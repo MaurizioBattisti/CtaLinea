@@ -1,0 +1,21 @@
+Upload di file tramite Web API
+https://code-maze.com/upload-files-dot-net-core-angular/
+
+upload file Lato client con Blazor
+https://code-maze.com/blazor-webassembly-file-upload/
+
+Blazor e Identity Server
+https://medium.com/@marcodesanctis2/securing-blazor-webassembly-with-identity-server-4-ee44aa1687ef
+https://docs.microsoft.com/it-it/aspnet/core/blazor/security/webassembly/standalone-with-authentication-library?view=aspnetcore-5.0&tabs=visual-studio
+...
+https://docs.microsoft.com/it-it/aspnet/core/blazor/security/webassembly/hosted-with-identity-server?view=aspnetcore-5.0&tabs=visual-studio
+
+
+http client in Blazor
+https://docs.microsoft.com/it-it/aspnet/core/blazor/security/webassembly/additional-scenarios?view=aspnetcore-5.0
+
+Chiamare WEBAPI da Blazor
+https://docs.microsoft.com/en-us/aspnet/core/blazor/call-web-api?view=aspnetcore-5.0
+
+Web aSsembly optimizzation
+https://docs.microsoft.com/it-it/aspnet/core/blazor/webassembly-performance-best-practices?view=aspnetcore-5.0

@@ -1,0 +1,25 @@
+﻿<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href=""><span style="color: #ffffff">CTA Linea</span></a>
+</div>
+
+<RadzenPanelMenu>
+    <RadzenPanelMenuItem Text="Home" Path="/" Icon="home"></RadzenPanelMenuItem>
+    <RadzenPanelMenuItem Text="Ricerche" Icon="saved_search">
+        <RadzenPanelMenuItem Text="Mezzi" Path="/cars" Icon="departure_board"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Utility" Path="/utility" Icon="settings"></RadzenPanelMenuItem>
+    </RadzenPanelMenuItem>
+    <RadzenPanelMenuItem Text="Linee" Icon="departure_board">
+        <RadzenPanelMenuItem Text="Servizi TT" Path="/tt_services" Icon="departure_board"></RadzenPanelMenuItem>
+    </RadzenPanelMenuItem>
+        
+    <RadzenPanelMenuItem Text="Gestione" Icon="construction">
+        <RadzenPanelMenuItem Text="Importa TT" Path="/import_tt" Icon="train"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Importa CTA" Path="/import_cta" Icon="local_shipping"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Crea Schede V2" Path="/export_v2" Icon="local_shipping"></RadzenPanelMenuItem>
+
+        <RadzenPanelMenuItem Text="Importazioni" Path="/import_list" Icon="file_upload"></RadzenPanelMenuItem>
+    </RadzenPanelMenuItem>
+</RadzenPanelMenu>
+
+@code {
+}

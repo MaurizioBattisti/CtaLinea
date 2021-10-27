@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace CtaLineaWebApi
+{
+    public static class Constants
+    {
+        internal const string CorsPolicyName = "MyCorsPolicy";
+
+        // configuration section
+        internal const string ConfigSection_IdentityServer = "IdentityServer";
+        internal const string ConfigSection_CtaLineaDb = "CtaLineaDb";
+
+        // importazioni
+        internal const string ImportDescr_TT = "TT Service";
+    }
+}

@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>CtaLineaDb</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{9e204af3-0949-4c8f-bc7a-dedce1186a7e}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql150DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath />
+    <RootNamespace>CtaLineaDb</RootNamespace>
+    <AssemblyName>CtaLineaDb</AssemblyName>
+    <ModelCollation>1033,CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <DefaultCollation>Latin1_General_CI_AS</DefaultCollation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="Tables" />
+    <Folder Include="Views" />
+    <Folder Include="StoredProc" />
+    <Folder Include="Tables\Viaggi_2" />
+    <Folder Include="Tables\Lookups" />
+    <Folder Include="Tables\TT" />
+    <Folder Include="Tables\Contab" />
+    <Folder Include="Tables\CTA" />
+    <Folder Include="Tables\Imports" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Tables\Viaggi_2\Associates.sql" />
+    <Build Include="Tables\Viaggi_2\Calendars.sql" />
+    <Build Include="Tables\Viaggi_2\CalendaSchoolYearRanges.sql" />
+    <Build Include="Tables\Viaggi_2\CalendarDays.sql" />
+    <Build Include="Tables\Viaggi_2\CollectionPoints.sql" />
+    <Build Include="Tables\Viaggi_2\SheetCategories.sql" />
+    <Build Include="Tables\Viaggi_2\SheetSubCategories.sql" />
+    <Build Include="Tables\Lookups\RunTypes.sql" />
+    <Build Include="Tables\TT\TtServices.sql" />
+    <PostDeploy Include="Post_Deploy.sql" />
+    <Build Include="Tables\TT\TtNodes.sql" />
+    <Build Include="Tables\CTA\CtaServices.sql" />
+    <Build Include="Tables\CTA\CtaServicePEriods.sql" />
+    <Build Include="Tables\CTA\CtaServiceCars.sql" />
+    <Build Include="Tables\Imports\Imports.sql" />
+    <Build Include="Tables\Imports\ImportDetails.sql" />
+    <Build Include="StoredProc\up_FinalizeServiceImport.sql" />
+    <Build Include="Views\vw_PendingImports.sql" />
+    <Build Include="Tables\CTA\CtaServiceLog.sql" />
+    <Build Include="Views\Vw_Services.sql" />
+    <Build Include="Views\vw_CtaServiceCars.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="CtaLineaDb.refactorlog" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Tables\Viaggi_2\Cars.sql" />
+    <Build Include="Tables\Viaggi_2\Drivers.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CtaLineaDb.publish.xml" />
+  </ItemGroup>
+</Project>

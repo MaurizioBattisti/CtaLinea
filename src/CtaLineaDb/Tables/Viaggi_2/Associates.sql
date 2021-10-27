@@ -1,0 +1,9 @@
+﻿CREATE TABLE [dbo].[Associates]
+(
+	[AssociateId] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY, 
+    [Description] VARCHAR(200) NOT NULL, 
+    [BsSupplierCode] VARCHAR(20) NULL, -- codice Busstop fornitore
+    [BsCustomerCode] NCHAR(10) NULL,   -- codice bustop cliente
+    [Active] BIT NOT NULL DEFAULT 1, 
+    [Email] VARCHAR(256) NULL
+)

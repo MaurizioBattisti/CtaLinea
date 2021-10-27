@@ -1,0 +1,116 @@
+﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+@using System.Threading;
+@page "/import_detail/{id:guid}"
+@inject IQueryUtilityService qieryService
+@attribute [Authorize]
+
+<h3>Dettaglio importazione</h3>
+<RadzenCard>
+    <div class="row">
+        @if (this.Import != null)
+        {
+        <div class="col-md-6">
+            <duv>
+                <RadzenIcon Icon="@this.IconToShow" />
+                @this.Import.ImportStatus
+            </duv>
+            <br />
+            <duv><strong>@this.Import.Description</strong></duv>
+            <br />
+            <div>Inizio importazione:</div>
+            <strong>@this.Import.ImportStartDate.ToString("dd/MM/yyyy hh:mm")</strong>
+            <br />
+            <div>Fine importazione:</div>
+            <strong>@this.Import.ImportStartDate.ToString("dd/MM/yyyy hh:mm")</strong>
+            <br />
+            <div>Nr Elementi Processati</div>
+            <span>@this.Import.ProcessedElements.ToString()</span>
+            <br />
+            <div>Nr Elementi Importati</div>
+            <span>@this.Import.ImportedElements.ToString()</span>
+            <br />
+            <div>Utente</div>
+            <strong>@this.Import.User</strong>
+        </div>
+        <div class="col-md-6">
+            <p>@this.Import.Note</p>
+        </div>
+        }
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <!-- griglia con i dati di dettaglio-->
+            <RadzenDataGrid @ref="@this.grid" AllowFiltering="true"
+                            AllowColumnResize="true"
+                            FilterMode="FilterMode.Simple"
+                            PageSize="20"
+                            Count="@this.DetailCount"
+                            LoadData="@LoadDetails"
+                            AllowPaging="true" AllowSorting="true"
+                            Data="@Details" TItem="ImportDetailQueryItem"
+                            ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or"
+                            >
+                <Columns>
+                    <RadzenDataGridColumn TItem="ImportDetailQueryItem" Property="ServiceId" Title="Id Servizio" Width="100" />
+                    <RadzenDataGridColumn TItem="ImportDetailQueryItem" Property="ImportNote" Title="Note" />
+
+                    <RadzenDataGridColumn TItem="ImportDetailQueryItem" Property="LineNumber" Title="Nr Linea" />
+                    <RadzenDataGridColumn TItem="ImportDetailQueryItem" Property="RunNumber" Title="Nr. Corsa" />
+                    <RadzenDataGridColumn TItem="ImportDetailQueryItem" Property="LineDescription" Title="Descrizione" />
+                    <RadzenDataGridColumn TItem="ImportDetailQueryItem" Property="Company" Title="Ditta" />
+                </Columns>
+            </RadzenDataGrid>
+        </div>
+    </div>
+</RadzenCard>
+
+@code {
+    RadzenDataGrid<ImportDetailQueryItem> grid;
+    [Parameter]
+    public Guid Id { get; set; }
+
+    // il singolo import
+    QueryDefinition _importQueryDef = new QueryDefinition();
+    ImportQueryItem Import = null;
+
+    // il dettaglio dell'import
+    QueryDefinition _detailQueryDef = new QueryDefinition();
+    ImportDetailQueryItem[] Details = null; //  new ImportDetailQueryItem[] { };
+    int DetailCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        this._importQueryDef.EndPoint = string.Format(Constants.Endpoint_ImportLog_Single,
+            this.Id);
+        this._detailQueryDef.EndPoint = string.Format(Constants.Endpoint_ImportLog_Details,
+            this.Id);
+
+        this.Import = await this.qieryService.GetOneAsync<ImportQueryItem>(
+                this._importQueryDef);
+
+        this.StateHasChanged();
+    }
+
+    private string IconToShow => this.Import?.ImportStatus switch
+    {
+        "ABORTED" => "warning",
+        "PROGRESS" => "pending",
+        "COMPLETED" => "done",
+        _ => "error"
+    };
+
+    private async Task LoadDetails(LoadDataArgs args)
+    {
+        this._detailQueryDef.Filter = string.Empty;
+        this._detailQueryDef.Sort = "ServiceId";
+
+        this._detailQueryDef.Page = args.Skip.Value / args.Top.Value;
+        this._detailQueryDef.PageSize = args.Top.Value;
+
+        var result = await qieryService.GetListAsync<ImportDetailQueryItem>(
+                    this._detailQueryDef);
+
+        this.Details = result.Items;
+        this.DetailCount = result.TotalRows;
+    }
+}

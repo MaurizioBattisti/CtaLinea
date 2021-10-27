@@ -1,0 +1,97 @@
+﻿@page "/cars"
+@inject IQueryUtilityService qieryService
+@attribute [Authorize]
+<h3>Cars</h3>
+
+<RadzenGrid Count="@CarCount" Data="@this.CarList" LoadData="@LoadData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" PageSize="20" TItem="Car" ColumnWidth="200px">
+    <Columns>
+        <RadzenGridColumn TItem="Car" Property="Id" Title="ID" />
+        <RadzenGridColumn TItem="Car" Property="RegNumber" Title="Targa" />
+        <RadzenGridColumn TItem="Car" Property="Description" Title="Descrizione" />
+        <RadzenGridColumn TItem="Car" Property="NrSittings" Title="Posti" />
+        <RadzenGridColumn TItem="Car" Property="AssociateDescription" Title="Ditta" />
+    </Columns>
+</RadzenGrid>
+
+
+@if (CarList == null)
+{
+    <p><em>Loading Saetta McQueen...</em></p>
+}
+else
+{
+    <p>Current count: @CarList.Count()</p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Targa</th>
+                <th>Descrizione</th>
+                <th>Nr. Posti</th>
+                <th>Ditta</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var car in this.CarList)
+            {
+                <tr>
+                    <td>@car.RegNumber</td>
+                    <td>@car.Description</td>
+                    <td>@car.NrSittings.ToString() </td>
+                    <td>@car.AssociateDescription</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    public int CarCount = 0;
+    private Car[] CarList = null;
+    QueryDefinition _queryDef = new QueryDefinition();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        this._queryDef.EndPoint = Constants.Endpoint_Cars;
+
+        /*
+        var result = await qieryService.GetListAsync<Car>(
+            this._queryDef);
+
+        this.CarList = result.Items;
+        */
+    }
+
+    async Task LoadData(LoadDataArgs args)
+    {
+        // StateHasChanged();
+
+        /*
+        var query = dbContext.Employees.AsQueryable();
+
+        if (!string.IsNullOrEmpty(args.Filter))
+        {
+            query = query.Where(args.Filter);
+        }
+
+        if (!string.IsNullOrEmpty(args.OrderBy))
+        {
+            query = query.OrderBy(args.OrderBy);
+        }
+
+        employees = query.Skip(args.Skip.Value).Take(args.Top.Value).ToList();
+
+        count = dbContext.Employees.Count();
+
+        await InvokeAsync(StateHasChanged);
+        **/
+        this._queryDef.Page = args.Skip.Value / args.Top.Value;
+        this._queryDef.PageSize = args.Top.Value;
+
+        var result = await qieryService.GetListAsync<Car>(
+        this._queryDef);
+
+        this.CarList = result.Items;
+        this.CarCount = result.TotalRows;
+    }
+}

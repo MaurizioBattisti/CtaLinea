@@ -1,0 +1,68 @@
+﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+@using System.Threading;
+@using CtaLinea.Application.Utility;
+@page "/tt_services"
+@inject IQueryUtilityService qieryService
+@inject DialogService DialogService
+@attribute [Authorize]
+
+<RadzenDialog />
+<h3>Cerca i servizi TT</h3>
+<RadzenDataGrid @ref="@this.grid" 
+                FilterMode="FilterMode.Simple"
+                PageSize="20"
+                Count="@ServicesCount"
+                LoadData="@LoadServices"
+                Data="@this.Services" TItem="TtServiceQueryItem"
+                AllowFiltering="true"
+                AllowColumnResize="true"
+                AllowPaging="true" 
+                AllowSorting="true"
+                ColumnWidth="300px" 
+                LogicalFilterOperator="LogicalFilterOperator.And"
+                >
+    <Columns>
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="Id" Title="Id Servizio" />
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="LineNumber" Title="Nr Linea" />
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="RunNumber" Title="Nr Corsa" />
+
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="LineDescription" Title="Desrizione Linea" />
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="PathDescription" Title="Percorso" />
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="Km" Title="Km" />
+
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="StartDate" Title="Inizio" FormatString="{0:dd/MM/yyyy hh:mm:ss}" />
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="EndDate" Title="Fine " FormatString="{0:dd/MM/yyyy hh:mm:ss}" />
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    RadzenDataGrid<TtServiceQueryItem> grid;
+
+    QueryDefinition _servicesQueryDef = new QueryDefinition();
+    TtServiceQueryItem[] Services = null; // new ImportQueryItem[] { };
+    int ServicesCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        this._servicesQueryDef.EndPoint = Constants.Endpoint_TtServies;
+        await Task.CompletedTask;
+        this.StateHasChanged();
+    }
+
+    private async Task LoadServices(LoadDataArgs args)
+    {
+        this._servicesQueryDef.Sort = "id-";
+
+        this._servicesQueryDef.Page = args.GetQueryPage();
+        this._servicesQueryDef.PageSize = args.GetQueryPageSize();
+
+        var result = await qieryService.GetListAsync<TtServiceQueryItem>(
+                    this._servicesQueryDef);
+
+        this.Services = result.Items;
+        this.ServicesCount = result.TotalRows;
+    }
+
+
+
+}

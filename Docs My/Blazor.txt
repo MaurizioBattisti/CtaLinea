@@ -1,0 +1,35 @@
+Blazor
+
+Blazor Course (13)
+1.
+https://www.youtube.com/watch?v=XgnjvaGbXV0&list=PL4WEkbdagHIR0RBe_P4bai64UDqZEbQap&index=10
+2. Blazor Server Side
+https://www.youtube.com/watch?v=8DNgdphLvag
+3*. Blazor web ASsembly
+https://www.youtube.com/watch?v=KOMo77bVKSw
+4. Prograssive Web Application
+https://www.youtube.com/watch?v=Ph9ReSnyGJc
+5. Opend id connect in Blazor Web Assembly
+https://www.youtube.com/watch?v=VpEexGvZWSQ
+
+Blazor component Library
+a list o f libraries
+https://jonhilton.net/blazor-component-libraries/
+
+Free For commercial use
+https://blazor.radzen.com/
+https://blazorise.com/docs/
+https://github.com/Blazored
+
+https://mudblazor.com/components/card
+Free for comunity 
+
+identity server in Blazor Web ASsembly
+https://docs.microsoft.com/it-it/aspnet/core/blazor/security/webassembly/standalone-with-authentication-library?view=aspnetcore-5.0&tabs=visual-studio
+
+Signal R in Blazor Web Assembly
+https://www.syncfusion.com/blogs/post/get-real-time-updates-in-blazor-wasm-apps-with-signalr-communication.aspx
+
+Free component for Blazor 
+Video
+https://www.youtube.com/watch?v=i1Kric5tqYk
