@@ -1,43 +1,107 @@
 ﻿@page "/cars"
-@inject IQueryUtilityService qieryService
+@inject IQueryUtilityService queryService
 @attribute [Authorize]
-<h3>Cars</h3>
 
-<RadzenGrid Count="@CarCount" Data="@this.CarList" LoadData="@LoadData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" PageSize="20" TItem="Car" ColumnWidth="200px">
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Mezzi" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+        <RadzenTextBox @bind-Value="FullTextSearch" Placeholder="Cerca..." Change=@(args => FullText_OnChange(args)) Class="w-100" />
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<RadzenDataGrid @ref="@grdData" 
+        FilterMode="FilterMode.Simple"
+        IsLoading=@isLoading
+        PageSize=@(Settings?.PageSize ?? 5)
+        Count="@RowCount"
+        LoadData="@LoadServices"
+        Data="@this.Data" TItem="Car"
+        AllowFiltering="true"
+        AllowColumnResize="true"
+        AllowPaging="true" 
+        AllowSorting="true"
+        LogicalFilterOperator="LogicalFilterOperator.And"
+        PagerHorizontalAlign="HorizontalAlign.Left" 
+        ShowPagingSummary="true"
+        >
+    <EmptyTemplate>
+        <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun mezzo trovato !</p>
+    </EmptyTemplate>
     <Columns>
-        <RadzenGridColumn TItem="Car" Property="Id" Title="ID" Visible=false />
-        <RadzenGridColumn TItem="Car" Property="RegNumber" Title="Targa" />
-        <RadzenGridColumn TItem="Car" Property="Description" Title="Descrizione" />
-        <RadzenGridColumn TItem="Car" Property="NrSittings" Title="Posti" />
-        <RadzenGridColumn TItem="Car" Property="AssociateDescription" Title="Ditta" />
-    </Columns>
-</RadzenGrid>
+        <RadzenDataGridColumn TItem="Car" Property="Id" Title="ID" Visible=false />
+        <RadzenDataGridColumn TItem="Car" Property="BsCarId" Title="Cod. B.S." Width="100px"/>
 
+        <RadzenDataGridColumn TItem="Car" Property="RegNumber" Title="Targa"  Width="120px" />
+        <RadzenDataGridColumn TItem="Car" Property="Description" Title="Descrizione"  Width="200px"/>
+        <RadzenDataGridColumn TItem="Car" Property="NrSittings" Title="Posti" Width="100px"/>
+        <RadzenDataGridColumn TItem="Car" Property="AssociateDescription" Title="Ditta" Width="200px"/>
+
+        <RadzenDataGridColumn TItem="Car" Property="PrimaryCar" Title="Titolare" Width="100px"/>
+        <RadzenDataGridColumn TItem="Car" Property="SpareCar" Title="Scorta" Width="100px"/>
+
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="FirstRegistration" Title="Prima imm." FormatString="{0:dd/MM/yyyy}" Width="150px"/>
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="DiscontinuationDate" Title="Vendita " FormatString="{0:dd/MM/yyyy}" Width="150px"/>
+
+        <RadzenDataGridColumn TItem="Car" Property="ChassisNumber" Title="Nr. Telaio" Width="150px"/>
+
+        <RadzenDataGridColumn TItem="Car" Property="Active" Title="Attivo" Width="100px"/>
+        <RadzenDataGridColumn TItem="Car" Property="AssociateActive" Title="Ditta Att." Width="150px"/>
+    </Columns>
+</RadzenDataGrid>
 
 @code {
-    public int CarCount = 0;
-    private Car[]? CarList = null;
-    QueryDefinition _queryDef = new QueryDefinition();
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+    RadzenDataGrid<Car>? grdData;
 
+    QueryDefinition _servicesQueryDef = new QueryDefinition();
+    Car[]? Data = null; 
+    int RowCount = 0;
+    bool isLoading = false;
+    string FullTextSearch = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        this._queryDef.EndPoint = Constants.Endpoint_Cars;
+        this._servicesQueryDef.EndPoint = Constants.Endpoint_Cars;
         await Task.CompletedTask;
+        this.StateHasChanged();
     }
 
-    async Task LoadData(LoadDataArgs args)
+    void FullText_OnChange(string value)
     {
-        this._queryDef.Page = args.GetQueryPage(); //  args.Skip.Value / args.Top.Value;
-        this._queryDef.PageSize = args.GetQueryPageSize();  // args.Top.Value;
+        this.grdData?.Reload();
+    }
 
-        var result = await qieryService.GetListAsync<Car>(
-            this._queryDef);
+    private async Task LoadServices(LoadDataArgs args)
+    {
+        this.isLoading = true;
+        this.StateHasChanged();
 
-        if (result != null)
+        this._servicesQueryDef.Filter = args.GetQueryFilter<Car> ();
+        this._servicesQueryDef.Sort = args.GetQuerySort(nameof(Car.RegNumber));
+        this._servicesQueryDef.FullText = this.FullTextSearch;
+
+        this._servicesQueryDef.Page = args.GetQueryPage();
+        this._servicesQueryDef.PageSize = args.GetQueryPageSize();
+
+        try
         {
-            this.CarList = result.Items;
-            this.CarCount = result.TotalRows;
+            var result = await queryService.GetListAsync<Car>(
+                        this._servicesQueryDef);
+
+            if (result != null)
+            {
+                this.Data = result.Items;
+                this.RowCount = result.TotalRows;
+            }
+        }
+        finally
+        {
+            this.isLoading = false;
+            this.StateHasChanged();
         }
     }
 }

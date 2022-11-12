@@ -1,7 +1,4 @@
-﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
-@using CtaLinea.Application.Model;
-@using System.Threading;
-@page "/tt_services"
+﻿@page "/tt_services"
 @inject IQueryUtilityService queryService
 @attribute [Authorize]
 
@@ -10,12 +7,12 @@
         <RadzenLabel Text="Servizi TT" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
     </PageTitle>
     <TopLine>
-        <RadzenTextBox @bind-Value="FullTextSearch" Placeholder="Cerca..." Change=@(args => OnChange(args)) Class="w-100" />
+        <RadzenTextBox @bind-Value="FullTextSearch" Placeholder="Cerca..." Change=@(args => FullText_OnChange(args)) Class="w-100" />
     </TopLine>
 </LayoutSetter>
 <CtaLineaSttingsNotifier Changed=@StateHasChanged />
 
-<RadzenDataGrid @ref="@grdServices" 
+<RadzenDataGrid @ref="@grdData" 
                 FilterMode="FilterMode.Simple"
                 IsLoading=@isLoading
                 PageSize=@(Settings?.PageSize ?? 5)
@@ -31,7 +28,7 @@
                 ShowPagingSummary="true"
                 >
     <EmptyTemplate>
-        <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun servizio trovatoy.</p>
+        <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun servizio trovato !</p>
     </EmptyTemplate>
     <Columns>
         <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="Id" Title="Id Servizio" Visible=false />
@@ -77,12 +74,11 @@
 
 @code {
     [CascadingParameter]
-    CtaLineaSettings Settings {  get;  set; }
-
-    RadzenDataGrid<TtServiceQueryItem> grdServices;
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+    RadzenDataGrid<TtServiceQueryItem>? grdData;
 
     QueryDefinition _servicesQueryDef = new QueryDefinition();
-    TtServiceQueryItem[]? Data = null; // new ImportQueryItem[] { };
+    TtServiceQueryItem[]? Data = null; 
     int RowCount = 0;
     bool isLoading = false;
     string FullTextSearch = string.Empty;
@@ -94,9 +90,9 @@
         this.StateHasChanged();
     }
 
-    void OnChange(string value)
+    void FullText_OnChange(string value)
     {
-        this.grdServices.Reload();
+        this.grdData?.Reload();
     }
 
     private async Task LoadServices(LoadDataArgs args)
