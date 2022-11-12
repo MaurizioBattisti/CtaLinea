@@ -65,7 +65,7 @@ BEGIN
 
 		-- aggiunge una riga alla tabella delle modifiche
 		INSERT INTO dbo.CtaServiceLog
-			(ServiceId, [USer], Note)
+			(ServiceId, [User], Note)
 			SELECT s.ServiceId,
 					i.[User],
 					'Nuova importazione riga' AS Note
@@ -87,7 +87,7 @@ BEGIN
 		-- Inserisce i valori di modifica nella tabella del log 
 		-- aggiunge una riga alla tabella delle modifiche
 		INSERT INTO dbo.CtaServiceLog
-			(ServiceId, [USer], Note)
+			(ServiceId, [User], Note)
 			SELECT s.ServiceId,
 					i.[User],
 					'Modifica in fase di importazione' AS Note

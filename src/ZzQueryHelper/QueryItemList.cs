@@ -20,6 +20,6 @@ namespace ZzSoft.QueryHelper
 
         public IEnumerable<T> Items { get; private set; }
         public int CurrentPage { get; private set; }
-        public int TotalRows { get; private set; }
+        public int? TotalRows { get; private set; }
     }
 }

@@ -51,8 +51,9 @@ namespace CtaLineaWebApi.Controllers
             }
             catch (Exception exc)
             {
-                this._logger.LogError(exc, "errore durante il caricamento del file dei servizi TT");
-                throw;
+                var msg = "errore durante il caricamento del file dei servizi TT";
+                this._logger.LogError(exc, msg);
+                return this.Conflict(msg + "\n" + exc.Message);
             }
             return this.Ok();
         }

@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[CtaServices]
 (
 	[ServiceId] INT NOT NULL PRIMARY KEY, 
-    [RunTypeId] NCHAR(10) NULL,
+    [RunTypeId] VARCHAR(10) NULL,
 
     [CategoryId] VARCHAR(10) NULL, 
     [SubCategoryId] VARCHAR(20) NULL, 
@@ -20,6 +20,10 @@
         FOREIGN KEY (SubCategoryId) 
         REFERENCES dbo.SheetSubCategories(SubCategoryId)
         ON DELETE NO ACTION
-        ON UPDATE CASCADE
-
+        ON UPDATE CASCADE,
+    CONSTRAINT [FK_CtaService_RunType]
+		FOREIGN KEY ([RunTypeId]) 
+		REFERENCES [dbo].[RunTypes]([RunTypeId])
+		ON DELETE NO ACTION
+        ON UPDATE NO ACTION 
 )

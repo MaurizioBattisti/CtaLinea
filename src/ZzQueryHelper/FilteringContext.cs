@@ -24,6 +24,7 @@ namespace ZzSoft.QueryHelper
             this.Projection = projection;
 
             this.Page = Page;
+            if (this.Page <= 0) this.Page = 1;
             this.PageSize = pageSize;
 
             this.Count = count;

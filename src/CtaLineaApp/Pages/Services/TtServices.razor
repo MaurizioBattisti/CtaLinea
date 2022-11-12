@@ -1,0 +1,131 @@
+﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+@using CtaLinea.Application.Model;
+@using System.Threading;
+@page "/tt_services"
+@inject IQueryUtilityService queryService
+@attribute [Authorize]
+
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Servizi TT" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+        <RadzenTextBox @bind-Value="FullTextSearch" Placeholder="Cerca..." Change=@(args => OnChange(args)) Class="w-100" />
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<RadzenDataGrid @ref="@grdServices" 
+                FilterMode="FilterMode.Simple"
+                IsLoading=@isLoading
+                PageSize=@(Settings?.PageSize ?? 5)
+                Count="@RowCount"
+                LoadData="@LoadServices"
+                Data="@this.Data" TItem="TtServiceQueryItem"
+                AllowFiltering="true"
+                AllowColumnResize="true"
+                AllowPaging="true" 
+                AllowSorting="true"
+                LogicalFilterOperator="LogicalFilterOperator.And"
+                PagerHorizontalAlign="HorizontalAlign.Left" 
+                ShowPagingSummary="true"
+                >
+    <EmptyTemplate>
+        <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun servizio trovatoy.</p>
+    </EmptyTemplate>
+    <Columns>
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="Id" Title="Id Servizio" Visible=false />
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="LineNumber" Title="Nr Linea" Width="100px"/>
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="RunNumber" Title="Nr Corsa" Width="100px"/>
+
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="LineDescription" Title="Desrizione Linea" Width="200px"/>
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="PathDescription" Title="Percorso" Width="200px"/>
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="Km" Title="Km" Width="100px"/>
+
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="StartDate" Title="Inizio" FormatString="{0:dd/MM/yyyy}" Width="150px"/>
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="EndDate" Title="Fine " FormatString="{0:dd/MM/yyyy}" Width="150px"/>
+
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="FrequencyDescription" Title="Frequenza" Width="200px"/>
+
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="StartingLocation" Title="Partenza" Width="200px"/>
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="EndingLocation" Title="Destinazione" Width="200px"/>
+
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="StartHour" Title="Ora inizio" FormatString="{0:hh:mm}" Width="100px"/>
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="EndHour" Title="Ora fine" FormatString="{0:hh:mm}" Width="100px"/>
+        
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="RequestedSittings" Title="nr Posti" Width="100px"/>
+        
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="SpecReference" Title="Rif. Spec." Width="200px"/>
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="RunType" Title="Tipo corsa." Width="200px"/>
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="ServiceTypeDescr" Title="Tipo Servizio." Width="200px"/>
+        
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="RunInHoursBook" Title="In Orario." Width="100px"/>
+
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="Company" Title="Ditta" Width="200px"/>
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="Company1" Title="Ditta 1" Width="200px"/>
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="Company2" Title="Ditta 2" Width="200px"/>
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="Company3" Title="Ditta 3" Width="200px"/>
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="DestinationTable" Title="Tabella Destinazioni" Width="200px"/>
+
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="Note" Title="Note" Width="400px"/>
+
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="InsertDate" Title="Inserimetno" FormatString="{0:dd/MM/yyyy hh:mm}" Width="200px"/>
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="ModifyDate" Title="Modifica " FormatString="{0:dd/MM/yyyy hh:mm}" Width="200px"/>
+        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="LastUpdateDate" Title="Ultimo agg. " FormatString="{0:dd/MM/yyyy hh:mm}" Width="200px"/>
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    [CascadingParameter]
+    CtaLineaSettings Settings {  get;  set; }
+
+    RadzenDataGrid<TtServiceQueryItem> grdServices;
+
+    QueryDefinition _servicesQueryDef = new QueryDefinition();
+    TtServiceQueryItem[]? Data = null; // new ImportQueryItem[] { };
+    int RowCount = 0;
+    bool isLoading = false;
+    string FullTextSearch = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        this._servicesQueryDef.EndPoint = Constants.Endpoint_TtServies;
+        await Task.CompletedTask;
+        this.StateHasChanged();
+    }
+
+    void OnChange(string value)
+    {
+        this.grdServices.Reload();
+    }
+
+    private async Task LoadServices(LoadDataArgs args)
+    {
+        this.isLoading = true;
+        this.StateHasChanged();
+
+        this._servicesQueryDef.Filter = args.GetQueryFilter<TtServiceQueryItem> ();
+        this._servicesQueryDef.Sort = args.GetQuerySort(nameof(TtServiceQueryItem.Id));
+        this._servicesQueryDef.FullText = this.FullTextSearch;
+
+        this._servicesQueryDef.Page = args.GetQueryPage();
+        this._servicesQueryDef.PageSize = args.GetQueryPageSize();
+
+        try
+        {
+            var result = await queryService.GetListAsync<TtServiceQueryItem>(
+                        this._servicesQueryDef);
+
+            if (result != null)
+            {
+                this.Data = result.Items;
+                this.RowCount = result.TotalRows;
+            }
+        }
+        finally
+        {
+            this.isLoading = false;
+            this.StateHasChanged();
+        }
+    }
+}

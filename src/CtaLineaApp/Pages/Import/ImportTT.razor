@@ -1,0 +1,146 @@
+﻿@inject IAccountService accountService
+@inject HttpClient httpClient;
+@page "/import_tt"
+@attribute [Authorize]
+
+<h3>Importa dati da TT</h3>
+
+@if (this.PendingImport == null)
+{
+    <p>Seleziona il file dei servizi TT per mandarlo al server ed elaborarlo per caricare le  variazioni</p>
+    <RadzenUpload @ref="upload"
+                  ChooseText="Seleziona file TT"
+                  Auto="false"
+                  Multiple="false"
+                  Url="@this.UploadUrl"
+                  Style="margin-bottom: 20px;"
+                  Change=@this.OnChange
+                  Progress=@this.OnProgress>
+        <RadzenUploadHeader Name="Authorization" Value="@this.BearerToken" />
+    </RadzenUpload>
+    <RadzenButton Text="Carica il file"
+                  Disabled="@(this.FileToUpload == null)"
+                  Click=@this.UploadTtServices
+                  Style="margin-bottom: 20px;" />
+
+    @if (this.UploadStarted == true)
+    {
+        <p>caricamento del file in corso ....</p>
+        <RadzenProgressBar Value="@Progress"
+                           Style="margin-bottom: 20px" />
+    }
+}
+else
+{
+    <p>Importazione in corso</p>
+    <div class="row">
+        <div class="col-6">
+            <h3>@PendingImport.Description</h3>
+            <p>@PendingImport.ImportStatus</p>
+            <p>@PendingImport.LastUpdateDate.ToString()</p>
+        </div>
+        <div class="col-6">
+            <p>@PendingImport.ProcessedElements</p>
+            <p>@PendingImport.ImportStatus</p>
+        </div>
+    </div>
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Style="margin-bottom: 20px" />
+}
+
+@code {
+    // https://blazor.radzen.com/example-upload
+    // https://www.radzen.com/documentation/blazor/upload/
+    RadzenUpload upload;
+    RadzenDataGrid<ImportQueryItem> grid;
+
+    int Progress = 0;
+    bool UploadStarted = false;
+
+    string UploadUrl = string.Empty;
+    string BearerToken = string.Empty;
+    FileInfo? FileToUpload = null;
+
+    private Timer? _timer;
+    QueryDefinition _pendigQueryDef = new QueryDefinition();
+    ImportQueryItem? PendingImport = null;
+
+    // lista delle importazioni
+    QueryDefinition _importQueryDef = new QueryDefinition();
+    ImportQueryItem[] Imports = null; // new ImportQueryItem[] { };
+    int ImportCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // this._timer = new Timer(this.OnTimer, null, 1, 1000);
+        this._pendigQueryDef.EndPoint = string.Format(Constants.Endpoint_PendingImport, Constants.ImportDescr_TT);
+        this._importQueryDef.EndPoint = Constants.Endpoint_ImportLog;
+
+        await Task.CompletedTask;
+
+        this.UploadUrl = httpClient.BaseAddress + "api/utility/ttservices";
+
+        /*
+        this.UploadUrl = this.qieryService.GetCompleteUrl(Constants.Endpoint_TT_Import);
+        
+        var token = await this.accessToken.RequestAccessToken();
+        token.TryGetToken(out AccessToken accessToken); ;
+        this.BearerToken = "Bearer " + accessToken.Value;
+        */
+        this.BearerToken = "Bearer " + accountService.User?.Token ?? string.Empty;
+
+        // this.PendingImport = await this.GetPendingImport();
+        this.StateHasChanged();
+    }
+
+    private async Task ResetAll ()
+    {
+        this.UploadStarted = false;
+        this.Progress = 0;
+        this.FileToUpload = null;
+
+        // ricarica la lista delle ultime importazioni
+        await this.grid.Reload();
+
+        this.StateHasChanged();
+    }
+
+
+    private async Task UploadTtServices(MouseEventArgs args)
+    {
+        await this.upload.Upload();
+        this.UploadStarted = true;
+        this.StateHasChanged();
+    }
+
+    private void OnChange(UploadChangeEventArgs args)
+    {
+        this.FileToUpload = null;
+        foreach (var file in args.Files)
+        {
+            this.FileToUpload = file;
+        }
+        this.StateHasChanged();
+    }
+
+    void OnProgress(UploadProgressArgs args)
+    {
+        this.Progress = args.Progress;
+
+        this.StateHasChanged();
+    }
+
+    private string GetStyleBackColorByStatus (string status)
+    {
+        var color = "white";
+        switch(status)
+        {
+            case Constants.ImportStatus_Error:
+                color = "orangered";
+                break;
+            case Constants.ImportStatus_Completed:
+                color = "lightgreen";
+                break;
+        }
+        return color;
+    }
+}

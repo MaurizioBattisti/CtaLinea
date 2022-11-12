@@ -371,4 +371,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="Od" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="a67aed08-1807-4afc-a4c4-cc332b49e024" ChangeDateTime="10/29/2022 12:27:01">
+    <Property Name="ElementName" Value="[dbo].[Meta_Users].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Meta_Users]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="UserName" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="aa32304d-ec92-4e6b-8c16-d33c4971db34" ChangeDateTime="10/29/2022 12:32:57">
+    <Property Name="ElementName" Value="[dbo].[Meta_Roles].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Meta_Roles]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="UserName" />
+  </Operation>
 </Operations>

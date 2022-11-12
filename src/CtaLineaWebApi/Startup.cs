@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using ZzSoft.CtaLinea.Dal.Repositories;
 using Microsoft.IdentityModel.Tokens;
 using CtaLineaWebApi.Utility.BackGround;
+using CtaLineaWebApi.Auth;
 
 namespace CtaLineaWebApi
 {
@@ -50,11 +51,13 @@ namespace CtaLineaWebApi
             services.AddMvcCore()
                 .AddApiExplorer();
              */
+            /*
             var oidcConfig = new IdentityServerConfiguration();
             this.Configuration.GetSection(Constants.ConfigSection_IdentityServer)
                 .Bind(oidcConfig);
-            
+            */
             // Identity Service
+            /*
             services.AddAuthentication(
                 JwtBearerDefaults.AuthenticationScheme)
               .AddJwtBearer(options =>
@@ -62,6 +65,7 @@ namespace CtaLineaWebApi
                   options.Authority = oidcConfig.Authority;
                   options.Audience = oidcConfig.Audience;
               });
+            */
             /*
             "CtaLinea_WebAPi"
             "wi8wDyV0E95Xp99fQM7FQHkYx8MaY+1yrzoYv9aw8mk="
@@ -90,6 +94,11 @@ namespace CtaLineaWebApi
 
             // aggiunge utti i servizi custom
             services.AddCustomServices(this.Configuration);
+
+            // aggiunge il servizio epr il jwt token
+            services.AddJWTTokenServices(this.Configuration);
+            // aggiunge le policy di autorizzaizone
+            services.AddAuthorizationPolicies();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -190,6 +199,9 @@ namespace CtaLineaWebApi
                 TtServicesQueries>();
 
             // repository per le importazioni da TT
+            services.AddScoped<
+                IUserRepository,
+                UserRepository>();
             services.AddScoped<
                 ITtServiceRepository,
                 TtServiceRepository>();

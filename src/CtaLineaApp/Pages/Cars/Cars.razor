@@ -1,0 +1,43 @@
+﻿@page "/cars"
+@inject IQueryUtilityService qieryService
+@attribute [Authorize]
+<h3>Cars</h3>
+
+<RadzenGrid Count="@CarCount" Data="@this.CarList" LoadData="@LoadData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" PageSize="20" TItem="Car" ColumnWidth="200px">
+    <Columns>
+        <RadzenGridColumn TItem="Car" Property="Id" Title="ID" Visible=false />
+        <RadzenGridColumn TItem="Car" Property="RegNumber" Title="Targa" />
+        <RadzenGridColumn TItem="Car" Property="Description" Title="Descrizione" />
+        <RadzenGridColumn TItem="Car" Property="NrSittings" Title="Posti" />
+        <RadzenGridColumn TItem="Car" Property="AssociateDescription" Title="Ditta" />
+    </Columns>
+</RadzenGrid>
+
+
+@code {
+    public int CarCount = 0;
+    private Car[]? CarList = null;
+    QueryDefinition _queryDef = new QueryDefinition();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        this._queryDef.EndPoint = Constants.Endpoint_Cars;
+        await Task.CompletedTask;
+    }
+
+    async Task LoadData(LoadDataArgs args)
+    {
+        this._queryDef.Page = args.GetQueryPage(); //  args.Skip.Value / args.Top.Value;
+        this._queryDef.PageSize = args.GetQueryPageSize();  // args.Top.Value;
+
+        var result = await qieryService.GetListAsync<Car>(
+            this._queryDef);
+
+        if (result != null)
+        {
+            this.CarList = result.Items;
+            this.CarCount = result.TotalRows;
+        }
+    }
+}

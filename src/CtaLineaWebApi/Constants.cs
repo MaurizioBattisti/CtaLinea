@@ -13,6 +13,11 @@ namespace CtaLineaWebApi
         internal const string ConfigSection_IdentityServer = "IdentityServer";
         internal const string ConfigSection_CtaLineaDb = "CtaLineaDb";
 
+        // claims type
+
+        public const string ClaimType_AssociateId = "ctalinea.associateid";
+
+
         // importazioni
         internal const string ImportDescr_TT = "TT Service";
     }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31129.286
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{A66140D5-8670-4B80-A98A-F1CF1305B84D}"
 EndProject
@@ -20,6 +20,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Db", "Db", "{63CA7B2D-C7B1-42F6-A7DF-882F2D8B5820}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "CtaLineaDb", "CtaLineaDb\CtaLineaDb.sqlproj", "{9E204AF3-0949-4C8F-BC7A-DEDCE1186A7E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CtaLineaApp", "CtaLineaApp\CtaLineaApp.csproj", "{697CEE8D-3891-4EA1-ABCC-90F4C9EC035A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +51,10 @@ Global
 		{9E204AF3-0949-4C8F-BC7A-DEDCE1186A7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E204AF3-0949-4C8F-BC7A-DEDCE1186A7E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9E204AF3-0949-4C8F-BC7A-DEDCE1186A7E}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{697CEE8D-3891-4EA1-ABCC-90F4C9EC035A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{697CEE8D-3891-4EA1-ABCC-90F4C9EC035A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{697CEE8D-3891-4EA1-ABCC-90F4C9EC035A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{697CEE8D-3891-4EA1-ABCC-90F4C9EC035A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,6 +65,7 @@ Global
 		{BC00F846-E8A2-4E35-9307-56A40236379B} = {A66140D5-8670-4B80-A98A-F1CF1305B84D}
 		{E8183566-A159-4DA1-BC4C-F0001DEA2330} = {55AAAE2C-3D3C-4618-AF72-3D490705A0B6}
 		{9E204AF3-0949-4C8F-BC7A-DEDCE1186A7E} = {63CA7B2D-C7B1-42F6-A7DF-882F2D8B5820}
+		{697CEE8D-3891-4EA1-ABCC-90F4C9EC035A} = {A66140D5-8670-4B80-A98A-F1CF1305B84D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {98E926CE-5562-4DF4-B5A2-3B246D0D994E}

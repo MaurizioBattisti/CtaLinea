@@ -243,7 +243,7 @@ namespace ZzSoft.QueryHelper
             int pageSize
             )
         {
-            int startRow = (page * pageSize);
+            int startRow = ((page - 1) * pageSize);
 
             return string.Format(
                 SqlPaging_Fmt,
@@ -301,6 +301,30 @@ namespace ZzSoft.QueryHelper
         }
 
         private string GetFullTextWhereClause(
+            string fulltextSearch)
+        {
+            var sb = new StringBuilder(1024);
+            if (string.IsNullOrWhiteSpace(fulltextSearch) == false)
+            {
+                var words = fulltextSearch.Split(",");
+                foreach (var word in words)
+                {
+                    var w = word.Trim();
+                    if (string.IsNullOrWhiteSpace(w) == false)
+                    {
+                        if (sb.Length > 0) sb.Append(LOGICAL_AND);
+                        sb.Append(PARENTESIS_OPEN);
+
+                        var fileter = this.GetFullTextWhereClauseSingleWord(w);
+                        sb.Append(fileter);
+
+                        sb.Append(PARENTESIS_CLOSE);
+                    }
+                }
+            }
+            return sb.ToString();
+        }
+        private string GetFullTextWhereClauseSingleWord(
             string fulltextSearch)
         {
             var sb = new StringBuilder(1024);
@@ -446,13 +470,22 @@ namespace ZzSoft.QueryHelper
                 || token.TokenType == TokenType.Or)
             {
                 if (tokenEnum.MoveNext() == false) return null;
-                var expLeft = this.GetLogicalExpression(tokenEnum);
-                var expRight = this.GetLogicalExpression(tokenEnum);
-                if (token.TokenType != TokenType.CloseParenthesis)
+                var ExpressionList = new List<string>();
+                while (tokenEnum.Current.TokenType != TokenType.CloseParenthesis
+                    && ExpressionList.Count <= 2)
                 {
-                    throw new ApplicationException("stringa do query non crretta");
-                }
+                    var expr = this.GetLogicalExpression(tokenEnum);
+                    tokenEnum.MoveNext();
+                    if (string.IsNullOrEmpty(expr) == true) break;
 
+                    if (tokenEnum.Current.TokenType == TokenType.Comma)
+                    { 
+                        tokenEnum.MoveNext();
+                    }
+                    ExpressionList.Add (expr);
+                }
+                if (ExpressionList.Count < 2) throw new ApplicationException("Sintasssi di query non corretta");
+                
                 string logicalOp = token.TokenType switch
                 {
                     TokenType.And => LOGICAL_AND,
@@ -461,9 +494,13 @@ namespace ZzSoft.QueryHelper
                 };
 
                 sb.Append("(");
-                sb.Append(expLeft);
-                sb.Append(logicalOp);
-                sb.Append(expRight);
+                var first = true;
+                foreach (var expr in ExpressionList)
+                {
+                    if (first == false)  sb.Append(logicalOp);
+                    first = false;
+                    sb.Append(expr);
+                }
                 sb.Append(")");
             }
             else
@@ -548,7 +585,7 @@ namespace ZzSoft.QueryHelper
                         + this.GetValues(tokenEnum)
                         + SQL_LIKEALLPLACEHOLDER;
                     var param = this.CreateParameter(value);
-                    comparison = string.Format(compareOpFmt, expAttr, param);
+                    comparison = string.Format(likeOpFmt, expAttr, param);
                 }
             }
             return comparison;

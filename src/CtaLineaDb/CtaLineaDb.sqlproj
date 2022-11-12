@@ -64,6 +64,7 @@
     <Folder Include="Tables\Contab" />
     <Folder Include="Tables\CTA" />
     <Folder Include="Tables\Imports" />
+    <Folder Include="Tables\Auth" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Viaggi_2\Associates.sql" />
@@ -87,6 +88,8 @@
     <Build Include="Tables\CTA\CtaServiceLog.sql" />
     <Build Include="Views\Vw_Services.sql" />
     <Build Include="Views\vw_CtaServiceCars.sql" />
+    <Build Include="Tables\Auth\Meta_Users.sql" />
+    <Build Include="Tables\Auth\Meta_Roles.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="CtaLineaDb.refactorlog" />
