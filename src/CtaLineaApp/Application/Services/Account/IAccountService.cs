@@ -15,5 +15,7 @@ namespace CtaLineaApp.Application.Services.Account
         Task Update(string id, EditUser model);
         Task Delete(string id);
         */
+
+        Action? UserStatusChanged { get; set; }
     }
 }

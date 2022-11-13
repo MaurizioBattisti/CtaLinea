@@ -7,17 +7,17 @@ namespace CtaLineaApp
         : ComponentBase
     {
         [CascadingParameter]
-        public MainLayout Layout { get; set; }
+        public MainLayout? Layout { get; set; }
 
         [Parameter]
-        public RenderFragment TopLine { get; set; }
+        public RenderFragment? TopLine { get; set; }
 
         [Parameter]
-        public RenderFragment PageTitle { get; set; }
+        public RenderFragment? PageTitle { get; set; }
 
         protected override void OnInitialized()
         {
-            Layout.SetHeaderAndFooter(
+            Layout?.SetHeaderAndFooter(
                 this.TopLine, 
                 this.PageTitle);
         }

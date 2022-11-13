@@ -13,7 +13,17 @@ namespace CtaLineaApp.Application.Services.Account
         private NavigationManager _navigationManager;
         private ILocalStorageService _localStorageService;
 
-        public UserModel? User  { get;  private set; }
+        private UserModel? _User;
+        public UserModel? User  
+        {
+            get {  return _User; }
+            private set 
+            { 
+                _User = value;
+                if (UserStatusChanged != null) this.UserStatusChanged();
+            }
+        }
+        public Action? UserStatusChanged { get; set; } = null;
 
         public AccountService(
             IHttpService httpService,

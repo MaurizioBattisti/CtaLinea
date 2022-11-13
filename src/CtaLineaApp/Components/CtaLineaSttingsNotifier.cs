@@ -11,7 +11,7 @@ namespace CtaLineaApp
         public EventCallback<CtaLineaSettings> Changed { get; set; }
 
         [CascadingParameter]
-        public CtaLineaSettings ?Settings { get; set; } = null;
+        public CtaLineaSettings? Settings { get; set; } = null;
 
         public async Task IngrandaAsync ()
         {

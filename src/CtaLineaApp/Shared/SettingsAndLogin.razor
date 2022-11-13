@@ -1,0 +1,38 @@
+﻿@using CtaLineaApp.Application.Services.Account;
+@using CtaLineaApp.Application.Model.Account;
+@using System.Net
+@inject IAccountService AccountService
+@inject NavigationManager NavigationManager
+
+<div style="padding-left: 20px;" >
+@if(AccountService.User == null)
+{
+    <RadzenButton Click=@(args => Login()) Text="Login" Icon="account_circle" ButtonStyle="ButtonStyle.Primary" />
+}
+else
+{
+<RadzenMenu>
+    <RadzenMenuItem Text="@AccountService.User.Description" Icon="account_circle">
+        <RadzenMenuItem Text="Impostazioni" Icon="settings"></RadzenMenuItem>
+        <hr class="separator">
+        <RadzenMenuItem Text="Disconnetti" Path="/account/logout" Icon="logout"></RadzenMenuItem>
+    </RadzenMenuItem>
+ </RadzenMenu>
+ }
+ </div>
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        AccountService.UserStatusChanged = () => { this.StateHasChanged(); };
+    }
+
+    void Login ()
+    {
+        var returnUrl = WebUtility.UrlEncode(new Uri(NavigationManager.Uri).PathAndQuery);
+        NavigationManager.NavigateTo($"account/login?returnUrl={returnUrl}");
+    }
+}

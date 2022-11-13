@@ -7,25 +7,25 @@
         <RadzenHeader>
             <ChildContent>
                 <div class="row justify-content-start align-items-center">
-                    <div class="col-3 d-flex align-items-center">
-                        <RadzenSidebarToggle Click="@(args => { sidebarExpanded = !sidebarExpanded; bodyExpanded = !bodyExpanded; })" />
-                        
+                    <div class="col-5 d-flex align-items-center">
+                        <RadzenSidebarToggle Click="@(args => { sidebarExpanded = !sidebarExpanded; bodyExpanded = !bodyExpanded; })">
+                        </RadzenSidebarToggle>
                         <RadzenLabel Text="CTA Lineas" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
                         @if(PageTitle != null){ 
                             <RadzenLabel Text=" / " style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
                             @PageTitle
                         }
                     </div>
-                    <div class="col-7 d-flex align-items-center">
-                        @TopLine
-                    </div>
-                    <div class="col-1 d-flex align-items-center">
-                        <RadzenLabel Text="settings" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
-                        </RadzenLabel>
-                    </div>
-                    <div class="col-1 d-flex align-items-center">
-                        <RadzenLabel Text="log in info" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
-                        </RadzenLabel>
+                    <div class="col-7 d-flex align-items-center justify-content-end">
+                        <div  class="d-none d-md-inline-flex align-items-center">
+                            @TopLine
+                        </div>
+                        <div class="d-none d-md-inline-flex align-items-center">
+                            <SettingsAndLogin />
+                        </div>
+
+                        <a href="https://www.zzsoft.it" title="GitHub" target="_blank" class="mx-3">
+                        </a>
                     </div>
                 </div>
             </ChildContent>
@@ -53,13 +53,17 @@
 
     CtaLineaSettings LineaSettings = new CtaLineaSettings();
 
-    public void SetHeaderAndFooter(
-        RenderFragment topLine, 
-        RenderFragment pageTitle)
+    protected override async Task OnInitializedAsync()
     {
         // assegna la pagesize letta dal file json
         LineaSettings.PageSize = Constants.Default_PageSize;
+        await Task.CompletedTask;
+    }
 
+    public void SetHeaderAndFooter(
+    RenderFragment? topLine, 
+        RenderFragment? pageTitle)
+    {
         this.TopLine = topLine;
         this.PageTitle = pageTitle;
         StateHasChanged();
