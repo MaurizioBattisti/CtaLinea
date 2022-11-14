@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @using CtaLineaApp.Application.Model;
 
+
 <CascadingValue Value=@this>
 <CascadingValue Value=@this.LineaSettings >
     <RadzenLayout>
@@ -36,6 +37,7 @@
         <RadzenBody @bind-Expanded="@bodyExpanded">
             <ChildContent>
                 <RadzenContentContainer Name="main">
+                    <RadzenDialog />
                     @Body
                 </RadzenContentContainer>
             </ChildContent>

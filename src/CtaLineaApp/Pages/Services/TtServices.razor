@@ -17,7 +17,7 @@
                 IsLoading=@isLoading
                 PageSize=@(Settings?.PageSize ?? 5)
                 Count="@RowCount"
-                LoadData="@LoadServices"
+                LoadData="@LoadData"
                 Data="@this.Data" TItem="TtServiceQueryItem"
                 AllowFiltering="true"
                 AllowColumnResize="true"
@@ -95,7 +95,7 @@
         this.grdData?.Reload();
     }
 
-    private async Task LoadServices(LoadDataArgs args)
+    private async Task LoadData(LoadDataArgs args)
     {
         this.isLoading = true;
         this.StateHasChanged();

@@ -1,33 +1,48 @@
 ﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 @using System.Threading;
 @page "/import_list"
-@inject IQueryUtilityService qieryService
+@inject IQueryUtilityService queryService
 @inject DialogService DialogService
 @attribute [Authorize]
 
-<RadzenDialog />
-<h3>Elenco importazioni</h3>
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Elenco importazioni" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+        <RadzenTextBox @bind-Value="FullTextSearch" Placeholder="Cerca..." Change=@(args => FullText_OnChange(args)) Class="w-100" />
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
 
-<RadzenDataGrid @ref="@this.grid" AllowFiltering="true"
-                AllowColumnResize="true"
+<RadzenDataGrid @ref="@grdData" 
                 FilterMode="FilterMode.Simple"
-                PageSize="20"
-                Count="@ImportCount"
-                LoadData="@LoadImports"
-                AllowPaging="true" AllowSorting="true"
-                Data="@Imports" TItem="ImportQueryItem"
-                ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or"
+                IsLoading=@isLoading
+                PageSize=@(Settings?.PageSize ?? 5)
+                Count="@RowCount"
+                LoadData="@LoadData"
+                Data="@this.Data" TItem="ImportQueryItem"
+                AllowFiltering="true"
+                AllowColumnResize="true"
+                AllowPaging="true" 
+                AllowSorting="true"
+                LogicalFilterOperator="LogicalFilterOperator.And"
+                PagerHorizontalAlign="HorizontalAlign.Left" 
+                ShowPagingSummary="true"
                 CellRender="@this.ImportLog_CellRender">
+    <EmptyTemplate>
+        <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessuna importazione trovata !</p>
+    </EmptyTemplate>
     <Columns>
-        <RadzenDataGridColumn TItem="ImportQueryItem" Context="ImportQueryItem" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="100px">
+        <RadzenDataGridColumn TItem="ImportQueryItem" Context="ImportQueryItem" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
             <Template Context="import">
                 <RadzenButton Icon="edit" Size="ButtonSize.Small" Click="@(async (args) => await ShowDetailAsync(import))" @onclick:stopPropagation="true">
                 </RadzenButton>
             </Template>
         </RadzenDataGridColumn>
 
-        <RadzenDataGridColumn TItem="ImportQueryItem" Property="Description" Title="Tipo" />
-        <RadzenDataGridColumn TItem="ImportQueryItem" Property="ImportStatus" Title="Stato">
+        <RadzenDataGridColumn TItem="ImportQueryItem" Property="Description" Title="Tipo" Width="150px" />
+        <RadzenDataGridColumn TItem="ImportQueryItem" Property="ImportStatus" Title="Stato" Width="180px" >
             <Template Context="data">
                 @if (data.ImportStatus == Constants.ImportStatus_Error)
                 {
@@ -39,43 +54,68 @@
                 }
             </Template>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="ImportQueryItem" Property="ImportStartDate" Title="inizio import" FormatString="{0:dd/MM/yyyy hh:mm:ss}" />
-        <RadzenDataGridColumn TItem="ImportQueryItem" Property="LastUpdateDate" Title="Fine import" FormatString="{0:dd/MM/yyyy hh:mm:ss}" />
-        <RadzenDataGridColumn TItem="ImportQueryItem" Property="Note" Title="Note" Width="150px" />
-        <RadzenDataGridColumn TItem="ImportQueryItem" Property="User" Title="User" />
-        <RadzenDataGridColumn TItem="ImportQueryItem" Property="ProcessedElements" Title="Nr. processati" />
-        <RadzenDataGridColumn TItem="ImportQueryItem" Property="ImportedElements" Title="Importati" />
+        <RadzenDataGridColumn TItem="ImportQueryItem" Property="ProcessedElements" Title="Nr. processati" Width="180px" />
+        <RadzenDataGridColumn TItem="ImportQueryItem" Property="ImportedElements" Title="Importati" Width="120px" />
+
+        <RadzenDataGridColumn TItem="ImportQueryItem" Property="ImportStartDate" Title="inizio import" FormatString="{0:dd/MM/yyyy hh:mm:ss}" Width="180px" />
+        <RadzenDataGridColumn TItem="ImportQueryItem" Property="LastUpdateDate" Title="Fine import" FormatString="{0:dd/MM/yyyy hh:mm:ss}" Width="180px" />
+        <RadzenDataGridColumn TItem="ImportQueryItem" Property="Note" Title="Note" Width="300px" />
+        <RadzenDataGridColumn TItem="ImportQueryItem" Property="User" Title="User" Width="180px" />
     </Columns>
 </RadzenDataGrid>
 
 @code {
-    RadzenDataGrid<ImportQueryItem> grid;
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+    RadzenDataGrid<ImportQueryItem>? grdData;
 
-    QueryDefinition _importQueryDef = new QueryDefinition();
-    ImportQueryItem[] Imports = null; // new ImportQueryItem[] { };
-    int ImportCount = 0;
+    QueryDefinition _servicesQueryDef = new QueryDefinition();
+    ImportQueryItem[]? Data = null; 
+    int RowCount = 0;
+    bool isLoading = false;
+    string FullTextSearch = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        this._importQueryDef.EndPoint = Constants.Endpoint_ImportLog;
+        this._servicesQueryDef.EndPoint = Constants.Endpoint_ImportLog;
         await Task.CompletedTask;
         this.StateHasChanged();
     }
 
-    private async Task LoadImports(LoadDataArgs args)
+    void FullText_OnChange(string value)
     {
-        this._importQueryDef.Sort = "LastUpdateDate-";
-
-        this._importQueryDef.Page = args.Skip.Value / args.Top.Value;
-        this._importQueryDef.PageSize = args.Top.Value;
-
-        var result = await qieryService.GetListAsync<ImportQueryItem>(
-                    this._importQueryDef);
-
-        this.Imports = result.Items;
-        this.ImportCount = result.TotalRows;
+        this.grdData?.Reload();
     }
 
+    private async Task LoadData(LoadDataArgs args)
+    {
+        this.isLoading = true;
+        this.StateHasChanged();
+
+        this._servicesQueryDef.Filter = args.GetQueryFilter<ImportQueryItem> ();
+        this._servicesQueryDef.Sort = args.GetQuerySort(nameof(ImportQueryItem.LastUpdateDate) + "-" );
+        this._servicesQueryDef.FullText = this.FullTextSearch;
+
+        this._servicesQueryDef.Page = args.GetQueryPage();
+        this._servicesQueryDef.PageSize = args.GetQueryPageSize();
+
+        try
+        {
+            var result = await queryService.GetListAsync<ImportQueryItem>(
+                        this._servicesQueryDef);
+
+            if (result != null)
+            {
+                this.Data = result.Items;
+                this.RowCount = result.TotalRows;
+            }
+        }
+        finally
+        {
+            this.isLoading = false;
+            this.StateHasChanged();
+        }
+    }
     private void ImportLog_CellRender(DataGridCellRenderEventArgs<ImportQueryItem> args)
     {
         if (args.Column.Property == "ImportStatus")
@@ -106,9 +146,19 @@
         await Task.CompletedTask;
         NavigationManager.NavigateTo("/import_detail/" + import.Id.ToString(), true);
         */
-        await DialogService.OpenAsync<ImportDetail>($"Dettagli",
+        await DialogService.OpenAsync<ImportDetail>(
+            $"Dettaglio importazioni",
             new Dictionary<string, object>() { { "id", import.Id } },
-            new DialogOptions() { Width = "700px", Height = "530px" });
+            new DialogOptions() { 
+                AutoFocusFirstElement = true,
+                ShowTitle = true,
+                CloseDialogOnEsc = true,
+                CloseDialogOnOverlayClick = true,
+                Resizable = true,
+                Top = "5%",
+                Left = "10%",
+                Bottom = "5%"
+            });
     }
 
 }
