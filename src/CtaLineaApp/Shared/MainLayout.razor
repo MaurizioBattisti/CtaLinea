@@ -4,6 +4,7 @@
 
 <CascadingValue Value=@this>
 <CascadingValue Value=@this.LineaSettings >
+    <RadzenDialog />
     <RadzenLayout>
         <RadzenHeader>
             <ChildContent>
@@ -37,7 +38,6 @@
         <RadzenBody @bind-Expanded="@bodyExpanded">
             <ChildContent>
                 <RadzenContentContainer Name="main">
-                    <RadzenDialog />
                     @Body
                 </RadzenContentContainer>
             </ChildContent>

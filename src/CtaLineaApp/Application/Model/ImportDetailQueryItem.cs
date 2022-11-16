@@ -11,6 +11,6 @@ namespace CtaLineaApp.Application.Model
         public Guid ImportId { get; set; }
         public int ServiceId { get; set; }
 
-        public string ImportNote { get; set; }
+        public string? ImportNote { get; set; }
     }
 }
