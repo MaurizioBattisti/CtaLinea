@@ -1,0 +1,76 @@
+Cta linea
+17-11-2022
+
+- caricare il file dell'olimpia 
+- creare le tabelli di codifica
+- caricare file mezzi / autisti / ditte / punti di raccolta (vittig 1)
+
+tabelle di look iup
+- freuqneze tt
+- calendari tt
+  p.es.
+  estivo - Dal al
+  invernale dal al
+  all'interno dell'invernale un calendario
+  scolastico dal al
+  icalendari si alternano sequenzialmente tra estio e  invernale
+  vengono segnati i giorni festvi in aggiunta a tutte le domeniche c he sono già festive
+  sopra viene definito il calendario scolastico con i giorni di chiusura delle scuole
+  i prefestivi e post festivi valgono solo sui calendari scolastici
+   la base è l'anno scolastico dal 1/9 al 31/8
+
+una corsa da capitolato potrebbe avere una struttura di fermate che vale per il periodo dell'appalto
+  può succeder che venga modificato il prospetto delle fermate di una corsa in un perodo
+  va tenuta traccia della variaizone chilometrica perchè i chilometri vanno in extra capitolato  
+poi esistono corse che sono completamente extra capitolato
+
+file olimpia
+- la frequenza della corsa è la colonna AB
+
+calcolo costi
+- una tariffa giornaliera per mezzo e per periodo colonna BT
+- unq integrazione sulla corssa sul mezzo sul periodo con frequenza diversa della corsa stessa da sommare alla tariffa
+- forfati  *** per il momento sospesa
+- tariffa al hilometro 
+- tarifa al chilometo anch esulla singola corsa  potenialmente
+
+- importaizone mezzi
+  importare tutti i mezzi e no solo quelli con gli usi specifici
+    assegnare i vari flags  e permettere di selezionare q quasliasi mezzo anche se non titolare e scorta
+	
+nelle combo box visualizzare i mezzi con dei colori
+- verde titolare
+- giallo le scorette
+- normale - tutti gli altri  attivii
+- rossi i non attivii
+
+funzionalità
+- invio mail con n giorni di anticipo per indicare cosa deve essere fatto e cosa non deve essere fatto
+  "solo" per i festivi non domenicai
+- una corsa dal al potrebbe avere dei buchi nel peiodo (caso intensificazione invernale eseguita da TT in un periodo)
+
+la mail da inviare on demand
+deve essere fatta così
+
+identrificare le ditte che effettuano i servizi co di diverso tipo
+le informaioni sono solo su tre tipi
+- feriali
+- scolastiche
+- non scolastiche
+creare una mail che dice
+per esempio
+le corse feriali sono regolari i giorni x, y  e z
+le corse scolastiche sono sospese i gironi x  y  e z
+la cors 1 descrizione bla bla bla da  rovere a nomi non scoalastica va attivata per i gironi x y  e z
+la cora 2 descriozne xxx da isera a zangriorgio  non scolastica va attivata i gironi x y e z
+.... ulteriri minchiate verranno comnicate  ad cazzum
+
+nella mail mettere 
+in CCN -> linea@ctatn.it
+e raplyTo -> linea@ctant.it
+
+
+sistema di segnalazione di "incongruenze"
+se ci sono incongruenze presentarle in una specie di "cruscoto"
+con la possibilità di indicare che non venga più visualizata l'incongruenza
+se la corsa con l'incongruenza viene modificata, lìincongruenza marcata come no voglio più vederla deve tornare visibile

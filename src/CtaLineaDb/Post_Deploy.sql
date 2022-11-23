@@ -9,21 +9,6 @@ Post-Deployment Script Template
                SELECT * FROM [$(TableName)]					
 --------------------------------------------------------------------------------------
 */
--- Run Types
-MERGE dbo.RunTypes AS t
-	USING  (SELECT * FROM  (VALUES
-		('RUN', 'IN ESSERE'),
-		('TOASS', 'DA ASSEGNARE'),
-		('TOMOD', 'DA MODIFICARE'),
-		('END', 'FINITA')
-		) AS src(Id, Descr)
-		) AS s
-	ON  t.RunTypeId = s.Id
-	WHEN NOT MATCHED  THEN
-		INSERT VALUES (s.Id, s.Descr)
-	WHEN NOT MATCHED  BY SOURCE  THEN
-		DELETE
-	;
 
 -- users 
 MERGE dbo.Meta_Users AS t

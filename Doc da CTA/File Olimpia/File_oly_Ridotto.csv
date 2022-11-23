@@ -1,0 +1,1843 @@
+note appalto;n° righe capitolato: 928;Linea;"n.
+corsa";ora part.;ora arr.;percorso;frequenza ;Km  corsa/servizio;Posti autobus;nr. gg;Tot km;DITTA
+;1;91;492;12:35;13:40;Trento-Laives;"feriale
+sabato";50;50;50;2.500,00;SRT S.R.L.
+;2;91;492;12:35;13:40;Trento-Laives;"feriale 
+da lunedì a venerdì";50;50;245;12.250,00;SRT S.R.L.
+;3;91;493;14:15;15:15;Laives-Trento;"feriale
+sabato";50;50;50;2.500,00;SRT S.R.L.
+;4;91;493;14:15;15:15;Laives-Trento;"feriale 
+da lunedì a venerdì";50;50;245;12.250,00;SRT S.R.L.
+;5;91;494;20:45;21:45;Trento-Laives;"feriale 
+da lunedì a venerdì";50;50;245;12.250,00;SRT S.R.L.
+;6;91;495;22:10;23:10;Laives-Trento;"feriale
+sabato";50;50;50;2.500,00;SRT S.R.L.
+;7;91;495;22:10;23:10;Laives-Trento;"feriale 
+da lunedì a venerdì";50;50;245;12.250,00;SRT S.R.L.
+;8;102;146;13:16;13:56;Trento (via Giusti e giro scuole) - Verla (bis);"scolastica 
+da lunedì a venerdì";19;55;174;3.306,00;NICE srl
+;9;103;110;12:20;14:12;Trento-Sover-Cavalese;"festiva 
+invernale";62;40;45;2.790,00;PERINI FRANCO 
+;10;103;110;12:20;14:12;Trento-Sover-Cavalese;"festiva 
+estiva";62;30;13;806;PERINI FRANCO 
+;11;103;118;16:40;17:30;Trento - Fornace - Albiano;"scolastica 
+da lunedì a giovedì";27;55;137;3.699,00;SRT S.R.L.
+;12;103;119;17:00;18:52;Cavalese-Trento;"festiva 
+invernale";62;40;45;2.790,00;PERINI FRANCO 
+;13;103;119;17:00;18:56;Cavalese-Trento;"festiva 
+estiva";62;30;13;806;PERINI FRANCO 
+;14;103;124;18:35;20:00;Trento-Fornace-Sover ;"feriale
+sabato";48;50;50;2.400,00;NICE srl
+;15;103;124;18:35;19:50;Trento-Sover ;"feriale 
+da lunedì a venerdì";44;50;252;11.088,00;NICE srl
+;16;107;570;17:05;17:26;Mezzolombardo-Roverè della Luna;"scolastica 
+da lunedì a sabato";15;30;208;3.120,00;NICE srl
+;17;107;571;17:26;17:46;Roverè della Luna-Mezzolombardo;"scolastica 
+da lunedì a sabato";15;30;208;3.120,00;NICE srl
+;18;120;178;14:53;15:03;Cavalese-Ospedale-Cavalese;"festiva 
+invernale";4;40;45;180;PERINI FRANCO 
+;19;120;55;15:53;16:03;Cavalese-Ospedale-Cavalese;"festiva 
+estiva";4;19;13;52;PERINI FRANCO 
+;20;120;90;15:53;16:03;Cavalese-Ospedale-Cavalese;"festiva 
+invernale";4;40;45;180;PERINI FRANCO 
+;21;123;172;08:50;09:38;Moena - Falcade;"Estiva
+lunedì-sabato";22;50;67;1.474,00;DESILVESTRO TAXI E VIAGGI SRL
+;22;123;172;08:50;09:27;Moena-Passo S.Pellegrino-Falcade;"festiva 
+estiva";22;50;13;286;DESILVESTRO TAXI E VIAGGI SRL
+;23;123;173;09:37;10:14;Falcade - Moena;estiva feriale;22;50;67;1.474,00;DESILVESTRO TAXI E VIAGGI SRL
+;24;123;173;09:37;10:14;Falcade-Passo S. Pellegrino-Moena;"festiva 
+estiva";22;50;13;286;DESILVESTRO TAXI E VIAGGI SRL
+;25;123;174;10:20;11:15;Moena - S.Pellegrino;estiva feriale;12;50;67;804;DESILVESTRO TAXI E VIAGGI SRL
+;26;123;174;10:20;10:42;Moena-Passo S.Pellegrino;"festiva 
+estiva";12;50;13;156;DESILVESTRO TAXI E VIAGGI SRL
+frequenza corretta da capitolato;27;123;175;10:47;11:10;Passo S. Pellegrino-Moena;feriale estiva;12;50;67;804;DESILVESTRO TAXI E VIAGGI SRL
+;28;123;175;10:47;11:10;S. Pellegrino - Moena;"festiva 
+estiva";12;50;13;156;DESILVESTRO TAXI E VIAGGI SRL
+;29;123;176;11:20;11:42;Moena-Passo S.Pellegrino;"estiva
+feriale ";12;50;67;804;DESILVESTRO TAXI E VIAGGI SRL
+;30;123;176;11:20;11:42;Moena-Passo S.Pellegrino;"festiva 
+estiva";12;50;13;156;DESILVESTRO TAXI E VIAGGI SRL
+;31;123;177;11:47;12:10;Passo S. Pellegrino-Moena;"estiva
+feriale ";12;50;67;804;DESILVESTRO TAXI E VIAGGI SRL
+;32;123;177;11:47;12:10;Passo S. Pellegrino-Moena;"festiva 
+estiva";12;50;13;156;DESILVESTRO TAXI E VIAGGI SRL
+;33;123;178;13:50;14:12;Moena-Passo S.Pellegrino;"estiva
+feriale ";12;50;67;804;DESILVESTRO TAXI E VIAGGI SRL
+;34;123;178;13:50;14:12;Moena-Passo S.Pellegrino;"festiva 
+estiva";12;50;13;156;DESILVESTRO TAXI E VIAGGI SRL
+;35;123;179;14:20;14:42;Passo S. Pellegrino-Moena;"estiva
+feriale ";12;50;67;804;DESILVESTRO TAXI E VIAGGI SRL
+;36;123;179;14:20;14:42;Passo S. Pellegrino-Moena;"festiva 
+estiva";12;50;13;156;DESILVESTRO TAXI E VIAGGI SRL
+;37;123;180;15:50;16:12;Moena-Passo S.Pellegrino;"estiva
+feriale ";12;50;67;804;DESILVESTRO TAXI E VIAGGI SRL
+;38;123;180;15:50;16:12;Moena-Passo S.Pellegrino;"festiva 
+estiva";12;50;13;156;DESILVESTRO TAXI E VIAGGI SRL
+;39;123;181;16:17;16:39;Passo S. Pellegrino-Moena;"estiva
+feriale ";12;50;67;804;DESILVESTRO TAXI E VIAGGI SRL
+;40;123;181;16:17;16:39;Passo S. Pellegrino-Moena;"festiva 
+estiva";12;50;13;156;DESILVESTRO TAXI E VIAGGI SRL
+;41;123;182;16:50;17:27;Moena - Falcade;estiva feriale;22;50;67;1.474,00;DESILVESTRO TAXI E VIAGGI SRL
+;42;123;182;16:50;17:27;Moena-Passo S.Pellegrino-Falcade;"festiva 
+estiva";22;50;13;286;DESILVESTRO TAXI E VIAGGI SRL
+;43;123;183;17:37;18:14;Falcade-Passo S. Pellegrino-Moena;estiva feriale;22;50;67;1.474,00;DESILVESTRO TAXI E VIAGGI SRL
+;44;123;183;17:37;18:14;Falcade-Passo S. Pellegrino-Moena;"festiva 
+estiva";22;50;13;286;DESILVESTRO TAXI E VIAGGI SRL
+;45;123;184;18:30;18:52;Moena - S.Pellegrino;estiva feriale;12;50;67;804;DESILVESTRO TAXI E VIAGGI SRL
+;46;123;184;18:30;18:52;Moena-Passo S.Pellegrino;"festiva 
+estiva";12;50;13;156;DESILVESTRO TAXI E VIAGGI SRL
+frequenza corretta da capitolato;47;123;185;18:55;19:17;Passo S. Pellegrino-Moena;feriale estiva;12;50;67;804;DESILVESTRO TAXI E VIAGGI SRL
+;48;123;185;18:55;19:17;Passo S. Pellegrino-Moena;"festiva 
+estiva";12;50;13;156;DESILVESTRO TAXI E VIAGGI SRL
+;49;202;92;07:45;08:40;Trento-Viote;"festiva 
+estiva";24;30;13;312;PERINI FRANCO 
+;50;202;85;08:45;09:40;Viote-Trento;"festiva 
+estiva";24;30;13;312;PERINI FRANCO 
+;51;204;148;06:40;07:50;Calavino-Riva del Garda;"scolastica 
+da lunedì a sabato";34;50;208;7.072,00;SARCATOUR s.r.l.
+;52;204;281;07:18;07:48;Drena-Vigo Cavedine -Vezzano;"feriale 
+da lunedì a venerdì";16,9;50;252;4.258,80;NICE srl
+;53;204;375;14:22;14:37;Drò - Drena - Vigo Cavedine;"scolastica 
+da lunedì a sabato";10;19;208;2.080,00;SRT S.R.L.
+;54;204;414;14:30;15:02;Calavino-Dro;"scolastica 
+da lunedì a venerdì";16;19;174;2.784,00;SRT S.R.L.
+;55;204;200;16:32;17:03;Vezzano -Vigo Cavedine-Drena;"invernale
+da lunedì a venerdì";17,9;55;202;3.615,80;NICE srl
+;56;204;282;16:39;17:09;Vezzano -Vigo Cavedine-Drena;"Estiva
+lunedì-venerdì";17,9;55;55;984,5;NICE srl
+;57;205;59;06:52;06:58;S. Massenza - Due laghi;"estiva feriale 
+dal lunedì al venerdì";1;19;55;55;NICE srl
+;58;205;397;06:52;06:55;S. Massenza - Due laghi;"feriale non scolastica
+da lunedì a sabato";1;19;29;29;NICE srl
+;59;205;400;17:50;17:52;Due Laghi - S. Massenza;"scolastica 
+da lunedì a venerdì";1,5;19;174;261;NICE srl
+;60;206;124;16:10;16:50;Trento - Terlago - Monte Terlago;"invernale
+da lunedì a venerdì";18,3;35;202;3.696,60;NICE srl
+;61;213;5;06:55;07:10;Castel Condino - Cimego;"scolastica 
+da lunedì a sabato";3,7;29;208;769,6;MAESTRI AUGUSTO & C. S.N.C. 
+;62;214;;07:24;07:45;Pregasina - Riva del Garda;"scolastica 
+da lunedì a sabato";10,5;17;208;2.184,00;EUROTOUR SERVICE (IN SIGLA E.T.S.) DI AZZOLINI LUCA & C. S.N.C. 
+;63;214;616;13:02;13:06;Pregasina bv.-Pregasina;"scolastica
+sabato";3,1;8;34;105,4;EUROTOUR SERVICE (IN SIGLA E.T.S.) DI AZZOLINI LUCA & C. S.N.C. 
+;64;214;49;13:10;14:05;Pregasina - Riva del Garda;"scolastica 
+sabato";10,5;8;34;357;EUROTOUR SERVICE (IN SIGLA E.T.S.) DI AZZOLINI LUCA & C. S.N.C. 
+;65;214;618;13:42;13:46;Pregasina bv.-Pregasina;scolastica di lunedì, mercoledì e venerdì;3,1;8;106;328,6;AUTOSERVIZI MATTUZZI CLAUDIO & C. S.N.C.
+;65 bis;214;618;13:42;13:46;Pregasina bv.-Pregasina;scolastica di martedì e giovedì;3,1;8;68;210,8;EUROTOUR SERVICE (IN SIGLA E.T.S.) DI AZZOLINI LUCA & C. S.N.C. 
+;66;214;49;14:37;14:58;Pregasina - Riva del Garda;scolastica di lunedì, mercoledì e venerdì;10,5;08-ago;106;1.113,00;AUTOSERVIZI MATTUZZI CLAUDIO & C. S.N.C.
+;66 bis;214;49;14:37;14:58;Pregasina - Riva del Garda;scolastica di martedì e giovedì;10,5;08-ago;68;714;EUROTOUR SERVICE (IN SIGLA E.T.S.) DI AZZOLINI LUCA & C. S.N.C. 
+;67;214;680;14:30;14:34;Pregasina bivio-Pregasina;scolastica di lunedì, mercoledì e venerdì;3,1;08-ago;106;328,6;AUTOSERVIZI MATTUZZI CLAUDIO & C. S.N.C.
+;67 bis;214;680;14:30;14:34;Pregasina bivio-Pregasina;scolastica di martedì e giovedì;3,1;08-ago;68;210,8;EUROTOUR SERVICE (IN SIGLA E.T.S.) DI AZZOLINI LUCA & C. S.N.C. 
+;68;312;730;08:30;09:54;Rovereto-Pian della Fugazze;"estiva+inv
+festiva";41;30;58;2.378,00;TODESCHI AUTONOLEGGI SRL
+;69;312;731;10:00;11:08;Pian delle Fugazze-Rovereto;"estiva+inv
+festiva";32;30;58;1.856,00;TODESCHI AUTONOLEGGI SRL
+;70;312;732;16:10;17:34;Rovereto-Pian della Fugazze;"estiva+inv
+festiva";41;30;58;2.378,00;TODESCHI AUTONOLEGGI SRL
+;71;312;733;17:40;18:48;Pian delle Fugazze-Rovereto;"estiva+inv
+festiva";32;30;58;1.856,00;TODESCHI AUTONOLEGGI SRL
+;72;413;11;06:25;06:33;Valcava - Brusago;"scolastica 
+da lunedì a sabato";3;19;208;624;SVALDI PIERINO 
+;73;428;5;06:40;06:45;Svaldi - Bedollo;"scolastica 
+da lunedì a sabato";2;19;208;416;SVALDI PIERINO 
+;74;428;7;07:18;07:21;Svaldi - Bedollo;"scolastica 
+da lunedì a sabato";2;19;208;416;SVALDI PIERINO 
+;75;428;6;13:25;13:29;Bedollo - Svaldi;"scolastica 
+da lunedì a sabato";2;19;208;416;SVALDI PIERINO 
+;76;428;8;14:20;14:24;Bedollo - Svaldi;"scolastica 
+da lunedì a sabato";2;19;208;416;SVALDI PIERINO 
+;77;428;10;18:35;18:39;Bedollo - Svaldi;"scolastica 
+da lunedì a venerdì";2;19;174;348;SVALDI PIERINO 
+;78;601;696;20:45;21:17;Trento FTM-Mezzolombardo FTM  (serv. Sostitutivo treno);"invernale
+lunedì-sabato";22;19;240;5.280,00;NICE srl
+;79;611;67;06:32;07:15;(Fai Miravalle) - Cortalta-Trento;"scolastica 
+da lunedì a sabato";33;30;208;6.864,00;OSCAR VIAGGI DI FORMOLO OSCAR
+;80;621;239;06:53;07:26;Mezzolombardo - Nave s. Rocco - Trento ;"scolastica 
+solo giorno di sabato";21;55;34;714;SRT S.R.L.
+;81;621;966;08:30;08:54;Lavis FTM-Nave S.Rocco-Mezzolombardo;"estiva
+feriale ";13,2;19;67;884,4;OSCAR VIAGGI DI FORMOLO OSCAR
+;82;621;966;08:30;08:54;Lavis FTM-Nave S.Rocco-Mezzolombardo;"invernale
+lunedì-sabato";13,2;19;240;3.168,00;OSCAR VIAGGI DI FORMOLO OSCAR
+;83;621;241;08:45;09:21;Mezzolombardo - Nave s. Rocco - Trento (dal 12/09/19);"festiva invernale
+invernale";22;40;45;990;PERINI FRANCO 
+;84;621;987;08:59;09:20;Mezzolombardo-Nave S.Rocco-Lavis FTM;"invernale
+lunedì-sabato";11,3;19;240;2.712,00;OSCAR VIAGGI DI FORMOLO OSCAR
+;85;621;987;08:59;09:20;Mezzolombardo-Nave S.Rocco-Lavis FTM;"estiva
+feriale ";11,3;19;67;757,1;OSCAR VIAGGI DI FORMOLO OSCAR
+;86;621;968;09:26;09:50;Lavis FTM-Nave S.Rocco-Mezzolombardo;"estiva
+feriale ";13,2;19;67;884,4;OSCAR VIAGGI DI FORMOLO OSCAR
+;87;621;989;11:50;12:09;Mezzolombardo-Nave S.Rocco-Lavis FTM;"estiva
+feriale ";11,3;19;67;757,1;OSCAR VIAGGI DI FORMOLO OSCAR
+;88;621;970;16:50;17:14;Lavis FTM-Nave S.Rocco-Mezzolombardo;"invernale
+lunedì-sabato";13,2;19;240;3.168,00;OSCAR VIAGGI DI FORMOLO OSCAR
+;89;621;970;16:56;17:20;Lavis FTM-Nave S.Rocco-Mezzolombardo;"estiva
+feriale ";13,2;19;67;884,4;OSCAR VIAGGI DI FORMOLO OSCAR
+;90;621;991;17:30;17:49;Mezzolombardo-Nave S.Rocco-Lavis FTM;"invernale
+lunedì-sabato";11,3;19;240;2.712,00;OSCAR VIAGGI DI FORMOLO OSCAR
+;91;634;537;08:40;09:14;Lanza-Cles;"Invernale 
+festiva";20;19;47;940;VIAGGI CORNELIO DI FLESSATI NICOLA E C. S.N.C.
+;92;634;535;08:40;09:14;Lanza-Cles;"festiva 
+estiva";20;19;13;260;VIAGGI CORNELIO DI FLESSATI NICOLA E C. S.N.C.
+;93;634;532;09:40;10:40;Cles-Bresimo-Lanza;"festiva 
+estiva";28;19;13;364;VIAGGI CORNELIO DI FLESSATI NICOLA E C. S.N.C.
+;94;634;530;09:40;10:40;Cles-Bresimo-Lanza;"Invernale 
+festiva";28;19;47;1.316,00;VIAGGI CORNELIO DI FLESSATI NICOLA E C. S.N.C.
+;95;634;539;12:20;13:14;Lanza-Bresimo-Cles;"Invernale 
+festiva";28;19;47;1.316,00;VIAGGI CORNELIO DI FLESSATI NICOLA E C. S.N.C.
+;96;634;539;12:25;13:19;Lanza-Bresimo-Cles;"festiva 
+estiva";28;19;13;364;VIAGGI CORNELIO DI FLESSATI NICOLA E C. S.N.C.
+;97;634;538;15:40;16:35;Cles-Bresimo-Lanza;"Invernale 
+festiva";28;19;47;1.316,00;VIAGGI CORNELIO DI FLESSATI NICOLA E C. S.N.C.
+;98;634;543;16:40;17:14;Lanza-Cles;"Invernale 
+festiva";20;19;47;940;VIAGGI CORNELIO DI FLESSATI NICOLA E C. S.N.C.
+;99;634;536;17:25;18:20;Cles-Bresimo-Lanza;"festiva 
+estiva";28;19;13;364;VIAGGI CORNELIO DI FLESSATI NICOLA E C. S.N.C.
+;100;634;544;17:50;18:24;Cles-Lanza;"Invernale 
+festiva";20;19;47;940;VIAGGI CORNELIO DI FLESSATI NICOLA E C. S.N.C.
+;101;640;659;18:15;18:43;Malè-Somrabbi;"scolastica 
+da lunedì a venerdì";16;30;174;2.784,00;VIAGGI CICOLINI S.R.L .  
+;102;91;490;04:45;05:45;Trento-Laives;feriale;50;50;296;14.800,00;MDL s.r.l.
+;103;91;491;06:10;07:10;Laives-Trento;"feriale 
+da martedì a sabato";50;50;255;12.750,00;MDL s.r.l.
+;104;101;656;07:03;07:25;(Solaiolo Alto extracapitolato) - Solaiolo basso - Cavalese;"scolastica 
+da lunedì a sabato";15;15;208;3.120,00;DMG
+;105;101;661;13:50;14:05;Cavalese - Solaiolo                                                         al martedi partenza alle 14.15;"scolastica 
+da lunedì a sabato";15;8;208;3.120,00;M.G.M. DI CASARI MARCO
+;106;101;662;14:10;14:25;Solaiolo - Cavalese                                          al martedì partenza alle 14.30;"scolastica 
+da lunedì a sabato";15;8;208;3.120,00;M.G.M. DI CASARI MARCO
+;107;102;664;06:10;06:20;Grumes - Giro masi;"scolastica 
+da lunedì a sabato";5,3;8;208;1.102,40;FERSINA TOUR S.R.L
+;108;102;131;06:20;06:30;Faver loc.Ponciac-Cembra loc.Molini-Cembra;"scolastica 
+da lunedì a sabato";5;8;208;1.040,00;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;109;102;639;06:30;07:03;Cembra - Capriana;"scolastica 
+da lunedì a venerdì";22;41;174;3.828,00;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;110;102;131;06:43;07:21;Cembra - Trento (corsa bis);"scolastica 
+da lunedì a venerdì";24;47;174;4.176,00;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;111;102;131;06:51;07:30;Lisignago - Trento (corsa bis);"scolastica 
+da lunedì a venerdì";21;55;174;3.654,00;NICE srl
+;112;102;640;07:30;08:15;Valda - Faver - Cembra - Ville - S.Michele;"scolastica 
+da lunedì a sabato";26;41;208;5.408,00;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;113;102;137;08:36;09:47;Grauno - Trento;festiva;37;20;58;2.146,00;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;114;102;142;12:20;14:20;Trento-Cembra-Cavalese;"festiva 
+estiva";62;30;13;806;PERINI FRANCO 
+;115;102;145;14:11;14:28;Capriana-Grauno;"Scolastica
+mart+merc";8;9;70;560;AUTONOLEGGIO DI GUADAGNINI FERDINANDO E ZAMPIERI DAVID S.N.C.
+;116;102;665;14:32;14:51;Grumes - Giro masi;"scolastica 
+da lunedì a venerdì";7,3;8;174;1.270,20;FERSINA TOUR S.R.L
+;117;102;176;14:32;14:50;Grumes-Capriana;"scolastica 
+da lunedì a venerdì";10;9;174;1.740,00;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;118;102;538;15:27;16:37;Trento-Grauno;"estiva feriale 
+dal lunedì al venerdì";35;19;55;1.925,00;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;119;102;185;15:50;17:21;Tesero-Palù di Giovo;"scolastica 
+da lunedì a giovedì";51;41;137;6.987,00;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;120;102;147;17:00;19:10;Cavalese-Trento;"festiva 
+estiva";62;30;13;806;PERINI FRANCO 
+;121;103;928;06:13;06:30;Albiano-Lases-Segonzano;"scolastica 
+da lunedì a venerdì";13,3;57;174;2.314,20;SIGNORI SI PARTE DI DONINI IORAM 
+;122;103;101;06:20;06:25;Piscine - Sover;"invernale
+lunedì-sabato";2,5;22;240;600;GROFF TOUR DI TATTI CARLA
+;123;103;101;06:43;07:42;Scancio di Segonzano  - Trento giro scuole (corsa bis);"scolastica 
+da lunedì a venerdì";31;57;174;5.394,00;SIGNORI SI PARTE DI DONINI IORAM 
+;124;103;99;06:55;07:24;Lases - Trento Port'Aquila (corsa bis);"scolastica 
+da lunedì a venerdì";18;20;174;3.132,00;GROFF PAOLO
+;125;103;183;07:05;07:36;07.05 Sover-Segonzano-Sevignano-Faver bv;"scolastica 
+da lunedì a sabato";16;20;208;3.328,00;GROFF  ALFREDO
+;126;103;224;10:20;10:40;Trento-Civezzano;estiva feriale;11;30;67;737;AUTONOLEGGI VISINTAINER di VISINTAINER FRANCESCO
+;127;103;442;13:57;14:09;Fornace - Pian del Gacc (ore 14:00 part. il sabato);"scolastica 
+da lunedì a sabato";2;19;208;416;AUTONOLEGGI VISINTAINER di VISINTAINER FRANCESCO
+;128;103;203;14:00;14:08;Stramentizzo - Casatta;"scolastica 
+da lunedì a sabato";6,5;16;208;1.352,00;FERSINA TOUR S.R.L
+;129;103;203;14:08;14:18;Casatta - Sover;"scolastica 
+da lunedì a sabato";6;22;208;1.248,00;GROFF TOUR DI TATTI CARLA
+;130;103;232;14:35;14:50;Civezzano-Fornace ;"scolastica 
+da lunedì a venerdì";8;20;174;1.392,00;AUTONOLEGGI VISINTAINER di VISINTAINER FRANCESCO
+;131;103;185;16:19;16:31;Sover-Scancio di Segonzano;"scolastica 
+da lunedì a giovedì";8,8;41;137;1.205,60;FERSINA TOUR S.R.L
+km corretti da capitolato;132;103;191;16:33;16:44;"Scancio di Segonzano-Lases
+in coinc. con c.sa Tte da Ist. Alberghiero Tesero ";"scolastica
+martedì ";7,5;30;34;255;AUTONOLEGGI VISINTAINER di VISINTAINER FRANCESCO
+;133;103;123;18:55;19:15;Civezzano-Trento;"invernale
+da lunedì a venerdì";11;30;202;2.222,00;AUTONOLEGGI VISINTAINER di VISINTAINER FRANCESCO
+;134;103;325;18:55;19:15;Civezzano-Trento;"estiva 
+dal lunedì al venerdì feriale";11;19;55;605;ITALBUS S.N.C. DI CASAGRANDE ARMANDO E CHRISTIAN & C.
+;135;103;248;19:30;19:50;Trento-Civezzano;feriale;11;30;304;3.344,00;AUTONOLEGGI VISINTAINER di VISINTAINER FRANCESCO
+;136;105;639;06:02;06:30;Ville-Palù di Giovo-Cembra ;"scolastica 
+da lunedì a venerdì";13,5;41;174;2.349,00;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;137;105;233;07:06;07:19;Palù di Giovo - Verla;"scolastica 
+da lunedì a venerdì";6;20;174;1.044,00;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;138;105;234;07:41;07:56;Verla - Palù di Giovo;"scolastica 
+da lunedì a sabato";5,5;20;208;1.144,00;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;139;105;151;07:56;08:09;Palù di Giovo - Verla;"scolastica 
+da lunedì a sabato";5,5;20;208;1.144,00;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;140;105;216;11:51;12:06;Verla - Palù di Giovo;"scolastica 
+da lunedì a venerdì";5,5;20;174;957;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;141;105;500;15:56;16:05;Verla - Palù di Giovo, nei gg. senza scuola  e estivi   transita da Ville di Giovo;"feriale estivo + senza scuola
+da lunedì a venerdì";5,5;8;81;445,5;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;142;105;628;15:59;16:01;Verla - Palù di Giovo (strada breve);"scolastica 
+da lunedì a venerdì";2;8;174;348;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;143;105;181;16:01;16:14;Palù di Giovo - Ville di Giovo - Verla;"scolastica 
+da lunedì a venerdì";5,5;8;174;957;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;144;105;150;17:51;18:06;Verla - Palù di Giovo;"invernale
+da lunedì a venerdì";5,5;8;202;1.111,00;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;145;105;150;17:55;18:06;Verla - Palù di Giovo;"Estiva
+lunedì-venerdì";5,5;8;55;302,5;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;146;105;218;18:16;18:31;Verla - Palù di Giovo;"invernale
+da lunedì a venerdì";5,5;19;202;1.111,00;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;147;105;218;18:16;18:31;Verla - Palù di Giovo;"Estiva
+lunedì-venerdì";5,5;19;55;302,5;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;148;105;158;19:16;19:31;Verla - Palù di Giovo;"invernale
+da lunedì a venerdì";5,5;19;202;1.111,00;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;149;105;158;19:16;19:31;Verla - Palù di Giovo;"Estiva
+lunedì-venerdì";5,5;19;55;302,5;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;150;106;295;06:06;06:25;Faedo-Mezzocorona;estiva feriale;8;19;67;536;OSCAR VIAGGI DI FORMOLO OSCAR
+;151;106;281;06:30;06:49;Pineta Faedo-S.Michele-Mezzocorona ;"scolastica 
+da lunedì a sabato";8;19;208;1.664,00;OSCAR VIAGGI DI FORMOLO OSCAR
+;152;106;290;06:43;07:04;Mezzocorona-Faedo;"estiva feriale 
+dal lunedì al venerdì";9;19;55;495;OSCAR VIAGGI DI FORMOLO OSCAR
+;153;106;285;07:03;07:22;Faedo-Mezzocorona;"estiva feriale 
+dal lunedì al venerdì";8;19;55;440;OSCAR VIAGGI DI FORMOLO OSCAR
+;154;106;302;08:10;08:29;Mezzocorona-Faedo;"estiva feriale 
+dal lunedì al venerdì";9;19;55;495;OSCAR VIAGGI DI FORMOLO OSCAR
+;155;106;303;09:05;09:24;Faedo-Mezzocorona;"estiva feriale 
+dal lunedì al venerdì";8;19;55;440;OSCAR VIAGGI DI FORMOLO OSCAR
+;156;106;286;13:40;13:59;Mezzocorona-Faedo;estiva feriale;9;19;67;603;OSCAR VIAGGI DI FORMOLO OSCAR
+;157;106;287;15:25;15:44;Faedo-Mezzocorona;estiva feriale;8;19;67;536;OSCAR VIAGGI DI FORMOLO OSCAR
+;158;106;288;17:56;18:15;Mezzocorona - Faedo;"invernale
+lunedì-sabato";9;16;240;2.160,00;VITO DI PEDRON VITTORIA
+;159;106;289;18:16;18:35;Faedo - Mezzocorona;"invernale
+lunedì-sabato";8;16;240;1.920,00;VITO DI PEDRON VITTORIA
+;160;106;304;18:50;19:09;Mezzocorona - Faedo;"invernale
+da lunedì a venerdì";9;16;202;1.818,00;VITO DI PEDRON VITTORIA
+;161;106;288;19:10;19:29;Mezzocorona-Faedo;"estiva feriale 
+dal lunedì al venerdì";9;19;55;495;OSCAR VIAGGI DI FORMOLO OSCAR
+;162;107;566;13:12;13:24;Mezzolombardo-Mezzocorona FS;"scolastica 
+da lunedì a venerdì";3;47;174;522;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;163;107;570;14:40;14:59;Mezzolombardo-Roverè della Luna;"estiva
+sabato ";15;19;12;180;OSCAR VIAGGI DI FORMOLO OSCAR
+;164;107;571;15:06;15:27;Roverè della Luna-Mezzolombardo;"estiva
+sabato ";15;19;12;180;OSCAR VIAGGI DI FORMOLO OSCAR
+;165;107;570;17:05;17:26;Mezzolombardo-Roverè della Luna;invernale non scolastica feriale;15;19;29;435;OSCAR VIAGGI DI FORMOLO OSCAR
+;166;107;571;17:26;17:46;Roverè della Luna-Mezzolombardo;"invernale non scolastica 
+feriale";15;19;29;435;OSCAR VIAGGI DI FORMOLO OSCAR
+;167;109;60;19:00;19:09;Cavalese - Masi di Cavalese;"invernale
+lunedì-sabato";4;16;240;960;TAXI  ZETA DI ZAMPIERI SERGIO
+;168;109;63;19:12;19:19;Masi di Cavalese - Cavalese;"invernale
+lunedì-sabato";4;16;240;960;TAXI  ZETA DI ZAMPIERI SERGIO
+;169;111;20;08:10;08:36;Cavalese - Veronza ;Estiva lunedì-sabato agosto/settembre;5,3;19;34;180,2;TAXI  ZETA DI ZAMPIERI SERGIO
+;169 bis;111;20;08:10;08:36;Cavalese - Veronza ;Estiva lunedì-sabato giugno/luglio;5,3;19;33;174,9;DESILVESTRO TAXI E VIAGGI SRL
+;170;111;21;08:26;08:50;Veronza - Aguai - Carano - Cavalese;Estiva lunedì-sabato agosto/settembre;10,2;19;34;346,8;TAXI  ZETA DI ZAMPIERI SERGIO
+;170 bis;111;21;08:26;08:50;Veronza - Aguai - Carano - Cavalese;Estiva lunedì-sabato giugno/luglio;10,2;19;33;336,6;DESILVESTRO TAXI E VIAGGI SRL
+;171;112;64;17:25;17:55;Cavalese - Varena - Cavalese ;"invernale
+lunedì-sabato";13;16;240;3.120,00;TAXI  ZETA DI ZAMPIERI SERGIO
+;172;110;440;06:34;06:41;Tesero - Stava (dal 19/11/18);"scolastica 
+da lunedì a sabato";4;9;208;832;AUTONOLEGGIO DI GUADAGNINI FERDINANDO E ZAMPIERI DAVID S.N.C.
+;173;110;449;06:42;06:58;Stava - Cavalese (dal 19/11/18);"scolastica 
+da lunedì a sabato";9;9;208;1.872,00;AUTONOLEGGIO DI GUADAGNINI FERDINANDO E ZAMPIERI DAVID S.N.C.
+;174;110;445;07:20;07:27;Stava - Tesero;"scolastica 
+da lunedì a sabato";4;16;208;832;TAXI  ZETA DI ZAMPIERI SERGIO
+;175;110;448;14:05;14:12;Tesero - Stava;"scolastica 
+da lunedì a venerdì";4;16;174;696;TAXI  ZETA DI ZAMPIERI SERGIO
+;176;110;448;17:10;17:17;Tesero - Stava;"scolastica 
+lunedì ";4;16;33;132;TAXI  ZETA DI ZAMPIERI SERGIO
+;177;113;64;17:55;18:34;Cavalese - Tesero - Tesero Casa Riposo - Masi - Cavalese;"invernale
+lunedì-sabato";16;16;240;3.840,00;TAXI  ZETA DI ZAMPIERI SERGIO
+;178;114;8;06:10;06:40;Casatta - Sicina;"invernale
+lunedì-sabato";8;16;240;1.920,00;FERSINA TOUR S.R.L
+;179;114;8;06:15;06:45;Casatta - Sicina;estiva feriale;8;16;67;536;FERSINA TOUR S.R.L
+;180;114;7;06:45;07:00;Sicina - Casatta;"invernale
+lunedì-sabato";8;16;240;1.920,00;FERSINA TOUR S.R.L
+;181;114;7;06:50;07:05;Sicina - Casatta;estiva feriale;8;16;67;536;FERSINA TOUR S.R.L
+;182;114;10;07:20;07:35;Casatta - Sicina;"invernale
+lunedì-sabato";8;16;240;1.920,00;FERSINA TOUR S.R.L
+;183;114;10;07:31;07:46;Casatta - Sicina;estiva feriale;8;16;67;536;FERSINA TOUR S.R.L
+;184;114;9;07:40;08:10;Sicina - Casatta;"invernale
+lunedì-sabato";8;16;240;1.920,00;FERSINA TOUR S.R.L
+;185;114;9;07:46;08:16;Sicina - Casatta;estiva feriale;8;16;67;536;FERSINA TOUR S.R.L
+;186;114;12;11:40;11:55;Casatta - Sicina;"estiva feriale 
+dal lunedì al venerdì";8;16;55;440;FERSINA TOUR S.R.L
+;187;114;12;11:45;12:00;Casatta - Sicina;"invernale
+lunedì-sabato";8;16;240;1.920,00;FERSINA TOUR S.R.L
+;188;114;11;12:05;12:30;Sicina - Casatta;"invernale
+lunedì-sabato";8;16;240;1.920,00;FERSINA TOUR S.R.L
+;189;114;11;12:05;12:35;Sicina - Casatta;"estiva feriale 
+dal lunedì al venerdì";8;16;55;440;FERSINA TOUR S.R.L
+;190;114;14;13:12;13:33;Casatta - Sicina;estiva feriale;8;16;67;536;FERSINA TOUR S.R.L
+;191;114;14;13:12;13:33;Casatta - Sicina;"invernale
+lunedì-sabato";8;16;240;1.920,00;FERSINA TOUR S.R.L
+;192;114;13;13:33;13:45;Sicina - Casatta;estiva feriale ;8;16;67;536;FERSINA TOUR S.R.L
+;193;114;13;13:33;13:48;Sicina - Casatta - Pradel ;"invernale
+lunedì-sabato";10;16;240;2.400,00;FERSINA TOUR S.R.L
+;194;114;16;14:08;14:23;Casatta - Sicina;"scolastica 
+da lunedì a venerdì";8;16;174;1.392,00;FERSINA TOUR S.R.L
+;195;114;18;17:27;17:57;Casatta - Sicina;"invernale
+lunedì-sabato";8;16;240;1.920,00;FERSINA TOUR S.R.L
+;196;114;18;17:27;17:57;Casatta - Sicina;estiva feriale;8;16;67;536;FERSINA TOUR S.R.L
+;197;114;17;18:00;18:15;Sicina - Casatta;"invernale
+lunedì-sabato";8;16;240;1.920,00;FERSINA TOUR S.R.L
+;198;114;17;18:00;18:15;Sicina - Casatta;estiva feriale;8;16;67;536;FERSINA TOUR S.R.L
+;199;115;381;06:55;07:25;Fornace - Civezzano 7.11 - Pergine;"scolastica 
+da lunedì a sabato";15;50;208;3.120,00;AUTONOLEGGI VISINTAINER di VISINTAINER FRANCESCO
+;200;115;436;07:05;07:28;Civezzano Ist. De Carneri - 7:12 Civezzano-Pergine V.;"scolastica 
+da lunedì a venerdì";7;29;174;1.218,00;AUTONOLEGGI VISINTAINER di VISINTAINER FRANCESCO
+;201;115;434;08:33;08:57;Civezzano Ist. De Carneri - Civezzano-Pergine V.;"invernale
+lunedì-sabato";9;19;240;2.160,00;AUTONOLEGGI VISINTAINER di VISINTAINER FRANCESCO
+;202;115;431;11:20;12:05;Pergine-Civezzano-Bosco;"invernale
+lunedì-sabato";19;19;240;4.560,00;ITALBUS S.N.C. DI CASAGRANDE ARMANDO E CHRISTIAN & C.
+;203;115;489;12:32;12:47;Pergine - Civezzano;"scolastica 
+sabato";7;50;34;238;AUTONOLEGGI VISINTAINER di VISINTAINER FRANCESCO
+;204;115;435;13:20;13:35;Pergine - Civezzano;"scolastica 
+da lunedì a venerdì";7;50;174;1.218,00;AUTONOLEGGI VISINTAINER di VISINTAINER FRANCESCO
+;205;116;215;06:49;07:04;S.Agnese-Civezzano;"scolastica 
+da lunedì a venerdì";5;29;174;870;AUTONOLEGGI VISINTAINER di VISINTAINER FRANCESCO
+;206;116;217;09:00;09:50;Penedallo-Bosco-Civezzano-Trento;"estiva feriale 
+dal lunedì al venerdì";22;19;55;1.210,00;ITALBUS S.N.C. DI CASAGRANDE ARMANDO E CHRISTIAN & C.
+;207;116;240;10:40;11:10;Civezzano-Bosco;"Estiva
+lunedì-sabato";11;30;67;737;AUTONOLEGGI VISINTAINER di VISINTAINER FRANCESCO
+;208;116;327;11:15;11:35;Bosco-Civezzano;"Estiva
+lunedì-sabato";9;30;67;603;AUTONOLEGGI VISINTAINER di VISINTAINER FRANCESCO
+;209;116;242;11:36;12:05;Civezzano-Bosco;estiva feriale;11;30;67;737;AUTONOLEGGI VISINTAINER di VISINTAINER FRANCESCO
+;210;116;117;16:40;17:00;Bosco-Civezzano;"estiva feriale 
+dal lunedì al venerdì";11;19;55;605;ITALBUS S.N.C. DI CASAGRANDE ARMANDO E CHRISTIAN & C.
+;211;116;246;17:00;17:30;Civezzano-Bosco;"estiva feriale 
+dal lunedì al venerdì";11;19;55;605;ITALBUS S.N.C. DI CASAGRANDE ARMANDO E CHRISTIAN & C.
+;212;116;236;18:01;18:30;Civezzano-Bosco;"feriale 
+da lunedì a venerdì";11;19;252;2.772,00;ITALBUS S.N.C. DI CASAGRANDE ARMANDO E CHRISTIAN & C.
+;213;116;123;18:35;18:54;Bosco-Civezzano;"feriale 
+da lunedì a venerdì";11;19;252;2.772,00;ITALBUS S.N.C. DI CASAGRANDE ARMANDO E CHRISTIAN & C.
+;214;116;248;19:51;20:20;Civezzano-Bosco;feriale;11;19;304;3.344,00;ITALBUS S.N.C. DI CASAGRANDE ARMANDO E CHRISTIAN & C.
+;215;121;70;06:00;06:10;Montesover - Sover;"invernale
+lunedì-sabato";5,5;22;240;1.320,00;GROFF TOUR DI TATTI CARLA
+;216;121;72;06:20;06:30;Montesover - Sover;estiva feriale;5,5;22;67;368,5;GROFF TOUR DI TATTI CARLA
+;217;121;173;06:27;06:31;Facendi  - Sveseri Bivio;"scolastica 
+da lunedì a sabato";1,5;22;208;312;GROFF TOUR DI TATTI CARLA
+;218;121;72;06:40;06:50;Montesover - Sover;"invernale
+lunedì-sabato";5,5;22;240;1.320,00;GROFF TOUR DI TATTI CARLA
+;219;121;65;07:05;07:15;Sover - Montesover;feriale;5,5;22;304;1.672,00;GROFF TOUR DI TATTI CARLA
+;220;121;74;13:10;13:20;Montesover - Sover;"invernale
+lunedì-sabato";5,5;22;240;1.320,00;GROFF TOUR DI TATTI CARLA
+;221;121;74;13:20;13:30;Montesover - Sover;estiva feriale;5,5;22;67;368,5;GROFF TOUR DI TATTI CARLA
+;222;121;67;13:35;13:45;Sover - Montesover;feriale;5,5;22;304;1.672,00;GROFF TOUR DI TATTI CARLA
+;223;121;67;13:45;13:55;Montesover- Gabard (prolungamento c.sa 67);"scolastica 
+solo venerdì ";4;22;36;144;GROFF TOUR DI TATTI CARLA
+;224;121;67;13:55;14:13;Maso Gabard-Rizzolaga-Baselga;scolastica venerdì;12,4;9;36;446,4;GROFF TOUR DI TATTI CARLA
+;225;121;437;14:28;14:35;Sover - Montesover;"scolastica 
+da lunedì a sabato";5,5;22;208;1.144,00;GROFF TOUR DI TATTI CARLA
+;226;121;707;16:20;16:30;Sover-Montesover                                        ;"scolastica 
+da lunedì a giovedì";5,5;19;137;753,5;GROFF TOUR DI TATTI CARLA
+;227;121;69;17:45;17:55;Sover - Montesover;feriale;5,5;22;304;1.672,00;GROFF TOUR DI TATTI CARLA
+;228;121;112;18:21;18:25;Sveseri Bivio - Facendi ;"scolastica 
+da lunedì a venerdì";1,5;22;174;261;GROFF TOUR DI TATTI CARLA
+;229;122;23;06:50;07:03;Bellamonte - Predazzo;"scolastica 
+da lunedì a sabato";6,1;8;208;1.268,80;DOLOMITI RENT A CAR S.N.C. DI ROMOR MARSHA & C.
+;230;122;920;07:20;07:55;Castellir - Bellamonte-Predazzo;"scolastica 
+da lunedì a sabato";10;20;208;2.080,00;DOLOMITI RENT A CAR S.N.C. DI ROMOR MARSHA & C.
+;231;122;924;13:05;13:25;Predazzo-Bellamonte - Castellir;"scolastica 
+da lunedì a sabato";10;20;208;2.080,00;DOLOMITI RENT A CAR S.N.C. DI ROMOR MARSHA & C.
+;232;122;926;14:05;14:25;Bellamonte - Predazzo sc.;"scolastica
+mar+gio";10;19;68;680;DOLOMITI RENT A CAR S.N.C. DI ROMOR MARSHA & C.
+;233;122;927;16:35;16:55;Predazzo sc.-Bellamonte;"scolastica
+mar+gio";10;19;68;680;DOLOMITI RENT A CAR S.N.C. DI ROMOR MARSHA & C.
+;234;123;1;07:35;08:10;Falcade - Moena;"feriale invernale 
+lun-ven-sab e gg. pre e postfest.
+(non si effettua nel periodo di effettuazione 20 dic-fine marzo))";22;19;25;550;DESILVESTRO TAXI E VIAGGI SRL
+;235;123;1;07:35;08:10;Falcade - Moena;"invernale feriale 
+da lunedì a sabato 
+(periodo intensificazione circa 20 dic- fine marzo)";22;29;83;1.826,00;DESILVESTRO TAXI E VIAGGI SRL
+;236;123;6;17:00;17:35;Moena - Falcade;"feriale invernale 
+lun-ven-sab e gg. pre e postfest.
+(non si effettua nel periodo di effettuazione 20 dic-fine marzo))";22;19;25;550;DESILVESTRO TAXI E VIAGGI SRL
+;237;123;6;17:00;17:35;Moena - Falcade;"invernale feriale 
+da lunedì a sabato 
+(periodo intensificazione circa 20 dic- fine marzo)";22;29;83;1.826,00;DESILVESTRO TAXI E VIAGGI SRL
+;238;124;655;06:05;07:30;Masi di Imer - Pozza di fassa;"scolastica 
+solo lunedì e postfest.";65,5;29;36;2.358,00;HOTEL AL BIVIO SRL
+;239;124;654;14:00;15:35;Pozza Fassa-Predazzo-P.so Rolle-Fiera P.-Imer;"Scolastica
+venerdì+prefest. infrasett.";65,5;29;39;2.554,50;HOTEL AL BIVIO SRL
+;240;132;642;09:40;10:10;Valcava - Segonzano - Cembra;"feriale 
+solo mercoledì";17;20;52;884;ZAMPEDRI STEFANO 
+;241;132;647;11:50;12:20;Cembra - Segonzano - Valcava;"feriale 
+solo mercoledì";17;20;52;884;ZAMPEDRI STEFANO 
+;242;132;643;12:35;13:02;S.Michele - Cembra;"scolastica 
+solo giorno di sabato";20;41;34;680;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;243;132;643;13:02;13:17;Cembra - Scancio di Segonzano;"scolastica 
+sabato";9;41;34;306;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;244;132;643;13:17;13:20;"Scancio di Segonzano-Sevignano
+prolungamento  c.sa Cembra-Scancio";"scolastica 
+sabato";2;41;34;68;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;245;132;641;13:35;14:02;S.Michele - Cembra;"scolastica 
+da lunedì a venerdì";20;41;174;3.480,00;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;246;132;641;14:02;14:16;Cembra - Scancio di Segonzano - Sevignano;"scolastica 
+da lunedì a venerdì";11;41;174;1.914,00;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;247;135;640;07:05;07:29;"Capriana-Grumese - Valda 
+(prolungamento c.sa per S.Michele)";"scolastica 
+da lunedì a venerdì";14,5;41;174;2.523,00;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;248;135;640;07:05;07:29;"Capriana-Grumes-Valda
+(prolungamento c.sa per S.Michele)";"scolastica
+sabato";14,5;19;34;493;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;249;201;59;06:36;07:22;Ponte Arche - Trento (corsa bis);"scolastica 
+solo lunedì e posfest.";31;56;36;1.116,00;SARCATOUR s.r.l.
+;250;201;59;06:36;07:22;Ponte Arche-Trento;"scolastica 
+da martedì a venerdì 
+(esclusi giorni postfest.)";30;50;141;4.230,00;SARCATOUR s.r.l.
+;251;201;251;07:09;08:17;Tione-Trento;"invernale
+lunedì-sabato";44;50;240;10.560,00;TRENTINOBUS SRL
+NUOVA;252;201;279;07:46;08:04;Tione-P.Arche;"Invernale 
+festiva";15;50;47;705;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+NUOVA;253;201;518;08:34;08:52;P.Arche-Tione;"invernale
+lunedì-sabato";15;50;240;3.600,00;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+NUOVA;254;201;518;08:34;08:52;P.Arche-Tione;"Invernale 
+festiva";15;50;47;705;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+km corretti da capitolato;255;201;230;08:50;09:59;Trento-Tione;"invernale
+lunedì-sabato";44;50;240;10.560,00;TRENTINOBUS SRL
+NUOVA;256;201;351;09:00;09:18;Tione-P.Arche;"invernale
+lunedì-sabato";15;50;240;3.600,00;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+NUOVA;257;201;351;09:00;09:18;Tione-P.Arche;"Invernale 
+festiva";15;50;47;705;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+NUOVA;258;201;520;09:34;09:52;P.Arche-Tione;"invernale
+lunedì-sabato";15;50;240;3.600,00;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+bacino 2 estate 2021;259;201;65;10:00;10:18;Tione-P.Arche;"festiva 
+estiva";16;50;13;208;SOLETANA VIAGGI S.R.L.
+NUOVA;260;201;65;10:00;10:18;Tione-P.Arche;"invernale
+lunedì-sabato";15;50;240;3.600,00;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+NUOVA;261;201;65;10:00;10:18;Tione-P.Arche;"Invernale 
+festiva";15;50;47;705;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+NUOVA;262;201;522;10:34;10:52;P.Arche-Tione;"invernale
+lunedì-sabato";15;50;240;3.600,00;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+NUOVA;263;201;522;10:51;11:09;P.Arche-Tione;"Invernale 
+festiva";15;50;47;705;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+NUOVA;264;201;353;10:59;12:57;Tione-Ragoli-Trento;"invernale
+feriale sabato";44;50;38;1.672,00;TRENTINOBUS SRL
+bacino 2 estate 2021;265;201;518;11:34;11:52;P.Arche-Tione;"Estiva
+lunedì-venerdì";16;50;55;880;MAESTRI AUGUSTO & C. S.N.C. 
+NUOVA;266;201;516;11:34;11:52;P.Arche-Tione;"invernale
+lunedì-sabato";15;50;240;3.600,00;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+NUOVA;267;201;524;12:06;12:24;P.Arche-Tione;"Invernale 
+festiva";15;50;47;705;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+NUOVA;268;201;525;12:32;12:50;Tione-P.Arche;"Invernale 
+festiva";15;50;47;705;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+;269;201;335;13:25;13:48;Tione - Ponte Arche (corsa bis);"scolastica 
+solo venerdì";15;50;36;540;SOLETANA VIAGGI S.R.L.
+NUOVA;270;201;529;13:27;13:45;Tione-P.Arche;"Invernale 
+festiva";15;50;47;705;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+NUOVA;271;201;526;13:45;14:03;P.Arche-Tione;"Invernale 
+festiva";15;50;47;705;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+;272;201;310;14:28;14:44; Ponte Arche - Tione ( corsa bis);"scolastica 
+solo venerdì";15;55;36;540;SOLETANA VIAGGI S.R.L.
+NUOVA;273;201;71;15:00;15:18;Tione-P.Arche;"invernale
+lunedì-sabato";15;50;240;3.600,00;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+NUOVA;274;201;71;15:00;15:18;Tione-P.Arche;"Invernale 
+festiva";15;50;47;705;TRENTINOBUS SRL
+bacino 2 estate 2021;275;201;71;15:00;16:08;Tione-Trento;"festiva 
+estiva";44;50;13;572;SOLETANA VIAGGI S.R.L.
+NUOVA;276;201;530;15:34;15:52;P.Arche-Tione;"invernale
+lunedì-sabato";15;50;240;3.600,00;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+NUOVA;277;201;530;15:34;15:52;P.Arche-Tione;"Invernale 
+festiva";15;50;47;705;TRENTINOBUS SRL
+bacino 2 estate 2021;278;201;73;17:00;17:18;Tione-P.Arche;"Estiva
+lunedì-sabato";16;50;67;1.072,00;TRENTINOBUS SRL
+NUOVA;279;201;73;17:05;17:23;Tione-P.Arche;"invernale
+lunedì-sabato";15;50;240;3.600,00;MAESTRI AUGUSTO & C. S.N.C. 
+NUOVA;280;201;73;17:05;17:23;Tione-P.Arche;"Invernale 
+festiva";15;50;47;705;TRENTINOBUS SRL
+bacino 2 estate 2021;281;201;302;17:46;18:04;P.Arche-Tione;"festiva 
+estiva";16;50;13;208;SOLETANA VIAGGI S.R.L.
+NUOVA;282;201;302;17:46;18:04;P.Arche-Tione;"Invernale 
+festiva";15;50;47;705;TRENTINOBUS SRL
+NUOVA;283;201;77;17:59;18:17;Tione-P.Arche;"invernale
+lunedì-sabato";15;50;240;3.600,00;MAESTRI AUGUSTO & C. S.N.C. 
+NUOVA;284;201;308;18:34;18:52;P.Arche-Tione;"invernale
+lunedì-sabato";15;50;240;3.600,00;MAESTRI AUGUSTO & C. S.N.C. 
+NUOVA;285;201;527;18:59;19:17;Tione-P.Arche;"invernale
+lunedì-sabato";15;50;240;3.600,00;MAESTRI AUGUSTO & C. S.N.C. 
+NUOVA;286;201;527;18:59;17:17;Tione-P.Arche;"Invernale 
+festiva";15;50;47;705;TRENTINOBUS SRL
+Eliminata;287;201;438;19:55;20:28;Sarche - Ponte Arche - Tione;"invernale
+da lunedì a venerdì";27;19;; -   ;SARCATOUR s.r.l.
+;288;202;306;08:30;09:45;Trento-Lagolo;"festiva 
+estiva";35;30;13;455;PERINI FRANCO 
+;289;202;210;08:45;09:00;Lasino-Lagolo;"estiva
+lun-mer-gio";10;19;33;330;PEDERZOLLI DENIS
+;290;202;211;09:15;09:30;Lagolo-Lasino;"estiva
+lun-mer-gio";10;19;33;330;PEDERZOLLI DENIS
+;291;202;94;10:15;10:32;Trento - Sardagna;feriale;6;20;304;1.824,00;PERINI FRANCO 
+;292;202;87;10:35;10:51;Sardagna - Trento;feriale;6;20;304;1.824,00;PERINI FRANCO 
+;293;202;216;11:45;12:00;Lasino-Lagolo;"estiva
+lun-mer-gio";10;19;33;330;PEDERZOLLI DENIS
+;294;202;100;13:00;13:55;Trento-Sardagna-Vason-Viote;"festiva 
+estiva";24;40;13;312;CLUB DELLAI S.R.L.
+;295;202;93;13:15;14:10;Viote-Trento;"festiva 
+estiva";24;30;13;312;PERINI FRANCO 
+;296;202;548;17:00;18:15;Trento-Lagolo;"festiva 
+estiva";35;30;13;455;PERINI FRANCO 
+;297;202;212;17:15;17:30;Lasino-Lagolo;"estiva
+lun-mer-gio";10;19;33;330;PEDERZOLLI DENIS
+;298;202;97;17:25;18:20;Viote-Vason-Sardagna-Trento;"festiva 
+estiva";24;40;13;312;CLUB DELLAI S.R.L.
+;299;202;213;17:50;18:15;Lagolo-Lasino-Vezzano;"estiva
+lun-mer-gio";17,5;19;33;577,5;PEDERZOLLI DENIS
+;300;202;104;18:00;18:55;Trento-Viote;estiva feriale;24;40;67;1.608,00;PERINI FRANCO 
+;301;202;104;18:00;18:55;Trento-Viote;"invernale
+lunedì-sabato";24;50;240;5.760,00;PERINI FRANCO 
+;302;202;247;18:20;19:35;Lagolo-Trento;"festiva 
+estiva";35;30;13;455;PERINI FRANCO 
+;303;202;99;19:00;19:55;Viote-Trento;estiva feriale;24;40;67;1.608,00;PERINI FRANCO 
+;304;202;99;19:00;19:55;Viote-Trento;"invernale
+lunedì-sabato";24;50;240;5.760,00;PERINI FRANCO 
+;305;203;383;06:35;07:13;Margone - Ranzo - Vezzano bivio sud;"invernale
+da lunedì a venerdì";15,5;19;202;3.131,00;PERINI FRANCO 
+;306;203;174;13:18;13:41;Vezzano Apt- Margone;"scolastica 
+da lunedì a sabato";11,5;36;208;2.392,00;PERINI FRANCO 
+;307;203;176;14:01;14:13;Vezzano Apt - Ciago (bis);"scolastica 
+solo martedì e giovedì ";3,5;19;68;238;PERINI FRANCO 
+;308;203;176;14:01;14:39;Vezzano Apt - Ranzo - Margone;"scolastica 
+da lunedì a sabato";15,5;36;208;3.224,00;PERINI FRANCO 
+;309;203;80;15:02;15:29;Vezzano - Fraveggio - Ciago - Ranzo (settimane pari);"scolastica 
+lunedì (settimane pari)";10,5;8;16;168;PERINI FRANCO 
+;310;204;405;06:29;06:39;Drena - Masi di Vigo C. -  Vigo Cavedine ;"scolastica 
+da lunedì a sabato";7,5;16;208;1.560,00;PEDERZOLLI DENIS
+;311;204;226;06:29;06:47;Vigo Cavedine-Dro;"scolastica 
+da lunedì a venerdì";10;50;174;1.740,00;SARCATOUR s.r.l.
+;312;204;405;06:32;06:39;Drena - Vigo Cavedine ;"feriale
+non scolastica";4;20;29;116;PEDERZOLLI DENIS
+;313;204;405;06:33;06:39;Drena - Vigo Cavedine ;"feriale
+estiva";4;20;67;268;PEDERZOLLI DENIS
+;314;204;313;07:10;07:57;V.Cavedine-Trento;festiva invernale;27;19;45;1.215,00;PERINI FRANCO 
+;315;204;313;07:10;07:57;V.Cavedine-Trento;"festiva 
+estiva";27;19;13;351;PERINI FRANCO 
+Eliminata già compresa;316;204;281;07:18;07:25;Drena-Vigo Cavedine -Vezzano;"Estiva
+lunedì-venerdì";16,9;55;; -   ;NICE srl
+;317;204;468;08:40;09:04;Vezzano Apt-V.Cavedine;"invernale
+da lunedì a venerdì";14;19;202;2.828,00;PERINI FRANCO 
+;318;204;231;09:25;10:09;Vigo Cavedine - Vezzano -Trento;"invernale
+lunedì-sabato";29;30;240;6.960,00;PERINI FRANCO 
+;319;204;274;10:12;10:42;Vezzano APT-Vigo Cavedine-Drena;"Estiva
+lunedì-venerdì";17,9;30;55;984,5;PERINI FRANCO 
+;320;204;274;10:48;11:18;Drena-Vigo Cavedine-Vezzano;"Estiva
+lunedì-sabato";19,9;30;67;1.333,30;PERINI FRANCO 
+;321;204;150;11:55;12:02;Vigo Cavedine - Drena ;"feriale
+non scolastica";4;20;29;116;PEDERZOLLI DENIS
+;322;204;150;11:55;12:02;Vigo Cavedine - Drena ;"scolastica 
+da lunedì a sabato";4;20;208;832;PEDERZOLLI DENIS
+;323;204;276;12:07;11:58;Vigo Cavedine - Drena ;"feriale
+estiva";4;20;67;268;PEDERZOLLI DENIS
+;324;204;427;14:58;15:30;Drò - Drena - Vigo Cavedine-Calavino;"scolastica 
+da lunedì a venerdì";16;19;174;2.784,00;SARCATOUR s.r.l.
+;325;204;160;17:15;17:59;Trento-Vezzano-v.Cavedine;"festiva 
+estiva";27;30;13;351;CLUB DELLAI S.R.L.
+;326;204;162;17:40;18:02;Trento-Vezzano-v.Cavedine;"scolastica 
+da lunedì a venerdì";27,6;50;174;4.802,40;SARCATOUR s.r.l.
+;327;204;412;18:00;18:07;Vigo Cavedine - Drena ;"feriale
+non scolastica";4;20;29;116;PEDERZOLLI DENIS
+;328;204;412;18:00;18:11;Vigo Cavedine - Masi di Vigio C. - Drena;"scolastica 
+da lunedì a sabato";7,5;16;208;1.560,00;PEDERZOLLI DENIS
+;329;204;164;18:40;19:31;Trento-Drena;estiva feriale;31;50;67;2.077,00;SARCATOUR s.r.l.
+;330;204;168;19:30;20:14;Trento-Vigo Cavedine;"invernale
+lunedì-sabato";27;40;240;6.480,00;SARCATOUR s.r.l.
+;331;204;232;20:40;21:41;Trento-Terlago-M.te Terlago-Ciago-Vezzano-Vigo Cavedine-Drena;"Estiva
+lunedì-venerdì";42,9;19;55;2.359,50;PERINI FRANCO 
+;332;205;159;06:33;07:24;Ceniga-Dro - Sarche - Trento (corsa bis);"scolastica 
+da martedì a venerdì 
+(esclusi giorni postfest)";32,5;56;141;4.582,50;SARCATOUR s.r.l.
+;333;205;184;07:07;07:37;Dro-Riva del Garda;"scolastica 
+da lunedì a venerdì";11;19;174;1.914,00;SARCATOUR s.r.l.
+;334;205;409;08:45;09:03;Lago Cavedine Trebi-Sarche;"invernale
+lunedì-sabato";9;19;240;2.160,00;SARCATOUR s.r.l.
+;335;205;409;08:45;09:03;Lago Cavedine Trebi-Sarche;"estiva
+feriale ";9;19;67;603;SARCATOUR s.r.l.
+;336;205;404;14:15;14:29;Sarche - Pergolese - Pietramurata;"scolastica 
+da lunedì a venerdì";9;19;174;1.566,00;NICE srl
+;337;205;171;16:00;16:46;Riva-Sarche (c.sa bis);"scolastica 
+da lunedì a venerdì";23;50;174;4.002,00;SARCATOUR s.r.l.
+;338;205;366;16:50;17:07;Sarche-Lago Cavedine Trebi;"estiva
+feriale ";9;19;67;603;SARCATOUR s.r.l.
+;339;205;366;16:52;17:09;Sarche-Lago Cavedine Trebi;"invernale
+lunedì-sabato";9;19;240;2.160,00;SARCATOUR s.r.l.
+;340;205;402;19:20;19:24;Sarche-Pergolese;"scolastica 
+da lunedì a venerdì";3;19;174;522;PERINI FRANCO 
+;341;206;403;06:10;06:32;Monte Terlago - Cadine - Forte Bus del Vela;feriale;12,5;30;304;3.800,00;PERINI FRANCO 
+frequenza corretta da capitolato;342;206;107;07:02;07:20;Monte Terlago - Cadine;"invernale + estiva
+lunedì-sabato";11;20;304;3.344,00;PERINI FRANCO 
+;343;206;109;07:38;08:13;Monte Terlago - Trento;feriale;16;36;304;4.864,00;PERINI FRANCO 
+;344;206;110;08:28;08:50;Cadine - Terlago - M.terlago;festiva;11;19;58;638;PERINI FRANCO 
+;345;206;113;09:00;09:35;Monte Terlago - Trento;festiva;16;19;58;928;PERINI FRANCO 
+;346;206;112;10:10;10:50;Trento - Covelo-Ciago-Monte Terlago;"scolastica 
+da lunedì a sabato";18;30;208;3.744,00;PERINI FRANCO 
+;347;206;116;12:33;12:55;Cadine - Terlago - M.terlago;festiva;11;19;58;638;PERINI FRANCO 
+;348;206;116;12:55;12:57;M.te Terlago - Laghi Lamar (prolungamento);"festiva 
+estiva";2;19;13;26;PERINI FRANCO 
+;349;206;382;13:10;13:30;Terlago bivio - M.te Terlago;"scolastica 
+da lunedì a sabato";11;20;208;2.288,00;PERINI FRANCO 
+;350;206;117;14:03;14:38;Monte Terlago - Trento;festiva;16;19;58;928;PERINI FRANCO 
+;351;206;128;17:00;17:26;Trento - Monte Terlago;festiva;16;19;58;928;PERINI FRANCO 
+;352;206;580;17:05;17:15;Terlago - Covelo - Maso Ariol - Monte Terlago;"feriale 
+da lunedì a venerdì";6;19;252;1.512,00;PERINI FRANCO 
+;353;206;372;17:15;17:55;Trento - Terlago - Covelo -Ciago - Monte Terlago;"invernale
+lunedì-sabato";18,5;30;240;4.440,00;PERINI FRANCO 
+;354;206;128;17:20;18:01;Monte Terlago-Ciago-Vezzano-V.Cavedine;"invernale 
+festiva";15,5;30;47;728,5;PERINI FRANCO 
+;355;206;121;17:53;17:55;L. Lamar -M.Terlago 17.55  (Prolungamento);"festiva 
+estiva";2;19;13;26;PERINI FRANCO 
+;356;206;121;17:55;18:30;M.Terlago-Covelo-Terlago-TN;"festiva 
+estiva";16;30;13;208;PERINI FRANCO 
+;357;206;121;17:55;18:30;Monte Terlago - Covelo - Terlago - TN;"invernale
+lunedì-sabato";16;20;240;3.840,00;PERINI FRANCO 
+;358;206;130;18:15;18:50;Trento - Monte Terlago;"Estiva
+lunedì-venerdì";15;19;55;825;NICE srl
+;359;206;130;18:15;18:50;Trento - Terlago - Monte Terlago;"scolastica 
+da lunedì a venerdì";16;19;174;2.784,00;NICE srl
+;360;206;132;18:35;19:15;Trento - Monte Terlago (estate ore 18.40);feriale;16;20;304;4.864,00;PERINI FRANCO 
+;361;206;123;18:50;19:25;Monte Terlago - Terlago - Trento;"scolastica 
+da lunedì a venerdì";16;19;174;2.784,00;NICE srl
+;362;206;123;18:50;19:25;Monte Terlago - Trento;"Estiva
+lunedì-venerdì";15;19;55;825;NICE srl
+;363;206;134;19:30;20:05;Trento - Terlago - Monte Terlago;"scolastica 
+da lunedì a venerdì";16;19;174;2.784,00;NICE srl
+;364;206;134;19:30;20:05;Trento - Terlago - Monte Terlago;"invernale feriale 
+solo sabato";16;19;38;608;NICE srl
+;365;208;551;06:10;06:33;Sclemo - Stenico - Ponte Arche;"scolastica 
+da lunedì a venerdì";11,5;22;174;2.001,00;TRENTINOBUS SRL
+frequenza corretta da capitolato;366;208;444;06:25;06:40;S.Lorenzo in Banale - Molveno;"scolastica 
+da lunedì a venerdì";10,5;8;174;1.827,00;RIGOTTI FLAVIO
+;367;208;449;06:50;07:10;S.Lorenzo in B.- Andogno ;"Feriale 
+estiva + no scuola";4,3;8;96;412,8;RIGOTTI FLAVIO
+;368;208;449;06:55;07:20;Andogno - S.Lorenzo in B.;"Feriale 
+estiva + no scuola";4,4;8;96;422,4;RIGOTTI FLAVIO
+;369;208;449;07:05;07:10;S.Lorenzo in B.- Andogno ;"scolastica 
+da lunedì a sabato";4,3;8;208;894,4;RIGOTTI FLAVIO
+;370;208;449;07:10;07:20;Andogno - S.Lorenzo in B.;"scolastica 
+da lunedì a sabato";4,4;8;208;915,2;RIGOTTI FLAVIO
+;371;208;552;09:40;10:15;S.Lorenzo in Banale - Ponte Arche;"invernale 
+da lunedì a sabato";17;8;240;4.080,00;RIGOTTI FLAVIO
+;372;208;550;12:10;12:45;Ponte Arche - S.Lorenzo in Banale;"invernale 
+da lunedì a sabato";17;8;240;4.080,00;RIGOTTI FLAVIO
+;373;208;451;13:02;13:10;S.Lorenzo in B.-Tavodo;feriale;4,3;8;304;1.307,20;RIGOTTI FLAVIO
+;374;208;451;13:10;13:18;Tavodo-Andogno - S.Lorenzo in B.;feriale;8,7;8;304;2.644,80;RIGOTTI FLAVIO
+;375;208;384;13:18;13:36;S.Lorenzo - Molveno;"scolastica 
+da lunedì a venerdì";10,5;8;174;1.827,00;RIGOTTI FLAVIO
+;376;208;221;13:21;13:41;S.Lorenzo in Banale - Villa Banale - Ponte Arche ;"scolastica 
+solo giorno di sabato";9;8;34;306;RIGOTTI FLAVIO
+;377;208;498;13:49;14:12;Ponte Arche - Stenico - Sclemo;"scolastica 
+da lunedì a venerdì";10,5;22;174;1.827,00;TRENTINOBUS SRL
+;378;208;223;14:02;14:26;Molveno-Dorsino;"scolastica 
+da lunedì a venerdì";11,6;53;174;2.018,40;FABIO VIAGGI SRL
+;379;208;420;16:30;17:19;Ponte Arche - S.Lorenzo - Molveno;"scolastica 
+da lunedì a giovedì";27,5;50;137;3.767,50;TRENTINOBUS SRL
+;380;208;374;17:23;17:58;Ponte Arche - Sclemo - S.Lorenzo;"scolastica 
+da lunedì a venerdì";17;44;174;2.958,00;TRENTINOBUS SRL
+;381;208;54;17:50;18:25;Ponte Arche - S.Lorenzo in Banale;"scolastica 
+da lunedì a venerdì";17;22;174;2.958,00;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+bacino 2 estate 2021;382;208;226;19:35;20:10;P.Arche-S. Lorenzo in B.;"Estiva
+lunedì-sabato";17;50;67;1.139,00;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+;383;209;9;06:15;06:34;Lundo - Ponte Arche;"scolastica 
+da lunedì a sabato";10,3;22;208;2.142,40;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+;384;209;11;06:55;07:15;Lundo - Ponte Arche;"scolastica 
+da lunedì a sabato";10;22;208;2.080,00;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+bacino 2 estate 2021;385;209;11;07:10;07:30;Lundo-P.Arche;"Estiva
+lunedì-venerdì";9;50;55;495;TRENTINOBUS SRL
+;386;209;22;14:28;14:48;Ponte Arche - Lundo;"scolastica 
+da lunedì a venerdì";10;22;174;1.740,00;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+bacino 2 estate 2021;387;209;14;18:40;19:00;P.Arche-Lundo;"Estiva
+lunedì-sabato";9;22;67;603;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+bacino 2 estate 2021;388;210;55;06:58;07:29;Bivedo-P.Arche;"estiva
+sabato ";11;50;12;132;TRENTINOBUS SRL
+;389;210;55;07:19;07:50;Villa-Sesto bivio - Ponte Arche - Tione (corsa bis);"scolastica 
+da lunedì a venerdì";19;50;174;3.306,00;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+;390;210;245;07:25;07:36;S.Croce - Ponte Arche;"scolastica 
+da lunedì a venerdì";5;22;174;870;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+;391;210;66;15:15;15:22;Ponte Arche - Cares - Sesto bivio;"scolastica 
+da lunedì a venerdì";5;20;174;870;FRUNER VIAGGI IN EUROPA DI FRUNER TATIANA E SIMONE FRUNER SAS
+;392;210;430;15:35;15:46;Ponte Arche - S.Croce Bleggio;"scolastica 
+lun+merc+ven ";5;22;105;525;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+;393;210;458;16:30;16:59;Ponte Arche - Cavrasto - Bivedo;"scolastica 
+solo  lun-mar-gio ";11;44;101;1.111,00;TRENTINOBUS SRL
+bacino 2 estate 2021;394;211;16;06:16;06:33;Fiavè-P.Arche;"Estiva
+lunedì-sabato";7,5;50;67;502,5;TRENTINOBUS SRL
+;395;211;8;06:16;06:41;Favrio - Dasindo - Fiavè loc. Curè - Cornelle - Fiavè;"scolastica 
+da lunedì a venerdì";7,7;20;174;1.339,80;FRUNER VIAGGI IN EUROPA DI FRUNER TATIANA E SIMONE FRUNER SAS
+;396;211;373;07:04;07:09;Calvola - Ville del Monte;"scolastica 
+solo giorno di sabato";1,5;8;34;51;AUTOSERVIZI MATTUZZI CLAUDIO & C. S.N.C. 
+NUOVA;397;211;;08:40;09:39;Ponte Arche - Riva del Garda;"Estiva
+lunedì-sabato";29;50;67;1.943,00;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+NUOVA;398;211;;09:45;10:43;Riva d.G-Ponte Arche;"Estiva
+lunedì-sabato";29;50;67;1.943,00;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+;399;211;376;13:07;13:12;Ville del Monte - Calvola;"scolastica 
+da lunedì a sabato";1,5;22;208;312;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+;400;211;492;13:32;13:37;Ville del Monte - Calvola;"scolastica 
+lun+mar+mer+ven ";1,5;22;140;210;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+;401;211;22;14:02;14:25;Ville del Monte - Ponte Arche ;"scolastica 
+da lunedì a sabato";18;22;208;3.744,00;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+NUOVA;402;211;;14:40;15:39;Ponte Arche - Riva del Garda;"Estiva
+lunedì-sabato";29;50;67;1.943,00;AUTOSERVIZI MATTUZZI CLAUDIO & C. S.N.C. 
+;403;211;86;14:42;15:14;Ville d.Monte S.Antonio-Fiavè-Ponte Arche;"scolastica 
+da lunedì a venerdì";17,4;20;174;3.027,60;FRUNER VIAGGI IN EUROPA DI FRUNER TATIANA E SIMONE FRUNER SAS
+;404;211;574;16:30;16:45;Ponte Arche - Fiavè - Lundo - Comano;"scolastica 
+solo lunedì martedì e giovedì ";21;19;101;2.121,00;TRENTINOBUS SRL
+NUOVA;405;211;8;16:45;17:43;Riva del Garda - Ponte Arche;"Estiva
+lunedì-sabato";29;50;67;1.943,00;AUTOSERVIZI MATTUZZI CLAUDIO & C. S.N.C. 
+;406;211;584;16:35;17:19;Riva del Garda - Tenno - Fiavè ;"scolastica 
+da lunedì a venerdì";23;16;174;4.002,00;AUTOSERVIZI MATTUZZI CLAUDIO & C. S.N.C. 
+;407;211;584;17:19;17:34;"Fiavè-V.Lomaso-P.Arche
+prolungamento 16.35 Riva-Fiavè";"scolastica 
+da lunedì a giovedì ";7;20;137;959;AUTOSERVIZI MATTUZZI CLAUDIO & C. S.N.C. 
+NUOVA;408;211;7;17:55;18:54;Ponte Arche - Riva d.G;"Estiva
+lunedì-sabato";29;50;67;1.943,00;AUTOSERVIZI MATTUZZI CLAUDIO & C. S.N.C. 
+;409;212;318;12:56;13:11;"Forti Lardaro-Praso-Daone
+";"scolastica 
+da lunedì a venerdì";4;20;174;696;MAESTRI AUGUSTO & C. S.N.C. 
+;410;212;308;16:30;16:42;"Forti Lardaro-Praso-Daone
+";"scolastica 
+da lunedì a venerdì";4;20;174;696;MAESTRI AUGUSTO & C. S.N.C. 
+;411;213;413;07:00;07:05;Por - Pieve di Bono (loc. Strada);"scolastica 
+da lunedì a sabato";3,2;8;208;665,6;MAESTRI AUGUSTO & C. S.N.C. 
+;412;213;968;13:15;13:25;Cimego-Castel Condino ;"scolastica 
+sabato";4,6;29;34;156,4;MAESTRI AUGUSTO & C. S.N.C. 
+;413;213;6;14:15;14:30;P.di Bono Borel - Castel Condino;"scolastica 
+da lunedì a venerdì";7;9;174;1.218,00;MAESTRI AUGUSTO & C. S.N.C. 
+;414;214;27;05:55;07:21;Baitoni-Riva;estiva feriale;54;50;67;3.618,00;SOLETANA VIAGGI S.R.L.
+;415;214;27;06:05;07:38;Baitoni-Riva;invernale non scolastica feriale;54;50;29;1.566,00;SOLETANA VIAGGI S.R.L.
+;416;214;582;06:12;07:38;Pieve di Bono-Storo-Riva;"scolastica 
+da lunedì a sabato";61;55;208;12.688,00;SOLETANA VIAGGI S.R.L.
+;417;214;582;06:50;07:38;Tiarno Off.Mariani-Bezzecca-Riva del Garda;"Scolastica
+solo lunedì";24;50;33;792;SARCATOUR s.r.l.
+;418;214;450;08:10;08:30;Riva del Garda - Pregasina ;"feriale 
+solo mercoledì";11,5;8;52;598;AUTOSERVIZI MATTUZZI CLAUDIO & C. S.N.C. 
+;419;214;29;08:30;08:51;Pregasina - Riva del Garda;"feriale 
+solo mercoledì";11,5;8;52;598;AUTOSERVIZI MATTUZZI CLAUDIO & C. S.N.C. 
+;420;214;615;10:00;10:18;Storo-Tremalzo bv.-Tiarno;"Estiva
+lunedì-sabato a mesi alterni";12,5;19;34;425;SOLETANA VIAGGI S.R.L.
+;420 bis;214;615;10:00;10:18;Storo-Tremalzo bv.-Tiarno;"Estiva
+lunedì-sabato a mesi alterni";12,5;19;33;412,5;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+;421;214;18;10:10;11:11;Riva-Bezzecca-Concei-Tiarno;"festiva 
+estiva";28;50;13;364;AUTOSERVIZI MATTUZZI CLAUDIO & C. S.N.C. 
+;422;214;639;11:00;11:18;Storo-Tremalzo bv.-Tiarno;"festiva 
+estiva";12,5;19;13;162,5;SOLETANA VIAGGI S.R.L.
+;423;214;36;11:12;11:30;"Tiarno-Tremalzo bv.-Storo
+";"Estiva
+lunedì-sabato a mesi alterni";12,5;19;34;425;SOLETANA VIAGGI S.R.L.
+;423 bis;214;36;11:12;11:30;"Tiarno-Tremalzo bv.-Storo
+";"Estiva
+lunedì-sabato a mesi alterni";12,5;19;33;412,5;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+;424;214;741;11:20;12:22;Tiarno-Concei-Bezzecca-Riva;"festiva 
+estiva";28;50;13;364;AUTOSERVIZI MATTUZZI CLAUDIO & C. S.N.C. 
+;425;214;36;11:20;11:38;Tiarno-Tremalzo bv.-Storo;"festiva 
+estiva";12,5;19;13;162,5;SOLETANA VIAGGI S.R.L.
+;426;214;38;13:46;14:02;Tiarno Sopra - Storo;"Scolastica
+lun+mar+gio+ven";13;15;138;1.794,00;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+;427;214;66;14:10;15:11;Riva-Bezzecca-Concei-Tiarno;"festiva 
+estiva";28;30;13;364;AUTOSERVIZI MATTUZZI CLAUDIO & C. S.N.C. 
+;428;214;641;15:00;15:18;Storo-Tremalzo bv.-Tiarno;"festiva 
+estiva";12,5;19;13;162,5;SOLETANA VIAGGI S.R.L.
+;429;214;42;15:02;15:53;Tiarno - Storo-Baitoni-Darzo-P.di Bono;"scolastica 
+da lunedì a venerdì";36;22;174;6.264,00;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+;430;214;42;15:14;16:05;Tiarno - Storo - Condino - Pieve di Bono ;"scolastica 
+solo giorno di sabato";36;8;34;1.224,00;SARCATOUR s.r.l.
+;431;214;745;15:20;16:22;Tiarno-Concei-Bezzecca-Riva;"festiva 
+estiva";28;50;13;364;AUTOSERVIZI MATTUZZI CLAUDIO & C. S.N.C. 
+;432;214;457;16:00;16:18;Storo-Tremalzo bv.-Tiarno;"Estiva
+lunedì-sabato a mesi alterni";12,5;19;34;425;SOLETANA VIAGGI S.R.L.
+;432 bis;214;457;16:00;16:18;Storo-Tremalzo bv.-Tiarno;"Estiva
+lunedì-sabato a mesi alterni";12,5;19;33;412,5;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+;433;214;334;16:30;17:31;Riva-Bezzecca-Concei-Tiarno;"festiva 
+estiva";28;50;13;364;AUTOSERVIZI MATTUZZI CLAUDIO & C. S.N.C. 
+;434;214;570;16:30;17:31;Riva-Bezzecca-Concei-Tiarno;"Invernale no scuola
+lun-ven";28;22;26;728;AUTOSERVIZI MATTUZZI CLAUDIO & C. S.N.C. 
+;435;214;74;17:17;17:35;Tiarno-Tremalzo bv.-Storo;"Estiva
+lunedì-sabato a mesi alterni";12,5;19;34;425;SOLETANA VIAGGI S.R.L.
+;435 bis;214;74;17:17;17:35;Tiarno-Tremalzo bv.-Storo;"Estiva
+lunedì-sabato a mesi alterni";12,5;19;33;412,5;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+;436;214;574;17:32;17:50;Tiarno-Tremalzo bv.-Storo;"festiva 
+estiva";12,5;19;13;162,5;SOLETANA VIAGGI S.R.L.
+;437;214;41;17:35;18:37;Tiarno-Concei-Bezzecca-Riva;"festiva 
+estiva";28;50;13;364;AUTOSERVIZI MATTUZZI CLAUDIO & C. S.N.C. 
+;438;214;46;18:45;20:19;Riva-Baitoni;"invernale
+lunedì-sabato";50;50;240;12.000,00;SOLETANA VIAGGI S.R.L.
+;439;214;385;18:40;19:29;Tiarno-Concei-Bezzecca-Riva;"Invernale no scuola
+lun-ven";28;22;26;728;AUTOSERVIZI MATTUZZI CLAUDIO & C. S.N.C. 
+;440;214;46;18:45;19:45;Riva-Bezzecca-Concei-Tiarno;"festiva 
+estiva";28;50;13;364;AUTOSERVIZI MATTUZZI CLAUDIO & C. S.N.C. 
+;441;214;46;19:00;20:34;Riva-Baitoni;"Estiva
+lunedì-sabato";50;50;67;3.350,00;SOLETANA VIAGGI S.R.L.
+;442;215;135;06:08;07:06;Baitoni-Tione;"invernale
+lunedì-sabato";37;50;240;8.880,00;MAESTRI AUGUSTO & C. S.N.C. 
+;443;215;585;06:35;06:43;Bondone - Baitoni;"scolastica 
+da lunedì a sabato";5,2;19;208;1.081,60;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+NUOVA;444;215;;06:35;06:45;Loc. Ruc Riccomassimo-Lodrone;"scolastica 
+da lunedì a sabato";6;5;208;1.248,00;SOLETANA VIAGGI S.R.L.
+bacino 2 estate 2021;445;215;127;06:45;07:43;Baitoni-Tione;Estiva lunedì-venerdì;37;50;55;2.035,00;SOLETANA VIAGGI S.R.L.
+bacino 2 estate 2021;445 bis;215;127;06:45;07:43;Baitoni-Tione;Estiva sabato;37;50;12;444;MAESTRI AUGUSTO & C. S.N.C.
+;446;225;447;06:49;07:04;Brione - Condino;"scolastica 
+da lunedì a sabato";6;22;208;1.248,00;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+;447;215;595;07:00;07:15;Bondone - Ponte Caffaro bivio;"scolastica 
+da lunedì a sabato";8,5;19;208;1.768,00;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+;448;215;;07:00;14:00;Servizio a chiamata Elastibus del Chiese fino Tione 2^ navetta Elastibus Bondone);"feriale 
+da lunedì a venerdì";;9;252;43.200,00;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+variazione da capitolato;449;215;127;07:00;07:46;Ca' Rossa-Fontanedo-Tione-Istituto;"scolastica 
+da lunedì a venerdì";26,5;50;174;4.611,00;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+;450;215;467;07:10;07:15;Prezzo - Pieve di Bono;"scolastica 
+da lunedì a sabato";3;8;208;624;MAESTRI AUGUSTO & C. S.N.C. 
+NUOVA;451;215;593;07:58;08:58;Baitoni-Tione;"Invernale
+sabato";37;50;38;1.406,00;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+bacino 2 estate 2021;452;215;602;07:59;08:59;Tione-Baitoni;"estiva
+sabato ";37;50;12;444;MAESTRI AUGUSTO & C. S.N.C. 
+NUOVA;453;215;603;08:58;09:56;Baitoni-Tione;"invernale
+lunedì-sabato";37;50;240;8.880,00;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+bacino 2 estate 2021;454;215;136;09:00;10:00;Tione-Baitoni;Estiva lunedì-venerdì;37;50;55;2.035,00;SOLETANA VIAGGI S.R.L.
+bacino 2 estate 2021;454 bis;215;136;09:00;10:00;Tione-Baitoni;Estiva sabato;37;50;12;444;TRENTINOBUS SRL
+;455;215; ;09:15;18:30;Servizio a chiamata Elastibus del Chiese fino Tione 1^ navetta Elastibus Pieve Bono);"feriale 
+da lunedì a venerdì";;22;252;59.300,00;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+;456;215;138;10:00;11:00;Tione-Baitoni;"invernale
+lunedì-sabato";44;50;240;10.560,00;MAESTRI AUGUSTO & C. S.N.C. 
+bacino 2 estate 2021;457;215;595;11:30;12:59;Baitoni-Tione;"Estiva
+lunedì-sabato";37;50;67;2.479,00;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+bacino 2 estate 2021;458;215;606;11:59;12:59;Tione-Baitoni;"Estiva
+lunedì-sabato";37;50;67;2.479,00;MAESTRI AUGUSTO & C. S.N.C. 
+NUOVA;459;215;606;11:59;12:59;Tione-Baitoni;"invernale
+lunedì-sabato";37;50;240;8.880,00;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+bacino 2 estate 2021;460;215;129;12:20;13:18;Baitoni-Tione;"Estiva
+lunedì-venerdì";37;50;55;2.035,00;SOLETANA VIAGGI S.R.L.
+bacino 2 estate 2021;461;215;140;12:32;13:32;Tione-Baitoni;"Estiva
+lunedì-sabato";37;50;67;2.479,00;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+;462;215;140;12:32;13:32;Tione - Baitoni;"Invernale 
+festiva";37;55;47;1.739,00;TRENTINOBUS SRL
+;463;215;140;12:35;13:46;Tione-Baitoni;"scolastica 
+da lunedì a venerdì";37;55;174;6.438,00;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+;464;215;349;12:55;13:09;Ponte Caffaro - Bondone ;"scolastica 
+sabato";8,7;9;34;295,8;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+;465;215;363;13:00;13:19;Ponte Caffaro-Storo-Baitoni;"scolastica 
+da lunedì a sabato";13;40;208;2.704,00;SOLETANA VIAGGI S.R.L.
+bacino 2 estate 2021;466;215;611;13:05;14:03;Baitoni-Tione;"Estiva
+lunedì-sabato";37;50;67;2.479,00;MAESTRI AUGUSTO & C. S.N.C. 
+NUOVA;467;215;611;13:05;14:03;Baitoni-Tione;"invernale
+lunedì-sabato";37;50;240;8.880,00;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+;468;225;448;13:14;13:28;Condino - Brione ;"scolastica 
+solo venerdì e sabato";6;22;70;420;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+;469;215;602;13:35;13:43;Baitoni-Bondone;"scolastica 
+solo mar-gio-ven";5,3;9;104;551,2;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+;470;215;588;13:50;13:58;Baitoni-Bondone;"scolastica 
+solo sabato ";5,3;9;34;180,2;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+frequenza corretta da capitolato;471;215;131;13:58;14:48;Baitoni-Tione;festiva invernale;37;40;45;1.665,00;TRENTINOBUS SRL
+;472;215;349;13:55;14:09;Ponte Caffaro - Bondone ;"scolastica 
+gio+ven";8,7;9;70;609;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+;473;215;38;14:02;14:08;Storo-Baitoni;"Scolastica
+lun+mar+gio+ven";6;15;138;828;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+;474;215;478;14:04;14:08;Pieve di Bono (loc. Creto) - Prezzo ;"scolastica 
+da lunedì a venerdì";2,5;8;174;435;MAESTRI AUGUSTO & C. S.N.C. 
+;475;225;441;14:10;14:25;Condino - Brione ;"scolastica 
+da lunedì a venerdì";6;22;174;1.044,00;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+;476;215;142;14:23;15:23;Tione-Baitoni;"invernale 
+solo sabato non scol.";38;40;3;114;SOLETANA VIAGGI S.R.L.
+;477;215;604;14:30;14:38;Baitoni-Bondone;"scolastica 
+solo lun+mer";5,3;9;69;365,7;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+;478;215;610;14:32;14:47;Storo - Lodrone - Baitoni;"scolastica 
+da lunedì a venerdì";9;16;174;1.566,00;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+;479;215;40;14:41;14:53;Condino-Pieve di Bono - Strada ;"scolastica 
+da lunedì a giovedì";7,5;19;137;1.027,50;MAESTRI AUGUSTO & C. S.N.C. 
+;480;215;349;14:55;15:09;Ponte Caffaro - Bondone ;"scolastica 
+lun+mar+mer";8,7;9;103;896,1;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+bacino 2 estate 2021;481;215;142;15:00;16:00;Tione-Baitoni;"Estiva
+lunedì-sabato";37;50;67;2.479,00;MAESTRI AUGUSTO & C. S.N.C. 
+bacino 2 estate 2021;482;215;133;15:58;16:56;Baitoni-Tione;"Estiva
+lunedì-sabato";37;50;67;2.479,00;TRENTINOBUS SRL
+NUOVA;483;215;133;15:58;16:56;Baitoni-Tione;"invernale
+lunedì-sabato";37;50;240;8.880,00;MAESTRI AUGUSTO & C. S.N.C. 
+;484;225;452;17:00;17:15;Condino - Brione ;"scolastica 
+da lunedì a giovedì";6;22;137;822;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+bacino 2 estate 2021;485;215;146;18:11;19:11;Tione-Baitoni;"Estiva
+lunedì-sabato";37;50;67;2.479,00;TRENTINOBUS SRL
+NUOVA eliminata;486;215;146;18:11;19:11;Tione-Baitoni;"Invernale
+sabato";37;50;; -   ;ELIMINATA
+bacino 2 estate 2021;487;215;633;18:58;19:56;Baitoni-Tione;"Estiva
+lunedì-sabato";37;50;67;2.479,00;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+frequenza corretta da capitolato;488;215;424;18:59;19:59;Tione-Baitoni;"invernale
+lunedì-sabato";37;50;240;8.880,00;TRENTINOBUS SRL
+bacino 2 estate 2021;489;215;426;19:59;20:59;Tione-Baitoni;"Estiva
+lunedì-sabato";37;50;67;2.479,00;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+variazione km capitolato;490;215;593;20:30;21:54;Vestone - Tione;"invernale feriale 
+solo venerdì";54;22;41;2.214,00;SOLETANA VIAGGI S.R.L.
+;491;216;48;13:09;13:23;Preore-Montagne;"scolastica 
+da lunedì a venerdì";5,5;19;174;957;TRENTINOBUS SRL
+;492;216;45;13:25;14:10;Montagne-Tione;"scolastica 
+da lunedì a venerdì";20;19;174;3.480,00;TRENTINOBUS SRL
+;493;216;398;16:07;16:55;Tione - Montagne;"scolastica 
+da lunedì a giovedì";19;22;137;2.603,00;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+eliminata;494;217;;14:05;14:15;Tione-Tione-Ospedale-Tione;"invernale
+da lunedì a venerdì";4;50;; -   ;SOLETANA VIAGGI S.R.L.
+;495;218;407;13:45;13:49;Masi di Vigo - Vigo Cavedine;"scolastica 
+da lunedì a sabato";4;16;208;832;PEDERZOLLI DENIS
+;496;218;408;13:50;13:55;Vigo Cavedine - Masi di Vigo;"scolastica 
+da lunedì a sabato";4;16;208;832;PEDERZOLLI DENIS
+;497;218;410;14:25;14:36;Vigo Cavedine - Masi di Vigo - Drena;"scolastica 
+da lunedì a sabato";7,5;16;208;1.560,00;PEDERZOLLI DENIS
+;498;224;149;06:35;06:49;Lagolo-Lasino;"scolastica 
+da lunedì a sabato";10;16;208;2.080,00;PEDERZOLLI DENIS
+;499;231;62;06:42;07:45;Tione - M. di Campiglio C.Carlo Magno;invernale giornaliera;33;50;287;9.471,00;TRENTINOBUS SRL
+;500;231;63;07:10;07:15;Massimeno - Giustino;"scolastica 
+da lunedì a venerdì";2;8;174;348;TN SERVICE LORENZI A CAPITALE RIDOTTO S.R.L. DI TAVELLI ANDREA
+NUOVA;501;231;253;07:52;08:58;C.C.Magno-Tione;"invernale
+lunedì-sabato";33;50;240;7.920,00;TRENTINOBUS SRL
+bacino 2 estate 2021;502;231;932;11:16;12:19;Tione-C.C.Magno;"festiva 
+estiva";33;50;13;429;SOLETANA VIAGGI S.R.L.
+bacino 2 estate 2021;503;231;971;13:53;14:58;C.C.Magno-Tione;"festiva 
+estiva";33;50;13;429;SOLETANA VIAGGI S.R.L.
+NUOVA;504;231;978;16:05;17:08;Tione-C.C.Magno;"invernale
+da lunedì a venerdì";33;50;202;6.666,00;TRENTINOBUS SRL
+NUOVA;505;231;938;18:59;20:03;Tione-C.C.Magno;"invernale
+lunedì-sabato";33;50;240;7.920,00;TRENTINOBUS SRL
+NUOVA;506;231;261;17:52;18:56;C.C.Magno-Tione;"invernale
+da lunedì a venerdì";33;50;202;6.666,00;TRENTINOBUS SRL
+frequenza corretta da capitolato;507;231;293;19:52;20:56;C.C.Magno-Tione;Festiva invernale;33;50;45;1.485,00;TRENTINOBUS SRL
+;508;236;471;09:15;09:27;Terlago - Sopramonte;"feriale 
+da lunedì a venerdì";8,2;19;252;2.066,40;PERINI FRANCO 
+;509;236;470;09:50;10:19;Sopramonte - Monte Terlago;"feriale 
+da lunedì a venerdì";16;19;252;4.032,00;PERINI FRANCO 
+;510;236;473;10:25;10:51;Monte Terlago - Sopramonte;"feriale 
+da lunedì a venerdì";16;19;252;4.032,00;PERINI FRANCO 
+;511;236;472;11:11;11:40;Sopramonte - Monte Terlago;"feriale 
+da lunedì a venerdì";16;19;252;4.032,00;PERINI FRANCO 
+;512;236;475;11:46;12:12;Monte Terlago - Sopramonte;"feriale 
+da lunedì a venerdì";16;19;252;4.032,00;PERINI FRANCO 
+;513;236;477;14:46;15:12;Monte Terlago - Sopramonte;"feriale 
+da lunedì a venerdì";16;19;252;4.032,00;PERINI FRANCO 
+;514;236;474;15:35;16:04;Sopramonte - Monte Terlago;"feriale 
+da lunedì a venerdì";16;20;252;4.032,00;PERINI FRANCO 
+;515;236;479;17:15;17:41;Monte Terlago - Sopramonte;"feriale 
+da lunedì a venerdì";16;19;252;4.032,00;PERINI FRANCO 
+;516;236;476;18:02;18:31;Sopramomnte - Monte Terlago;"feriale 
+da lunedì a venerdì";16;19;252;4.032,00;PERINI FRANCO 
+;517;301;169;05:07;05:53;Rovereto-Trento;"scolastica 
+da lunedì a venerdì";28;30;174;4.872,00;BUS MANIA srl
+;518;301;354;05:57;06:43;Trento-Rovereto;"scolastica 
+da lunedì a venerdì";28;30;174;4.872,00;BUS MANIA srl
+NUOVA frequenza corretta da capitolato;519;301;815;19:29;20:19;Rovereto-Trento;invernale lunedì-venerdì;27;50;202;5.454,00;SRT S.R.L.
+;520;302;473;06:23;06:32;Vigile - Cimone bivio Pietra;"scolastica 
+da lunedì a sabato";3;19;208;624;MDL s.r.l.
+;521;302;463;06:47;06:54;Vigile - Cimone bivio Pietra;"scolastica 
+da lunedì a sabato";3;19;208;624;MDL s.r.l.
+;522;302;463;06:47;06:54;Vigile - Cimone bivio Pietra;"non scolastica 
+da lunedì a sabato";3;19;29;87;MDL s.r.l.
+;523;302;463;06:50;06:57;Vigile - Cimone bivio Pietra;"Estiva
+lunedì-venerdì";3;19;55;165;MDL s.r.l.
+;524;302;465;07:25;07:32;Vigile - Cimone bivio Pietra;"scolastica 
+da lunedì a sabato";3;19;208;624;MDL s.r.l.
+;525;302;465;07:30;07:37;Vigile - Cimone bivio Pietra;"estiva feriale 
+solo giorno di giovedì";3;19;11;33;MDL s.r.l.
+;526;302;149;08:27;09:15;Garniga V.-Garniga-Aldeno-Ravina-Trento;"Invernale
+festiva";25;19;47;1.175,00;NICE srl
+;527;302;149;08:27;09:15;Garniga Vecchia- Garniga T. - Aldeno - Trento;"festiva 
+estiva";25;24;13;325;NICE srl
+;528;302;154;11:51;12:14;Aldeno - Garniga - Ganiga Vecchia;"invernale
+lunedì-sabato";12;24;240;2.880,00;NICE srl
+;529;302;537;12:15;13:03;Garniga Vecchia - Garniga - Aldeno - Trento;"invernale
+lunedì-sabato";25;24;240;6.000,00;NICE srl
+;530;302;156;12:20;13:22;Trento - Aldeno - Garniga - Garniga Vecchia;"festiva 
+estiva";25;24;13;325;NICE srl
+;531;302;156;12:20;13:08;Trento - Aldeno - Garniga - Garniga Vecchia;"Invernale 
+festiva";25;24;47;1.175,00;NICE srl
+;532;302;462;12:53;13:00;Cimone bivio Pietra - Vigile;"estiva feriale 
+solo giorno di giovedì";3;19;11;33;MDL s.r.l.
+;533;302;462;13:03;13:10;Cimone bivio Pietra - Vigile;"scolastica 
+da lunedì a sabato";3;19;208;624;MDL s.r.l.
+;534;302;421;13:35;14:32;Garniga Vecchia - Garniga - Aldeno - Trento;"festiva 
+estiva";25;24;13;325;NICE srl
+;535;302;421;13:35;14:32;Garniga Vecchia - Garniga - Aldeno - Trento;"Invernale 
+festiva";25;24;47;1.175,00;NICE srl
+;536;302;464;14:09;14:16;Cimone bivio Pietra - Vigile;"scolastica 
+da lunedì a sabato";3;19;208;624;MDL s.r.l.
+;537;302;440;17:20;18:14;Trento - Aldeno - Garniga - garniga Vecchia;"festiva 
+estiva";25;24;13;325;NICE srl
+;538;302;440;17:20;18:14;Trento - Aldeno - Garniga - garniga Vecchia;"Invernale 
+festiva";25;24;47;1.175,00;NICE srl
+;539;302;474;17:30;17:37;Cimone bivio Pietra - Vigile;"scolastica 
+da lunedì a venerdì";3;19;174;522;MDL s.r.l.
+;540;302;466;17:59;18:06;Cimone bivio Pietra - Vigile;"scolastica 
+da lunedì a venerdì";3;19;174;522;MDL s.r.l.
+;541;302;466;17:59;18:06;Cimone bivio Pietra - Vigile;"non scolastica 
+da lunedì a venerdì";3;19;26;78;MDL s.r.l.
+;542;302;466;17:59;18:06;Cimone bivio Pietra - Vigile;"estiva 
+da lunedì a giovedì";3;19;44;132;MDL s.r.l.
+;543;302;167;18:25;19:13;Garniga Vecchia - Garniga - Aldeno - Trento;"festiva 
+estiva";25;24;13;325;NICE srl
+;544;302;167;18:25;19:13;Garniga Vecchia - Garniga - Aldeno - Trento;"Invernale 
+festiva";25;24;47;1.175,00;NICE srl
+;545;302;238;20:30;21:05;Trento - Aldeno - Garniga;"Estiva
+lunedì-venerdì";22;19;55;1.210,00;NICE srl
+;546;302;238;20:30;21:05;Trento - Aldeno - Garniga;"invernale
+da lunedì a venerdì";22;19;202;4.444,00;NICE srl
+;547;302;238;22:00;22:35;Trento - Aldeno - Garniga;"estiva
+sabato ";22;19;12;264;NICE srl
+;548;302;238;22:00;22:35;Trento - Aldeno - Garniga;"invernale feriale 
+solo sabato";22;19;38;836;NICE srl
+km corretti da capitolato;549;303;545;06:30;07:05;Luserna - Caldonazzo - Pergine;"scolastica 
+da lunedì a sabato";28;14;208;5.824,00;AUTOFFICINA LUNELLI DI LUNELLI STEFANO & C. S.N.C.
+;550;303;545;06:30;07:05;Luserna-Caldonazzo-Pergine;"feriale estiva
+da lunedì a venerdì";28;14;55;1.540,00;AUTOFFICINA LUNELLI DI LUNELLI STEFANO & C. S.N.C.
+;551;303;501;06:44;07:41;Carbonare - Vigolo Vattaro - Trento (corsa bis);"scolastica a mesi alterni
+da lunedì a venerdì";28;55;87;2.436,00;STENGHELE SRL
+;551 bis;303;501;06:44;07:41;Carbonare - Vigolo Vattaro - Trento (corsa bis);"scolastica a mesi alterni
+da lunedì a venerdì";28;55;87;2.436,00;TOLLER S.N.C. DI TOLLER CALLISTO E C. 
+NUOVA Eliminata già compresa;552;303;545;06:53;07:05;Caldonazzo-Pergine;"scolastica 
+da lunedì a sabato";9;14;; -   ;ELIMINATA
+;553;303;427;06:55;07:16;Centa - Calceranica;"scolastica 
+da lunedì a sabato";10,5;22;208;2.184,00;CLUB DELLAI S.R.L.
+;554;303;501;07:00;07:41;Pian dei Pradi - Trento (corsa bis);"scolastica 
+da lunedì a venerdì";19;55;174;3.306,00;CLUB DELLAI S.R.L.
+;555;303;253;07:27;07:32;Vattaro - Vigolo Vattaro (corsa bis);"scolastica 
+da lunedì a venerdì";3;22;174;522;CLUB DELLAI S.R.L.
+;556;303;253;07:35;07:40;Bosentino - Vigolo Vattaro (corsa bis);"scolastica 
+da lunedì a venerdì";3;22;174;522;CLUB DELLAI S.R.L.
+;557;330;437;07:45;08:11;Vigolo Vattaro - Levico;"scolastica 
+da lunedì a venerdì";11;22;174;1.914,00;CLUB DELLAI S.R.L.
+;558;303;550;07:50;08:13;Caldonazzo-Luserna;"feriale estiva
+da lunedì a venerdì";19;14;55;1.045,00;AUTOFFICINA LUNELLI DI LUNELLI STEFANO & C. S.N.C.
+;559;303;473;07:58;08:48;Lavarone - V.Vattaro;"Estiva
+lunedì-venerdì";21,5;50;55;1.182,50;STENGHELE SRL  
+;560;303;549;08:15;08:38;Luserna - Caldonazzo;"Invernale feriale
+solo giovedì";19;14;39;741;AUTOFFICINA LUNELLI DI LUNELLI STEFANO & C. S.N.C.
+;561;303;703;08:25;09:20;Centa-Bosentino-V.Vattaro-Trento;"festiva 
+estiva";23;30;13;299;CLUB DELLAI S.R.L.
+;562;303;703;08:25;09:20;Centa-Bosentino-V.Vattaro-Trento;"Invernale 
+festiva";23;30;47;1.081,00;CLUB DELLAI S.R.L.
+;563;303;541;08:35;09:15;Centa - Pergine;"feriale non scolastica
+da lunedì a sabato";20;22;29;580;CLUB DELLAI S.R.L.
+;564;303;551;08:45;09:11;Luserna-Caldonazzo;"estiva
+feriale ";19;9;67;1.273,00;AUTOFFICINA LUNELLI DI LUNELLI STEFANO & C. S.N.C.
+;565;303;530;08:55;10:13;Trento-Lavarone;"festiva 
+estiva";39;30;13;507;STENGHELE SRL  
+;566;303;552;09:35;10:01;Caldonazzo-Luserna;"estiva
+feriale ";19;9;67;1.273,00;AUTOFFICINA LUNELLI DI LUNELLI STEFANO & C. S.N.C.
+;567;303;474;11:17;11:56;Pian dei Pradi - Lavarone;"Estiva
+lunedì-venerdì";16;50;55;880;STENGHELE SRL  
+;568;303;246;12:30;13:20;Trento-V.Vattaro-Bosentino-Centa;"Invernale 
+festiva";23;30;47;1.081,00;CLUB DELLAI S.R.L.
+;569;303;248;12:30;13:37;Trento-V.Vattaro-Bosentino-Centa-Carbonare;"festiva 
+estiva";32,5;30;13;422,5;CLUB DELLAI S.R.L.
+;570;303;296;12:42;13:07;Pergine - Bosentino-V.Vattaro;"scolastica 
+sabato";14,5;22;34;493;CLUB DELLAI S.R.L.
+;571;303;550;12:52;13:17;Caldonazzo-Luserna;"Invernale feriale
+solo giovedì";19;14;39;741;TOMA SPEED DI TOMASELLI PIERGIORGIO
+;572;329;296;13:23;13:48;Pergine - Bosentino-V.Vattaro;"scolastica 
+lun+mar+mer";14,5;22;103;1.493,50;CLUB DELLAI S.R.L.
+;573;330;296;13:23;14:29;Pergine - Levico - Centa ;"scolastica 
+gio+ven";30;22;70;2.100,00;CLUB DELLAI S.R.L.
+;574;303;705;13:30;14:25;Centa-Bosentino-V.Vattaro-Trento;"Invernale 
+festiva";23;30;47;1.081,00;CLUB DELLAI S.R.L.
+;575;303;544;13:47;14:26;Pergine - Caldonazzo-Luserna;"scolastica 
+da lunedì a sabato";28;14;208;5.824,00;AUTOFFICINA LUNELLI DI LUNELLI STEFANO & C. S.N.C.
+;576;303;551;14:15;14:38;Luserna - Caldonazzo;"Invernale feriale
+solo giovedì";19;14;39;741;TOMA SPEED DI TOMASELLI PIERGIORGIO
+;577;303;705;14:25;15:40;Carbonare-Centa-Bosentino-V.Vattaro-Trento;"festiva 
+estiva";32,5;30;13;422,5;CLUB DELLAI S.R.L.
+;578;303;531;14:50;15:40;Centa - Trento;"invernale
+lunedì-sabato";26;22;240;6.240,00;CLUB DELLAI S.R.L.
+;579;303;250;16:40;17:25;Trento - Vigolo Vattaro -Centa;"scolastica 
+da lunedì a venerdì";21;50;174;3.654,00;CLUB DELLAI S.R.L.
+;580;303;543;16:45;17:02;Levico -Vigolo vattaro;"scolastica 
+da lunedì a venerdì";12;22;174;2.088,00;CLUB DELLAI S.R.L.
+;581;303;537;17:10;18:26;Lavarone-Trento;"festiva 
+estiva";39;30;13;507;STENGHELE SRL  
+;582;303;553;17:15;17:41;Luserna-Caldonazzo;"estiva
+feriale ";19;9;67;1.273,00;STENGHELE SRL  
+;583;303;252;17:30;18:20;Trento-V.Vattaro-Bosentino-Centa;"Invernale 
+festiva";23;30;47;1.081,00;CLUB DELLAI S.R.L.
+;584;303;546;17:52;18:17;Caldonazzo  FS-Luserna;"scolastica 
+da lunedì a venerdì";19;14;174;3.306,00;AUTOFFICINA LUNELLI DI LUNELLI STEFANO & C. S.N.C.
+;585;303;554;17:52;18:18;Caldonazzo-Luserna;"estiva
+feriale ";19;9;67;1.273,00;STENGHELE SRL  
+;586;303;256;19:15;20:05;Trento-Centa;"invernale
+da lunedì a venerdì";23;30;202;4.646,00;AUTONOLEGGI PEGORARO S.N.C. di PEGORARO LUCIANO & C.
+;587;305;306;06:15;06:26;S.Giacomo - Brentonico ;"scolastica 
+da lunedì a sabato";9;4;208;1.872,00;ANDREOLLI FRANCO
+;588;305;508;13:55;14:17;Mori - Besagno - Brentonico;"scolastica 
+sabato";11;19;34;374;AUTOSERVIZI ANDREOLLI SNC DI ANDREOLLI PAOLO & C.
+;589;305;510;14:05;14:11;Mori FS - Mori Bar Centrale;"scolastica 
+da lunedì a venerdì";2,5;19;174;435;AUTOSERVIZI ANDREOLLI SNC DI ANDREOLLI PAOLO & C.
+;590;305;508;14:18;14:40;Mori - Besagno - Brentonico;"scolastica 
+da lunedì a venerdì";11;19;174;1.914,00;AUTOSERVIZI ANDREOLLI SNC DI ANDREOLLI PAOLO & C.
+;591;306;467;06:55;07:10;Guardia di Folgaria - Mezzomonte;"scolastica 
+da lunedì a sabato";5;19;208;1.040,00;VALDUGA FRANCESCO
+;592;306;51;07:02;07:39;Folgaria - Rovereto F.S.  (corsa bis);"scolastica 
+da lunedì a venerdì";24;50;174;4.176,00;PEDRINOLLA GRAZIANO s.r.l.
+;593;306;469;07:40;08:18;Guardia di Folgaria - Mezzomonte - Folgaria;"estiva feriale 
+solo giorno di martedì";10;19;11;110;VALDUGA FRANCESCO
+;594;306;469;07:50;08:28;Guardia di Folgaria - Mezzomonte - Folgaria;"invernale feriale 
+solo martedì";12;19;41;492;VALDUGA FRANCESCO
+;595;306;36;08:00;08:49;Rovereto - Folgaria;"scolastica 
+da lunedì a venerdì";24;50;174;4.176,00;TOLLER S.N.C. DI TOLLER CALLISTO E C. 
+;596;306;471;10:55;11:31;Folgaria - Mezzomonte - Guardia di Fogaria;"feriale 
+solo martedì";18;19;52;936;VALDUGA FRANCESCO
+;597;306;57;12:05;12:54;Folgaria - Rovereto ;"Estiva
+lunedì-venerdì";24;19;55;1.320,00;NICE srl
+;598;306;509;12:50;14:42;Luserna-Lavarone-Carbonare-Folgaria-Calliano-Rovereto,;"invernale 
+festiva";52;30;47;2.444,00;STENGHELE SRL  
+;599;306;470;13:05;13:20;Mezzomonte-Guardia di Folgaria;"feriale 
+solo martedì";5;19;52;260;VALDUGA FRANCESCO
+;600;306;468;14:04;14:19;Mezzomonte - Guardia di Folgaria;"scolastica 
+da lunedì a sabato";5;19;208;1.040,00;VALDUGA FRANCESCO
+;601;306;509;14:20;16:12;Luserna-Lavarone-Carbonare-Folgaria-Calliano-Rovereto,;"festiva 
+estiva";52;30;13;676;STENGHELE SRL  
+;602;306;514;16:50;18:41;Rovereto-Calliano-Folgaria-Carbonare-Lavarone-Luserna;"invernale + estiva
+festiva";52;30;58;3.016,00;STENGHELE SRL  
+;603;310;93;06:55;07:34;Valle S.Felice - Rovereto (c.sa bis);"scolastica 
+da lunedì a venerdì";18;50;174;3.132,00;NICE srl
+frequenza corretta da capitolato;604;310;183;08:40;09:34;Ronzo-V.S.Felice.Mori-Rovereto;"feriale invernale
+da lunedì a venerdì";30;30;202;6.060,00;NICE srl
+;605;311;797;17:20;17:38;Aldeno - Pomarolo;"scolastica 
+da lunedì a venerdì";12;16;174;2.088,00;NICE srl
+;606;312;365;06:20;06:47;Pian delle Fugazze - Raossi;"scolastica 
+da lunedì a sabato";15,5;20;208;3.224,00;FERSINA TOUR S.R.L
+;607;312;601;08:40;08:50;Raossi - Valmorbia;"feriale 
+solo lunedì e giovedì";6;19;98;588;FERSINA TOUR S.R.L
+;608;312;600;08:50;09:00;Valmorbia - Raossi;"feriale 
+solo lunedì e giovedì";6,5;19;98;637;FERSINA TOUR S.R.L
+;609;312;604;09:10;09:34;Raossi - Piano Vallarsa -P. Fugazze - Camposilvano;"feriale 
+solo lunedì e giovedì";14;19;98;1.372,00;FERSINA TOUR S.R.L
+;610;312;605;09:34;09:55;Camposilvano - Speccheri  - Raossi ;"feriale 
+solo lunedì e giovedì";12,5;19;98;1.225,00;FERSINA TOUR S.R.L
+;611;312;603;10:30;10:56;Raossi - Vanza (in estate ore 10.35);"feriale 
+solo lunedì e giovedì";12;19;98;1.176,00;FERSINA TOUR S.R.L
+;612;312;602;10:51;11:17;Vanza - Anghebeni-S.Anna.-Anghebeni-Raossi ;"feriale 
+solo lunedì e giovedì";12;19;98;1.176,00;FERSINA TOUR S.R.L
+;613;312;606;11:30;12:00;Raossi - Pian delle Fugazze;"feriale 
+solo lunedì e giovedì";17,5;19;98;1.715,00;FERSINA TOUR S.R.L
+;614;312;607;12:00;12:14;Pian delle Fugazze - Camposilvano- Speccheri- Raossi;"feriale 
+solo lunedì e giovedì";14;19;98;1.372,00;FERSINA TOUR S.R.L
+NUOVA;615;312;;16:15;17:00;Rovereto - Pozzacchio;"scolastica 
+da lunedì a venerdì";17,2;19;174;2.992,80;TODESCHI AUTONOLEGGI SRL
+;616;312;110;17:27;18:44;Rovereto-Camposilvano;"feriale 
+da lunedì a venerdì";36;19;252;9.072,00;NICE srl
+;617;312;128;18:20;19:05;Rovereto-Pozzacchio;"scolastica 
+da lunedì a sabato";17;19;208;3.536,00;NICE srl
+;618;312;130;19:30;20:15;Rovereto-Pozzacchio;"feriale 
+da lunedì a venerdì";17;19;252;4.284,00;NICE srl
+;619;314;115;06:30;07:25;Ometto - Rovereto;"feriale non scolastica
+da lunedì a sabato";27;20;29;783;FERSINA TOUR S.R.L
+;620;314;114;07:25;08:10;Rovereto - Raossi;"feriale non scolastica 
+da lunedì a venerdì";25;20;26;650;FERSINA TOUR S.R.L
+;621;314;608;08:40;09:02;Raossi -Ometto;"feriale 
+solo martedì mercoledì e venerdì";12;19;156;1.872,00;FERSINA TOUR S.R.L
+;622;314;609;09:02;09:23;Ometto - Raossi;"feriale 
+solo martedì mercoledì e venerdì";12;19;156;1.872,00;FERSINA TOUR S.R.L
+;623;314;613;09:25;09:49;Raossi - Albaredo;"feriale 
+solo martedì mercoledì e venerdì";15;19;156;2.340,00;FERSINA TOUR S.R.L
+;624;314;612;09:49;10:13;Albaredo - Raossi;"feriale 
+solo martedì mercoledì e venerdì";15;19;156;2.340,00;FERSINA TOUR S.R.L
+;625;314;610;10:30;10:52;Raossi - Ometto;"feriale 
+solo martedì mercoledì e venerdì";12;19;156;1.872,00;FERSINA TOUR S.R.L
+;626;314;611;10:52;11:13;Ometto - Raossi;"feriale 
+solo martedì mercoledì e venerdì";12;19;156;1.872,00;FERSINA TOUR S.R.L
+;627;314;615;11:30;11:54;Raossi - Albaredo;"feriale 
+solo martedì mercoledì e venerdì";15;19;156;2.340,00;FERSINA TOUR S.R.L
+;628;314;614;11:54;12:18;Albaredo - Raossi;"feriale 
+solo martedì mercoledì e venerdì";15;19;156;2.340,00;FERSINA TOUR S.R.L
+;629;315;99;06:35;07:18;Serrada - Terragnolo - Rovereto F.S.;"festiva 
+estiva";20;19;13;260;VALDUGA FRANCESCO
+;630;315;333;06:53;07:03;Geroli - Piazza di Terragnolo - Zencheri           (ore 6.50 prolungamento per Valle e Costa);"scolastica 
+da lunedì a sabato";13;17;208;2.704,00;VALDUGA FRANCESCO
+;631;315;951;09:00;09:38;Zoreri-Piazza Terragnolo-Rovereto;"feriale invernale 
+martedì e giovedì";20;19;80;1.600,00;BUS MANIA SRL 
+;632;315;951;09:00;09:38;Zoreri-Piazza Terragnolo-Rovereto;"estiva 
+martedì feriale";20;29;11;220;BUS MANIA SRL 
+;633;315;94;10:10;11:05;Rovereto-Terragnolo - Serrada - Folgaria;"festiva 
+estiva";25;19;13;325;VALDUGA FRANCESCO
+;634;315;952;11:30;12:08;Rovereto-Piazza Terragnolo - Zoreri;"feriale invernale 
+martedì e giovedì";20;19;80;1.600,00;BUS MANIA SRL 
+;635;315;952;11:30;12:08;Rovereto-Piazza Terragnolo - Zoreri;"estiva 
+martedì feriale";20;29;11;220;BUS MANIA SRL 
+;636;315;335;14:00;14:32;Piazza di Terragnolo -Zoreri - Geroli;"scolastica 
+da lunedì a sabato";7;17;208;1.456,00;VALDUGA FRANCESCO
+;637;315;953;15:45;16:23;Zoreri-Piazza Terragnolo-Rovereto;"invernale
+da lunedì a venerdì";20;19;202;4.040,00;BUS MANIA SRL 
+;638;315;954;16:35;17:13;Rovereto-Piazza Terragnolo - Zoreri;"invernale
+da lunedì a venerdì";20;19;202;4.040,00;BUS MANIA SRL 
+;639;334;539;08:17;08:26;Vò Sinistro - Ala Fs;"scolastica 
+da lunedì a sabato";4;19;208;832;PEDRINOLLA GRAZIANO s.r.l.
+km corretti da capitolato;640;334;276;09:39;09:53;Ala Fs - Avio;"scolastica 
+da lunedì a sabato";16;19;208;3.328,00;PEDRINOLLA GRAZIANO s.r.l.
+;641;334;405;09:59;10:29;Avio - Ala Fs;"scolastica 
+da lunedì a sabato";19,3;19;208;4.014,40;PEDRINOLLA GRAZIANO s.r.l.
+;642;334;87;11:05;11:28;Ala Fs-Serravalle-Chizzola-Pilcante;"scolastica 
+da lunedì a venerdì";14;19;174;2.436,00;PEDRINOLLA GRAZIANO s.r.l.
+;643;334;197;13:56;14:04;Vò Sinistro - Ala Fs;"scolastica 
+da lunedì a sabato";4;19;208;832;PEDRINOLLA GRAZIANO s.r.l.
+;644;334;201;14:31;15:02;Avio CC - Ala FS;"scolastica 
+da lunedì a venerdì";19,3;19;174;3.358,20;PEDRINOLLA GRAZIANO s.r.l.
+;645;334;401;16:30;16:46;Avio - Ala Fs;"scolastica 
+ sabato";10;19;34;340;PEDRINOLLA GRAZIANO s.r.l.
+;646;334;278;17:54;18:09;Avio - Masi d'Avio;"scolastica 
+da lunedì a venerdì";10,3;19;174;1.792,20;PEDRINOLLA GRAZIANO s.r.l.
+;647;334;211;18:10;18:23;Masi d'Avio - Ala Fs;"scolastica 
+da lunedì a venerdì";8;19;174;1.392,00;PEDRINOLLA GRAZIANO s.r.l.
+;648;334;402;18:29;18:44;Avio - Masi d'Avio;"scolastica 
+da lunedì a sabato";10,3;19;208;2.142,40;PEDRINOLLA GRAZIANO s.r.l.
+;649;307;282;09:40;10:12;Ala-Serravalle-Chizzola-Ala;"scolastica 
+da lunedì a venerdì";17;19;174;2.958,00;PEDRINOLLA GRAZIANO s.r.l.
+;650;335;182;10:46;10:55;Ala Fs - Vò Sinistro;"scolastica 
+da lunedì a sabato";4;19;208;832;PEDRINOLLA GRAZIANO s.r.l.
+;651;335;198;15:45;15:54;Ala Fs - Vò Sinistro;"scolastica 
+da lunedì a sabato";4;19;208;832;PEDRINOLLA GRAZIANO s.r.l.
+;652;335;208;19:05;19:42;Ala Fs-Avio;"scolastica 
+da lunedì a sabato";19,3;19;208;4.014,40;PEDRINOLLA GRAZIANO s.r.l.
+km corretti da capitolato;653;335;208;19:42;19:54;Avio-Ala Fs;"scolastica 
+da lunedì a sabato";19,3;19;208;4.014,40;PEDRINOLLA GRAZIANO s.r.l.
+;654;335;210;19:58;20:27;Ala Fs-Avio;"scolastica 
+da lunedì a sabato";19,3;19;208;4.014,40;PEDRINOLLA GRAZIANO s.r.l.
+;655;336;791;06:33;06:49;Ronchi di Ala (Ponzolotti) - Ala F.S.;"scolastica 
+da lunedì a sabato";9,5;8;208;1.976,00;PEDRINOLLA FABRIZIO
+;656;336;786;07:05;07:19;Ala F.S.- Ronchi di Ala;"invernale
+lunedì-sabato";6,7;29;240;1.608,00;PEDRINOLLA GRAZIANO s.r.l.
+;657;336;787;07:25;07:45;Ronchi di Ala (Ponzolotti) - Ala F.S.;feriale;7;29;304;2.128,00;PEDRINOLLA GRAZIANO s.r.l.
+;658;336;788;13:13;13:32;Ala - Ronchi di Ala -Ponzolotti;feriale;7,7;29;304;2.340,80;PEDRINOLLA GRAZIANO s.r.l.
+;659;336;789;13:32;13:47;Ponzolotti - Ronchi di Ala -  Ala F.S.;feriale;7,7;29;304;2.340,80;PEDRINOLLA GRAZIANO s.r.l.
+;660;336;794;14:10;14:30;Ala F.S. - Ronchi di Ala + (Ponzolotti);"scolastica 
+da lunedì a sabato";7,7;8;208;1.601,60;PEDRINOLLA FABRIZIO
+;661;336;803;14:30;14:45;(Ponzolotti) + Ronchi di Ala - Ala F.S.;"scolastica 
+da lunedì a sabato";7,7;8;208;1.601,60;PEDRINOLLA FABRIZIO
+;662;336;790;17:10;17:27;Ala F.S. - Ronchi di Ala ( Ponzolotti);"scolastica 
+da lunedì a venerdì; 
+non scolastici 
+solo lun-merc-ven  ";7,7;8;188;1.447,60;PEDRINOLLA GRAZIANO s.r.l.
+;663;336;805;17:27;17:42;(Ponzolotti)+Ronchi di Ala - Ala F.S.;"scolastica 
+da lunedì a venerdì; 
+non scolastici 
+solo lun-merc-ven  ";7,7;8;188;1.447,60;PEDRINOLLA GRAZIANO s.r.l.
+;664;401;122;06:50;07:19;Levico T. - Borgo V.;scolastica solo sabato;17;19;34;578;MARTINA MATTEO
+;665;401;122;06:50;07:19;Levico T. - Borgo V.;invernale non scolastico lunedì-venerdì;17;19;26;442;MARTINA MATTEO
+;666;401;507;07:55;08:50;Borgo-Levico-Caldonazzo-Trento;"invernale
+da lunedì a venerdì";49;50;202;9.898,00;MARTINA MATTEO 
+;667;401;134;10:15;11:21;Trento-Pergine-gallerie-Levico-Borgo;"festiva 
+estiva";37;40;13;481;CLUB DELLAI S.R.L.
+;668;401;147;11:30;12:43;Borgo-Levico-Caldonazzo-Trento;"festiva 
+estiva";41;40;13;533;CLUB DELLAI S.R.L.
+;669;401;507;13:10;14:20;Borgo-Levico-Caldonazzo-Trento;"feriale estiva
+da lunedì a venerdì";49;50;55;2.695,00;MARTINA MATTEO 
+;670;401;266;16:50;17:15;Levico - Borgo Valsugana;"estiva feriale 
+dal lunedì al venerdì";17,5;8;55;962,5;MARGON DIEGO
+;671;401;410;18:35;18:57;Trento - Pergine;"Estiva
+lunedì-venerdì";11,5;50;55;632,5;FERSINA TOUR S.R.L
+;672;401;172;19:15;20:22;Trento-Borgo V.;"feriale 
+da lunedì a venerdì";41;50;252;10.332,00;MARTINA MATTEO
+;673;401;172;19:15;20:22;Trento-Pergine-Levico-Borgo;"invernale feriale 
+solo sabato";41;50;38;1.558,00;AUTONOLEGGI PEGORARO S.N.C. di PEGORARO LUCIANO & C.
+;674;402;254;06:17;06:43;Baselga P.-Rizzolaga (prolungamento c.sa x Sover);"scolastica 
+da lunedì a venerdì";2,4;22;174;417,6;GROFF  ALFREDO
+;675;402;254;06:22;06:50;Rizzolaga-Sover;"scolastica 
+da lunedì a venerdì";15,5;22;174;2.697,00;GROFF  ALFREDO
+;676;402;108;12:20;12:58;Trento-Baselga;"festiva 
+estiva";18;30;13;234;GROFF  ALFREDO
+;677;402;113;13:40;14:18;Baselga-Trento;"festiva 
+estiva";18;30;13;234;GROFF  ALFREDO
+;678;402;639;15:35;16:53;Trento- Giro Città-Nogarè-Baselga-Montesover;"scolastica 
+da lunedì a venerdì";38,5;50;174;6.699,00;AUTONOLEGGI PEGORARO S.N.C. di PEGORARO LUCIANO & C.
+;679;403;517;17:55;18:46;Baselga-Trento;"festiva 
+estiva";25;30;13;325;GROFF  ALFREDO
+;680;403;410;18:35;19:28;Trento-Pergine-Baselga Pinè;"festiva 
+estiva";25;40;13;325;CLUB DELLAI S.R.L.
+;681;404;633;06:45;06:56;Fiorè - Baselga di Pinè;"scolastica 
+da lunedì a sabato";3,5;6;208;728;GROFF  ALFREDO
+;682;404;638;13:10;13:21;Baselga di Pinè - Fiorè;"scolastica 
+solo sabato";3,5;8;34;119;GROFF  ALFREDO
+;683;404;635;13:26;13:37;Fiorè - Baselga di Pinè;"scolastica 
+solo sabato";4,5;8;34;153;GROFF  ALFREDO
+;684;404;640;14:05;14:16;Baselga di Pinè - Fiorè;"scolastica 
+da lunedì a venerdì";3,5;8;174;609;GROFF  ALFREDO
+;685;404;637;14:16;14:27;Fiorè - Baselga di Pinè;"scolastica 
+da lunedì a venerdì";3,5;8;174;609;GROFF  ALFREDO
+;686;406;27;07:00;07:45;Samone-Borgo;"estiva
+sabato ";19;19;12;228;MARTINA MATTEO
+;687;407;74;17:20;17:45;Borgo-Torcegno;"Estiva
+lunedì-venerdì";8;30;55;440;MARTINA MATTEO
+;688;407;75;17:50;18:10;Torcegno-Borgo;"Estiva
+lunedì-venerdì";8;30;55;440;MARTINA MATTEO
+;689;407;79;19:05;19:25;Borgo -Torcegno;"invernale
+da lunedì a venerdì";8;19;202;1.616,00;ANGELI CAMILLO
+;690;408;36;07:25;07:31;Borgo-Olle;"scolastica 
+da lunedì a sabato";3;40;208;624;MARTINA MATTEO 
+;691;408;36;07:25;07:31;Borgo-Olle;invernale non scolastica feriale;3;19;29;87;MARTINA MATTEO 
+;692;408;41;07:32;07:38;Olle-Borgo;"scolastica 
+da lunedì a sabato";3;40;208;624;MARTINA MATTEO 
+;693;408;41;07:32;07:38;Olle-Borgo;invernale non scolastica feriale;3;19;29;87;MARTINA MATTEO 
+;694;409;613;09:20;10:00;Ronchi Valsugana  giro masi - Borgo vals.;"feriale 
+solo mercoledì";20;16;52;1.040,00;CLUB DELLAI S.R.L.
+;695;409;612;11:15;11:55; Borgo vals. - Ronchi Valsugana  giro masi;"feriale 
+solo mercoledì";20;16;52;1.040,00;CLUB DELLAI S.R.L.
+;696;409;56;18:16;18:36;Borgo-Ronchi;"invernale
+da lunedì a venerdì";10;19;202;2.020,00;ANGELI CAMILLO
+;697;409;56;18:20;18:41;Borgo V. - Ronchi;"estiva
+sabato ";10;19;12;120;ANGELI CAMILLO
+;698;409;55;18:40;19:00;Ronchi Borgo;"invernale
+da lunedì a venerdì";10;19;202;2.020,00;ANGELI CAMILLO
+;699;409;55;18:44;19:04;Ronchi - Borgo V.;"estiva
+sabato ";10;19;12;120;ANGELI CAMILLO
+;700;417;225;07:16;07:39;S. Orsola Mantovani- Mala - Viarago - Pergine (corsa bis);"scolastica 
+da lunedì a venerdì";10,5;41;174;1.827,00;FERSINA TOUR S.R.L
+;701;417;225;07:36;07:47;"Serso-Pergine V. 
+C.sa bis L.417";"scolastica 
+da lunedì a venerdì";5,5;19;174;957;FONTANARI SERGIO
+;702;417;307;15:20;15:57;Palù del Fersina - Viarago - Pergine ;"scolastica 
+da lunedì a venerdì";14,5;22;174;2.523,00;VALBUS S.R.L.
+;703;417;256;16:07;16:49;Pergine-Palù del Fersina;"scolastica 
+da lunedì a venerdì";17,5;30;174;3.045,00;FONTANARI SERGIO
+frequenza corretta da capitolato;704;418;89;06:07;06:12;Maso Tingherla-Kamauz (prolungamento c.sa x Roveda bv);"invernale scolastico
+lunedì-sabato";3;9;208;624;PERGBUS DI FUCHS MARIO E C. S.N.C.
+;705;418;169;06:10;06:45;Hacleri-Canezza Bar al Sole-Pergine;"scolastica 
+da lunedì a sabato";15,7;30;208;3.265,60;FONTANARI SERGIO
+;706;418;169;06:10;06:45;Hacleri-Pergine;invernale non scolastica feriale;14;19;29;406;FONTANARI SERGIO
+;707;418;169;06:10;06:45;Hacleri-pergine;estiva feriale;14;19;67;938;FONTANARI SERGIO
+;708;418;89;06:12;06:25;Kamauz - Roveda Bivio;feriale;6;19;304;1.824,00;PERGBUS DI FUCHS MARIO E C. S.N.C.
+NUOVA;709;418;;06:58;07:05;Maso S. Lorenzo - S. Felice  Fierozzo;"scolastica 
+da lunedì a venerdì";2,5;5;174;435;FONTANARI SERGIO
+;710;418;95;07:02;07:20;Maso Tingherla-Kamauz - Roveda Bivio;"scolastica 
+da lunedì a sabato";9;19;208;1.872,00;PERGBUS DI FUCHS MARIO E C. S.N.C.
+;711;418;91;07:17;07:52;"Kamauz - Canezza - Pergine
++1,8km prolungamento bar sole";feriale;15,3;25;304;4.651,20;PERGBUS DI FUCHS MARIO E C. S.N.C.
+;712;418;274/275;08:50;10:07;Pergine-Fierozzo-Palu' F.-S.Orsola-Pergine;Festiva;32,5;30;58;1.885,00;PLANCHEL RENATO
+;713;418;92;12:40;13:17;Pergine - Canezza - Kamauz;estiva feriale;13,5;25;67;904,5;PERGBUS DI FUCHS MARIO E C. S.N.C.
+;714;418;92;12:45;13:20;Pergine - Canezza - Kamauz;"invernale
+lunedì-sabato";13,5;25;240;3.240,00;PERGBUS DI FUCHS MARIO E C. S.N.C.
+;715;418;180;12:55;13:30;Pergine - Frassilongo - Fierozzo - Hacleri;"scolastica 
+da lunedì a sabato";12;22;208;2.496,00;FERSINA TOUR S.R.L
+;716;418;276/277;13:10;14:27;Pergine-Fierozzo-Palu' F.-S.Orsola-Pergine (estate ore 12.45);Festiva;32,5;30;58;1.885,00;PLANCHEL RENATO
+;717;418;456;13:35;13:48;Roveda bivio - Kamauz;"scolastica 
+da lunedì a sabato";6;19;208;1.248,00;PERGBUS DI FUCHS MARIO E C. S.N.C.
+;718;418;93;13:59;14:12;Kamuz - Roveda Bivio;feriale;6;20;304;1.824,00;PERGBUS DI FUCHS MARIO E C. S.N.C.
+;719;418;458;14:12;14:25;Roveda bivio - Kamauz;"scolastica 
+da lunedì a sabato";6;8;208;1.248,00;PERGBUS DI FUCHS MARIO E C. S.N.C.
+;720;418;458;14:25;14:30;Kamauz - Maso Tingerla (prolungamento);"scolastica 
+da lunedì a sabato";3;8;208;624;PERGBUS DI FUCHS MARIO E C. S.N.C.
+;721;418;306;14:40;15:20;Pergine - Fierozzo - Hacleri - Palù del Fersina;"scolastica 
+da lunedì a venerdì";19,5;22;174;3.393,00;VALBUS S.R.L.
+;722;418;460;15:00;15:18;Roveda bivio - Kamauz-Maso Tingherla;"scolastica 
+da lunedì a venerdì";9;19;174;1.566,00;PERGBUS DI FUCHS MARIO E C. S.N.C.
+;723;418;272;16:07;16:42;Pergine-Hacleri;"scolastica 
+da lunedì a venerdì";14;19;174;2.436,00;FONTANARI SERGIO
+;724;418;278/279;17:40;18:57;Pergine-Fierozzo-Palu' F.-S.Orsola-Pergine;Festiva;32,5;30;58;1.885,00;PLANCHEL RENATO
+;725;418;168;17:40;18:15;Pergine-Hacleri;"scolastica 
+da lunedì a venerdì";14;19;174;2.436,00;PERGBUS DI FUCHS MARIO E C. S.N.C.
+;726;418;94;18:35;19:05;Pergine - Canezza - Kamauz;feriale;13,5;25;304;4.104,00;PERGBUS DI FUCHS MARIO E C. S.N.C.
+;727;418;184;19:03;19:38;Pergine-Hacleri ;feriale;14;19;304;4.256,00;FONTANARI SERGIO
+;728;418;94;19:05;19:12;Kamauz - Maso Tingerla (prolungamento);"scolastica 
+da lunedì a sabato";3;8;208;624;PERGBUS DI FUCHS MARIO E C. S.N.C.
+;729;423;177;07:39;07:49;"Ischia-Pergine V
+(c.sa bis a L.423)";"scolastica 
+da lunedì a venerdì";6;19;174;1.044,00;GROFF PAOLO
+;730;423;202;19:38;20:06;Pergine - Tenna - Levico;"scolastica 
+da lunedì a venerdì";14;19;174;2.436,00;VALBUS S.R.L.
+;731;425;438;09:35;09:57;Pergine - Falesina;"feriale 
+solo giovedì";12,5;20;50;625;ITALBUS S.N.C. DI CASAGRANDE ARMANDO E CHRISTIAN & C.
+;732;425;465;10:00;10:22;Falesina - Pergine;"feriale 
+solo giovedì";12,5;20;50;625;ITALBUS S.N.C. DI CASAGRANDE ARMANDO E CHRISTIAN & C.
+;733;425;440;11:45;12:07;Pergine - Falesina;"feriale 
+solo giovedì";12,5;20;50;625;ITALBUS S.N.C. DI CASAGRANDE ARMANDO E CHRISTIAN & C.
+;734;425;467;12:10;12:32;Falesina - Pergine;"feriale 
+solo giovedì";12,5;20;50;625;ITALBUS S.N.C. DI CASAGRANDE ARMANDO E CHRISTIAN & C.
+;735;429;19;06:58;07:05;Regnana Alta-Centrale B.;"scolastica 
+da lunedì a sabato";3;19;208;624;SVALDI PIERINO 
+;736;429;21;13:15;13:20;Regnana-Centrale;"scolastica 
+da lunedì a venerdì";2;9;174;348;SVALDI PIERINO 
+;737;429;16;13:35;13:40;Centrale-Regnana;"scolastica 
+da lunedì a venerdì";2;9;174;348;SVALDI PIERINO 
+;738;431;1;07:00;07:10;S.Mauro - Baselga di Pinè;"scolastica 
+da lunedì a sabato";4,5;22;208;936;GROFF  ALFREDO
+;739;431;4;17:47;17:58;Baselga di Pinè - S.Mauro ;"scolastica 
+da lunedì a venerdì";4,5;22;174;783;GROFF  ALFREDO
+;740;433;530;08:00;08:52;"Roncegno giro Masi - Borgo Vals.
+  la partenza ad ore 8.00 solo mesi di luglio e agosto (con orario estivo giu e set ore 9.00)";"estivo feriale
+solo giorni di lunedì e mercoledì ";17;20;22;374;ANGELI CAMILLO
+;741;433;530;09:00;09:52;Roncegno giro Masi - Borgo Vals. ;"invernale feriale 
+solo lunedì e mercoledì ";17;20;78;1.326,00;ANGELI CAMILLO
+;742;433;532;11:15;12:07;Borgo Vals. - Roncegno giro masi;"feriale solo 
+lunedì e mercoledì ";17;20;100;1.700,00;ANGELI CAMILLO
+;743;504;8;17:19;17:32;Lausen polo scol. - Canal S.Bovo - Ronco Chiesa;"scolastica 
+da lunedì a venerdì";5;16;174;870;HOTEL AL BIVIO SRL
+;744;512;476;05:52;06:25;Trento-Levico (prolungamento c.sa per Feltre ;"scolastica 
+lunedì + post festivi";25;56;36;900;FERSINA TOUR S.R.L
+;745;512;476;06:25;08:00;Levico (S.P. 228 maso Rosso) - Borgo - Feltre Vellai;"scolastica 
+da lunedì a sabato";65,8;56;208;13.686,40;FERSINA TOUR S.R.L
+;746;601;695;06:32;07:03;Dermulo FTM-Mezzocorona FS;"scolastica 
+da lunedì a venerdì";21,5;30;174;3.741,00;ERIKA TOURS SRL
+;746 bis;601;695;06:32;07:03;Dermulo FTM-Mezzocorona FS;scolastica il sabato;21,5;30;34;731;VITO DI PEDRON VITTORIA
+;747;601;616;20:45;21:17;Trento FTM - Lavis - Mezzolombardo;"Estiva
+lunedì-sabato";22;19;67;1.474,00;VITO DI PEDRON VITTORIA
+;748;611;387;06:15;06:50;Cavedago-Fai-Andalo-Molveno;"scolastica 
+da lunedì a sabato";19,1;50;208;3.972,80;FABIO VIAGGI SRL
+;749;611;71;06:15;07:09;Molveno-Mezzocorona;"Estiva
+lunedì-sabato";27;19;67;1.809,00;VITO DI PEDRON VITTORIA
+;750;611;49;06:33;07:03;Santel-Mezzolombardo;"estiva
+lunedi-venerdì";14;19;55;770;OSCAR VIAGGI DI FORMOLO OSCAR
+;751;611;71;06:44;07:24;Spormaggiore-Trento;scolastica lunedì;26,5;50;33;874,5;MDL s.r.l.
+;752;611;229;07:20;07:24;Mezzocorona Fs-S.Michele a/A;"Estiva
+lunedì-venerdì";4;19;55;220;VITO DI PEDRON VITTORIA
+;753;611;620;13:00;13:40;Crescino-Spormaggiore-Molveno;"scolastica 
+da lunedì a sabato";21;19;208;4.368,00;FABIO VIAGGI SRL
+;754;611;60;13:00;14:02;S. Michele-Mezzolombardo-Spormaggire-Molveno;"scolastica 
+da lunedì a venerdì";30;53;174;5.220,00;FABIO VIAGGI SRL
+;755;132;641;13:24;13:29;"Mezzocorona FS-S. Michele Ist. Agrario
+prolungamento c.sa per Cembra";"scolastica 
+da lunedì a venerdì";3;41;174;522;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+;756;611;577;16:40;17:25;Molveno-Andalo-Mezzolombardo;"invernale
+da lunedì a venerdì";23;50;202;4.646,00;FABIO VIAGGI SRL
+;757;611;95;17:40;18:31;Molveno-Fai-Mezzocorona;"scolastica 
+da lunedì a venerdì";27;30;174;4.698,00;FABIO VIAGGI SRL
+;758;611;92;17:56;18:21;Mezzolombardo-Fai-Santel;"scolastica 
+da lunedì a venerdì";14;19;174;2.436,00;FABIO VIAGGI SRL
+;759;611;98;18:50;19:40;Mezzocorona-Spormaggiore-Molveno;"scolastica 
+da lunedì a venerdì";27;30;174;4.698,00;FABIO VIAGGI SRL
+;760;611;100;18:55;19:25;"Mezzolombardo-Fai-
+Andalo Maso Toscana";"invernale
+da lunedì a venerdì";17;19;202;3.434,00;OSCAR VIAGGI DI FORMOLO OSCAR
+;761;611;100;19:15;19:45;"Mezzolombardo-Fai-
+Andalo Maso Toscana";"invernale feriale
+sabato";17;19;38;646;OSCAR VIAGGI DI FORMOLO OSCAR
+;762;615;518/509;06:03;06:33;Raut-Toss-Mezzolombardo;"scolastica 
+da lunedì a venerdì";13;19;174;2.262,00;OSCAR VIAGGI DI FORMOLO OSCAR
+km corretti da capitolato;763;615;510;06:51;07:06;Mezzolombardo-Toss;"estiva
+sabato ";10;19;12;120;OSCAR VIAGGI DI FORMOLO OSCAR
+km corretti da capitolato;764;615;511;07:07;07:29;Toss-Mezzolombardo;"estiva
+sabato ";12;19;12;144;OSCAR VIAGGI DI FORMOLO OSCAR
+;765;615;546;13:50;14:10;Mezzolombardo-Vigo di Ton-Toss;"Estiva
+lunedì-sabato";10;19;67;670;VITO DI PEDRON VITTORIA
+km corretti da capitolato;766;615;524;13:53;14:10;Denno FTM-Moncovo-Truzzi bivio-Toss;"scolastica 
+da lunedì a venerdì";8;19;174;1.392,00;OSCAR VIAGGI DI FORMOLO OSCAR
+;767;615;524;14:10;14:15;"Toss-Raut 
+(prolungamento c.sa da Denno FTM-Toss)";"scolastica 
+lun+merc+ven ";2,6;19;105;273;OSCAR VIAGGI DI FORMOLO OSCAR
+;768;615;522;17:10;17:30;Mezzolombardo-Toss;"scolastica 
+da lunedì a venerdì";10;15;174;1.740,00;OSCAR VIAGGI DI FORMOLO OSCAR
+;769;615;520;18:05;18:25;Mezzolombardo-Toss;"estiva
+sabato ";22;19;12;264;VITO DI PEDRON VITTORIA
+;770;615;520;18:05;18:25;Mezzolombardo-Toss;"invernale
+lunedì-sabato";10;19;240;2.400,00;OSCAR VIAGGI DI FORMOLO OSCAR
+;771;615;515;18:26;18:51;Toss-Mezzolombardo;"invernale
+lunedì-sabato";12;19;240;2.880,00;OSCAR VIAGGI DI FORMOLO OSCAR
+;772;615;517;18:26;18:51;Toss-Mezzolombardo;"estiva
+sabato ";22;19;12;264;VITO DI PEDRON VITTORIA
+;773;620;230;06:14;06:58;Lover - Dercolo-Cles (tratta Lover - Dercolo extracap.);"scolastica 
+da lunedì a venerdì";18;19;174;3.132,00;FABIO VIAGGI SRL
+;774;620;223;06:28;07:34;Cles-Campodenno-Mezzocorona FS;"Estiva
+lunedì-venerdì";32,5;30;55;1.787,50;VITO DI PEDRON VITTORIA
+;775;620;237;12:54;13:00;Lover - Sporminore ;"scolastica 
+da lunedì a sabato";3;8;208;624;VIAGGI FORMOLO S.A.S. DI FORMOLO ANGELO & C.
+;776;620;420;13:28;13:45;Crescino - Dercolo - Quetta - Campodenno - Sporminore;"scolastica 
+da lunedì a sabato";11,4;8;208;2.371,20;VIAGGI FORMOLO S.A.S. DI FORMOLO ANGELO & C.
+;777;620;420;13:28;13:35;Crescino Sporminore (bis corsa diretta);"scolastica 
+da lunedì a sabato";3,9;8;208;811,2;VIAGGI FORMOLO S.A.S. DI FORMOLO ANGELO & C.
+;778;620;973;13:58;15:04;Cles-Campodenno-Mezzocorona FS;"estiva
+sabato ";32,5;30;12;390;GENZIANA S.r.l.
+;779;620;646;13:58;14:05;Crescino - Sporminore;"scolastica 
+da lunedì a sabato";3,9;8;208;811,2;VIAGGI FORMOLO S.A.S. DI FORMOLO ANGELO & C.
+;780;620;426;14:33;14:40;Crescino - Sporminore;"scolastica 
+da lunedì a sabato";3,9;8;208;811,2;VIAGGI FORMOLO S.A.S. DI FORMOLO ANGELO & C.
+;781;620;982;14:53;15:59;Mezzocorona FS-Campodenno-Cles;"estiva
+feriale ";32,5;30;67;2.177,50;VITO DI PEDRON VITTORIA
+;782;620;982;14:53;15:59;Mezzocorona FS-Campodenno-Cles;"invernale
+lunedì-sabato";32,5;30;240;7.800,00;VITO DI PEDRON VITTORIA
+;783;620;984;15:53;16:41;Mezzocorona FS-Denno-Cles;"estiva
+sabato ";29;19;12;348;GENZIANA S.r.l.
+;784;620;979;16:03;17:09;Cles-Campodenno-Mezzocorona FS;"estiva
+feriale ";32,5;30;67;2.177,50;VITO DI PEDRON VITTORIA
+;785;620;979;16:03;17:09;Cles-Campodenno-Mezzocorona FS;"invernale
+lunedì-sabato";32,5;30;240;7.800,00;VITO DI PEDRON VITTORIA
+;786;620;226;16:52;17:09;Crescino-Sporminore;"scolastica 
+da lunedì a venerdì";9,4;19;174;1.635,60;OSCAR VIAGGI DI FORMOLO OSCAR
+;787;620;228;17:50;18:32;Mezzolombardo - Denno -Cles;"feriale invernale
+sabato";26;30;38;988;VITO DI PEDRON VITTORIA
+;788;620;228;17:50;18:29;Mezzolombardo-Denno-Cles;"estiva
+sabato ";26;30;12;312;VITO DI PEDRON VITTORIA
+;789;620;988;18:32;19:07;Mezzzolombardo-Termon;"invernale
+lunedì-sabato";16;19;240;3.840,00;VITO DI PEDRON VITTORIA
+;790;620;988;18:35;19:10;Mezzolombardo-Termon;"estiva
+feriale ";16;19;67;1.072,00;VITO DI PEDRON VITTORIA
+;791;620;983;19:05;20:10;Cles-Campodenno-Mezzocorona FS;"estiva
+sabato ";32,5;30;12;390;VITO DI PEDRON VITTORIA
+;792;620;983;19:05;20:11;Cles-Campodenno-Mezzocorona FS;"scolastica 
+da lunedì a sabato";32,5;30;208;6.760,00;VITO DI PEDRON VITTORIA
+;793;620;214;20:53;21:41;Mezzocorona FS-Denno-Cles;"scolastica 
+da lunedì a venerdì";29;16;174;5.046,00;VITO DI PEDRON VITTORIA
+;794;621;197/198;07:11;07:42;Mezzolombardo-Nave S.Rocco-Mezzolombardo ;"scolastica 
+da lunedì a venerdì";15;54;174;2.610,00;ERIKA TOURS SRL 
+;795;621;968;09:55;10:19;Lavis FTM-Nave S.Rocco-Mezzolombardo;"invernale
+lunedì-sabato";13,2;19;240;3.168,00;OSCAR VIAGGI DI FORMOLO OSCAR
+;796;621;989;11:30;11:49;Mezzolombardo-Nave S.Rocco-Lavis FTM;"invernale
+lunedì-sabato";11,3;19;240;2.712,00;OSCAR VIAGGI DI FORMOLO OSCAR
+;797;621;991;17:25;17:44;Mezzolombardo-Nave S.Rocco-Lavis FTM;"estiva
+feriale ";11,3;19;67;757,1;OSCAR VIAGGI DI FORMOLO OSCAR
+;798;623;256;17:20;17:47;Cles-Portolo;"invernale
+lunedì-sabato";12;19;240;2.880,00;ERIKA TOURS SRL 
+;799;623;264;17:30;17:57;Cles-Tuenno-Portolo;"Estiva
+lunedì-sabato";12;19;67;804;ERIKA TOURS SRL 
+;800;623;261;17:52;18:07;Portolo-Cles;"invernale
+lunedì-sabato";10;19;240;2.400,00;ERIKA TOURS SRL 
+;801;623;261;17:50;18:05;Portolo-Tuenno-Cles;"Estiva
+lunedì-sabato";10;19;67;670;ERIKA TOURS SRL 
+;802;624;272;07:21;07:27;Cles piazza Fiera - Mechel;"scolastica 
+da lunedì a venerdì";4;50;174;696;VIAGGI CICOLINI S.R.L .
+;802 bis;624;272;07:21;07:27;Cles piazza Fiera - Mechel;scolastica il sabato;4;50;34;136;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;803;624;271;07:28;07:41;Mechel Cles;"scolastica 
+da lunedì a venerdì";3;50;174;522;VIAGGI CICOLINI S.R.L .
+;803 bis;624;271;07:28;07:41;Mechel Cles;scolastica il sabato;3;50;34;102;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;804;624;276;18:20;18:27;Cles-Mechel;"Estiva
+lunedì-sabato";4;19;67;268;GENZIANA S.r.l.
+;805;624;276;18:22;18:28;Cles-Mechel;"invernale
+lunedì-sabato";4;19;240;960;ERIKA TOURS SRL 
+;806;624;275;18:28;18:33;Mechel-Cles;"invernale
+lunedì-sabato";4;19;240;960;ERIKA TOURS SRL 
+;807;624;275;18:28;18:35;Mechel-Cles;"Estiva
+lunedì-sabato";4;19;67;268;GENZIANA S.r.l.
+;808;625;583;06:55;07:05;Tres - Taio;"scolastica 
+da lunedì a sabato";5;36;208;1.040,00;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;809;625;581;07:12;07:22;Tres (Predaia)-Tres - Taio;"scolastica 
+da lunedì a venerdì";5;36;174;870;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;810;625;506;17:30;18:01;Mollaro-Tres;"invernale
+lunedì-sabato";14;19;240;3.360,00;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;811;625;701;18:01;18:20;Tres-Cles;"invernale
+lunedì-sabato";14;19;240;3.360,00;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;812;627;403;06:03;06:30;Credaia-Sfruz-Tavon-Dermulo;"scolastica 
+da lunedì a venerdì";12;19;174;2.088,00;GORINI LUIGI
+;813;627;403;06:05;06:30;Sfruz-Tavon-Dermulo;"scolastica
+sabato";11;19;34;374;GORINI LUIGI
+;814;627;243;06:55;07:21;Tavon - Cles - Cles piazza Fiera;"scolastica 
+da lunedì a venerdì";13;54;174;2.262,00;VIAGGI CICOLINI S.R.L .  
+;815;627;778;13:12;13:37;Dermulo - Coredo - Sfruz ;"scolastica 
+solo sabato";14;36;34;476;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;816;627;778;13:25;13:50;Dermulo - Coredo - Sfruz ;"scolastica 
+da lunedì a venerdì";14;36;174;2.436,00;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;817;627;778;13:50;13:53;"Sfuz- Credai 
+(prolungamento c.sa Dermulo - Coredo - Sfruz) ";"scolastica 
+martedì-mercoledì-venerdì";1;36;106;106;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;818;627;916;14:50;15:08;Dermulo-Coredo-Sfruz;"scolastica 
+da lunedì a venerdì";12;30;174;2.088,00;GORINI LUIGI
+;819;627;246;17:08;17:46;Cles-Coredo-Merlonga-Sfruz;"scolastica 
+da lunedì a venerdì";14,5;30;174;2.523,00;ERIKA TOURS SRL 
+;820;627;247;17:47;18:15;Sfruz-Cles;"scolastica 
+da lunedì a venerdì";12;30;174;2.088,00;ERIKA TOURS SRL 
+;821;627;248;18:35;18:59;Dermulo-Tavon-Sfruz;"scolastica 
+da lunedì a sabato";11;19;208;2.288,00;GENZIANA S.r.l.
+;822;627;249;19:00;19:20;Sfruz-Dermulo;"scolastica 
+da lunedì a sabato";7;19;208;1.456,00;GENZIANA S.r.l.
+;823;630;121;15:45;16:26;Fondo-Romeno-Dermulo-Cles;"scolastica 
+solo Venerdì";23;19;36;828;GENZIANA S.r.l.
+;824;630;117;17:20;17:54;Fondo-Dermulo;"invernale
+lunedì-sabato";17;19;240;4.080,00;GENZIANA S.r.l.
+;825;630;578;17:42;18:24;Dermulo - Dambel - Cavareno - Don - Cavareno - Fondo;"scolastica 
+da lunedì a venerdì";25,5;36;174;4.437,00;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;826;630;116;18:25;19:28;Cles-Mendola;"invernale
+lunedì-sabato";33;30;240;7.920,00;ERIKA TOURS SRL 
+;827;630;119;19:30;19:49;Mendola-Fondo;"invernale
+lunedì-sabato";12;30;240;2.880,00;ERIKA TOURS SRL 
+;828;630;118;19:35;20:24;Cles-Dermulo-Romeno-Fondo;"invernale
+da lunedì a venerdì";24;19;202;4.848,00;GENZIANA S.r.l.
+;829;632;153;06:30;07:05;Castelfondo - Revò - Cles;"scolastica 
+da lunedì a sabato";18,5;40;208;3.848,00;GENZIANA S.r.l.
+;830;632;776;06:48;06:53;Fondo (Vasio) - Fondo ;"scolastica 
+da lunedì a sabato";2;8;208;416;GENZIANA S.r.l.
+;831;632;737;06:48;07:05;Salobbi - Brez;"scolastica 
+da lunedì a sabato";4;22;208;832;GENZIANA S.r.l.
+;832;637;747;07:00;07:15;Tregiovo - Revò;"scolastica 
+da lunedì a sabato";9;20;208;1.872,00;GENZIANA S.r.l.
+;833;632;135;07:17;07:32;Romallo-Cles;"scolastica
+sabato";7;50;34;238;VIAGGI CICOLINI S.R.L .  
+;834;632;736;12:55;13:15;Brez - Salobbi;"scolastica 
+da lunedì a sabato";4;22;208;832;GENZIANA S.r.l.
+frequenza corretta da capitolato;835;632;777;13:05;13:15;Fondo  - Fondo (Vasio)  - Fondo;"scolastica 
+solo martedì ";2;8;34;68;GENZIANA S.r.l.
+;836;632;712;13:10;13:45;Cles - Castelfondo;"scolastica 
+da lunedì a venerdì";19;54;174;3.306,00;VIAGGI CICOLINI S.R.L .  
+frequenza corretta da capitolato;837;632;780;13:15;13:25;Fondo  - Fondo (Vasio)  - Fondo;"scolastica 
+solo giovedì";5;8;34;170;GENZIANA S.r.l.
+NUOVA;838;632;730;13:50;14:00;Brez - Salobbi;"scolastica 
+da lunedì a venerdì";4;19;174;696;GENZIANA S.r.l.
+;839;632;151;16:27;16:40;Romallo-Cles;scolastica dal lunedì al giovedì ;7;19;138;966;ALPINABUS DI MARTINTONI MAURO
+;840;632;152;16:30;16:49;Cles-Romallo;"estiva 
+da lunedì a giovedì";7;19;44;308;ERIKA TOURS SRL 
+;841;632;147;16:45;17:00;Romallo-Cles;"estiva 
+da lunedì a giovedì";6;19;44;264;ERIKA TOURS SRL 
+frequenza corretta da capitolato;842;632;147;17:00;17:47;Fondo-Cles;feriale invernale;23;19;240;5.520,00;GENZIANA S.r.l.
+;843;632;143;17:20;18:07;Fondo-Cles;"feriale
+estiva";23;40;67;1.541,00;GENZIANA S.r.l.
+;844;632;152;18:42;19:17;Cles - Castelfondo;"invernale
+lunedì-sabato";18,5;50;240;4.440,00;GENZIANA S.r.l.
+;845;632;148;19:30;20:15;Cles-Fondo;"feriale
+estiva";23;19;67;1.541,00;GENZIANA S.r.l.
+frequenza corretta da capitolato;846;632;148;19:52;20:37;Cles-Fondo;feriale invernale;23;19;240;5.520,00;GENZIANA S.r.l.
+;847;633;170;07:02;07:17;Cles - Cis;"scolastica 
+da lunedì a venerdì";7,5;40;174;1.305,00;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;848;633;171;07:18;07:33;Cis - Cles;"scolastica 
+solo sabato";7,5;19;34;255;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+aggiornato percorso;849;633;171;07:18;07:33;Cis - Cles + Sc. Medie (+2° mezzo 7:12 Cis - 7:17 Mostizzolo);"scolastica 
+da lunedì a venerdì";8,5;40;174;1.479,00;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;850;633;172;13:10;13:25;Cles - Cis ;"scolastica 
+da lunedì a venerdì";7;19;174;1.218,00;ALPINABUS DI MARTINTONI MAURO
+;851;633;173;13:25;13:40;Cis - Cles ;"scolastica 
+da lunedì a venerdì";7;19;174;1.218,00;ALPINABUS DI MARTINTONI MAURO
+;852;633;174;16:25;16:40;Cles-Cis;estiva dal lunedì al venerdì feriale;7;19;55;385;ALPINABUS DI MARTINTONI MAURO
+;853;633;175;16:45;16:59;Cis-Cles;estiva dal lunedì al venerdì feriale;7;19;55;385;ALPINABUS DI MARTINTONI MAURO
+;854;633;174;17:10;17:25;Cles-Cis;"scolastica 
+da lunedì a sabato";7;19;208;1.456,00;ALPINABUS DI MARTINTONI MAURO
+;855;633;175;17:26;17:41;Cis-Cles;"scolastica 
+da lunedì a sabato";7;19;208;1.456,00;ALPINABUS DI MARTINTONI MAURO
+;856;634;533;06:03;06:32;Bresimo-Livo-Cles;"invernale
+lunedì-sabato";20;19;240;4.800,00;ALPINABUS DI MARTINTONI MAURO
+;857;634;533;07:04;07:20;Lanza-Livo;estiva feriale;9;19;67;603;ALPINABUS DI MARTINTONI MAURO
+;858;634;541;13:35;14:07;Bresimo-Livo-Cles;estiva feriale;28;19;67;1.876,00;ALPINABUS DI MARTINTONI MAURO
+;859;634;540;17:25;17:57;Cles-Lanza;"feriale
+estiva";20;19;67;1.340,00;ALPINABUS DI MARTINTONI MAURO
+;860;634;540;17:50;18:24;Cles-Lanza;"invernale
+lunedì-sabato";20;19;240;4.800,00;ALPINABUS DI MARTINTONI MAURO
+;861;634;538;18:20;18:48;Cles-Livo-Bresimo;"feriale
+estiva";15;19;67;1.005,00;ERIKA TOURS SRL 
+;862;634;545;18:35;19:09;Lanza-Cles;"invernale
+lunedì-sabato";20;19;240;4.800,00;ALPINABUS DI MARTINTONI MAURO
+;863;634;542;18:37;19:05;Cles-Livo-Bresimo;"invernale
+lunedì-sabato";15;19;240;3.600,00;ERIKA TOURS SRL 
+;864;634;545;18:45;19:15;Lanza-Cles;"feriale
+estiva";20;19;67;1.340,00;ALPINABUS DI MARTINTONI MAURO
+;865;634;547;19:07;19:36;Bresimo-Livo-Cles;"invernale
+lunedì-sabato";15;19;240;3.600,00;ERIKA TOURS SRL 
+;866;634;547;19:12;19:41;Bresimo-Livo-Cles;"feriale
+estiva";15;19;67;1.005,00;ERIKA TOURS SRL 
+;867;634;540;19:25;20:00;Cles-Lanza;"feriale
+estiva";20;19;67;1.340,00;ALPINABUS DI MARTINTONI MAURO
+;868;634;546;19:52;20:26;Cles-Lanza;"invernale
+lunedì-sabato";20;19;240;4.800,00;ALPINABUS DI MARTINTONI MAURO
+;869;637;745;05:10;05:34;Terzolas Revò o 12.15 Terzolas Revò per turni alternati ;"invernale 
+da lun a sab 
+(sospesa gg chiusura magazzino Melinda)";17;20;152;2.584,00;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;870;637;629;05:10;05:34;Terzolas Revò o 12.20 Terzolas Revò per turni alternati ;estiva da lun a sab (sospesa gg chiusura magazzino Melinda);17;20;67;1.139,00;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;871;637;639;07:10;07:40;Terzolas - Revò turno a giornata  ;estiva da lunedì a venerdì corsa operai (sospesa gg chiusura magazzino Melinda);17;20; -   ; -   ;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;872;637;629;07:00;07:24;Terzolas - Revò turno a giornata     ;"invernale
+da lunedì a venerdì (sospesa gg chiusura magazzino Melinda)";17;20;73;1.241,00;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;873;637;746;12:45;13:00;Revò-Tregiovo;"scolastica 
+mar-gio-ven-sab";9;8;138;1.242,00;FIABA VIAGGI SNC DI FANTI MILVA
+;874;637;742;12:45;13:04;Revò - Terzolas o 20.00 Terzolas - Revò per turni alternati;"invernale 
+da lun a sab 
+(sospesa gg chiusura magazzino Melinda)";17;20;152;2.584,00;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;875;637;748;12:45;13:04;Revò - Terzolas o 20.00 Terzolas - Revò per turni alternati;estiva da lun a sab (sospesa gg chiusura magazzino Melinda);17;20;67;1.139,00;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;876;637;738;13:25;13:40;Revò - Tregiovo;"scolastica 
+da lunedì a venerdì";9;20;174;1.566,00;GENZIANA S.r.l.
+;877;637;748;17:30;17:45;Revò - Tregiovo;"scolastica 
+da lunedì a venerdì";9;20;174;1.566,00;GENZIANA S.r.l.
+;878;637;751;17:46;18:00;Tregiovo - Revò;"scolastica 
+da lunedì a venerdì";9;20;174;1.566,00;GENZIANA S.r.l.
+;879;637;645;18:05;18:24;Revò - Terzolas turno a giornata ;"feriale 
+da lunedì a venerdì corsa operai 
+(sospesa gg chiusura magazzino Melinda)";17;20;73;1.241,00;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+km corretti da capitolato;880;640;630;14:00;14:35;Malè-Somrabbi;"scolastica 
+solo venerdì ";18,5;15;36;666;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;881;641;385;06:45;07:05;Bolentina - Malè;"scolastica 
+solo giorno di sabato";7,5;8;34;255;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;882;641;382;12:45;13:00;Malè - Bolentina;"scolastica 
+da lunedì a sabato";7;8;208;1.456,00;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;883;641;383;13:00;13:20;Bolentina - Montes -Malè;"scolastica 
+da lunedì a sabato";7;8;208;1.456,00;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;884;642;349;06:20;07:00;6.20 S.Antonio di Mavignola-Campiglio-Dimaro;"scolastica 
+da lunedì a sabato";25;19;208;5.200,00;BUCELLA IVANO 
+;885;642;348;14:02;14:42;Dimaro staz.FTM-Campiglio-S.A.Mavignola;"scolastica 
+da lunedì a venerdì";25;19;174;4.350,00;VIAGGI CORNELIO DI FLESSATI NICOLA E C. S.N.C.
+;886;643;395;06:35;06:52;Marilleva 1400 - Marilleva 900;"scolastica 
+da lunedì a sabato";9,5;8;208;1.976,00;"BIANCANEVE VIAGGI DI
+ DALLATORRE MARCO"
+;887;643;390;08:50;09:35;Malè-Marrilleva 1400;"Estiva
+lunedì-sabato";22;20;67;1.474,00;TONALE VIAGGI DI PANIZZA CLAUDIO 
+;888;643;391;10:08;10:53;Marilleva 1400 - Malè;"Estiva
+lunedì-sabato";22;20;67;1.474,00;TONALE VIAGGI DI PANIZZA CLAUDIO 
+;889;644;311;06:25;06:43;Menas - Pellizzano;"scolastica 
+da lunedì a sabato";9;16;208;1.872,00;TAXI-MINIBUS-AUTOBUS PANIZZA S.A.S. DI ZENDELI ILIR 
+;890;644;370;08:20;08:38;Pellizzano-Menas;estiva dal lunedì al venerdì feriale;8;19;55;440;TAXI-MINIBUS-AUTOBUS PANIZZA S.A.S. DI ZENDELI ILIR 
+;891;644;371;08:43;09:01;Menas-Pellizzano;estiva dal lunedì al venerdì feriale;8;19;55;440;TAXI-MINIBUS-AUTOBUS PANIZZA S.A.S. DI ZENDELI ILIR 
+;892;644;374;11:05;11:23;Pellizzano-Castello-Menas;"Feriale invernale
+giovedì";8,2;15;39;319,8;TAXI-MINIBUS-AUTOBUS PANIZZA S.A.S. DI ZENDELI ILIR 
+;893;644;372;11:20;11:38;Pellizzano-Menas;"estiva feriale 
+solo giorno di giovedì";8;19;11;88;TONALE VIAGGI DI PANIZZA CLAUDIO 
+;894;644;375;11:23;11:41;Menas-Castello-Pellizzano;"Feriale invernale
+giovedì";8,2;15;39;319,8;TAXI-MINIBUS-AUTOBUS PANIZZA S.A.S. DI ZENDELI ILIR 
+;895;644;373;11:43;12:01;Menas-Pellizzano;"estiva feriale 
+solo giorno di giovedì";8;19;11;88;TONALE VIAGGI DI PANIZZA CLAUDIO 
+;896;644;374;12:20;12:38;Pellizzano-Menas;"Estiva
+lunedì-venerdì";8;19;55;440;TONALE VIAGGI DI PANIZZA CLAUDIO 
+;897;644;375;12:43;13:01;Menas-Pellizzano;"Estiva
+lunedì-venerdì";8;19;55;440;TONALE VIAGGI DI PANIZZA CLAUDIO 
+;898;644;378;13:55;14:13;Pellizzano-Claiano bv.-Menas;"invernale
+da lunedì a venerdì";8;15;202;1.616,00;TAXI-MINIBUS-AUTOBUS PANIZZA S.A.S. DI ZENDELI ILIR 
+;899;644;660;18:20;18:36;Claiano bv-Ortisè-Menas;"scolastica
+lun+merc+giov+ven";6,5;9;140;910;TAXI-MINIBUS-AUTOBUS PANIZZA S.A.S. DI ZENDELI ILIR 
+;900;645;784;06:20;06:25;Celentino Bivio - Strombiano - Celentino Paese;"scolastica 
+ sabato";2,5;8;34;85;PATERNOSTER LORENZO
+;901;645;639;06:26;06:30;Celentino paese - Celentino Bivio;"scolastica 
+ sabato";2,5;8;34;85;PATERNOSTER LORENZO
+;902;645;784;06:30;06:35;Celentino Bivio - Strombiano - Celentino Paese;"scolastica 
+da lunedì a venerdì";2,5;8;174;435;PATERNOSTER LORENZO
+;903;645;639;06:35;06:40;Celentino paese - Celentino Bivio;"scolastica 
+da lunedì a venerdì";2,5;8;174;435;PATERNOSTER LORENZO
+;904;645;639;06:35;06:38;Strombiano- Celentino Bivio;"scolastica 
+ sabato";1,5;8;34;51;PATERNOSTER LORENZO
+;905;645;418;06:55;06:58;Deggiano-Mastellina FTM;"scolastica 
+da lunedì a sabato";2;9;208;416;VIAGGI CORNELIO DI FLESSATI NICOLA E C. S.N.C.
+;906;645;43;08:40;08:50;Cavizzana - Malè;"estiva
+2° e 4° mercoledì feriale";6;23;4;24;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;907;645;739;08:40;09:00;Comasine - Cogolo;"feriale 
+solo martedì e venerdì";9;19;104;936;PATERNOSTER LORENZO
+;908;645;741;11:00;11:20;Cogolo - Celentino paese;"feriale 
+solo martedì e venerdì";9;19;104;936;PATERNOSTER LORENZO
+;909;645;44;12:20;12:30;Malè - Cavizzana;"estiva
+2° e 4° mercoledì feriale";6;23;4;24;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+;910;645;786;13:06;13:08;Comasine bv-Comasine paese-Comasine bv;"scolastica 
+da lunedì a sabato";3;19;208;624;PATERNOSTER LORENZO
+;911;645;786;13:08;13:16;Comasine bv.-Strombiano-Celentino;"scolastica
+solo mart-merc-ven";3,1;15;107;331,7;PATERNOSTER LORENZO
+;912;645;682;13:18;14:22;Cles-Mezzana-Fucine-Peio;"scolastica 
+da lunedì a venerdì";44,7;54;174;7.777,80;PATERNOSTER LORENZO
+;913;645;314;18:19;18:43;Fucine - Pejo;"invernale
+lunedì-sabato";12,4;16;240;2.976,00;VIAGGI CORNELIO DI FLESSATI NICOLA E C. S.N.C.
+;914;645;312;18:55;19:33;Mezzana FTM - Pejo;"Estiva
+lunedì-sabato";19;19;67;1.273,00;TONALE VIAGGI DI PANIZZA CLAUDIO 
+;915;645;418;19:10;19:59;Malè-Cogolo;"invernale
+lunedì-sabato";25,7;15;240;6.168,00;TONALE VIAGGI DI PANIZZA CLAUDIO 
+;916;645;419;19:40;20:04;Pejo - Fucine;"Estiva
+lunedì-sabato";12;19;67;804;TONALE VIAGGI DI PANIZZA CLAUDIO 
+;917;646;653;06:10;06:25;Passo Tonale - Stavel - Vermiglio;"scolastica 
+da lunedì a sabato";14;16;208;2.912,00;TAXI-MINIBUS-AUTOBUS PANIZZA S.A.S. DI ZENDELI ILIR 
+;918;646;682;14:10;14:31;Vermiglio-Stavel-Vallon-Passo Tonale;"scolastica 
+da lunedì a venerdì";15;16;174;2.610,00;TAXI-MINIBUS-AUTOBUS PANIZZA S.A.S. DI ZENDELI ILIR 
+;919;646;445;14:35;14:56;Passo Tonale - Vermiglio ;"scolastica 
+da lunedì a venerdì";11;16;174;1.914,00;TAXI-MINIBUS-AUTOBUS PANIZZA S.A.S. DI ZENDELI ILIR 
+;920;646;655;15:22;16:23;Passo Tonale - Vermiglio - Fucine -Pellizzano - Mezzana -  Dimaro ;"scolastica 
+da lunedì a venerdì";27;16;174;4.698,00;TAXI-MINIBUS-AUTOBUS PANIZZA S.A.S. DI ZENDELI ILIR 
+;921;646;650;16:05;16:35;Cusiano - Passo Tonale;"scolastica 
+da lunedì a giovedì";17;15;137;2.329,00;TAXI-MINIBUS-AUTOBUS PANIZZA S.A.S. DI ZENDELI ILIR 
+;922;646;319;17:35;17:57;"Vermiglio - Mezzana
+(periodo NON di intensificazione: fino al 7/12 e dopo Pasqua circa)";"invernale
+lunedì-sabato";11,5;16;240;2.760,00;VIAGGI CORNELIO DI FLESSATI NICOLA E C. S.N.C.
+;923;646;406;17:40;19:05;Ponte di Legno - Fucine - Malè;"scolastica 
+da lunedì a venerdì";43;19;174;7.482,00;TONALE VIAGGI DI PANIZZA CLAUDIO 
+frequenza corretta da capitolato;924;646;319;17:45;17:57;"Fucine - Mezzana
+(periodo di intensificazione: dal 8/12 a Pasqua circa)";invernale lunedì-venerdì;6;16;225;1.350,00;VIAGGI CORNELIO DI FLESSATI NICOLA E C. S.N.C.
+;925;646;314;18:27;18:55;Vermiglio-Stavel-Vallon-Passo Tonale;"scolastica 
+mart+merc+giov+ven";15;16;141;2.115,00;TAXI-MINIBUS-AUTOBUS PANIZZA S.A.S. DI ZENDELI ILIR 
+;926;646;314;18:38;18:46;Fucine - Vermiglio;"invernale festivo 
+no durante intensificazione: Ponte Immacolata-1° decade aprile)";7;8;30;210;TONALE VIAGGI DI PANIZZA CLAUDIO 
+;927;646;418;19:49;19:57;Fucine - Vermiglio;"invernale
+lunedì-sabato";4,5;16;240;1.080,00;VIAGGI CORNELIO DI FLESSATI NICOLA E C. S.N.C.
+;928;401;124;07:16;07:52;"Calceranica-Caldonazzo-Levico-Borgo
+(C.sa bis sostitutiva treno)";"scolastica 
+da lunedì a sabato";22,5;50;208;4.680,00;AUTONOLEGGI PEGORARO S.N.C. di PEGORARO LUCIANO & C.
+NUOVA PREV. N. 02/2022;extra;645;307;06:48;06:55;Loc. Roncio - Mezzana FTM;"scolastica 
+da lunedì a sabato";2,8;8;208;582,4;VIAGGI CORNELIO DI FLESSATI NICOLA E C. S.N.C.
+NUOVA PREV. N. 03/2022;extra;101;57;17:00;19:00;Pozza di Fassa - Trento Autost.;scolastica di venerdì a settimane alterne;92;19;18;1.656,00;DOLOMITI RENT A CAR S.N.C. DI ROMOR MARSHA & C.
+NUOVA PREV. N. 03/2022;extra;101;57;17:00;19:00;Pozza di Fassa - Trento Autost.;scolastica di venerdì a settimane alterne;92;19;18;1.656,00;VIAGGI VALFASSA S.R.L.
+NUOVA PREV. N. 03/2022;extra;101;50;18:18;20:18;Trento Autost. - Pozza di Fassa;festivi esclusi precedenti a vacanza scol a settimane alterne;92;19;18;1.656,00;DOLOMITI RENT A CAR S.N.C. DI ROMOR MARSHA & C.
+NUOVA PREV. N. 03/2022;extra;101;50;18:18;20:18;Trento Autost. - Pozza di Fassa;festivi esclusi precedenti a vacanza scol a settimane alterne;92;19;18;1.656,00;VIAGGI VALFASSA S.R.L.
+dal 12/09/2022 al 30/09/2022;extra;211;8;06:28;06:50;Prolungamento Fiavè loc. Curè - Favrio-Cornelle-Fiavè;"scolastica 
+da lunedì a venerdì";1,3;20;15;19,5;FRUNER VIAGGI IN EUROPA DI FRUNER TATIANA E SIMONE FRUNER SAS
+dal 12/09/2022 inserimento loc. Rocca come all'andata;extra;336;794;14:10;14:30;Ala F.S. - Ronchi di Ala prolungamento per fermata loc. Rocca;"scolastica 
+da lunedì a sabato";1,8;8;208;374,4;PEDRINOLLA FABRIZIO
+dal 12/09/2022 partenza da Storo SP69;extra;215;127;06:51;07:00;Prolungamento Storo Sp.69 (km 2) - Ca' Rossa;"scolastica 
+da lunedì a venerdì";3,2;50;174;556,8;AUTONOLEGGI FILIPPI S.R.L. UNIPERSONALE
+dal 26/09/2022 era solo mar+mer;extra;102;145;14:11;14:28;Capriana-Grauno;Scolastica lun+gio+ven;8;9;97;776;AUTONOLEGGIO DI GUADAGNINI FERDINANDO E ZAMPIERI DAVID S.N.C.
+dal 27/09/2022 prolungamento;extra;625;581;07:10;07:12;Tres (Predaia)-via Predaia inc. v. Tavana;"scolastica 
+da lunedì a venerdì";1;36;174;174;TAXI VIAGGI VALENTINELLI DI VALENTINELLI GIORGIO & C. SNC
+dal 28/09/2022 era solo lu+ma+gio;extra;210;458;16:30;16:59;Ponte Arche - Cavrasto - Bivedo;scolastica mercoledì;11;44;34;374;TRENTINOBUS SRL
+dal 03/10/2022 prolungamento;extra;102;185;15:50;17:21;Verla bivio - Ville di Giovo - Verla deviazione Tesero - Palù;"scolastica 
+da lunedì a giovedì";3,5;41;125;437,5;MONAUNI CARLO S.N.C. DI MONAUNI GERARDO E C. 
+dal 11/10/2022 nuova;extra;645;682;13:18;14:00;Cles-Mezzana-Fucine;scolastica di martedì e giovedì;31,5;54;54;1.701,00;"BIANCANEVE VIAGGI DI
+ DALLATORRE MARCO"
+dal 12/10/2022 prolungamento;extra;101;656;07:03;07:10;Solaiolo Alto - Solaiolo;"scolastica 
+da lunedì a sabato";2,1;15;182;382,2;DMG

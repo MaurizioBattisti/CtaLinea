@@ -1,0 +1,5 @@
+per importare file oly
+
+- mettere tutti i campi nullable
+- tutti i campi di testo devonoe ssere varchar(MAX)
+- tutti i campi intteri -> varchar(MAX)

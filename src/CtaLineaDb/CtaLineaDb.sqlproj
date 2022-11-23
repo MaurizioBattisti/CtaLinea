@@ -58,36 +58,17 @@
     <Folder Include="Tables" />
     <Folder Include="Views" />
     <Folder Include="StoredProc" />
-    <Folder Include="Tables\Viaggi_2" />
-    <Folder Include="Tables\Lookups" />
-    <Folder Include="Tables\TT" />
     <Folder Include="Tables\Contab" />
-    <Folder Include="Tables\CTA" />
-    <Folder Include="Tables\Imports" />
     <Folder Include="Tables\Auth" />
+    <Folder Include="Tables\Base" />
+    <Folder Include="Tables\Runs" />
+    <Folder Include="Tables\External" />
+    <Folder Include="Tables\TT" />
+    <Folder Include="Tables\Calendars" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="Tables\Viaggi_2\Associates.sql" />
-    <Build Include="Tables\Viaggi_2\Calendars.sql" />
-    <Build Include="Tables\Viaggi_2\CalendaSchoolYearRanges.sql" />
-    <Build Include="Tables\Viaggi_2\CalendarDays.sql" />
-    <Build Include="Tables\Viaggi_2\CollectionPoints.sql" />
-    <Build Include="Tables\Viaggi_2\SheetCategories.sql" />
-    <Build Include="Tables\Viaggi_2\SheetSubCategories.sql" />
-    <Build Include="Tables\Lookups\RunTypes.sql" />
-    <Build Include="Tables\TT\TtServices.sql" />
     <PostDeploy Include="Post_Deploy.sql" />
-    <Build Include="Tables\TT\TtNodes.sql" />
-    <Build Include="Tables\CTA\CtaServices.sql" />
-    <Build Include="Tables\CTA\CtaServicePEriods.sql" />
-    <Build Include="Tables\CTA\CtaServiceCars.sql" />
-    <Build Include="Tables\Imports\Imports.sql" />
-    <Build Include="Tables\Imports\ImportDetails.sql" />
     <Build Include="StoredProc\up_FinalizeServiceImport.sql" />
-    <Build Include="Views\vw_PendingImports.sql" />
-    <Build Include="Tables\CTA\CtaServiceLog.sql" />
-    <Build Include="Views\Vw_Services.sql" />
-    <Build Include="Views\vw_CtaServiceCars.sql" />
     <Build Include="Tables\Auth\Meta_Users.sql" />
     <Build Include="Tables\Auth\Meta_Roles.sql" />
   </ItemGroup>
@@ -95,10 +76,27 @@
     <RefactorLog Include="CtaLineaDb.refactorlog" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="Tables\Viaggi_2\Cars.sql" />
-    <Build Include="Tables\Viaggi_2\Drivers.sql" />
+    <None Include="CtaLineaDb.publish.xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="CtaLineaDb.publish.xml" />
+    <Build Include="Tables\Base\Contracts.sql" />
+    <Build Include="Tables\Runs\RunNodes.sql" />
+    <Build Include="Tables\Runs\RunVariations.sql" />
+    <Build Include="Tables\Runs\Runs.sql" />
+    <Build Include="Tables\Runs\RunCarCosts.sql" />
+    <Build Include="Tables\External\Associates.sql" />
+    <Build Include="Tables\External\CollectionPoints.sql" />
+    <Build Include="Tables\External\Cars.sql" />
+    <Build Include="Tables\External\Drivers.sql" />
+    <Build Include="Tables\TT\RunFrequencies.sql" />
+    <Build Include="Tables\Calendars\CalendarPeriods.sql" />
+    <Build Include="Tables\Calendars\Calendars.sql" />
+    <Build Include="Tables\Calendars\CalendarHolidays.sql" />
+    <Build Include="Tables\Runs\RunCars.sql" />
+    <Build Include="Tables\Runs\RunPeriods.sql" />
+    <Build Include="Tables\Base\SuspensionTypes.sql" />
+    <Build Include="Tables\Runs\RunSuspensions.sql" />
+    <Build Include="Tables\Runs\RunCarReplacements.sql" />
+    <Build Include="Tables\Runs\RunCarReplacementDetails.sql" />
   </ItemGroup>
 </Project>
