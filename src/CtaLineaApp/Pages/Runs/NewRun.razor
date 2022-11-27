@@ -1,0 +1,40 @@
+﻿@page "/newrun"
+@inject IQueryUtilityService queryService
+@inject IRunService RunService
+@inject IContractService ContractService
+
+<PageTitle>@Constants.App_Title - Nuova Corsa</PageTitle>
+
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Nuova corsa" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<BaseRunDataView CurrentRun=@CurrentRun EditMode=@EditMode />
+
+
+
+
+@code {
+    bool EditMode = false;
+
+    RunItem CurrentRun = new RunItem();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ContractService.Current != null)
+        {
+            // chiamare la funzione di RunService che crea il run
+            this.CurrentRun = RunService.CreateNewRun(ContractService.Current);
+        }
+
+        await Task.CompletedTask;
+
+    }
+
+}

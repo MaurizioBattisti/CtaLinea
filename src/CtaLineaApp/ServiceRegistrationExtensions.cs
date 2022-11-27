@@ -3,6 +3,8 @@ using CtaLineaApp.Application.Services.Account;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using System.Net.Http;
 using CtaLineaApp.Application.Services.Utility;
+using CtaLineaApp.Application.Services.Run;
+using CtaLineaApp.Application.Services.Base;
 
 namespace CtaLineaApp
 {
@@ -27,6 +29,11 @@ namespace CtaLineaApp
                 .AddScoped<IHttpService, HttpService>()
                 .AddScoped<ILocalStorageService, LocalStorageService>()
                 .AddScoped<IQueryUtilityService, QueryUtilityService>()
+
+                // servizio per la gestiond ei contratti
+                .AddScoped<IContractService, ContractService> ()
+                // serivi per gestire le corse
+                .AddScoped<IRunService, RunService> ()
                 ;
 
 

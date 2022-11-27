@@ -15,8 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Application\DataModel\" />
-    <Folder Include="Application\Services\" />
     <Folder Include="Infrastructure\" />
   </ItemGroup>
 

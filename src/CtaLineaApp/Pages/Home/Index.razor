@@ -1,0 +1,14 @@
+﻿@using CtaLineaApp.Application.Services.Account;
+@using CtaLineaApp.Application.Model.Account;
+@page "/"
+@inject IAccountService AccountService
+@inject NavigationManager NavigationManager
+
+<PageTitle>@Constants.App_Title - Home</PageTitle>
+
+@if(this.AccountService.User == null)
+{
+	<WelcomeScreen />
+} else {
+	<DashBoard />
+}

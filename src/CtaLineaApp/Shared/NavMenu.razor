@@ -1,16 +1,30 @@
 ﻿<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href=""><span style="color: #ffffff">CTA Linea</span></a>
+    <a class="navbar-brand" href=""><span style="color: #ffffff">@Constants.App_Title </span></a>
 </div>
 
 <RadzenPanelMenu>
-
     <RadzenPanelMenuItem Text="Home" Path="/" Icon="home"></RadzenPanelMenuItem>
+
+    <RadzenPanelMenuItem Text="Test" Path="/newrun" Icon="home"></RadzenPanelMenuItem>
+
+
+    <RadzenPanelMenuItem Text="Gestione" Icon="work">
+        <RadzenPanelMenuItem Text="Linee" Path="/runs" Icon="departure_board"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Contratti" Path="/contracts" Icon="handshake"></RadzenPanelMenuItem>
+    </RadzenPanelMenuItem>
+
+    <hr class="separator">
+    <RadzenPanelMenuItem Text="Anagrafiche" Icon="inventory">
+        <RadzenPanelMenuItem Text="Ditte" Path="/companies" Icon="business"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Mezzi" Path="/cars" Icon="directions_bus"></RadzenPanelMenuItem>
+        
+        <RadzenPanelMenuItem Text="Punti" Path="/points" Icon="place"></RadzenPanelMenuItem>
+    </RadzenPanelMenuItem>
+
+    <!--
     <RadzenPanelMenuItem Text="Ricerche" Icon="saved_search">
         <RadzenPanelMenuItem Text="Mezzi" Path="/cars" Icon="departure_board"></RadzenPanelMenuItem>
 
-    </RadzenPanelMenuItem>
-    <RadzenPanelMenuItem Text="Linee" Icon="departure_board">
-        <RadzenPanelMenuItem Text="Servizi TT" Path="/tt_services" Icon="departure_board"></RadzenPanelMenuItem>
     </RadzenPanelMenuItem>
         
     <RadzenPanelMenuItem Text="Gestione" Icon="construction">
@@ -20,4 +34,5 @@
 
         <RadzenPanelMenuItem Text="Importazioni" Path="/import_list" Icon="file_upload"></RadzenPanelMenuItem>
     </RadzenPanelMenuItem>
+    -->
 </RadzenPanelMenu>

@@ -1,12 +1,12 @@
-﻿@page "/tt_services"
+﻿@page "/runs"
 @inject IQueryUtilityService queryService
 @attribute [Authorize]
 
-<PageTitle>@Constants.App_Title - Servizi TT</PageTitle>
+<PageTitle>@Constants.App_Title - Corse</PageTitle>
 
 <LayoutSetter>
     <PageTitle>
-        <RadzenLabel Text="Servizi TT" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+        <RadzenLabel Text="Corse" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
     </PageTitle>
     <TopLine>
         <RadzenTextBox @bind-Value="FullTextSearch" Placeholder="Cerca..." Change=@(args => FullText_OnChange(args)) Class="w-100" />

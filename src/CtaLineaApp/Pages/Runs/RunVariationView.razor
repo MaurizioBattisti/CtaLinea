@@ -1,0 +1,33 @@
+﻿<RadzenTabs 
+	Change=@OnTabChange 
+	TabPosition="TabPosition.Top" 
+	Class="w-100 my-1 mx-auto" 
+	RenderMode="TabRenderMode.Client" >
+	<Tabs>
+		<RadzenTabsItem Text="Dati">
+			<p>dati generali</p>
+
+		</RadzenTabsItem>
+		<RadzenTabsItem  Text="Nodi">
+			<p>Elenco fermate</p>
+
+		</RadzenTabsItem>
+		<RadzenTabsItem Text="Mappa">
+			<p>Mappa Google</p>
+		</RadzenTabsItem>
+	</Tabs>
+</RadzenTabs>
+
+@code {
+		[Parameter]
+	public RunVariation Variation { get; set; } = new RunVariation();
+	[Parameter]
+	public bool EditMode { get; set; } = false;
+
+
+
+	void OnTabChange(int index)
+    {
+        
+    }
+}

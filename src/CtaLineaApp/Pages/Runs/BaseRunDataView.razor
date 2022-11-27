@@ -1,0 +1,67 @@
+﻿@inject IRunService RunService
+
+<RadzenAccordion 
+	Multiple="true" >
+    <Items>
+        <RadzenAccordionItem Text="Dati Generali" Icon="assignment" Selected=true>
+			<RunVariationView  Variation=@DefaultVariant EditMode=@EditMode />
+        </RadzenAccordionItem>
+
+		@if (OtherVariations.Count > 0)
+		{
+		<RadzenAccordionItem Text="Varianti" Icon="calendar_month">
+			<RadzenTabs 
+				Change=@OnTabChange 
+				TabPosition="TabPosition.Left" 
+				Class="w-100 my-1 mx-auto" 
+				RenderMode="TabRenderMode.Client" >
+					<Tabs>
+						@foreach (var v in this.OtherVariations)
+						{
+							<RadzenTabsItem Text="@string.Format("{0:dd/MM/yyyy}",v.StartDate ?? DateTime.MinValue)">
+								<RunVariationView Variation=@v EditMode=@this.EditMode />
+							</RadzenTabsItem>
+						}
+					</Tabs>
+			</RadzenTabs>
+        </RadzenAccordionItem>
+		}
+    </Items>
+</RadzenAccordion>
+
+
+@code {
+	[Parameter]
+	public RunItem CurrentRun { get; set; } = new RunItem();
+	[Parameter]
+	public bool EditMode { get; set; } = false;
+
+	public RunVariation DefaultVariant = new RunVariation();
+	public IList<RunVariation> OtherVariations = new List<RunVariation>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		
+		await base.OnParametersSetAsync();
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		// recupera la variante di default
+		if (this.CurrentRun !=null)
+		{
+			var variation = this.RunService.GetDefaultVariation(this.CurrentRun);
+			if (variation != null) this.DefaultVariant = variation;
+
+			this.OtherVariations = this.CurrentRun.Variations.Where(v => v != variation).ToList();
+		}
+		await base.OnParametersSetAsync();
+	}
+
+
+
+	void OnTabChange(int index)
+	{
+        
+    }
+}

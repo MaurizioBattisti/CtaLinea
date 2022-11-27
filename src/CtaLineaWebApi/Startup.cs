@@ -183,17 +183,8 @@ namespace CtaLineaWebApi
                 ICollectionPointsQueries,
                 CollectionPointsQueries>();
             services.AddScoped<
-                ICategoriesQueries,
-                CategoriesQueries>();
-            services.AddScoped<
                 ICalendaQueries,
                 CalendaQueries>();
-            services.AddScoped<
-                IRunTypesQueries,
-                RunTypesQueries>();
-            services.AddScoped<
-                IImportQueries,
-                ImportQueries>();
             services.AddScoped<
                 ITtServicesQueries,
                 TtServicesQueries>();

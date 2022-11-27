@@ -7,6 +7,11 @@ namespace CtaLineaApp
 {
     internal class Constants
     {
+        // Titolo applicazione
+        public const string App_Title =  "CTA Linee";
+
+
+
         internal const string LoalStorageKey_User = "user";
 
 

@@ -27,7 +27,6 @@ namespace CtaLineaWebApi.Controllers
 
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AssociateQueryItem>>> GetAllAsync()
         {
