@@ -1,0 +1,40 @@
+﻿@inject IRunService RunService
+
+<RadzenAccordion 
+	Multiple="true" >
+    <Items>
+		@foreach(var pg in this.SubPeriodGroups)
+		{
+			<RadzenAccordionItem Text="@pg.ToString()" Icon="calendar_view_month">
+				<RunPeriodView CurrentRun=@CurrentRun EditMode=@EditMode PeriodGroup=@pg />
+			</RadzenAccordionItem>
+		}
+	</Items>
+</RadzenAccordion>
+
+@code {
+	[Parameter]
+	public RunItem CurrentRun { get; set; } = new RunItem();
+	[Parameter]
+	public bool EditMode { get; set; } = false;
+
+	IList<RunPeriodGroup> SubPeriodGroups = new List<RunPeriodGroup>();
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		await base.OnParametersSetAsync();
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		// recupera la variante di default
+		if (this.CurrentRun !=null)
+		{
+			this.SubPeriodGroups =this.RunService.GetPeriodGroups(this.CurrentRun);
+		}
+
+		await base.OnParametersSetAsync();
+	}
+
+}

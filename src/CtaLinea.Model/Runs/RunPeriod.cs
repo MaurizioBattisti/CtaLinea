@@ -1,4 +1,6 @@
-﻿namespace CtaLinea.Model.Runs
+﻿using System.Text;
+
+namespace CtaLinea.Model.Runs
 {
     public class RunPeriod
     {
@@ -22,5 +24,20 @@
         public IList<RunPeriodCar>? Cars { get; set; }
 
         public IList<CarReplacement>? CarReplacements { get; set; }
+
+        public string GetWeekDaysDescr()
+        {
+            var daysList = new List<string>();
+            if (this.Monday) daysList.Add("Lu");
+            if (this.Tuesday) daysList.Add("Ma");
+            if (this.Wednesday) daysList.Add("Me");
+            if (this.Thursday ) daysList.Add("Gio");
+            if (this.Friday) daysList.Add("Ve");
+            if (this.Saturday) daysList.Add("sa");
+            if (this.Sunday) daysList.Add("Dom");
+
+            return string.Join(", ", daysList);
+        }
     }
+
 }

@@ -1,4 +1,6 @@
-﻿namespace CtaLinea.Model.Runs
+﻿using CtaLinea.Model.External;
+
+namespace CtaLinea.Model.Runs
 {
     public class RunPeriodCar
     {
@@ -57,7 +59,9 @@
         #endregion
 
         public Guid AssociateId { get; set; }   
+        public Associate? AssociateData { get; set; }
         public Guid CarId { get; set; }
+        public Car? CarData { get; set; }
         public string? Note { get; set; }
 
         public IList<RunCarCost>? CarCosts { get; set; }

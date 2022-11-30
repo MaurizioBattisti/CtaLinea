@@ -1,5 +1,6 @@
 ﻿using CtaLinea.Model.Base;
 using CtaLinea.Model.Runs;
+using CtaLineaApp.Application.Model;
 
 namespace CtaLineaApp.Application.Services.Run
 {
@@ -12,6 +13,8 @@ namespace CtaLineaApp.Application.Services.Run
         RunCarCost? CreateRunCarCost(RunPeriodCar periodCar, DateTime? startdate = null);
 
         RunVariation? GetDefaultVariation(
+            RunItem run);
+        IList<RunPeriodGroup> GetPeriodGroups(
             RunItem run);
     }
 }

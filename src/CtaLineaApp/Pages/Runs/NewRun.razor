@@ -3,6 +3,7 @@
 @inject IRunService RunService
 @inject IContractService ContractService
 
+<h1>Nuova Corsa</h1>
 <PageTitle>@Constants.App_Title - Nuova Corsa</PageTitle>
 
 <LayoutSetter>
@@ -17,9 +18,6 @@
 
 <BaseRunDataView CurrentRun=@CurrentRun EditMode=@EditMode />
 
-
-
-
 @code {
     bool EditMode = false;
 
@@ -30,7 +28,48 @@
         if (ContractService.Current != null)
         {
             // chiamare la funzione di RunService che crea il run
-            this.CurrentRun = RunService.CreateNewRun(ContractService.Current);
+            var run= RunService.CreateNewRun(ContractService.Current);
+
+            // TODO: togliere questo codice
+            var period = run.SubPeriods?[0];
+            if (period != null)
+            {
+                var rc = RunService.CreatePeriodCar(period, CarTypeEnum.Replacement);
+                period.CarReplacements?.Add(
+                    new CarReplacement()
+                    {
+                        CarReplacementId = Guid.NewGuid(),
+                        StartDate = new DateTime(2022, 11, 01),
+                        EndDate = new DateTime(2023, 03, 31),
+                        OriginalPEriodCarIds = new List<Guid> () { period.Cars?[0]?.RunPeriodCarId ?? Guid.Empty },
+                        ReplacedPEriodCarIds = new List<Guid> () { rc.RunPeriodCarId },
+                        Note = "do re mi fa sol"
+                    }
+                );
+            }
+
+            // aggiunge un paiod i sospensioni
+            run.Suspensions?.Add(
+                new RunSuspension()
+                {
+                    RunSuspensionId = Guid.NewGuid(),
+                    SuspensionNote = "note di sospensione",
+                    StartDate = new DateTime (2022, 12, 20),
+                    EndDate = new DateTime (2023, 1, 10),
+                    SuspensionTypeId= 1
+                });
+            run.Suspensions?.Add(
+                new RunSuspension()
+                {
+                    RunSuspensionId = Guid.NewGuid(),
+                    SuspensionNote = "for per l'an",
+                    StartDate = new DateTime (2023, 4, 12),
+                    EndDate = new DateTime (2023, 4, 22),
+                    SuspensionTypeId= 1
+                });
+
+            /* fino  a qui */
+            this.CurrentRun = run;
         }
 
         await Task.CompletedTask;

@@ -1,0 +1,27 @@
+﻿@inject IRunService RunService
+
+<h3>Singola sospensione</h3>
+
+
+
+@code {
+	[Parameter]
+	public RunItem CurrentRun { get; set; } = new RunItem();
+	[Parameter]
+	public bool EditMode { get; set; } = false;
+	[Parameter]
+	public RunSuspension Suspension { get; set; } = new RunSuspension();
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		await base.OnParametersSetAsync();
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+
+		await base.OnParametersSetAsync();
+	}
+
+}

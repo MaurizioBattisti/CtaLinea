@@ -1,0 +1,63 @@
+﻿@inject IRunService RunService
+
+<p> Originale/i </p>
+@foreach(var c in this.OriginalCars)
+{
+	<RunCarDetailView CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@SubPeriod Model=@c ShowCosts=false />
+}
+<p> Sostituito/i da </p>
+@foreach(var c in this.ReplacingCars)
+{
+	<RunCarDetailView CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@SubPeriod Model=@c />
+}
+
+@code {
+	[Parameter]
+	public RunItem CurrentRun { get; set; } = new RunItem();
+	[Parameter]
+	public bool EditMode { get; set; } = false;
+	[Parameter]
+	public RunPeriod SubPeriod { get; set; } = new RunPeriod();
+	[Parameter]
+	public CarReplacement Replacement { get; set; } = new CarReplacement();
+
+	// lista dei mezzi originali
+	private IList<RunPeriodCar> OriginalCars = new List<RunPeriodCar>();
+	// lista dei mezzi in sostituzione
+	private IList<RunPeriodCar> ReplacingCars = new List<RunPeriodCar>();
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		await base.OnParametersSetAsync();
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		IEnumerable<Guid>? ids = Replacement.OriginalPEriodCarIds;
+		if (ids  != null)
+		{
+			var cars = this.GetRunCars(this.SubPeriod, ids);
+			if (cars != null) this.OriginalCars = cars.ToList();
+		}
+		
+		ids = Replacement.ReplacedPEriodCarIds;
+		if (ids  != null)
+		{
+			var cars = this.GetRunCars(this.SubPeriod, ids);
+			if (cars != null) this.ReplacingCars = cars.ToList();
+		}
+
+		await base.OnParametersSetAsync();
+	}
+
+	private IEnumerable<RunPeriodCar> GetRunCars (
+		RunPeriod period,
+		IEnumerable<Guid> ids)
+	{
+		var cars = (from c in period.Cars
+					where ids.Contains(c.RunPeriodCarId)
+					select c);
+		return cars;
+	}
+}

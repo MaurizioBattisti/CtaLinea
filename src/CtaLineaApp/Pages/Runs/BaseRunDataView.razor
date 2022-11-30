@@ -1,5 +1,6 @@
 ﻿@inject IRunService RunService
 
+<h2>Dati Generali della Corsa</h2>
 <RadzenAccordion 
 	Multiple="true" >
     <Items>
@@ -29,7 +30,24 @@
     </Items>
 </RadzenAccordion>
 
+<h2>Periodi di attività dei mezzi</h2>
+<RunPeriodGroupListView CurrentRun=@CurrentRun EditMode=@EditMode /> 
 
+@if (this.Suspensions.Count > 0)
+{
+	<h2>Sospensioni del servizio</h2>
+<RadzenAccordion 
+	Multiple="true" >
+    <Items>
+	@foreach(var s in this.Suspensions)
+	{
+		<RadzenAccordionItem Text="@this.GetSuspensionHeader(s)" Icon="block" >
+			<RunSuspnesionView CurrentRun=@CurrentRun EditMode=@EditMode Suspension=@s />	
+		</RadzenAccordionItem>
+	}
+	</Items>
+</RadzenAccordion>
+}
 @code {
 	[Parameter]
 	public RunItem CurrentRun { get; set; } = new RunItem();
@@ -39,9 +57,11 @@
 	public RunVariation DefaultVariant = new RunVariation();
 	public IList<RunVariation> OtherVariations = new List<RunVariation>();
 
+	private IList<RunSuspension> Suspensions = new List<RunSuspension>();
+
 	protected override async Task OnInitializedAsync()
 	{
-		
+
 		await base.OnParametersSetAsync();
 	}
 
@@ -53,12 +73,36 @@
 			var variation = this.RunService.GetDefaultVariation(this.CurrentRun);
 			if (variation != null) this.DefaultVariant = variation;
 
-			this.OtherVariations = this.CurrentRun.Variations.Where(v => v != variation).ToList();
+			if (this.CurrentRun.Variations != null)
+			{
+				this.OtherVariations = this.CurrentRun.Variations.Where(v => v != variation)
+					.ToList();
+			}
+
+			if(this.CurrentRun.Suspensions != null)
+			{
+				var susp = (from s in this.CurrentRun.Suspensions
+							orderby s.StartDate
+							select s)
+						.ToList();
+
+		if (susp != null)
+				{
+					this.Suspensions = susp;
+				}
+			}
 		}
 		await base.OnParametersSetAsync();
 	}
 
-
+	private string GetSuspensionHeader (
+		RunSuspension suspension)
+	{
+		return string.Format("dal {0:dd/MM/yyyy} - al {1:dd/MM/yyyy}",
+			suspension.StartDate,
+			suspension.EndDate
+			);
+	}
 
 	void OnTabChange(int index)
 	{

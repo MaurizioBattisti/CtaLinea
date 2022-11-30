@@ -9,7 +9,7 @@
 
         public string? Note { get; set; }
 
-        IEnumerable<Guid>? OriginalPEriodCarIds { get; set; }
-        IEnumerable<Guid>? ReplacedPEriodCarIds { get; set; }
+        public IList<Guid>? OriginalPEriodCarIds { get; set; }
+        public IList<Guid>? ReplacedPEriodCarIds { get; set; }
     }
 }

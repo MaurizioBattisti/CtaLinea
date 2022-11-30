@@ -1,5 +1,6 @@
 ﻿using CtaLinea.Model.Runs;
 using CtaLinea.Model.Base;
+using CtaLineaApp.Application.Model;
 
 namespace CtaLineaApp.Application.Services.Run
 {
@@ -107,7 +108,7 @@ namespace CtaLineaApp.Application.Services.Run
             var cost = new RunCarCost()
             {
                 RunCarCostId = Guid.NewGuid(),
-                StartDAte = startdate
+                StartDate = startdate
             };
 
             if (periodCar.CarCosts == null) periodCar.CarCosts = new List<RunCarCost>() { cost };
@@ -138,5 +139,20 @@ namespace CtaLineaApp.Application.Services.Run
             return variation;
         }
 
+        public IList<RunPeriodGroup> GetPeriodGroups (
+            RunItem run)
+        {
+            var list = new List<RunPeriodGroup>();
+            if (run.SubPeriods != null)
+            {
+                list = (from p in run.SubPeriods
+                            select new RunPeriodGroup () { StartDate = p.StartDate, EndDate = p.EndDate }
+                             ).Distinct ()
+                             .OrderBy (p => p.StartDate )
+                             .ToList ();
+            }
+
+            return list;
+        }
     }
 }

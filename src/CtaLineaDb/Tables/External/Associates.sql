@@ -3,7 +3,7 @@
 	[AssociateId] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(), 
     [Description] VARCHAR(200) NOT NULL, 
     [BsSupplierCode] VARCHAR(20) NULL, -- codice Busstop fornitore
-    [BsCustomerCode] NCHAR(10) NULL,   -- codice bustop cliente
+    [BsCustomerCode] VARCHAR(20) NULL,   -- codice bustop cliente
     [Active] BIT NOT NULL DEFAULT 1, 
     [Email] VARCHAR(256) NULL
 )
