@@ -1,0 +1,48 @@
+﻿@using System.Globalization
+@inject IRunService RunService
+
+
+<div class="d-flex flex-row p-1">
+    <div class="col-2">
+        <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Costo al Km</RadzenText>
+        <RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDecimal(this.CarCost.KmPrice)</strong></RadzenText>
+    </div>
+    <div class="col-2">
+        <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Costo al giorno</RadzenText>
+        <RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDecimal(this.CarCost.DayPrice)</strong></RadzenText>
+    </div>
+</div>
+<p>@System.Threading.Thread.CurrentThread.CurrentUICulture.ToString()</p>
+
+@code {
+    [Parameter]
+    public RunItem CurrentRun { get; set; } = new RunItem();
+    [Parameter]
+    public bool EditMode { get; set; } = false;
+    [Parameter]
+    public RunPeriod RunPeriod { get; set; } = new RunPeriod();
+    [Parameter]
+    public RunPeriodCar PeriodCar { get; set; } = new RunPeriodCar();
+    [Parameter]
+    public RunCarCost CarCost { get; set; } = new RunCarCost();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+
+        await base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+
+        await base.OnParametersSetAsync();
+    }
+
+    private string FormatDecimal (
+        decimal cost)
+    {
+        var ci = new CultureInfo("it-IT");
+        return string.Format(ci, "{0:C}", cost);
+    }
+}

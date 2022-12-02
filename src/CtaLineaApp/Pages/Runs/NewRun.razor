@@ -31,6 +31,11 @@
             var run= RunService.CreateNewRun(ContractService.Current);
 
             // TODO: togliere questo codice
+            if (run.Variations != null)
+            {
+                run.Variations[0].StartTime = new TimeSpan(10, 5, 0);
+                run.Variations[0].EndTime = new TimeSpan(10, 25, 55);
+            }
             var period = run.SubPeriods?[0];
             if (period != null)
             {
@@ -56,7 +61,9 @@
                     SuspensionNote = "note di sospensione",
                     StartDate = new DateTime (2022, 12, 20),
                     EndDate = new DateTime (2023, 1, 10),
-                    SuspensionTypeId= 1
+                    SuspensionTypeId= 1,
+                    SuspensionTypeData = new  SuspensionType () { SuspensionTypeId = 1, SuspensionTypeDescription = "Una motivazione"}
+                    
                 });
             run.Suspensions?.Add(
                 new RunSuspension()
@@ -65,7 +72,8 @@
                     SuspensionNote = "for per l'an",
                     StartDate = new DateTime (2023, 4, 12),
                     EndDate = new DateTime (2023, 4, 22),
-                    SuspensionTypeId= 1
+                    SuspensionTypeId= 2,
+                    SuspensionTypeData = new  SuspensionType () { SuspensionTypeId = 2, SuspensionTypeDescription = "Un'altra motivazione"}
                 });
 
             /* fino  a qui */

@@ -1,30 +1,99 @@
-﻿<RadzenTabs 
+﻿@inject IRunService RunService
+
+<RadzenTabs 
 	Change=@OnTabChange 
 	TabPosition="TabPosition.Top" 
 	Class="w-100 my-1 mx-auto" 
 	RenderMode="TabRenderMode.Client" >
 	<Tabs>
 		<RadzenTabsItem Text="Dati">
-			<p>dati generali</p>
+			<div class="d-flex flex-row">
+				<div class="col-2">
+					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Nr. Linea</RadzenText>
+					<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.LineNumber</strong></RadzenText>
+					
+					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Nr. Corsa</RadzenText>
+					<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.RunNumber</strong></RadzenText>
+				</div>
+				<div class="col-2">
+					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Ora inizio</RadzenText>
+					<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatTime(Variation.StartTime)</strong></RadzenText>
+					
+					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Ora fine</RadzenText>
+					<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatTime(Variation.EndTime)</strong></RadzenText>
+				</div>
+				<div class="col-4">
+					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Calendario</RadzenText>
+					<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.CalendarData?.CalendarName</strong></RadzenText>
 
+					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Frequenza</RadzenText>
+					<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.RequestedFrequency</strong></RadzenText>
+				</div>
+				<div class="col-4">
+					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Km</RadzenText>
+					<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.Km</strong></RadzenText>
+
+					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Annotazioni</RadzenText>
+					<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.Note</strong></RadzenText>
+				</div>
+			</div>
 		</RadzenTabsItem>
 		<RadzenTabsItem  Text="Nodi">
-			<p>Elenco fermate</p>
-
-		</RadzenTabsItem>
-		<RadzenTabsItem Text="Mappa">
-			<p>Mappa Google</p>
+			<div class="d-flex flex-row">
+				@foreach(var node in this.Nodes)
+				{
+					<RunNodeView CurrentRun=@CurrentRun EditMode=@EditMode Variation=@Variation Node=@node />
+				}
+			</div>
 		</RadzenTabsItem>
 	</Tabs>
 </RadzenTabs>
 
 @code {
 	[Parameter]
+	public RunItem CurrentRun { get; set; } = new RunItem();
+	[Parameter]
 	public RunVariation Variation { get; set; } = new RunVariation();
 	[Parameter]
 	public bool EditMode { get; set; } = false;
 
+	IList<RunNode> Nodes { get; set; } = new List<RunNode>();
 
+	protected override async Task OnInitializedAsync()
+	{
+
+		await base.OnParametersSetAsync();
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		if (this.Variation.Nodes != null)
+		{
+
+			this.Nodes = (from n in this.Variation.Nodes
+						orderby n.ProgrNumber, n.Hout
+						select n)
+					.ToList();
+		}
+
+		await base.OnParametersSetAsync();
+	}
+
+	private string FormatDate (
+		DateTime? date)
+	{
+		if (date == null) return string.Empty;
+		return string.Format("{0:dd/MM/yyyy}", date);
+	}
+
+	private string FormatTime(
+		TimeSpan? time)
+	{
+		if (time == null) return string.Empty;
+		var dt = new DateTime(1, 1, 1);
+		dt = dt.Add(time.Value);
+		return string.Format("{0:HH:mm}", dt);
+	}
 
 	void OnTabChange(int index)
     {

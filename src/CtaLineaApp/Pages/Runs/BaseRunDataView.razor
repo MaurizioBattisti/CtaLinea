@@ -4,8 +4,54 @@
 <RadzenAccordion 
 	Multiple="true" >
     <Items>
-        <RadzenAccordionItem Text="Dati Generali" Icon="assignment" Selected=true>
-			<RunVariationView  Variation=@DefaultVariant EditMode=@EditMode />
+        <RadzenAccordionItem Text="Informazioni" Icon="info" Selected=true>
+			<RadzenCard>
+				<div class="d-flex flex-row p-1">
+					@if (this.CurrentRun.Extra == true)
+					{
+						<RadzenIcon Icon="health_and_safety" IconStyle=IconStyle.Warning />
+					}
+					<div class="col-4">
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Riferimento appalto</RadzenText>
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentRun.ContractData?.ContractDescription</strong></RadzenText>
+						
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Riga dell'appalto</RadzenText>
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentRun.ContractRowNumber</strong></RadzenText>
+						
+						@if (this.CurrentRun.Extra == true)
+						{
+							<RadzenText TextStyle="TextStyle.Body1"><strong>Extra capitolato</strong></RadzenText>
+						}
+					</div>
+					<div class="col-2">
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Appalto</RadzenText>
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Inizio</RadzenText>
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDate(CurrentRun.ContractData?.StartDate)</strong></RadzenText>
+						
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Fine</RadzenText>
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDate(CurrentRun.ContractData?.EndDate)</strong></RadzenText>
+					</div>
+					<div class="col-2">
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Cors</RadzenText>
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Inizio</RadzenText>
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDate(CurrentRun.StartDate)</strong></RadzenText>
+						
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Fine</RadzenText>
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDate(CurrentRun.EndDate)</strong></RadzenText>
+
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Giorni richiesti</RadzenText>
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentRun.RequestedDays</strong></RadzenText>
+					</div>
+					<div class="col-4">
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Note</RadzenText>
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentRun.Note</strong></RadzenText>
+					</div>
+				</div>
+			</RadzenCard>
+        </RadzenAccordionItem>
+
+        <RadzenAccordionItem Text="Dati Iniziali della corsa" Icon="flag_circle" Selected=true>
+			<RunVariationView CurrentRun=@CurrentRun Variation=@DefaultVariant EditMode=@EditMode />
         </RadzenAccordionItem>
 
 		@if (OtherVariations.Count > 0)
@@ -20,7 +66,7 @@
 						@foreach (var v in this.OtherVariations)
 						{
 							<RadzenTabsItem Text="@string.Format("{0:dd/MM/yyyy}",v.StartDate ?? DateTime.MinValue)">
-								<RunVariationView Variation=@v EditMode=@this.EditMode />
+								<RunVariationView CurrentRun=@CurrentRun Variation=@v EditMode=@this.EditMode />
 							</RadzenTabsItem>
 						}
 					</Tabs>
@@ -102,6 +148,13 @@
 			suspension.StartDate,
 			suspension.EndDate
 			);
+	}
+
+	private string FormatDate (
+		DateTime? date)
+	{
+		if (date == null) return string.Empty;
+		return string.Format("{0:dd/MM/yyyy}", date);
 	}
 
 	void OnTabChange(int index)

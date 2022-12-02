@@ -1,12 +1,11 @@
 using CtaLineaApp;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using System.Globalization;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 #region  add application services
-
-
 
 
 #endregion

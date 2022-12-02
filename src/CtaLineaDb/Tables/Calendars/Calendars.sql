@@ -4,7 +4,6 @@
     [BaseCalendarId] INT NULL , 
 
     [CalendarName] VARCHAR(200) NOT NULL, 
-    [Layer] INT NOT NULL DEFAULT 0, 
     [WorkDays] BIT NOT NULL DEFAULT 1, 
     
     CONSTRAINT [FK_CalendarHierarchy] 

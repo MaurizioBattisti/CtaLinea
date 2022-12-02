@@ -27,7 +27,7 @@
                     @foreach (var c in this.Costs)
                     {
                         <RadzenTabsItem Text="@GetCarCostHeader(c)">
-                            <p> costi di un mezzo in un periodo</p>
+                            <CarCostView CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@RunPeriod PeriodCar=@Model CarCost=@c />
                         </RadzenTabsItem>
                     }
 	                </Tabs>

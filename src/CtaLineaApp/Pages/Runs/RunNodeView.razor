@@ -1,0 +1,49 @@
+﻿@inject IRunService RunService
+
+<div class="d-flex flex-row">
+	<div class="col-1">
+		<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Orario</RadzenText>
+		<RadzenText TextStyle="TextStyle.Body1"># @Node.ProgrNumber <strong>@FormatTime(Node.Hout)</strong></RadzenText>
+	</div>
+	<div class="col-1">
+		<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Cod.</RadzenText>
+		<RadzenText TextStyle="TextStyle.Body1"><strong>@Node.CollectionPointId</strong></RadzenText>
+	</div>
+	<div class="col-10">
+		<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Fremata.</RadzenText>
+		<RadzenText TextStyle="TextStyle.Body1"><strong>@Node.CollectionPointData?.Description</strong></RadzenText>
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public RunItem CurrentRun { get; set; } = new RunItem();
+	[Parameter]
+	public RunVariation Variation { get; set; } = new RunVariation();
+	[Parameter]
+	public bool EditMode { get; set; } = false;
+	[Parameter]
+	public RunNode Node { get; set; } = new RunNode();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+
+        await base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+
+        await base.OnParametersSetAsync();
+    }
+
+	private string FormatTime(
+		TimeSpan? time)
+	{
+		if (time == null) return string.Empty;
+		var dt = new DateTime(1, 1, 1);
+		dt = dt.Add(time.Value);
+		return string.Format("{0:HH:mm}", dt);
+	}
+}

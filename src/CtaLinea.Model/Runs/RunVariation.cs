@@ -1,4 +1,6 @@
-﻿namespace CtaLinea.Model.Runs
+﻿using CtaLinea.Model.Base;
+
+namespace CtaLinea.Model.Runs
 {
     public class RunVariation
     {
@@ -12,8 +14,10 @@
         public TimeSpan? EndTime { get; set; }
 
         public int? CalendarId { get; set; }
+        public Calendar? CalendarData { get; set; }
 
         public string? RequestedFrequency { get; set; }
+
         public double? Km { get; set; }
         public string? Note { get; set; }
 
