@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ZzSoft.QueryHelper;
+﻿using ZzSoft.QueryHelper;
 
-namespace ZzSoft.CtaLinea.Dal.QueryModel
+namespace CtaLinea.QueryModel
 {
     [SqlAlias("cp")]
     public class CollectionPointQueryItem

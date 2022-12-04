@@ -29,15 +29,14 @@ namespace CtaLineaApp
                 .AddScoped<IHttpService, HttpService>()
                 .AddScoped<ILocalStorageService, LocalStorageService>()
                 .AddScoped<IQueryUtilityService, QueryUtilityService>()
-
+                
                 // servizio per la gestiond ei contratti
                 .AddScoped<IContractService, ContractService> ()
+                // Serivizo per la gestiondei calendari
+                .AddScoped<ICalendarService, CalendarService>()
                 // serivi per gestire le corse
                 .AddScoped<IRunService, RunService> ()
                 ;
-
-
-
 
 
             /*

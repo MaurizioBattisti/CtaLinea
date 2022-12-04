@@ -29,5 +29,22 @@ namespace CtaLineaApp.Application.Model.Cars
         public Guid AssociateId { get; set; }
         public string AssociateDescription { get; set; }
         public bool AssociateActive { get; set; }
+
+        public override bool Equals(object? o)
+        {
+            var other = o as Car;
+
+            return other?.Id == Id;
+        }
+
+        public override string ToString()
+        {
+            return this.Description;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
     }
 }

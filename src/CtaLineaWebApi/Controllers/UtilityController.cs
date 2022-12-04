@@ -15,7 +15,7 @@ using System.Net.Mime;
 using System.Threading.Tasks;
 using ZzSoft.Api.Utility.Base;
 using ZzSoft.CtaLinea.Dal.Queries;
-using ZzSoft.CtaLinea.Dal.QueryModel;
+using CtaLinea.QueryModel;
 
 namespace CtaLineaWebApi.Controllers
 {

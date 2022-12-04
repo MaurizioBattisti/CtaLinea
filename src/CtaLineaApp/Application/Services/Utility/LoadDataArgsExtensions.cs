@@ -16,31 +16,34 @@ namespace CtaLineaApp.Application.Services.Utility
         {
             var filter = new StringBuilder(1024);
             int filterCount = 0;
-            foreach (var f in args.Filters)
+            if (args.Filters != null)
             {
-                string? singleFilter = null;
-                var type = typeof(T);
-                var prop = type.GetProperty(f.Property);
-                if (prop != null)
+                foreach (var f in args.Filters)
                 {
-                    string filterOp = "$eq(";
-                    string? filterVal = f.FilterValue.ToString();
-                    if (filterVal != null)
+                    string? singleFilter = null;
+                    var type = typeof(T);
+                    var prop = type.GetProperty(f.Property);
+                    if (prop != null)
                     {
-                        if (prop.PropertyType == typeof(string))
+                        string filterOp = "$eq(";
+                        string? filterVal = f.FilterValue.ToString();
+                        if (filterVal != null)
                         {
-                            filterOp = "$like(";
-                            filterVal = "'" + filterVal + "'";
+                            if (prop.PropertyType == typeof(string))
+                            {
+                                filterOp = "$like(";
+                                filterVal = "'" + filterVal + "'";
+                            }
+                            singleFilter = filterOp + f.Property + "," + filterVal + ")";
+                            ++filterCount;
                         }
-                        singleFilter = filterOp + f.Property + "," + filterVal + ")";
-                        ++filterCount;
                     }
-                }
 
-                if (string.IsNullOrEmpty (singleFilter) == false)
-                {
-                    if (filter.Length > 0) filter.Append(",");
-                    filter.Append(singleFilter);
+                    if (string.IsNullOrEmpty(singleFilter) == false)
+                    {
+                        if (filter.Length > 0) filter.Append(",");
+                        filter.Append(singleFilter);
+                    }
                 }
             }
             var myFilter = filter.ToString();
@@ -58,13 +61,16 @@ namespace CtaLineaApp.Application.Services.Utility
             var sortSb = new StringBuilder(1024);
 
             // crea l'ordinamento
-            foreach (var s in args.Sorts)
+            if (args.Sorts != null)
             {
-                if (sortSb.Length > 0) sortSb.Append(",");
-                sortSb.Append (s.Property);
-                if (s.SortOrder == SortOrder.Descending)
+                foreach (var s in args.Sorts)
                 {
-                    sortSb.Append(@"-");
+                    if (sortSb.Length > 0) sortSb.Append(",");
+                    sortSb.Append(s.Property);
+                    if (s.SortOrder == SortOrder.Descending)
+                    {
+                        sortSb.Append(@"-");
+                    }
                 }
             }
 

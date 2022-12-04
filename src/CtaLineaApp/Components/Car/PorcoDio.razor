@@ -1,0 +1,21 @@
+﻿@using CtaLineaApp.Application.Model.Cars
+@inject IQueryUtilityService queryService
+
+<RadzenDropDown AllowClear="true" TValue="string" Class="w-100" 
+            Data=@Elements
+                />
+
+@code {
+    bool disabled = true;
+
+    IEnumerable<string> Elements;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Elements = new List<string>()
+        {
+            "Porco", "maiale", "Stronzo", "Giuliano"
+        };
+    }
+
+}

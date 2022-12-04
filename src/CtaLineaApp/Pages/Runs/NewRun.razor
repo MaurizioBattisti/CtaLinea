@@ -2,6 +2,7 @@
 @inject IQueryUtilityService queryService
 @inject IRunService RunService
 @inject IContractService ContractService
+@attribute [Authorize]
 
 <h1>Nuova Corsa</h1>
 <PageTitle>@Constants.App_Title - Nuova Corsa</PageTitle>
@@ -17,6 +18,20 @@
 <CtaLineaSttingsNotifier Changed=@StateHasChanged />
 
 <BaseRunDataView CurrentRun=@CurrentRun EditMode=@EditMode />
+
+<RadzenButton Click=@Btn_Click Text="Schiza !"></RadzenButton>
+<RadzenButton Click=@Btn_2_Click Text="imposta mezzo !"></RadzenButton>
+
+<RadzenCard>
+    <AssociateDropDown @bind-AssociateId="yAssociateId" AllowClear=true />
+</RadzenCard>
+<!--
+<CarDropDown AssociateId=@yAssociateId @bind-CarId="MyCarId" AllowClear=true />
+-->
+<RadzenCard>
+    <PorcoDio  />
+</RadzenCard>
+
 
 @code {
     bool EditMode = false;
@@ -63,7 +78,7 @@
                     EndDate = new DateTime (2023, 1, 10),
                     SuspensionTypeId= 1,
                     SuspensionTypeData = new  SuspensionType () { SuspensionTypeId = 1, SuspensionTypeDescription = "Una motivazione"}
-                    
+
                 });
             run.Suspensions?.Add(
                 new RunSuspension()
@@ -81,7 +96,18 @@
         }
 
         await Task.CompletedTask;
-
     }
 
+
+    Guid? yAssociateId = null;
+    Guid? MyCarId = null;
+    private void Btn_Click ()
+    {
+        string s = string.Empty;
+    }
+    private void Btn_2_Click ()
+    {
+        this.MyCarId = new Guid("58E2C252-D8A5-4619-A7F9-019D41195F8D");
+        this.StateHasChanged();
+    }
 }

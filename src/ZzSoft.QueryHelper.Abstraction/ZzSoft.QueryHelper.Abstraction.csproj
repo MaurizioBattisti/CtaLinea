@@ -6,8 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ZzSoft.QueryHelper.Abstraction\ZzSoft.QueryHelper.Abstraction.csproj" />
-  </ItemGroup>
-
 </Project>

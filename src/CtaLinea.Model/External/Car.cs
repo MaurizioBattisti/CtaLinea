@@ -8,7 +8,7 @@ namespace CtaLinea.Model.External
 {
     public class Car
     {
-        public Guid CarId { get; set; }
+        public Guid Id { get; set; }
         public Guid AssociateId { get; set; }
         public string Description { get; set; } = string.Empty;
         public int NrSittings { get; set; }
@@ -20,5 +20,22 @@ namespace CtaLinea.Model.External
         public bool PrimaryCar { get; set; }
         public bool SpareCar { get; set; }
         public bool Active { get; set; }
+
+        public override bool Equals(object o)
+        {
+            var other = o as Car;
+
+            return other?.Id == Id;
+        }
+
+        public override string ToString()
+        {
+            return this.Description;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
     }
 }

@@ -3,7 +3,7 @@ using System;
 using System.Data;
 using System.Threading.Tasks;
 using ZzSoft.CtaLinea.Dal.Context;
-using ZzSoft.CtaLinea.Dal.QueryModel;
+using CtaLinea.QueryModel;
 using ZzSoft.QueryHelper;
 
 namespace ZzSoft.CtaLinea.Dal.Queries

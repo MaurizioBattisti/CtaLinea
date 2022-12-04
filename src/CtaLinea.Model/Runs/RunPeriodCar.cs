@@ -1,4 +1,5 @@
 ﻿using CtaLinea.Model.External;
+using CtaLinea.QueryModel;
 
 namespace CtaLinea.Model.Runs
 {
@@ -61,7 +62,7 @@ namespace CtaLinea.Model.Runs
         public Guid AssociateId { get; set; }   
         public Associate? AssociateData { get; set; }
         public Guid CarId { get; set; }
-        public Car? CarData { get; set; }
+        public CarQueryItem? CarData { get; set; }
         public string? Note { get; set; }
 
         public IList<RunCarCost>? CarCosts { get; set; }

@@ -1,0 +1,110 @@
+﻿@using CtaLinea.QueryModel
+@inject IQueryUtilityService queryService
+
+<RadzenButton Click=@Btn_Click Text="Schiza !"></RadzenButton>
+<RadzenDropDown 
+    @ref=@dropDown
+    Data=@Data 
+    @bind-Value="CurrentItem"
+    TValue="AssociateQueryItem" 
+    AllowClear=@AllowClear
+    Change=@OnChange 
+    TextProperty="Description"
+    Class="w-100">
+</RadzenDropDown>
+
+@code {
+    RadzenDropDown<AssociateQueryItem> dropDown;
+
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+    public Guid? _AssociateId;
+    [Parameter]
+    public Guid? AssociateId 
+    {
+        get { return this._AssociateId;  }
+        set
+        {
+            _AssociateId = value;
+        }
+    }
+    [Parameter]
+    public EventCallback<Guid?> AssociateIdChanged { get; set; }
+
+    [Parameter]
+    public bool AllowClear { get; set; } = false;
+
+    QueryDefinition _servicesQueryDef = new QueryDefinition();
+    AssociateQueryItem[]? Data = null; 
+    int RowCount = 0;
+    bool isLoading = false;
+    AssociateQueryItem? CurrentItem = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        this._servicesQueryDef.EndPoint = Constants.Endpoint_Associates;
+
+        await LoadData();
+        this.StateHasChanged();
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+
+        await Task.CompletedTask;
+    }
+
+    private void Btn_Click ()
+    {
+        string s = string.Empty;
+    }
+
+    private async Task LoadData ()
+    {
+        await Task.CompletedTask;
+
+        this._servicesQueryDef.Filter = string.Empty;
+        this._servicesQueryDef.Sort = string.Empty;
+        this._servicesQueryDef.FullText = string.Empty;
+
+        this._servicesQueryDef.Page = 1;
+        this._servicesQueryDef.PageSize = 100000;
+
+        var result = await queryService.GetListAsync<AssociateQueryItem>(
+                    this._servicesQueryDef);
+
+        if (result != null)
+        {
+            this.Data = result.Items;
+            this.RowCount = result.TotalRows;
+        }
+    }
+
+        /*
+        private void  SelectCurrent (
+        Guid id)
+        {
+        if (_AssociateId != id)
+        {
+        _AssociateId = id;
+        this.CurrentItem = (from d in this.Data
+        where d.Id == id
+        select d).SingleOrDefault();
+            if (dropDown != null)
+            {
+            dropDown.SelectItem(this.CurrentItem, false);
+    }
+    }
+    }
+    */
+
+    private async Task OnChange (object value)
+    {
+        this._AssociateId = (value as AssociateQueryItem)?.Id;
+        await AssociateIdChanged.InvokeAsync(this.AssociateId);
+    }
+    private void OnSelectedItemChanged(object value)
+    {
+        this._AssociateId = (value as AssociateQueryItem)?.Id;
+    }
+}

@@ -1,0 +1,97 @@
+﻿@using CtaLinea.QueryModel
+@using CtaLineaApp.Application.Model.Cars
+@inject IQueryUtilityService queryService
+
+<RadzenDropDown 
+    Data=@Data 
+    TValue="Car" 
+    @bind-Value=@CurrentCar
+    AllowClear="true" 
+    AllowFiltering="true"
+    Change=@OnChange 
+    Class="w-100">
+</RadzenDropDown>
+
+@code {
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+    [Parameter]
+    public Guid? AssociateId { get; set; }
+    [Parameter]
+    public Guid? CarId 
+    {
+        get { return this.CurrentCar?.Id;  }
+        set
+        {
+            if (value != null)
+            {
+                CurrentCar = (from d in this.Data
+                              where d.Id == value.Value
+                              select d).SingleOrDefault();
+            }
+            else
+            {
+                CurrentCar = null;
+            }
+        }
+    }
+    [Parameter]
+    public EventCallback<Guid?> CarIdChanged { get; set; }
+
+    [Parameter]
+    public bool AllowClear { get; set; } = false;
+
+    QueryDefinition _servicesQueryDef = new QueryDefinition();
+    Car[]? Data = null; 
+    int RowCount = 0;
+    bool isLoading = false;
+    Car? CurrentCar = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        this._servicesQueryDef.EndPoint = Constants.Endpoint_Cars;
+
+        await LoadData();
+        this.StateHasChanged();
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        await Task.CompletedTask;
+        if (this.AssociateId  != _AssociateId)
+        {
+            await LoadData();
+        }
+    }
+
+    private Guid? _AssociateId;
+    private async Task LoadData ()
+    {
+        await Task.CompletedTask;
+        if (_AssociateId != this.AssociateId) _AssociateId = this.AssociateId;
+        if (this._AssociateId == null) return;
+        string? baseFilter = string.Empty;
+        baseFilter = string.Format("$eq(associateId,'{0}'", _AssociateId.Value);
+
+        this._servicesQueryDef.Filter = baseFilter;
+        this._servicesQueryDef.Sort = string.Empty;
+        this._servicesQueryDef.FullText = string.Empty;
+
+        this._servicesQueryDef.Page = 1;
+        this._servicesQueryDef.PageSize = 100000;
+
+        var result = await queryService.GetListAsync<Car>(
+                    this._servicesQueryDef);
+
+        if (result != null)
+        {
+            this.Data = result.Items;
+            this.RowCount = result.TotalRows;
+        }
+    }
+
+    private async Task OnChange (object value)
+    {
+        await CarIdChanged.InvokeAsync(this.CarId);
+    }
+}

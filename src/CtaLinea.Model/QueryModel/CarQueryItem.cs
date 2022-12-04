@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ZzSoft.QueryHelper;
+﻿using ZzSoft.QueryHelper;
 
-namespace ZzSoft.CtaLinea.Dal.QueryModel
+namespace CtaLinea.QueryModel
 {
     [SqlAlias("c")]
     public class CarQueryItem
@@ -11,18 +8,18 @@ namespace ZzSoft.CtaLinea.Dal.QueryModel
         [SqlField("CarId")]
         public Guid Id { get; set; }
 
-        [SqlField(FullText =true )]
-        public string Description { get; set; }
         [SqlField(FullText = true)]
-        public string RegNumber { get; set; }
+        public string Description { get; set; } = String.Empty;
+        [SqlField(FullText = true)]
+        public string RegNumber { get; set; } = String.Empty;
 
         public int NrSittings { get; set; }
 
         [SqlField(FullText = true)]
-        public string BsCarId { get; set; }
+        public string? BsCarId { get; set; }
         
         [SqlField(FullText = true)]
-        public string ChassisNumber { get; set; }
+        public string? ChassisNumber { get; set; }
         public DateTime? FirstRegistration { get; set; }
         public DateTime? DiscontinuationDate { get; set; }
 
@@ -36,9 +33,26 @@ namespace ZzSoft.CtaLinea.Dal.QueryModel
         public Guid AssociateId { get; set; }
         [SqlAlias("a")]
         [SqlField("Description", FullText = true)]
-        public string AssociateDescription { get; set; }
+        public string? AssociateDescription { get; set; }
         [SqlAlias("a")]
         [SqlField("Active")]
         public bool AssociateActive { get; set; }
+
+        public override bool Equals(object? o)
+        {
+            var other = o as CarQueryItem;
+
+            return (other == null ? false : other.Id == Id);
+        }
+
+        public override string ToString()
+        {
+            return this.Description;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
     }
 }
