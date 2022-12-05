@@ -1,29 +1,38 @@
 ﻿@using CtaLinea.QueryModel
-@using CtaLineaApp.Application.Model.Cars
 @inject IQueryUtilityService queryService
 
 <RadzenDropDown 
     Data=@Data 
-    TValue="Car" 
-    @bind-Value=@CurrentCar
-    AllowClear="true" 
-    AllowFiltering="true"
+    @bind-Value="CurrentItem"
+    TValue="CarQueryItem" 
+    AllowClear=@AllowClear
     Change=@OnChange 
+    TextProperty="Description"
+    AllowFiltering=true
+    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+    FilterOperator="StringFilterOperator.Contains"
     Class="w-100">
 </RadzenDropDown>
 
 @code {
+    /*
     [CascadingParameter]
     CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+    */
 
     [Parameter]
     public Guid? AssociateId { get; set; }
+
+    public Guid? _CarId;
+
     [Parameter]
     public Guid? CarId 
     {
-        get { return this.CurrentCar?.Id;  }
+        get { return this._CarId; }
         set
         {
+            _CarId = value;
+            /*
             if (value != null)
             {
                 CurrentCar = (from d in this.Data
@@ -34,19 +43,19 @@
             {
                 CurrentCar = null;
             }
+            */
         }
     }
     [Parameter]
     public EventCallback<Guid?> CarIdChanged { get; set; }
-
     [Parameter]
     public bool AllowClear { get; set; } = false;
 
     QueryDefinition _servicesQueryDef = new QueryDefinition();
-    Car[]? Data = null; 
+    CarQueryItem[]? Data = null; 
     int RowCount = 0;
     bool isLoading = false;
-    Car? CurrentCar = null;
+    CarQueryItem? CurrentItem = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -80,7 +89,7 @@
         this._servicesQueryDef.Page = 1;
         this._servicesQueryDef.PageSize = 100000;
 
-        var result = await queryService.GetListAsync<Car>(
+        var result = await queryService.GetListAsync<CarQueryItem>(
                     this._servicesQueryDef);
 
         if (result != null)

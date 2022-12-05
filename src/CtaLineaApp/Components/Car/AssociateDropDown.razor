@@ -1,23 +1,24 @@
 ﻿@using CtaLinea.QueryModel
 @inject IQueryUtilityService queryService
 
-<RadzenButton Click=@Btn_Click Text="Schiza !"></RadzenButton>
 <RadzenDropDown 
-    @ref=@dropDown
     Data=@Data 
     @bind-Value="CurrentItem"
     TValue="AssociateQueryItem" 
     AllowClear=@AllowClear
     Change=@OnChange 
     TextProperty="Description"
+    AllowFiltering=true
+    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+    FilterOperator="StringFilterOperator.Contains"
     Class="w-100">
 </RadzenDropDown>
 
 @code {
-    RadzenDropDown<AssociateQueryItem> dropDown;
-
+    /*
     [CascadingParameter]
     CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+    */
 
     public Guid? _AssociateId;
     [Parameter]
@@ -26,7 +27,20 @@
         get { return this._AssociateId;  }
         set
         {
-            _AssociateId = value;
+            if (_AssociateId != value)
+            {
+                _AssociateId = value;
+                if (this._AssociateId != null)
+                {
+                    this.CurrentItem = (from d in this.Data
+                                        where d.Id == this._AssociateId
+                                        select d).SingleOrDefault();
+                }
+                else
+                {
+                    this.CurrentItem = null;
+                }
+            }
         }
     }
     [Parameter]
@@ -41,6 +55,14 @@
     bool isLoading = false;
     AssociateQueryItem? CurrentItem = null;
 
+    public AssociateQueryItem? SelectedASsociateData 
+    {
+        get
+        {
+            return this.CurrentItem;
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         this._servicesQueryDef.EndPoint = Constants.Endpoint_Associates;
@@ -52,11 +74,6 @@
     {
 
         await Task.CompletedTask;
-    }
-
-    private void Btn_Click ()
-    {
-        string s = string.Empty;
     }
 
     private async Task LoadData ()
@@ -80,31 +97,15 @@
         }
     }
 
-        /*
-        private void  SelectCurrent (
-        Guid id)
-        {
-        if (_AssociateId != id)
-        {
-        _AssociateId = id;
-        this.CurrentItem = (from d in this.Data
-        where d.Id == id
-        select d).SingleOrDefault();
-            if (dropDown != null)
-            {
-            dropDown.SelectItem(this.CurrentItem, false);
-    }
-    }
-    }
-    */
-
     private async Task OnChange (object value)
     {
         this._AssociateId = (value as AssociateQueryItem)?.Id;
         await AssociateIdChanged.InvokeAsync(this.AssociateId);
     }
+    /*
     private void OnSelectedItemChanged(object value)
     {
         this._AssociateId = (value as AssociateQueryItem)?.Id;
     }
+    */
 }
