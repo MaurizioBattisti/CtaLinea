@@ -1,22 +1,42 @@
 ﻿@using CtaLinea.QueryModel
 @inject IQueryUtilityService queryService
 
-<RadzenDropDown 
-    Data=@Data 
-    @bind-Value="CurrentItem"
-    TValue="CarQueryItem" 
-    AllowClear=@AllowClear
-    Change=@OnChange 
-    AllowFiltering=true
-    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-    FilterOperator="StringFilterOperator.Contains"
-    Class="w-100">
-    <Template>
-        <div class="@GetClassByStatus(context as CarQueryItem)" >
-            @((context as CarQueryItem).Description)
-        </div>
-    </Template>
-</RadzenDropDown>
+<RadzenDropDownDataGrid 
+        Data=@Data 
+        TValue="CarQueryItem" 
+        @bind-Value="CurrentItem"
+        AllowVirtualization="true"
+        AllowFiltering="true" 
+        AllowSorting="true"
+        AllowClear="@AllowClear"
+        Count="@RowCount"
+        IsLoading=@isLoading
+        TextProperty="Description" 
+        Change=@OnChange 
+        Class="w-100">
+    <EmptyTemplate>
+        <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun mezzo trovato !</p>
+    </EmptyTemplate>
+    <Columns>
+        <RadzenDropDownDataGridColumn Property="Id" Title="ID" Visible=false />
+        <RadzenDropDownDataGridColumn Property="Description" Title="Descrizione"  Width="200px"/>
+        <RadzenDropDownDataGridColumn Property="BsCarId" Title="Cod. B.S." Width="100px"/>
+
+        <RadzenDropDownDataGridColumn Property="RegNumber" Title="Targa"  Width="120px" />
+        <RadzenDropDownDataGridColumn Property="NrSittings" Title="Posti" Width="100px"/>
+
+        <RadzenDropDownDataGridColumn Property="PrimaryCar" Title="Titolare" Width="100px"/>
+        <RadzenDropDownDataGridColumn Property="SpareCar" Title="Scorta" Width="100px"/>
+
+        <RadzenDropDownDataGridColumn Property="FirstRegistration" Title="Prima imm." FormatString="{0:dd/MM/yyyy}" Width="150px"/>
+        <RadzenDropDownDataGridColumn  Property="DiscontinuationDate" Title="Vendita " FormatString="{0:dd/MM/yyyy}" Width="150px"/>
+
+        <RadzenDropDownDataGridColumn Property="ChassisNumber" Title="Nr. Telaio" Width="150px"/>
+
+        <RadzenDropDownDataGridColumn Property="Active" Title="Attivo" Width="100px"/>
+        <RadzenDropDownDataGridColumn Property="AssociateActive" Title="Ditta Att." Width="150px"/>
+    </Columns>
+</RadzenDropDownDataGrid>
 
 @code {
     /*
@@ -101,16 +121,6 @@
         }
         this.SelectItem(this.CarId);
         this.StateHasChanged();
-    }
-
-    private string GetClassByStatus (
-        CarQueryItem? car)
-    {
-        if (car == null) return string.Empty;
-        if (car.PrimaryCar) return "alert-success";
-        if (car.SpareCar) return "alert-warning";
-        if (car.Active == false || car.AssociateActive == false) return "alert-danger";
-        return string.Empty;
     }
 
     private void SelectItem (Guid? carId)
