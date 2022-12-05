@@ -30,16 +30,7 @@
             if (_AssociateId != value)
             {
                 _AssociateId = value;
-                if (this._AssociateId != null)
-                {
-                    this.CurrentItem = (from d in this.Data
-                                        where d.Id == this._AssociateId
-                                        select d).SingleOrDefault();
-                }
-                else
-                {
-                    this.CurrentItem = null;
-                }
+                this.SelectItem(this._AssociateId);
             }
         }
     }
@@ -84,7 +75,7 @@
         this._servicesQueryDef.Sort = string.Empty;
         this._servicesQueryDef.FullText = string.Empty;
 
-        this._servicesQueryDef.Page = 1;
+        this._servicesQueryDef.Page = 0;
         this._servicesQueryDef.PageSize = 100000;
 
         var result = await queryService.GetListAsync<AssociateQueryItem>(
@@ -95,6 +86,21 @@
             this.Data = result.Items;
             this.RowCount = result.TotalRows;
         }
+    }
+
+    private void SelectItem (Guid? associateId)
+    {
+        if (associateId != null
+            && this.Data != null)
+        {
+            this.CurrentItem = (from d in this.Data
+                        where d.Id == associateId
+                        select d).SingleOrDefault();
+        }
+        else
+        {
+            this.CurrentItem = null;
+        }        
     }
 
     private async Task OnChange (object value)

@@ -19,9 +19,19 @@
     [CascadingParameter]
     CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
     */
-
+    private Guid? _AssociateId;
     [Parameter]
-    public Guid? AssociateId { get; set; }
+    public Guid? AssociateId 
+    {
+        get { return _AssociateId; }
+        set
+        {
+            if (value != _AssociateId)
+            {
+                this.LoadData(value);
+            }
+        }
+    }
 
     public Guid? _CarId;
 
@@ -32,18 +42,7 @@
         set
         {
             _CarId = value;
-            /*
-            if (value != null)
-            {
-                CurrentCar = (from d in this.Data
-                              where d.Id == value.Value
-                              select d).SingleOrDefault();
-            }
-            else
-            {
-                CurrentCar = null;
-            }
-            */
+            this.SelectItem (this._CarId);
         }
     }
     [Parameter]
@@ -60,33 +59,32 @@
     protected override async Task OnInitializedAsync()
     {
         this._servicesQueryDef.EndPoint = Constants.Endpoint_Cars;
-
-        await LoadData();
         this.StateHasChanged();
     }
     protected override async Task OnParametersSetAsync()
     {
         await Task.CompletedTask;
-        if (this.AssociateId  != _AssociateId)
-        {
-            await LoadData();
-        }
     }
 
-    private Guid? _AssociateId;
-    private async Task LoadData ()
+    private async Task LoadData (Guid? associateId)
     {
         await Task.CompletedTask;
-        if (_AssociateId != this.AssociateId) _AssociateId = this.AssociateId;
-        if (this._AssociateId == null) return;
-        string? baseFilter = string.Empty;
-        baseFilter = string.Format("$eq(associateId,'{0}'", _AssociateId.Value);
+        _AssociateId = associateId;
 
-        this._servicesQueryDef.Filter = baseFilter;
-        this._servicesQueryDef.Sort = string.Empty;
+        if (_AssociateId == null)
+        {
+            this.Data = null;
+            this.RowCount = 0;
+            this.CurrentItem = null;
+            this.StateHasChanged();
+            return;
+        }
+
+        this._servicesQueryDef.Filter = string.Format("$eq(associateId,'{0}')", _AssociateId.Value);
+        this._servicesQueryDef.Sort = "regNumber";
         this._servicesQueryDef.FullText = string.Empty;
 
-        this._servicesQueryDef.Page = 1;
+        this._servicesQueryDef.Page = 0;
         this._servicesQueryDef.PageSize = 100000;
 
         var result = await queryService.GetListAsync<CarQueryItem>(
@@ -97,10 +95,29 @@
             this.Data = result.Items;
             this.RowCount = result.TotalRows;
         }
+        this.SelectItem(this.CarId);
+        this.StateHasChanged();
+    }
+
+    private void SelectItem (Guid? carId)
+    {
+        if(carId != null
+            && this.Data != null)
+        {
+            this.CurrentItem = (from d in this.Data
+                        where d.Id == carId
+                        select d)
+                        .SingleOrDefault();
+        }
+        else
+        {
+            this.CurrentItem = null;
+        }
     }
 
     private async Task OnChange (object value)
     {
+        this._CarId = (value as CarQueryItem)?.Id;
         await CarIdChanged.InvokeAsync(this.CarId);
     }
 }

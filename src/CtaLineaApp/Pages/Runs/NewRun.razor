@@ -24,14 +24,8 @@
 
 <RadzenCard>
     <AssociateDropDown @bind-AssociateId="yAssociateId" AllowClear=true />
+    <ChildCarDropDown AssociateId=@yAssociateId @bind-CarId="MyCarId" AllowClear=true />
 </RadzenCard>
-<!--
-<CarDropDown AssociateId=@yAssociateId @bind-CarId="MyCarId" AllowClear=true />
--->
-<RadzenCard>
-    <PorcoDio  />
-</RadzenCard>
-
 
 @code {
     bool EditMode = false;
