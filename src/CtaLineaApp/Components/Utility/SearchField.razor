@@ -1,0 +1,18 @@
+﻿<div>
+	<RadzenTextBox @bind-Value="Text" Placeholder="Cerca..." Change=@(args => Search_OnChange(args)) Class="w-100" />
+</div>
+
+@code {
+	[Parameter]
+	public string? Text { get; set; }
+	[Parameter]
+	public EventCallback<string?> TextChanged { get; set; }
+	[Parameter]
+	public EventCallback<string?> OnSearch { get; set; }
+
+	private async Task Search_OnChange(string value)
+	{
+		await TextChanged.InvokeAsync(value);
+		await OnSearch.InvokeAsync(value);
+	}
+}

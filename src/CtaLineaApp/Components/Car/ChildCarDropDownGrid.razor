@@ -73,6 +73,8 @@
     public EventCallback<Guid?> CarIdChanged { get; set; }
     [Parameter]
     public bool AllowClear { get; set; } = false;
+    [Parameter]
+    public EventCallback<object> Changed { get; set; }
 
     QueryDefinition _servicesQueryDef = new QueryDefinition();
     CarQueryItem[]? Data = null; 
@@ -129,8 +131,8 @@
             && this.Data != null)
         {
             this.CurrentItem = (from d in this.Data
-                        where d.Id == carId
-                        select d)
+                                where d.Id == carId
+                                select d)
                         .SingleOrDefault();
         }
         else
@@ -143,5 +145,6 @@
     {
         this._CarId = (value as CarQueryItem)?.Id;
         await CarIdChanged.InvokeAsync(this.CarId);
+        await Changed.InvokeAsync(this);
     }
 }

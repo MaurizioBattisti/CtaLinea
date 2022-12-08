@@ -1,0 +1,90 @@
+﻿@using CtaLinea.QueryModel
+@inject IQueryUtilityService queryService
+
+<div class="@GetGeneralClass()">
+    <div class="@GetDivPartClass(ColumnType.ASsociate)" >
+        <RadzenLabel Text="Ditta" />
+        <AssociateDropDown Disabled=@Disabled @bind-AssociateId="AssociateId" AllowClear=@AllowClear Changed=@AssociateChanged />
+    </div>
+    <div class="@GetDivPartClass(ColumnType.Car)" >
+        <RadzenLabel Text="Mezzo" />
+        <ChildCarDropDown Disabled=@CarDisabled() AssociateId=@AssociateId @bind-CarId="CarId" AllowClear=@AllowClear Changed=@CarChanged />
+    </div>
+</div>
+
+@code {
+    public enum ColumnType
+    {
+        Unknown,
+        ASsociate,
+        Car
+    }
+
+    [Parameter]
+    public Guid? AssociateId { get; set; }
+    [Parameter]
+    public Guid? CarId { get; set; }
+
+    [Parameter]
+    public bool AllowClear { get; set; } = false;
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+    [Parameter]
+    public bool Inline { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<Guid?> AssociateIdChanged { get; set; }
+    [Parameter]
+    public EventCallback<Guid?> CarIdChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<object> Changed { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await Task.CompletedTask;
+        this.StateHasChanged();
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+
+
+        await Task.CompletedTask;
+    }
+    private string GetGeneralClass()
+    {
+        if (this.Inline == false) return string.Empty; 
+            return "d-flex flex-row";
+    }
+    private string GetDivPartClass(ColumnType ct)
+    {
+        if (this.Inline == false) return string.Empty;
+        switch (ct)
+        {
+            case ColumnType.ASsociate:
+                return "col-md-10";
+            case ColumnType.Car:
+                return "col-md-2";
+            default:
+                return string.Empty;
+        };
+    }
+
+    private async Task AssociateChanged (object value)
+    {
+        await AssociateIdChanged.InvokeAsync(this.AssociateId);
+        await Changed.InvokeAsync(this);
+        this.StateHasChanged();
+    }
+    private async Task CarChanged (object value)
+    {
+        await CarIdChanged.InvokeAsync(this.CarId);
+        await Changed.InvokeAsync(this);
+    }
+    private bool CarDisabled ()
+    {
+        if (this.Disabled == true) return this.Disabled;
+        return this.AssociateId == null;
+    }
+}

@@ -22,10 +22,7 @@
 <RadzenButton Click=@Btn_Click Text="Schiza !"></RadzenButton>
 <RadzenButton Click=@Btn_2_Click Text="imposta mezzo !"></RadzenButton>
 
-<RadzenCard>
-    <AssociateDropDown @bind-AssociateId="yAssociateId" AllowClear=true />
-    <ChildCarDropDown AssociateId=@yAssociateId @bind-CarId="MyCarId" AllowClear=true />
-</RadzenCard>
+<AssociateAndCarDropDown @bind-AssociateId="yAssociateId" @bind-CarId="MyCarId" AllowClear=true />
 
 @code {
     bool EditMode = false;
