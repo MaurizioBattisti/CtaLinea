@@ -16,5 +16,10 @@ namespace CtaLineaApp.Application.Services.Run
             RunItem run);
         IList<RunPeriodGroup> GetPeriodGroups(
             RunItem run);
-    }
+        
+        RunNode CreateNewNode(
+            RunVariation variation);
+        void ReorderNodes(
+            RunVariation variation);
+	}
 }

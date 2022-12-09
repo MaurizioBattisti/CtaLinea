@@ -1,6 +1,8 @@
 ﻿using CtaLinea.Model.Runs;
 using CtaLinea.Model.Base;
 using CtaLineaApp.Application.Model;
+using System.Security.Cryptography;
+using Radzen.Blazor.Rendering;
 
 namespace CtaLineaApp.Application.Services.Run
 {
@@ -44,7 +46,60 @@ namespace CtaLineaApp.Application.Services.Run
             return variation;
         }
 
-        public RunPeriod CreateNewPeriod(
+        public RunNode CreateNewNode (
+			RunVariation variation)
+        {
+            RunNode? lastNode = null;
+
+			if (variation.Nodes != null)
+            {
+                lastNode = (from n in variation.Nodes
+                            orderby n.ProgrNumber descending, n.Hout descending
+							select n)
+                            .FirstOrDefault();
+            }
+
+            var newHour = new TimeSpan(8, 1, 0);
+            if (lastNode != null)
+            {
+                newHour = lastNode.Hout.Add(new TimeSpan(0, 5, 1));
+			}
+
+            var node = new RunNode()
+            {
+                RunNodeId = Guid.NewGuid(),
+                ProgrNumber = lastNode?.ProgrNumber + 1  ?? 1,
+                Hout = newHour
+			};
+            if (variation.Nodes == null)
+            {
+                variation.Nodes = new List<RunNode>() { node };
+			}
+            else
+            {
+                variation.Nodes.Add(node);
+            }
+
+			return node;
+		}
+        public void ReorderNodes (
+			RunVariation variation)
+		{
+            int progr = 0;
+			if (variation.Nodes != null)
+			{
+				var list = (from n in variation.Nodes
+							orderby n.Hout ascending, n.ProgrNumber ascending
+							select n)
+							.ToList ();
+                foreach (var n in list)
+                {
+                    n.ProgrNumber = ++progr;
+				}
+			}
+		}
+
+		public RunPeriod CreateNewPeriod(
             RunItem run,
             DateTime? startDate = null,
             DateTime? endDate = null)

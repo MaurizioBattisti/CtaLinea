@@ -1,4 +1,5 @@
-﻿@inject IRunService RunService
+﻿@using CtaLinea.Model.Runs
+@inject IRunService RunService
 
 <RadzenTabs 
 	Change=@OnTabChange 
@@ -51,21 +52,39 @@
 					<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.RequestedFrequency</strong></RadzenText>
 				</div>
 				<div class="col-4">
-					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Km</RadzenText>
-					<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.Km</strong></RadzenText>
+					@if(this.EditMode == true)
+					{
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Km</RadzenText>
+						<KmInput @bind-Value="Variation.Km" />
 
-					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Annotazioni</RadzenText>
-					<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.Note</strong></RadzenText>
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Annotazioni</RadzenText>
+						<RadzenTextArea @bind-Value="Variation.Note" Class="w-100"  />
+					}
+					else
+					{
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Km</RadzenText>
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.Km</strong></RadzenText>
+
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Annotazioni</RadzenText>
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.Note</strong></RadzenText>
+					}
 				</div>
 			</div>
 		</RadzenTabsItem>
 		<RadzenTabsItem  Text="Nodi">
 			<div class="d-flex flex-row">
-				@foreach(var node in this.Nodes)
+				@foreach (var node in this.GetNodes())
 				{
 					<RunNodeView CurrentRun=@CurrentRun EditMode=@EditMode Variation=@Variation Node=@node />
 				}
 			</div>
+			@if(this.EditMode == true)
+			{
+				<div class="d-flex flex-row">
+					<RadzenButton Click=@AddNote_Click Text="Nuovo Nodo" />
+					<RadzenButton Click=@Reorder_Click Text="Riordina" ButtonStyle="ButtonStyle.Secondary" />
+				</div>
+			}
 		</RadzenTabsItem>
 	</Tabs>
 </RadzenTabs>
@@ -78,26 +97,30 @@
 	[Parameter]
 	public bool EditMode { get; set; } = false;
 
-	IList<RunNode> Nodes { get; set; } = new List<RunNode>();
-
 	protected override async Task OnInitializedAsync()
+	{
+
+		await base.OnInitializedAsync();
+	}
+
+	protected override async Task OnParametersSetAsync()
 	{
 
 		await base.OnParametersSetAsync();
 	}
 
-	protected override async Task OnParametersSetAsync()
+	private IList<RunNode> GetNodes()
 	{
+		var nodes = new List<RunNode>();
 		if (this.Variation.Nodes != null)
 		{
 
-			this.Nodes = (from n in this.Variation.Nodes
+			nodes = (from n in this.Variation.Nodes
 						orderby n.ProgrNumber, n.Hout
 						select n)
-					.ToList();
+				.ToList();
 		}
-
-		await base.OnParametersSetAsync();
+		return nodes;
 	}
 
 	private string FormatDate (
@@ -114,6 +137,17 @@
 		var dt = new DateTime(1, 1, 1);
 		dt = dt.Add(time.Value);
 		return string.Format("{0:HH:mm}", dt);
+	}
+
+	private void AddNote_Click()
+	{
+		this.RunService.CreateNewNode(this.Variation);
+		this.StateHasChanged();
+	}
+	private void Reorder_Click ()
+	{
+		RunService.ReorderNodes(this.Variation);
+		this.StateHasChanged();
 	}
 
 	void OnTabChange(int index)
