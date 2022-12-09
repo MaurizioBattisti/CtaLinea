@@ -13,14 +13,37 @@
 					}
 					<div class="col-4">
 						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Riferimento appalto</RadzenText>
-						<RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentRun.ContractData?.ContractDescription</strong></RadzenText>
+						@if (this.SuperEditMode == true)
+						{
+							<RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentRun.ContractData?.ContractDescription</strong></RadzenText>
+						}
+						else
+						{
+							<RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentRun.ContractData?.ContractDescription</strong></RadzenText>
+						}
 						
 						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Riga dell'appalto</RadzenText>
-						<RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentRun.ContractRowNumber</strong></RadzenText>
-						
-						@if (this.CurrentRun.Extra == true)
+						@if (this.EditMode == true)
 						{
-							<RadzenText TextStyle="TextStyle.Body1"><strong>Extra capitolato</strong></RadzenText>
+							<RadzenTextBox @bind-Value="this.CurrentRun.ContractRowNumber" MaxLength="20"  Class="w-100" />
+       
+							<div class="row-flex-row">
+								<RadzenCheckBox @bind-Value=@this.CurrentRun.Extra  Name="ExtraContract" TValue="bool"  />
+								<RadzenLabel Text="Extra Capitolato" Component="Corsa furoi dal conteggio del capitolato di appalto" Style="margin-left: 8px; vertical-align: middle;" />
+							</div>
+						}
+						else
+						{
+							<RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentRun.ContractRowNumber</strong></RadzenText>
+							@if (this.CurrentRun.Extra == true)
+							{
+								<RadzenText TextStyle="TextStyle.Body1"><strong>Extra capitolato</strong></RadzenText>
+							}
+						}
+						@if(this.EditMode == true)
+						{
+							// bottone per attivatre disattivare il super edit mode
+
 						}
 					</div>
 					<div class="col-2">
@@ -33,18 +56,42 @@
 					</div>
 					<div class="col-2">
 						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Cors</RadzenText>
-						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Inizio</RadzenText>
-						<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDate(CurrentRun.StartDate)</strong></RadzenText>
-						
-						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Fine</RadzenText>
-						<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDate(CurrentRun.EndDate)</strong></RadzenText>
-
+						@if(this.EditMode == true)
+						{
+							<DateRangeSelector 
+								@bind-StartDate="CurrentRun.StartDate"
+								@bind-EndDate="CurrentRun.EndDate" 
+								Min=@CurrentRun.ContractData?.StartDate
+								Max=@CurrentRun.ContractData?.EndDate 
+								/>
+						}
+						else
+						{
+							<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Inizio</RadzenText>
+							<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDate(CurrentRun.StartDate)</strong></RadzenText>
+							<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Fine</RadzenText>
+							<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDate(CurrentRun.EndDate)</strong></RadzenText>
+						}
 						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Giorni richiesti</RadzenText>
-						<RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentRun.RequestedDays</strong></RadzenText>
+						@if(this.EditMode == true)
+						{
+							<RadzenNumeric TValue="int?" @bind-Value="CurrentRun.RequestedDays" Class="w-100" />
+						}
+						else
+						{
+							<RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentRun.RequestedDays</strong></RadzenText>
+						}
 					</div>
 					<div class="col-4">
 						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Note</RadzenText>
-						<RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentRun.Note</strong></RadzenText>
+						@if(this.EditMode == true)
+						{
+							<RadzenTextArea @bind-Value="CurrentRun.Note" Class="w-100 h-100"  />
+						}
+						else
+						{
+							<RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentRun.Note</strong></RadzenText>
+						}
 					</div>
 				</div>
 			</RadzenCard>
@@ -99,6 +146,7 @@
 	public RunItem CurrentRun { get; set; } = new RunItem();
 	[Parameter]
 	public bool EditMode { get; set; } = false;
+	private bool SuperEditMode = false;
 
 	public RunVariation DefaultVariant = new RunVariation();
 	public IList<RunVariation> OtherVariations = new List<RunVariation>();

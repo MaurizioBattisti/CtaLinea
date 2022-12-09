@@ -3,11 +3,11 @@
 
 <div class="@GetGeneralClass()">
     <div class="@GetDivPartClass(ColumnType.ASsociate)" >
-        <RadzenLabel Text="Ditta" />
+        <RadzenText TextStyle="TextStyle.Overline" Text="Ditta" />
         <AssociateDropDown Disabled=@Disabled @bind-AssociateId="AssociateId" AllowClear=@AllowClear Changed=@AssociateChanged />
     </div>
     <div class="@GetDivPartClass(ColumnType.Car)" >
-        <RadzenLabel Text="Mezzo" />
+        <RadzenText TextStyle="TextStyle.Overline" Text="Mezzo" />
         <ChildCarDropDown Disabled=@CarDisabled() AssociateId=@AssociateId @bind-CarId="CarId" AllowClear=@AllowClear Changed=@CarChanged />
     </div>
 </div>

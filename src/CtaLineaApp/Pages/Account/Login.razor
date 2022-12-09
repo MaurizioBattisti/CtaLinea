@@ -1,6 +1,7 @@
 ﻿@page "/account/login"
 @inject IAccountService AccountService
 @inject NavigationManager NavigationManager
+@inject NotificationService notificationService
 
 <PageTitle>@Constants.App_Title - Login</PageTitle>
 
@@ -73,8 +74,12 @@
         }
         catch (Exception ex)
         {
-            // AlertService.Error(ex.Message);
             loading = false;
+            notificationService.Notify(
+                NotificationSeverity.Error,
+                "Login fallito",
+                ex.Message
+            );
             StateHasChanged();
         }
     }

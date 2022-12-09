@@ -1,4 +1,5 @@
 ﻿using CtaLineaApp.Application.Model.Account;
+using CtaLineaApp.Application.Model.Utility;
 using CtaLineaApp.Application.Services.Helper;
 using CtaLineaApp.Helpers;
 using Microsoft.AspNetCore.Components;
@@ -161,15 +162,40 @@ namespace CtaLineaApp.Application.Services.Helper
             // throw exception on error response
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-                if (error != null)
+                LineaProblemDetailsException? probelmExc = null;
+                try
                 {
-                    throw new Exception(error["message"]);
+                    var options = new JsonSerializerOptions();
+                    options.PropertyNameCaseInsensitive = true;
+                    options.Converters.Add(new StringConverter());
+
+                    var myPRob = await response.Content.ReadFromJsonAsync<LineaProblemDetails>(options);
+                    if (myPRob != null)
+                    {
+                        probelmExc = new LineaProblemDetailsException(myPRob.Detail, myPRob);
+                    }
                 }
-                else
+                catch 
                 {
-                    throw new Exception("Errore sconosciuto");
+                    // si mangia l'errore e ci riprova
                 }
+                if (probelmExc  == null)
+                {
+                    try
+                    {
+                        var strPRoblem = await response.Content.ReadAsStringAsync();
+                        if (strPRoblem != null)
+                        {
+                            probelmExc = new LineaProblemDetailsException(strPRoblem);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        probelmExc = new LineaProblemDetailsException("Errore sconosciutoo", ex);
+                    }
+                }
+                if (probelmExc == null) probelmExc= new LineaProblemDetailsException("Errore sconosciutoo");
+                throw probelmExc;
             }
         }
     }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ZzSoft.Api.Utility.Base;
 
@@ -45,7 +46,12 @@ namespace CtaLineaWebApi.Controllers
 
             if (response == null)
             {
-                return BadRequest(new { message = "Username or password is incorrect" });
+                return BadRequest(
+                    new ValidationProblemDetails (new Dictionary<string, string[]>())
+                    {
+                        Title = "Login FAllito",
+                        Detail = "Utente o password errati"
+                    });
             }
 
             return Ok(response);

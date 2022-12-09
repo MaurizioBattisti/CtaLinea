@@ -9,18 +9,39 @@
 		<RadzenTabsItem Text="Dati">
 			<div class="d-flex flex-row">
 				<div class="col-2">
-					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Nr. Linea</RadzenText>
-					<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.LineNumber</strong></RadzenText>
+					@if(this.EditMode == true)
+					{
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Nr. Linea</RadzenText>
+						<RadzenNumeric TValue="int?" @bind-Value=@Variation.LineNumber Class="w-100" />
 					
-					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Nr. Corsa</RadzenText>
-					<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.RunNumber</strong></RadzenText>
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Nr. Corsa</RadzenText>
+						<RadzenNumeric TValue="int?" @bind-Value=@Variation.RunNumber Class="w-100" />
+					}
+					else
+					{
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Nr. Linea</RadzenText>
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.LineNumber</strong></RadzenText>
+					
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Nr. Corsa</RadzenText>
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.RunNumber</strong></RadzenText>
+					}
 				</div>
 				<div class="col-2">
-					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Ora inizio</RadzenText>
-					<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatTime(Variation.StartTime)</strong></RadzenText>
+					@if(this.EditMode == true)
+					{
+						<TimeRangeSelector 
+							@bind-StartTime="Variation.StartTime"
+							@bind-EndTime="Variation.EndTime"
+							/>
+					}
+					else
+					{
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Ora inizio</RadzenText>
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatTime(Variation.StartTime)</strong></RadzenText>
 					
-					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Ora fine</RadzenText>
-					<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatTime(Variation.EndTime)</strong></RadzenText>
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Ora fine</RadzenText>
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatTime(Variation.EndTime)</strong></RadzenText>
+					}
 				</div>
 				<div class="col-4">
 					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Calendario</RadzenText>

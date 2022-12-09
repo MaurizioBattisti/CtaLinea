@@ -1,0 +1,52 @@
+﻿@inject IApplicationSettings AppSettings;
+
+<RadzenDatePicker 
+	TValue=DateTime?
+	@bind-Value=@NyValue
+	DateFormat="hh:MM" 
+	Change=@OnChange 
+	ShowTime="true" 
+	TimeOnly=true
+	Culture=@AppSettings.CurrentCulture
+	AllowClear=@AllowClear
+	Disabled=@Disabled
+	Class="w-100" >
+</RadzenDatePicker>
+@code {
+	private DateTime _ZeroDate = new DateTime(1, 1, 1, 0, 0, 0);
+	private DateTime? NyValue;
+	private TimeSpan? _Value;
+	[Parameter]
+	public TimeSpan? Value 
+	{ 
+		get { return this._Value;  }
+		set
+		{
+			this._Value = value;
+			if (this._Value != null)
+			{
+				this.NyValue = _ZeroDate.Add(this._Value.Value);
+			}
+			else
+			{
+				this.NyValue = null; 
+			}
+		}
+	}
+	[Parameter]
+	public EventCallback<TimeSpan?> ValueChanged { get; set; }
+	[Parameter]
+	public EventCallback<object> Changed { get; set; }
+
+	[Parameter]
+	public bool AllowClear { get; set; } = false;
+	[Parameter]
+	public bool Disabled { get; set; } = false;
+
+	private void OnChange (DateTime? value)
+	{
+		_Value = (value != null ? value - this._ZeroDate : null);
+		ValueChanged.InvokeAsync(this.Value);
+		this.Changed.InvokeAsync(this);
+	}
+}

@@ -23,6 +23,8 @@
 <RadzenButton Click=@Btn_2_Click Text="imposta mezzo !"></RadzenButton>
 
 <AssociateAndCarDropDown @bind-AssociateId="yAssociateId" @bind-CarId="MyCarId" AllowClear=true />
+<DateRangeSelector @bind-StartDate="MyStart" @bind-EndDate="MyEnd" Inline=true />
+<TimeRangeSelector @bind-StartTime="MyStartTime" @bind-EndTime="MyEndTime" Inline=true />
 
 @code {
     bool EditMode = false;
@@ -37,6 +39,9 @@
             var run= RunService.CreateNewRun(ContractService.Current);
 
             // TODO: togliere questo codice
+            run.ContractId = ContractService.Current.ContractId;
+            run.ContractData = ContractService.Current;
+
             if (run.Variations != null)
             {
                 run.Variations[0].StartTime = new TimeSpan(10, 5, 0);
@@ -89,12 +94,17 @@
         await Task.CompletedTask;
     }
 
+    DateTime? MyStart = null;
+    DateTime? MyEnd = null;
+    TimeSpan? MyStartTime = null;
+    TimeSpan? MyEndTime = null;
 
     Guid? yAssociateId = null;
     Guid? MyCarId = null;
     private void Btn_Click ()
     {
-        string s = string.Empty;
+        this.EditMode = !this.EditMode;
+        this.StateHasChanged();
     }
     private void Btn_2_Click ()
     {

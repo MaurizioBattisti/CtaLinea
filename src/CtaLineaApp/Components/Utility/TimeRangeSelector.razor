@@ -1,0 +1,61 @@
+﻿<div class="@GetGeneralClass()">
+    <div class="@GetColumnClass()" >
+        <RadzenText TextStyle="TextStyle.Overline" Text="Ora Inizio" />
+        <TimeSelector 
+            @bind-Value="StartTime"
+            Changed=@OnStartTimeChanged
+            Disabled=@Disabled
+            AllowClear=true
+            />
+    </div>
+    <div class="@GetColumnClass()" >
+        <RadzenText TextStyle="TextStyle.Overline" Text="Ora Fine" />
+        <TimeSelector 
+            @bind-Value="EndTime"
+            Changed=@OnEndTimeChanged
+            Disabled=@Disabled
+            AllowClear=true
+            />
+    </div>
+</div>
+@code {
+    [Parameter]
+    public TimeSpan? StartTime { get; set; }
+    [Parameter]
+    public EventCallback<TimeSpan?> StartTimeChanged { get; set; }
+    [Parameter]
+    public TimeSpan? EndTime { get; set; }
+    [Parameter]
+    public EventCallback<TimeSpan?> EndTimeChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<object> Changed { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+    [Parameter]
+    public bool Inline { get; set; } = false;
+
+    private string GetGeneralClass()
+    {
+        if (this.Inline == false) return string.Empty; 
+        return "d-flex flex-row";
+    }
+    private string GetColumnClass()
+    {
+        if (this.Inline == false) return string.Empty;
+        return "col-md-6";
+    }
+
+    private void OnStartTimeChanged (object value)
+    {
+        this.StartTimeChanged.InvokeAsync(this.StartTime);
+        this.Changed.InvokeAsync(this);
+
+    }
+    private void OnEndTimeChanged (object value)
+    {
+        this.EndTimeChanged.InvokeAsync(this.EndTime);
+        this.Changed.InvokeAsync(this);
+    }
+}

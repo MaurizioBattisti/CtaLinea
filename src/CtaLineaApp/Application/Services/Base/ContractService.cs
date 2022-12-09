@@ -10,7 +10,7 @@ namespace CtaLineaApp.Application.Services.Base
 
         public ContractService()
         {
-            this.Current = new Contract() { ContractId = 1, ContractDescription = "Appalto 2022 / 2026" };
+            this.Current = new Contract() { ContractId = 1, ContractDescription = "Appalto 2022 / 2026" , StartDate= new DateTime(2022, 9, 1), EndDate=new DateTime(2026, 8, 31) };
             _list = new List<Contract>()
             {
                 Current

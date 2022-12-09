@@ -5,6 +5,7 @@ using System.Net.Http;
 using CtaLineaApp.Application.Services.Utility;
 using CtaLineaApp.Application.Services.Run;
 using CtaLineaApp.Application.Services.Base;
+using Radzen;
 
 namespace CtaLineaApp
 {
@@ -24,6 +25,12 @@ namespace CtaLineaApp
             });
 
             builder.Services
+                // radzen registration
+                .AddScoped<NotificationService>()
+                .AddScoped<DialogService>()
+
+                // My
+                .AddScoped<IApplicationSettings, ApplicationSettings>()
                 .AddScoped<IAccountService, AccountService>()
                 // .AddScoped<IAlertService, AlertService>()
                 .AddScoped<IHttpService, HttpService>()
