@@ -4,7 +4,7 @@ using CtaLineaApp.Application.Model;
 
 namespace CtaLineaApp.Application.Services.Run
 {
-    public interface IRunService
+    public interface IRunModelService
     {
         RunPeriod CreateNewPeriod(RunItem run, DateTime? startDate = null, DateTime? endDate = null);
         RunItem CreateNewRun(Contract contract);
@@ -18,8 +18,16 @@ namespace CtaLineaApp.Application.Services.Run
             RunItem run);
         
         RunNode CreateNewNode(
-            RunVariation variation);
-        void ReorderNodes(
+            RunVariation variation,
+            bool addToList = true);
+        void AddNodeToVariation(
+            RunVariation variation,
+            RunNode node);
+        void RemoveNode(
+            RunVariation variation,
+            RunNode node);
+
+		void ReorderNodes(
             RunVariation variation);
 	}
 }

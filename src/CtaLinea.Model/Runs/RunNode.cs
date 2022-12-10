@@ -8,10 +8,19 @@ namespace CtaLinea.Model.Runs
         public string? CollectionPointId { get; set; }
         public CollectionPointSimple? CollectionPointData { get; set; }
 
-        public TimeSpan Hout { get; set; }
+        public TimeSpan Hour { get; set; }
         public int ProgrNumber { get; set; }
 
-        public float? Longitude { get; set; }
-        public float? Latitude { get; set; }
-    }
+        public RunNode GetClone ()
+        {
+            return new RunNode()
+            {
+				RunNodeId = this.RunNodeId,
+				CollectionPointId = this.CollectionPointId,
+				CollectionPointData = this.CollectionPointData,
+				Hour = this.Hour,
+				ProgrNumber = this.ProgrNumber
+        	};
+		}
+	}
 }

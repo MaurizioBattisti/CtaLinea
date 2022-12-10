@@ -42,7 +42,7 @@ namespace CtaLineaApp
                 // Serivizo per la gestiondei calendari
                 .AddScoped<ICalendarService, CalendarService>()
                 // serivi per gestire le corse
-                .AddScoped<IRunService, RunService> ()
+                .AddScoped<IRunModelService, RunModelService> ()
                 ;
 
 

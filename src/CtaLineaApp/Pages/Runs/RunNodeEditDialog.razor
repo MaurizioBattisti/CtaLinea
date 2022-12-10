@@ -1,0 +1,59 @@
+﻿
+<div class="flex-md-row">
+	<div class="col-md-2">
+		<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Poeizione</RadzenText>
+		<RadzenNumeric TValue="int" @bind-Value="Node.ProgrNumber" class="w-100" Change=@OnProgrChanged />
+
+		<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Orario</RadzenText>
+		<TimeSelector @bind-Value="Hour" Changed=@OnTimeChanged />
+		
+		<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Codice Nodo</RadzenText>
+		<RadzenTextBox @bind-Value="Node.CollectionPointId" MaxLength="20" class="w-100" Change=@OnTextChanged />
+		
+		<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Descrizioe Nodo</RadzenText>
+		<RadzenText TextStyle="TextStyle.Body1"><strong>@Node.CollectionPointData?.Description</strong></RadzenText>
+	</div>
+	<div class="col-md-10">
+		<div class="d-flex">
+
+		</div>
+		<div class="flex-fill">
+		</div>
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public RunNode Node { get; set; } = new RunNode();
+	[Parameter]
+	public EventCallback<RunNode> NodeChanged { get; set; }
+
+	public TimeSpan? Hour
+	{
+		get { return this.Node.Hour; }
+		set
+		{
+			if (value == null)
+			{
+				this.Node.Hour = new TimeSpan(8, 0, 0);
+			}
+			else
+			{
+				this.Node.Hour = value.Value;
+			}
+		}
+	}
+	private void OnProgrChanged (int value)
+	{
+		this.NodeChanged.InvokeAsync(this.Node);
+	}
+	private void OnTimeChanged (object value)
+	{
+		this.NodeChanged.InvokeAsync(this.Node);
+	}
+	private void OnTextChanged (string? value)
+	{
+		this.NodeChanged.InvokeAsync(this.Node);
+	}
+
+}

@@ -1,5 +1,6 @@
 ﻿@using CtaLinea.Model.Runs
-@inject IRunService RunService
+@inject IRunModelService RunModelService
+@inject DialogService DialogService
 
 <RadzenTabs 
 	Change=@OnTabChange 
@@ -73,10 +74,41 @@
 		</RadzenTabsItem>
 		<RadzenTabsItem  Text="Nodi">
 			<div class="d-flex flex-row">
-				@foreach (var node in this.GetNodes())
-				{
-					<RunNodeView CurrentRun=@CurrentRun EditMode=@EditMode Variation=@Variation Node=@node />
-				}
+
+				<RadzenDataGrid
+					AllowFiltering="false" AllowPaging="false" AllowSorting="false"
+								Data="@this.GetNodes()"
+								TItem="RunNode">
+					<Columns>
+						<RadzenDataGridColumn Width="50px" TItem="RunNode" Title="#" TextAlign="TextAlign.Center" Property="ProgrNumber" />
+						<RadzenDataGridColumn TItem="RunNode" Title="Orafio" Width="70px">
+							<Template Context="data">
+								@this.FormatTime(data.Hour)
+							</Template>
+						</RadzenDataGridColumn>
+						<RadzenDataGridColumn TItem="RunNode" Property="CollectionPointId" Title="Codice Nodo" Width="120px" />
+						<RadzenDataGridColumn TItem="RunNode" Title="Descrizione Nodo" >
+							<Template Context="data">
+								@data.CollectionPointData?.Description
+							</Template>
+						</RadzenDataGridColumn>
+
+						@if (this.EditMode == true)
+						{
+							<RadzenDataGridColumn Width="100px" TItem="RunNode">
+								<Template Context="data">
+									<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
+											  Icon="edit"
+											  Class="m-1" Click=@(() => EditNode_Click(data)) Text="" />
+									<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
+											  Icon="delete"
+											  Class="m-1" Click=@(() => DeleteNode_Click(data)) Text="" />
+								</Template>
+							</RadzenDataGridColumn>
+						}
+					</Columns>
+				</RadzenDataGrid>
+
 			</div>
 			@if(this.EditMode == true)
 			{
@@ -97,6 +129,9 @@
 	[Parameter]
 	public bool EditMode { get; set; } = false;
 
+	// nodo per il dialog
+	private RunNode? DialogNode = null;
+
 	protected override async Task OnInitializedAsync()
 	{
 
@@ -116,7 +151,7 @@
 		{
 
 			nodes = (from n in this.Variation.Nodes
-						orderby n.ProgrNumber, n.Hout
+						orderby n.ProgrNumber, n.Hour
 						select n)
 				.ToList();
 		}
@@ -139,19 +174,73 @@
 		return string.Format("{0:HH:mm}", dt);
 	}
 
-	private void AddNote_Click()
+	private async Task DeleteNode_Click(RunNode node)
 	{
-		this.RunService.CreateNewNode(this.Variation);
+		this.RunModelService.RemoveNode(
+			this.Variation,
+			node);
+		
+		this.StateHasChanged();
+		await Task.CompletedTask;
+	}
+	private async Task EditNode_Click(RunNode node)
+	{
+		this.DialogNode = node.GetClone();
+
+		if (await this.ShowNodeDialog("Modifica fermata (Nodo)") == true)
+		{
+			// elimina il vecchio nodo
+			this.RunModelService.RemoveNode(
+				this.Variation,
+				node);
+			this.RunModelService.AddNodeToVariation(
+				this.Variation,
+				this.DialogNode);
+		}
+		this.DialogNode = null;
+		this.StateHasChanged();
+
+		await Task.CompletedTask;
+	}
+	private async Task AddNote_Click()
+	{
+		this.DialogNode = this.RunModelService.CreateNewNode(this.Variation, false);
+
+		if (await this.ShowNodeDialog ("Nuova fermata (Nodo)") == true)
+		{
+			this.RunModelService.AddNodeToVariation(
+				this.Variation, 
+				this.DialogNode);
+		}
+		this.DialogNode = null;
 		this.StateHasChanged();
 	}
+
+	private async Task<bool> ShowNodeDialog (
+		string title)
+	{
+		bool? result = await DialogService.OpenAsync(
+			title,
+			ds =>
+				@<div>
+					<RunNodeEditDialog Node=@DialogNode />
+					<RadzenButton Text="Ok" Click="()=>ds.Close(true)" ButtonStyle="ButtonStyle.Primary" />
+					<RadzenButton Text="Annulla" Click="()=>ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" />
+				</div>
+			, new DialogOptions() { Width = "1000px" }
+			);
+
+		return (result != null && result == true);
+	}
+
 	private void Reorder_Click ()
 	{
-		RunService.ReorderNodes(this.Variation);
+		RunModelService.ReorderNodes(this.Variation);
 		this.StateHasChanged();
 	}
 
 	void OnTabChange(int index)
-    {
-        
-    }
+	{
+
+	}
 }

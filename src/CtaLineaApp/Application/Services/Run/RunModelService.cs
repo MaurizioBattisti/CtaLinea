@@ -6,8 +6,8 @@ using Radzen.Blazor.Rendering;
 
 namespace CtaLineaApp.Application.Services.Run
 {
-    public class RunService 
-        : IRunService
+    public class RunModelService 
+        : IRunModelService
     {
         public RunItem CreateNewRun(
             Contract contract)
@@ -47,14 +47,15 @@ namespace CtaLineaApp.Application.Services.Run
         }
 
         public RunNode CreateNewNode (
-			RunVariation variation)
+			RunVariation variation,
+            bool addToList = true)
         {
             RunNode? lastNode = null;
 
 			if (variation.Nodes != null)
             {
                 lastNode = (from n in variation.Nodes
-                            orderby n.ProgrNumber descending, n.Hout descending
+                            orderby n.ProgrNumber descending, n.Hour descending
 							select n)
                             .FirstOrDefault();
             }
@@ -62,34 +63,50 @@ namespace CtaLineaApp.Application.Services.Run
             var newHour = new TimeSpan(8, 1, 0);
             if (lastNode != null)
             {
-                newHour = lastNode.Hout.Add(new TimeSpan(0, 5, 1));
+                newHour = lastNode.Hour.Add(new TimeSpan(0, 5, 1));
 			}
 
             var node = new RunNode()
             {
                 RunNodeId = Guid.NewGuid(),
                 ProgrNumber = lastNode?.ProgrNumber + 1  ?? 1,
-                Hout = newHour
+                Hour = newHour
 			};
-            if (variation.Nodes == null)
+            if (addToList == true) 
             {
-                variation.Nodes = new List<RunNode>() { node };
-			}
-            else
-            {
-                variation.Nodes.Add(node);
+                this.AddNodeToVariation(variation, node); 
             }
 
 			return node;
 		}
-        public void ReorderNodes (
+        public void AddNodeToVariation (
+			RunVariation variation,
+            RunNode node)
+        {
+			if (variation.Nodes == null)
+			{
+				variation.Nodes = new List<RunNode>() { node };
+			}
+			else
+			{
+				variation.Nodes.Add(node);
+			}
+		}
+        public void RemoveNode (
+			RunVariation variation,
+			RunNode node)
+        {
+            if (variation.Nodes == null) return;
+			variation.Nodes.Remove(node);
+		}
+		public void ReorderNodes (
 			RunVariation variation)
 		{
             int progr = 0;
 			if (variation.Nodes != null)
 			{
 				var list = (from n in variation.Nodes
-							orderby n.Hout ascending, n.ProgrNumber ascending
+							orderby n.Hour ascending, n.ProgrNumber ascending
 							select n)
 							.ToList ();
                 foreach (var n in list)

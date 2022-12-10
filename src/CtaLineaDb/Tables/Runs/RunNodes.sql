@@ -3,10 +3,8 @@
 	[RunNodeId] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NewID(), 
     [RunVariationId] UNIQUEIDENTIFIER NOT NULL, 
     [CollectionPointId] VARCHAR(20) NOT NULL, 
-    [Hout] TIME NOT NULL, 
+    [Hour] TIME NOT NULL, 
     [ProgrNumber] INT NOT NULL DEFAULT 0, 
-    [Longitude] REAL NULL, 
-    [Latitude] REAL NULL, 
 
     CONSTRAINT [FK_Nodes_Variation] 
         FOREIGN KEY ([RunVariationId]) 

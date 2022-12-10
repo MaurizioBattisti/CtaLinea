@@ -1,4 +1,4 @@
-﻿@inject IRunService RunService
+﻿@inject IRunModelService RunModelService
 
 <h2>Dati Generali della Corsa</h2>
 <RadzenAccordion 
@@ -164,7 +164,7 @@
 		// recupera la variante di default
 		if (this.CurrentRun !=null)
 		{
-			var variation = this.RunService.GetDefaultVariation(this.CurrentRun);
+			var variation = this.RunModelService.GetDefaultVariation(this.CurrentRun);
 			if (variation != null) this.DefaultVariant = variation;
 
 			if (this.CurrentRun.Variations != null)

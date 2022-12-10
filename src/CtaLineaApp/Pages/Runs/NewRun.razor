@@ -1,7 +1,8 @@
 ﻿@page "/newrun"
 @inject IQueryUtilityService queryService
-@inject IRunService RunService
+@inject IRunModelService RunModelService
 @inject IContractService ContractService
+@inject DialogService DialogService
 @attribute [Authorize]
 
 <h1>Nuova Corsa</h1>
@@ -26,6 +27,7 @@
 <DateRangeSelector @bind-StartDate="MyStart" @bind-EndDate="MyEnd" Inline=true />
 <TimeRangeSelector @bind-StartTime="MyStartTime" @bind-EndTime="MyEndTime" Inline=true />
 
+
 @code {
     bool EditMode = false;
 
@@ -36,7 +38,7 @@
         if (ContractService.Current != null)
         {
             // chiamare la funzione di RunService che crea il run
-            var run= RunService.CreateNewRun(ContractService.Current);
+            var run = RunModelService.CreateNewRun(ContractService.Current);
 
             // TODO: togliere questo codice
             run.ContractId = ContractService.Current.ContractId;
@@ -50,7 +52,7 @@
             var period = run.SubPeriods?[0];
             if (period != null)
             {
-                var rc = RunService.CreatePeriodCar(period, CarTypeEnum.Replacement);
+                var rc = RunModelService.CreatePeriodCar(period, CarTypeEnum.Replacement);
                 period.CarReplacements?.Add(
                     new CarReplacement()
                     {

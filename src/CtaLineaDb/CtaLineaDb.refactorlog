@@ -595,4 +595,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="RunCarId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="02ed31f7-c346-4279-a5dc-4d6bbefca863" ChangeDateTime="12/10/2022 13:28:41">
+    <Property Name="ElementName" Value="[dbo].[RunNodes].[Hout]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[RunNodes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Hour" />
+  </Operation>
 </Operations>

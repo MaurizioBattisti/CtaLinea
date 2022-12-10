@@ -1,9 +1,9 @@
-﻿@inject IRunService RunService
+﻿@inject IRunModelService RunModelService
 
 <div class="d-flex flex-row">
 	<div class="col-1">
 		<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Orario</RadzenText>
-		<RadzenText TextStyle="TextStyle.Body1"># @Node.ProgrNumber <strong>@FormatTime(Node.Hout)</strong></RadzenText>
+		<RadzenText TextStyle="TextStyle.Body1"># @Node.ProgrNumber <strong>@FormatTime(Node.Hour)</strong></RadzenText>
 	</div>
 	<div class="col-1">
 		<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Cod.</RadzenText>

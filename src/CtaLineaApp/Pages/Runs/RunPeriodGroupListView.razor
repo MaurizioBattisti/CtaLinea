@@ -1,4 +1,4 @@
-﻿@inject IRunService RunService
+﻿@inject IRunModelService RunModelService
 
 <RadzenAccordion 
 	Multiple="true" >
@@ -31,7 +31,7 @@
 		// recupera la variante di default
 		if (this.CurrentRun !=null)
 		{
-			this.SubPeriodGroups =this.RunService.GetPeriodGroups(this.CurrentRun);
+			this.SubPeriodGroups = this.RunModelService.GetPeriodGroups(this.CurrentRun);
 		}
 
 		await base.OnParametersSetAsync();
