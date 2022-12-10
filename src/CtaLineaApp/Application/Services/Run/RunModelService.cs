@@ -3,6 +3,7 @@ using CtaLinea.Model.Base;
 using CtaLineaApp.Application.Model;
 using System.Security.Cryptography;
 using Radzen.Blazor.Rendering;
+using System.Xml.Linq;
 
 namespace CtaLineaApp.Application.Services.Run
 {
@@ -34,14 +35,56 @@ namespace CtaLineaApp.Application.Services.Run
             RunItem run,
             DateTime? startDate = null)
         {
-            var variation = new RunVariation()
-            {
-                RunVariationId = Guid.NewGuid(),
-                StartDate = startDate,
+            RunVariation variation;
 
-                Nodes = new List<RunNode>()
-            };
-            if (run.Variations == null) run.Variations = new List<RunVariation>() { variation };
+			if (startDate == null
+                || run.Variations == null
+                || run.Variations.Count == 0)
+            {
+                variation = new RunVariation()
+                {
+                    RunVariationId = Guid.NewGuid(),
+                    StartDate = startDate,
+
+                    Nodes = new List<RunNode>()
+                };
+            }
+            else
+            {
+                var oldVar = (from v in run.Variations
+                              where v.StartDate < startDate
+                              orderby v.StartDate descending
+                              select v)
+                              .FirstOrDefault ();
+                
+                // se non ne trova una con la data cerca la variante di default
+                if(oldVar == null)
+                {
+					oldVar = (from v in run.Variations
+								  where v.StartDate == null
+								  select v)
+								  .SingleOrDefault();
+				}
+
+				if (oldVar != null)
+                {
+                    variation = this.CloneVariation(oldVar);
+                    variation.RunVariationId = Guid.NewGuid();
+                    variation.StartDate= startDate;
+				}
+				else
+                {
+                    variation = new RunVariation()
+                    {
+                        RunVariationId = Guid.NewGuid(),
+                        StartDate = startDate,
+
+                        Nodes = new List<RunNode>()
+                    };
+                }
+			}
+
+			if (run.Variations == null) run.Variations = new List<RunVariation>() { variation };
             else run.Variations.Add(variation);
             return variation;
         }
@@ -226,5 +269,37 @@ namespace CtaLineaApp.Application.Services.Run
 
             return list;
         }
-    }
+		#region funzioni private di clonazione
+		private RunVariation CloneVariation (RunVariation source)
+        {
+			var variation = new RunVariation()
+			{
+				RunVariationId = source.RunVariationId,
+				StartDate = source.StartDate,
+                CalendarId= source.CalendarId,
+                CalendarData= source.CalendarData,
+                StartTime=source.StartTime,
+                EndTime =source.EndTime,
+                LineNumber = source.LineNumber,
+                RunNumber= source.RunNumber,
+                Km= source.Km,
+                RequestedFrequency = source.RequestedFrequency,
+                Note= source.Note,
+
+                Nodes = new List<RunNode>()
+			};
+
+			if (source.Nodes != null)
+			{
+				var nodes = (from n in source.Nodes
+							 select n.GetClone())
+						 .ToList();
+                
+                variation.Nodes = nodes;
+			}
+
+            return variation;
+		}
+		#endregion
+	}
 }

@@ -1,4 +1,5 @@
 ﻿@inject IRunModelService RunModelService
+@inject DialogService DialogService
 
 <h2>Dati Generali della Corsa</h2>
 <RadzenAccordion 
@@ -123,6 +124,14 @@
     </Items>
 </RadzenAccordion>
 
+@if (this.EditMode == true)
+{
+	<RadzenButton Text="Nuova Variante"
+		ButtonStyle="ButtonStyle.Primary"
+		Icon="calendar_month"
+		Click=@AddVariation_Click />
+}
+
 <h2>Periodi di attività dei mezzi</h2>
 <RunPeriodGroupListView CurrentRun=@CurrentRun EditMode=@EditMode /> 
 
@@ -167,11 +176,8 @@
 			var variation = this.RunModelService.GetDefaultVariation(this.CurrentRun);
 			if (variation != null) this.DefaultVariant = variation;
 
-			if (this.CurrentRun.Variations != null)
-			{
-				this.OtherVariations = this.CurrentRun.Variations.Where(v => v != variation)
-					.ToList();
-			}
+			// imposta la lista delle altre variazioni
+			this.ResetOtherVariationList();
 
 			if(this.CurrentRun.Suspensions != null)
 			{
@@ -180,7 +186,7 @@
 							select s)
 						.ToList();
 
-		if (susp != null)
+				if (susp != null)
 				{
 					this.Suspensions = susp;
 				}
@@ -207,6 +213,63 @@
 
 	void OnTabChange(int index)
 	{
-        
-    }
+
+	}
+
+	private void ResetOtherVariationList ()
+	{
+		if (this.CurrentRun?.Variations != null)
+		{
+			this.OtherVariations = this.CurrentRun.Variations.Where(v => v != this.DefaultVariant)
+				.ToList();
+		}
+	}
+
+	private DateTime? _AskStartDate = null;
+	private async Task AddVariation_Click ()
+	{
+		string title = "Nuova ariante";
+		_AskStartDate = null;
+		bool? result = await DialogService.OpenAsync(
+		title,
+			ds =>
+			@<div>
+				<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Data di inizio</RadzenText>
+				<DateSelector @bind-Value="_AskStartDate" Min=@this.CurrentRun.StartDate Max=this.CurrentRun.EndDate ShowSetTodayButton=true />
+
+				<RadzenButton Text="Ok" Click="()=>ds.Close(true)" ButtonStyle="ButtonStyle.Primary" />
+				<RadzenButton Text="Annulla" Click="()=>ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" />
+		</div>
+	);
+
+		if (result != null && result == true) ;
+		{
+			var date = _AskStartDate;
+			if (date == null)
+			{
+				await this.DialogService.Alert("Non è possible creare una variante che pata dall'inizio", title);
+			}
+			else
+			{
+				// controlla che nonc i siano variazioni che partono alla stessa data
+				var already = (from v in this.CurrentRun.Variations
+										where v.StartDate == date
+										select v).FirstOrDefault ();
+				if (already != null)
+				{
+					await this.DialogService.Alert(string.Format("Esiste già una variante che inizia il {0:dd/MM/yyyy}", date), title);
+				}
+				else
+				{
+					// crea la nuova variante
+					var newVar = this.RunModelService.CreateNewVariation(this.CurrentRun, date);
+					this.ResetOtherVariationList();
+					this.StateHasChanged();
+				}
+			}
+		}
+		_AskStartDate = null;
+		return;
+	}
+
 }
