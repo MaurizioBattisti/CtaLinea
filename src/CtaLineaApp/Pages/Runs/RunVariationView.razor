@@ -1,7 +1,5 @@
 ﻿@using CtaLinea.Model.Runs
-@using CtaLineaApp.Pages.Runs.Dialogs
 @inject IRunModelService RunModelService
-@inject DialogService DialogService
 
 <RadzenTabs 
 	Change=@OnTabChange 
@@ -10,114 +8,10 @@
 	RenderMode="TabRenderMode.Client" >
 	<Tabs>
 		<RadzenTabsItem Text="Dati">
-			<div class="d-flex flex-row">
-				<div class="col-2">
-					@if(this.EditMode == true)
-					{
-						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Nr. Linea</RadzenText>
-						<RadzenNumeric TValue="int?" @bind-Value=@Variation.LineNumber Class="w-100" />
-					
-						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Nr. Corsa</RadzenText>
-						<RadzenNumeric TValue="int?" @bind-Value=@Variation.RunNumber Class="w-100" />
-					}
-					else
-					{
-						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Nr. Linea</RadzenText>
-						<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.LineNumber</strong></RadzenText>
-					
-						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Nr. Corsa</RadzenText>
-						<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.RunNumber</strong></RadzenText>
-					}
-				</div>
-				<div class="col-2">
-					@if(this.EditMode == true)
-					{
-						<TimeRangeSelector 
-							@bind-StartTime="Variation.StartTime"
-							@bind-EndTime="Variation.EndTime"
-							/>
-					}
-					else
-					{
-						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Ora inizio</RadzenText>
-						<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatTime(Variation.StartTime)</strong></RadzenText>
-					
-						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Ora fine</RadzenText>
-						<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatTime(Variation.EndTime)</strong></RadzenText>
-					}
-				</div>
-				<div class="col-4">
-					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Calendario</RadzenText>
-					<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.CalendarData?.CalendarName</strong></RadzenText>
-
-					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Frequenza</RadzenText>
-					<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.RequestedFrequency</strong></RadzenText>
-				</div>
-				<div class="col-4">
-					@if(this.EditMode == true)
-					{
-						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Km</RadzenText>
-						<KmInput @bind-Value="Variation.Km" />
-
-						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Annotazioni</RadzenText>
-						<RadzenTextArea @bind-Value="Variation.Note" Class="w-100"  />
-					}
-					else
-					{
-						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Km</RadzenText>
-						<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.Km</strong></RadzenText>
-
-						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Annotazioni</RadzenText>
-						<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.Note</strong></RadzenText>
-					}
-				</div>
-			</div>
+			<RunVariationDataView CurrentRun=@CurrentRun Variation=@Variation EditMode=@EditMode />
 		</RadzenTabsItem>
 		<RadzenTabsItem  Text="Nodi">
-			<div class="d-flex flex-row">
-
-				<RadzenDataGrid
-					AllowFiltering="false" AllowPaging="false" AllowSorting="false"
-								Data="@this.GetNodes()"
-								TItem="RunNode">
-					<Columns>
-						<RadzenDataGridColumn Width="50px" TItem="RunNode" Title="#" TextAlign="TextAlign.Center" Property="ProgrNumber" />
-						<RadzenDataGridColumn TItem="RunNode" Title="Orafio" Width="70px">
-							<Template Context="data">
-								@this.FormatTime(data.Hour)
-							</Template>
-						</RadzenDataGridColumn>
-						<RadzenDataGridColumn TItem="RunNode" Property="CollectionPointId" Title="Codice Nodo" Width="120px" />
-						<RadzenDataGridColumn TItem="RunNode" Title="Descrizione Nodo" >
-							<Template Context="data">
-								@data.CollectionPointData?.Description
-							</Template>
-						</RadzenDataGridColumn>
-
-						@if (this.EditMode == true)
-						{
-							<RadzenDataGridColumn Width="100px" TItem="RunNode">
-								<Template Context="data">
-									<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
-											  Icon="edit"
-											  Class="m-1" Click=@(() => EditNode_Click(data)) Text="" />
-									<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
-											  Icon="delete"
-											  Class="m-1" Click=@(() => DeleteNode_Click(data)) Text="" />
-								</Template>
-							</RadzenDataGridColumn>
-						}
-					</Columns>
-				</RadzenDataGrid>
-
-			</div>
-			@if(this.EditMode == true)
-			{
-				<div class="d-flex flex-row">
-					<RadzenButton Click=@AddNote_Click Text="Nuovo Nodo" />
-					<RadzenButton Click=@Reorder_Click Text="Riordina" ButtonStyle="ButtonStyle.Secondary" />
-				</div>
-			}
+			<RunVariationNpdesView CurrentRun=@CurrentRun Variation=@Variation EditMode=@EditMode />
 		</RadzenTabsItem>
 	</Tabs>
 </RadzenTabs>
@@ -130,9 +24,6 @@
 	[Parameter]
 	public bool EditMode { get; set; } = false;
 
-	// nodo per il dialog
-	private RunNode? DialogNode = null;
-
 	protected override async Task OnInitializedAsync()
 	{
 
@@ -143,101 +34,6 @@
 	{
 
 		await base.OnParametersSetAsync();
-	}
-
-	private IList<RunNode> GetNodes()
-	{
-		var nodes = new List<RunNode>();
-		if (this.Variation.Nodes != null)
-		{
-
-			nodes = (from n in this.Variation.Nodes
-						orderby n.ProgrNumber, n.Hour
-						select n)
-				.ToList();
-		}
-		return nodes;
-	}
-
-	private string FormatDate (
-		DateTime? date)
-	{
-		if (date == null) return string.Empty;
-		return string.Format("{0:dd/MM/yyyy}", date);
-	}
-
-	private string FormatTime(
-		TimeSpan? time)
-	{
-		if (time == null) return string.Empty;
-		var dt = new DateTime(1, 1, 1);
-		dt = dt.Add(time.Value);
-		return string.Format("{0:HH:mm}", dt);
-	}
-
-	private async Task DeleteNode_Click(RunNode node)
-	{
-		this.RunModelService.RemoveNode(
-			this.Variation,
-			node);
-		
-		this.StateHasChanged();
-		await Task.CompletedTask;
-	}
-	private async Task EditNode_Click(RunNode node)
-	{
-		this.DialogNode = node.GetClone();
-
-		if (await this.ShowNodeDialog("Modifica fermata (Nodo)") == true)
-		{
-			// elimina il vecchio nodo
-			this.RunModelService.RemoveNode(
-				this.Variation,
-				node);
-			this.RunModelService.AddNodeToVariation(
-				this.Variation,
-				this.DialogNode);
-		}
-		this.DialogNode = null;
-		this.StateHasChanged();
-
-		await Task.CompletedTask;
-	}
-	private async Task AddNote_Click()
-	{
-		this.DialogNode = this.RunModelService.CreateNewNode(this.Variation, false);
-
-		if (await this.ShowNodeDialog ("Nuova fermata (Nodo)") == true)
-		{
-			this.RunModelService.AddNodeToVariation(
-				this.Variation, 
-				this.DialogNode);
-		}
-		this.DialogNode = null;
-		this.StateHasChanged();
-	}
-
-	private async Task<bool> ShowNodeDialog (
-		string title)
-	{
-		bool? result = await DialogService.OpenAsync(
-			title,
-			ds =>
-				@<div>
-					<RunNodeEditDialog Node=@DialogNode />
-					<RadzenButton Text="Ok" Click="()=>ds.Close(true)" ButtonStyle="ButtonStyle.Primary" />
-					<RadzenButton Text="Annulla" Click="()=>ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" />
-				</div>
-			, new DialogOptions() { Width = "1000px" }
-			);
-
-		return (result != null && result == true);
-	}
-
-	private void Reorder_Click ()
-	{
-		RunModelService.ReorderNodes(this.Variation);
-		this.StateHasChanged();
 	}
 
 	void OnTabChange(int index)
