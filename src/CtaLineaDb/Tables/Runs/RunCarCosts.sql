@@ -9,9 +9,11 @@ CREATE TABLE [dbo].[RunCarCosts]
 	[RunCarCostId] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(), 
     [RunCarId] UNIQUEIDENTIFIER NOT NULL, 
     [StartDAte] DATE NULL DEFAULT NULL, 
-    [DayPrice] MONEY NOT NULL DEFAULT 0, 
-    [KmPrice] MONEY NOT NULL DEFAULT 0, 
+    [DayPrice] MONEY NOT NULL DEFAULT 0 , 
+    [KmPrice] MONEY NOT NULL DEFAULT 0 , 
 
+    [DayIntegration] MONEY NULL , 
+    [DayForfait] MONEY NULL, 
     CONSTRAINT [FK_Costs_RunCar] 
         FOREIGN KEY ([RunCarId]) 
         REFERENCES [dbo].[RunCars](RunCarId)

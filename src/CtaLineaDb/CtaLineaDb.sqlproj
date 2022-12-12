@@ -98,5 +98,6 @@
     <Build Include="Tables\Runs\RunSuspensions.sql" />
     <Build Include="Tables\Runs\RunCarReplacements.sql" />
     <Build Include="Tables\Runs\RunCarReplacementDetails.sql" />
+    <Build Include="Tables\Contab\CarAnnualForfaits.sql" />
   </ItemGroup>
 </Project>

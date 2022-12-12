@@ -76,3 +76,10 @@ sistema di segnalazione di "incongruenze"
 se ci sono incongruenze presentarle in una specie di "cruscoto"
 con la possibilità di indicare che non venga più visualizata l'incongruenza
 se la corsa con l'incongruenza viene modificata, lìincongruenza marcata come no voglio più vederla deve tornare visibile
+
+note  12/12/2022
+- bisognerebbe torvare un modo di gestire i calendari "a inclusione"
+- integrazione giornaliera
+- forfait giornaliera
+
+- forati annuale separato messo via per mezzo e per anno

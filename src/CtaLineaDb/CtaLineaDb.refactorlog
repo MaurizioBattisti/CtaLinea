@@ -602,4 +602,25 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="Hour" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="0cbe9c7a-6a93-431c-97c3-56d58bd763f6" ChangeDateTime="12/12/2022 16:29:12">
+    <Property Name="ElementName" Value="[dbo].[Calendars].[WorkDays]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Calendars]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Inclusive" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="76d0555f-76c8-49e2-a533-63eb37534a94" ChangeDateTime="12/12/2022 16:36:09">
+    <Property Name="ElementName" Value="[dbo].[Calendars].[PreHolidais]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Calendars]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PreHolyday" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e5590e9c-4e43-4cca-87cb-ec4a365cb398" ChangeDateTime="12/12/2022 16:38:19">
+    <Property Name="ElementName" Value="[dbo].[CarAnnualForfaits].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[CarAnnualForfaits]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="CarId" />
+  </Operation>
 </Operations>

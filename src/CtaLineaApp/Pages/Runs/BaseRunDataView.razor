@@ -98,39 +98,32 @@
 			</RadzenCard>
         </RadzenAccordionItem>
 
-        <RadzenAccordionItem Text="Dati Iniziali della corsa" Icon="flag_circle" Selected=true>
-			<RunVariationView CurrentRun=@CurrentRun Variation=@DefaultVariant EditMode=@EditMode />
-        </RadzenAccordionItem>
-
-		@if (OtherVariations.Count > 0)
-		{
-		<RadzenAccordionItem Text="Varianti" Icon="calendar_month">
-			<RadzenTabs 
-				Change=@OnTabChange 
-				TabPosition="TabPosition.Left" 
-				Class="w-100 my-1 mx-auto" 
-				RenderMode="TabRenderMode.Client" >
-					<Tabs>
-						@foreach (var v in this.OtherVariations)
-						{
-							<RadzenTabsItem Text="@string.Format("{0:dd/MM/yyyy}",v.StartDate ?? DateTime.MinValue)">
-								<RunVariationView CurrentRun=@CurrentRun Variation=@v EditMode=@this.EditMode />
-							</RadzenTabsItem>
-						}
-					</Tabs>
-			</RadzenTabs>
-        </RadzenAccordionItem>
-		}
+        <RadzenAccordionItem Text="Varianti" Icon="flag_circle" Selected=true>
+			<div class="d-flex">
+				<div class="col-md-1" >
+					<RadzenListBox @bind-Value=@CurrentVariation
+								   Data=@GetVariationList()
+								   Style="height:250px"
+								   Class="w-100">
+						<Template>
+							@GetVariantDescr((context as RunVariation)?.StartDate))
+						</Template>
+					</RadzenListBox>
+				</div>
+				<div class="col-md-11">
+					<RunVariationView CurrentRun=@CurrentRun Variation=@CurrentVariation EditMode=@EditMode />
+				</div>
+			</div>
+			@if (this.EditMode == true)
+			{
+				<RadzenButton Text="Nuova Variante"
+						  ButtonStyle="ButtonStyle.Primary"
+						  Icon="calendar_month"
+						  Click=@AddVariation_Click />
+			}
+		</RadzenAccordionItem>
     </Items>
 </RadzenAccordion>
-
-@if (this.EditMode == true)
-{
-	<RadzenButton Text="Nuova Variante"
-		ButtonStyle="ButtonStyle.Primary"
-		Icon="calendar_month"
-		Click=@AddVariation_Click />
-}
 
 <h2>Periodi di attività dei mezzi</h2>
 <RunPeriodGroupListView CurrentRun=@CurrentRun EditMode=@EditMode /> 
@@ -157,8 +150,7 @@
 	public bool EditMode { get; set; } = false;
 	private bool SuperEditMode = false;
 
-	public RunVariation DefaultVariant = new RunVariation();
-	public IList<RunVariation> OtherVariations = new List<RunVariation>();
+	public RunVariation CurrentVariation { get; set; } = new RunVariation();
 
 	private IList<RunSuspension> Suspensions = new List<RunSuspension>();
 
@@ -173,11 +165,9 @@
 		// recupera la variante di default
 		if (this.CurrentRun !=null)
 		{
-			var variation = this.RunModelService.GetDefaultVariation(this.CurrentRun);
-			if (variation != null) this.DefaultVariant = variation;
-
-			// imposta la lista delle altre variazioni
-			this.ResetOtherVariationList();
+			var variation = this.GetVariationList().FirstOrDefault();
+			if (variation == null) variation = new RunVariation();
+			this.CurrentVariation = variation;
 
 			if(this.CurrentRun.Suspensions != null)
 			{
@@ -195,6 +185,21 @@
 		await base.OnParametersSetAsync();
 	}
 
+	private IEnumerable<RunVariation> GetVariationList ()
+	{
+		if (this.CurrentRun?.Variations == null) return null;
+		var qry = (from v in this.CurrentRun.Variations
+							where v.StartDate == null
+							select v
+					);
+		var qry2 = (from v in this.CurrentRun.Variations
+					where v.StartDate != null
+					orderby v.StartDate ascending
+					select v
+				);
+		return qry.Union(qry2).ToList();
+	}
+
 	private string GetSuspensionHeader (
 		RunSuspension suspension)
 	{
@@ -204,6 +209,16 @@
 			);
 	}
 
+	private string GetVariantDescr (
+		DateTime? date)
+	{
+		var descr = FormatDate(date);
+		if (string.IsNullOrEmpty(descr) == true)
+		{
+			descr = "Inizale";
+		}
+		return descr;
+	}
 	private string FormatDate (
 		DateTime? date)
 	{
@@ -214,15 +229,6 @@
 	void OnTabChange(int index)
 	{
 
-	}
-
-	private void ResetOtherVariationList ()
-	{
-		if (this.CurrentRun?.Variations != null)
-		{
-			this.OtherVariations = this.CurrentRun.Variations.Where(v => v != this.DefaultVariant)
-				.ToList();
-		}
 	}
 
 	private DateTime? _AskStartDate = null;
@@ -263,7 +269,7 @@
 				{
 					// crea la nuova variante
 					var newVar = this.RunModelService.CreateNewVariation(this.CurrentRun, date);
-					this.ResetOtherVariationList();
+					this.CurrentVariation = newVar;
 					this.StateHasChanged();
 				}
 			}
