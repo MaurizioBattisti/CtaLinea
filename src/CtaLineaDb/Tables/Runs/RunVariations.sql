@@ -29,5 +29,5 @@ CREATE TABLE [dbo].[RunVariations]
         FOREIGN KEY ([CalendarId]) 
         REFERENCES [dbo].[Calendars]([CalendarId])
         ON DELETE NO ACTION
-        ON UPDATE CASCADE
+        ON UPDATE NO ACTION
 )

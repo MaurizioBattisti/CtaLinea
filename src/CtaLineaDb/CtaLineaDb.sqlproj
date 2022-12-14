@@ -63,12 +63,10 @@
     <Folder Include="Tables\Base" />
     <Folder Include="Tables\Runs" />
     <Folder Include="Tables\External" />
-    <Folder Include="Tables\TT" />
     <Folder Include="Tables\Calendars" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post_Deploy.sql" />
-    <Build Include="StoredProc\up_FinalizeServiceImport.sql" />
     <Build Include="Tables\Auth\Meta_Users.sql" />
     <Build Include="Tables\Auth\Meta_Roles.sql" />
   </ItemGroup>
@@ -88,7 +86,6 @@
     <Build Include="Tables\External\CollectionPoints.sql" />
     <Build Include="Tables\External\Cars.sql" />
     <Build Include="Tables\External\Drivers.sql" />
-    <Build Include="Tables\TT\RunFrequencies.sql" />
     <Build Include="Tables\Calendars\CalendarPeriods.sql" />
     <Build Include="Tables\Calendars\Calendars.sql" />
     <Build Include="Tables\Calendars\CalendarHolidays.sql" />

@@ -21,12 +21,17 @@ CREATE TABLE [dbo].[RunCars]
         FOREIGN KEY ([AssociateId]) 
         REFERENCES [dbo].[Associates]([AssociateId])
         ON DELETE NO ACTION
-        ON UPDATE CASCADE, 
+        ON UPDATE NO ACTION, 
     CONSTRAINT [FK_RunCars_Car] 
         FOREIGN KEY ([CarId]) 
         REFERENCES [dbo].[Cars]([CarId])
         ON DELETE NO ACTION
-        ON UPDATE CASCADE, 
+        ON UPDATE NO ACTION, 
     CONSTRAINT [CHK_RunCar_CarType] 
-        CHECK ([CarType] IN ('P', '1', '2', 'R'))
+        CHECK ([CarType] IN (
+        'P',    -- Mezzo Titolar
+        '1',    -- prima scorta
+        '2',    -- seconda scorta
+        'R'     -- sostituzione
+        ))
 )

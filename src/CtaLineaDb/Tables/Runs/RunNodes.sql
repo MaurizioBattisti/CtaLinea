@@ -14,6 +14,6 @@
     CONSTRAINT [FK_Nodes_CollectionPoint] 
         FOREIGN KEY ([CollectionPointId]) 
         REFERENCES [dbo].[CollectionPoints]([CollectionPointId])
-        ON DELETE SET NULL
-        ON UPDATE CASCADE
+        ON DELETE NO ACTION
+        ON UPDATE NO ACTION
 )

@@ -11,14 +11,22 @@ CREATE TABLE [dbo].[Calendars]
     [BaseCalendarId] INT NULL , 
 
     [CalendarName] VARCHAR(200) NOT NULL, 
-    [Inclusive] BIT NOT NULL DEFAULT 0, 
     
-    [Exclusive] BIT NOT NULL DEFAULT 0, 
+    [CalendarType] CHAR(3) NOT NULL DEFAULT 'EXC', 
+    [Sundays] BIT NOT NULL DEFAULT 0, 
     [PreHolyday] BIT NOT NULL DEFAULT 0, 
     [PostHolyday] BIT NOT NULL DEFAULT 0, 
+
     CONSTRAINT [FK_CalendarHierarchy] 
         FOREIGN KEY ([BaseCalendarId]) 
         REFERENCES [dbo].[Calendars]([CalendarId])
         ON DELETE NO ACTION
-        ON UPDATE CASCADE
+        ON UPDATE NO ACTION, 
+    CONSTRAINT [CHK_CalendarType] 
+        CHECK ([CalendarType] IN (
+        'EXC',   -- Calendario In esclusione
+        'INC',   -- Calendario a inclusione
+        'IPL',   --Calendario che include solo quanto escluso dal livello precedente
+        'NOP'   -- Nessuna operaizone ne di inclusione nè di esclusione
+        ))
 )

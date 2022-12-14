@@ -16,5 +16,5 @@
         FOREIGN KEY (SuspensionTypeId) 
         REFERENCES [dbo].[SuspensionTypes](SuspensionTypeId) 
         ON DELETE NO ACTION
-        ON UPDATE CASCADE
+        ON UPDATE NO ACTION
 )
