@@ -1,7 +1,7 @@
 ﻿/* *******************************************************************
 *   Per ogni corsa viendi indicato  una serie di mezzi
 * il valore di CarType è il tipo di mezzo  tra Titolare , Riserva 1  e Riserva 2 e sostituzione
-* i codici saranno P -> titolare , 1 -> riserva 1 e 2 Riserva 2, R => Sostituzione
+* i codici saranno P -> titolare , S -> Scorta , R => Sostituzione
 * P stà per Primary
 ******************************************************************* */
 CREATE TABLE [dbo].[RunCars]
@@ -30,8 +30,7 @@ CREATE TABLE [dbo].[RunCars]
     CONSTRAINT [CHK_RunCar_CarType] 
         CHECK ([CarType] IN (
         'P',    -- Mezzo Titolar
-        '1',    -- prima scorta
-        '2',    -- seconda scorta
+        'S',    -- scorta
         'R'     -- sostituzione
         ))
 )

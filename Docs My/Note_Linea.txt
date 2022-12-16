@@ -1,12 +1,20 @@
 Cta linea
+---------------------------------------------------------------------
+nella App UI
+aggiungere alla variante i campi
+- Percorso
+- nr di posti richiesto
+
+---------------------------------------------------------------------
 17-11-2022
 
 - caricare il file dell'olimpia 
 - creare le tabelli di codifica
 - caricare file mezzi / autisti / ditte / punti di raccolta (vittig 1)
 
+/*
 tabelle di look up
-- freuqneze tt
+(NO) freuqneze tt
 - calendari tt
   p.es.
   estivo - Dal al
@@ -18,6 +26,7 @@ tabelle di look up
   sopra viene definito il calendario scolastico con i giorni di chiusura delle scuole
   i prefestivi e post festivi valgono solo sui calendari scolastici
    la base è l'anno scolastico dal 1/9 al 31/8
+*/
 
 una corsa da capitolato potrebbe avere una struttura di fermate che vale per il periodo dell'appalto
   può succeder che venga modificato il prospetto delle fermate di una corsa in un perodo
@@ -28,11 +37,13 @@ file olimpia
 - la frequenza della corsa è la colonna AB
 
 calcolo costi
+/*
 - una tariffa giornaliera per mezzo e per periodo colonna BT
 - unq integrazione sulla corssa sul mezzo sul periodo con frequenza diversa della corsa stessa da sommare alla tariffa
 - forfati  *** per il momento sospesa
 - tariffa al chilometro 
 - tarifa al chilometo anche sulla singola corsa  potenialmente
+*/
 
 - importaizone mezzi
   importare tutti i mezzi e no solo quelli con gli usi specifici
@@ -79,7 +90,10 @@ se la corsa con l'incongruenza viene modificata, lìincongruenza marcata come no
 
 note  12/12/2022
 - bisognerebbe torvare un modo di gestire i calendari "a inclusione"
+/*
 - integrazione giornaliera
 - forfait giornaliera
-
 - forati annuale separato messo via per mezzo e per anno
+*/
+
+

@@ -17,8 +17,6 @@ namespace CtaLinea.Model.Runs
         public bool Saturday { get; set; } = true;
         public bool Sunday { get; set; } = true;
 
-        public int RequestPrimaryCarCount { get; set; }
-
         public string? Note { get; set; }
 
         public IList<RunPeriodCar>? Cars { get; set; }

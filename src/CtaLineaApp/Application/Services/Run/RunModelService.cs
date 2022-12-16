@@ -278,6 +278,15 @@ namespace CtaLineaApp.Application.Services.Run
 				StartDate = source.StartDate,
                 CalendarId= source.CalendarId,
                 CalendarData= source.CalendarData,
+
+                Monday = source.Monday,
+                Tuesday = source.Tuesday,
+                Wednesday = source.Wednesday,
+                Thursday = source.Thursday,
+                Friday = source.Friday,
+                Saturday = source.Saturday,
+                Sunday = source.Sunday,
+
                 StartTime=source.StartTime,
                 EndTime =source.EndTime,
                 LineNumber = source.LineNumber,

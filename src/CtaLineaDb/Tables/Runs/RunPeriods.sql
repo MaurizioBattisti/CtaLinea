@@ -9,9 +9,8 @@
     [Wednesday] BIT NOT NULL DEFAULT 1, 
     [Thursday] BIT NOT NULL DEFAULT 1, 
     [Friday] BIT NOT NULL DEFAULT 1, 
-    [Saturday] BIT NOT NULL DEFAULT 0, 
-    [Sunday] BIT NOT NULL DEFAULT 0, 
-    [RequestPrimaryCarCount] INT NOT NULL DEFAULT 1, 
+    [Saturday] BIT NOT NULL DEFAULT 1, 
+    [Sunday] BIT NOT NULL DEFAULT 1, 
 
     [Note] VARCHAR(MAX) NULL, 
     CONSTRAINT [FK_Periods_Run] 

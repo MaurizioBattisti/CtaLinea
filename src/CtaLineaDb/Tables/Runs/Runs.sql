@@ -4,8 +4,8 @@
     [ContractId] INT NOT NULL, 
     [Extra] BIT NOT NULL DEFAULT 0, 
     [ContractRowNumber] VARCHAR(20) NULL,
-    [StartDate] DATE NOT NULL, 
-    [EndDate] DATE NOT NULL, 
+    [StartDate] DATE NULL, 
+    [EndDate] DATE NULL, 
     [RequestedDays] INT NULL, 
     [Note] VARCHAR(MAX) NULL, 
 

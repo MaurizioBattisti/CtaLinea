@@ -9,6 +9,7 @@ namespace CtaLinea.Model.Runs
         public DateTime? StartDate { get; set; }
         public  int? LineNumber { get; set; }
         public int? RunNumber { get; set; }
+        public string Path { get; set; } = string.Empty;
 
         public TimeSpan? StartTime { get; set; }
         public TimeSpan? EndTime { get; set; }
@@ -16,9 +17,18 @@ namespace CtaLinea.Model.Runs
         public int? CalendarId { get; set; }
         public Calendar? CalendarData { get; set; }
 
-        public string? RequestedFrequency { get; set; }
+		public bool Monday { get; set; } = true;
+		public bool Tuesday { get; set; } = true;
+		public bool Wednesday { get; set; } = true;
+		public bool Thursday { get; set; } = true;
+		public bool Friday { get; set; } = true;
+		public bool Saturday { get; set; } = true;
+		public bool Sunday { get; set; } = true;
 
-        public double? Km { get; set; }
+		public string? RequestedFrequency { get; set; }
+
+        public int RequestedCapacity { get; set; }
+		public double? Km { get; set; }
         public string? Note { get; set; }
 
         public IList<RunNode>? Nodes { get; set; }

@@ -1,5 +1,129 @@
+problema accentate Fiav? anzichè Fiavè
+WHERE Linea = 211  
+
 per importare file oly
+creare un file XSV pulito
+aggiungere una colonna iniziale chiamata "Nr_Riga"
+con una formula 1 + 1  in modo da avere i nueri dir iga
+salvare il file CSV in modo che sia finalizzato
+
+Database -> Tasks -> impor from file
 
 - mettere tutti i campi nullable
-- tutti i campi di testo devonoe ssere varchar(MAX)
+- tutti i campi di testo devonoe ssere nvarchar(MAX)
 - tutti i campi intteri -> varchar(MAX)
+  a parte 
+  - Km_corsa_servizio -> float
+  - Linea -> int
+  - "Nr_Riga" -> int
+
+// extra per le line extra capitoalto
+
+-- Eseguire questo script per aggiungere il riferimetno alla colonna runId
+USE CtaLineaDb
+GO
+CREATE TABLE import.Descriptions
+(
+	Nr_Riga		int IDENTITY (1,1) ,
+	[note appalto]	varchar(MAX) NULL,
+	percorso	varchar(MAX) NULL,
+	frequenza	varchar(MAX) NULL
+)
+GO
+
+/* ---------------------------------------------------------------
+-- alimentare la tabella delle descrizioni con un copia incolla
+-- dopo aver preso dal file csv solo le colonne
+Nr_Riga	
+note appalto
+percorso
+frequenza
+--------------------------------------------------------------- */
+
+ALTER TABLE import.Oly
+ADD 
+	OlyId uniqueidentifier NOT NULL DEFAULT(NEWID()) PRIMARY KEY
+	;
+GO
+
+-- aggiorna le descrizioni
+
+UPDATE import.Oly
+	SET note_appalto = d.[note appalto],
+		percorso = d.percorso,
+		frequenza = d.frequenza
+	FROM import.Oly o
+	INNER JOIN import.Descriptions d
+		ON o.Nr_Riga = d.Nr_Riga
+GO
+
+/* -----------------------------------------
+Eseguire l'importazione tramite script
+*** attenzione non funziona ancora ******
+----------------------------------------- */
+
+USE CtaLineaDb
+GO
+
+BEGIN TRAN;
+
+INSERT INTO [dbo].[Runs]
+			(RunId
+           ,[ContractId]
+           ,[Extra]
+           ,[ContractRowNumber]
+           ,[StartDate]
+           ,[EndDate]
+           ,[RequestedDays]
+           ,[Note])
+	SELECT 
+			i.OlyId,
+			1 AS ContractID,
+			CASE WHEN i.n_righe_capitolato_928 LIKE '%extra%' THEN  1 ELSE 0 END AS Extra_Appalto,
+			n_righe_capitolato_928,
+	        [data_inizio],
+			[data_fine],
+			[nr_gg],
+			[note_appalto]
+		FROM import.Oly i;
+
+INSERT INTO [dbo].[RunVariations]
+           ([RunId]
+           ,[StartDate]
+           ,[LineNumber]
+           ,[RunNumber]
+		   , [Path]
+           ,[StartTime]
+           ,[EndTime]
+           ,[CalendarId]
+           ,[RequestedFrequency]
+		   , RequestedCapacity
+           ,[Km]
+           ,[Note])
+	SELECT 
+			i.OlyId,
+			NULL AS startDate,
+			CAST([Linea] AS int) AS Linea,
+			CAST( (CASE WHEN [n_corsa] LIKE '%/%' THEN SUBSTRING([n_corsa], 1, CHARINDEX('/', [n_corsa])-1 ) ELSE [n_corsa] END) AS int) AS Corsa_1,
+			ISNULL([percorso], '-- NESSUN PERCORSO --'),
+			[ora_part],
+			[ora_arr],
+			1,
+			[frequenza],
+			ISNULL(TRY_CAST([Posti_autobus] AS int) , 0) AS posti,
+			[Km_corsa_servizio],
+			CASE 
+			WHEN TRY_CAST ([n_corsa] AS int) IS NULL  
+				AND TRY_CAST([Posti_autobus] AS INT) IS NULL 
+				THEN 'nr corsa con problemi :' + [n_corsa]
+					+ 'nr posti con dei problemi: ' + [Posti_autobus]
+			WHEN TRY_CAST ([n_corsa] AS int) IS NULL  
+				THEN 'nr corsa con problemi :' + [n_corsa]
+			WHEN  TRY_CAST([Posti_autobus] AS INT) IS NULL
+				THEN 'nr posti con dei problemi: ' + [Posti_autobus]
+			ELSE NULL
+			END AS note
+			
+		FROM import.Oly i;
+
+ROLLBACK;

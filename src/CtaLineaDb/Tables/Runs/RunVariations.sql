@@ -11,12 +11,21 @@ CREATE TABLE [dbo].[RunVariations]
     [StartDate] DATE NULL DEFAULT NULL, 
     [LineNumber] INT NULL, 
     [RunNumber] INT NULL,
+    [Path] VARCHAR(MAX) NOT NULL, 
     [StartTime] TIME NULL, 
     [EndTime] TIME NULL,
     [CalendarId] INT NULL, 
 
+    [Monday] BIT NOT NULL DEFAULT 1, 
+    [Tuesday] BIT NOT NULL DEFAULT 1, 
+    [Wednesday] BIT NOT NULL DEFAULT 1, 
+    [Thursday] BIT NOT NULL DEFAULT 1, 
+    [Friday] BIT NOT NULL DEFAULT 1, 
+    [Saturday] BIT NOT NULL DEFAULT 1, 
+    [Sunday] BIT NOT NULL DEFAULT 1, 
 
     [RequestedFrequency] VARCHAR(200) NULL, 
+    [RequestedCapacity] INT NOT NULL DEFAULT 0, 
     [Km] REAL NULL, 
     [Note] VARCHAR(MAX) NULL, 
 
