@@ -62,11 +62,78 @@ Eseguire l'importazione tramite script
 *** attenzione non funziona ancora ******
 ----------------------------------------- */
 
+-- dopo aver caricato correttamente 
+-- Collection point
+-- Associate
+-- cars
+
+USE CtaLineaDb
+GO
+
+CREATE TABLE import.Associate_Translate
+(
+	Id			int IDENTITY (1, 1),
+	A_Descr		varchar(200) NULL,
+	Oly_Descr	varchar(200) NULL
+);
+
+INSERT INTO import.Associate_Translate
+	(A_Descr, Oly_Descr)
+	SELECT a.Description,
+			i.DITTA
+		FROM Dbo.Associates a
+		LEFT JOIN  import.Oly i
+			ON a.Description LIKE '%' + i.DITTA + '%'
+
+GO
+
+CREATE TABLE import.Car_Translate
+(
+	ID			int IDENTITY (1,1) PRIMARY KEY,
+	CarId		uniqueidentifier NULL,
+	RegNum		varchar(20) NULL,
+	Oly_RegNum	varchar(50) NULL
+);
+
+INSERT INTO import.Car_Translate
+	(CarId, RegNum)
+SELECT  c.CarId,
+		REPLACE(REPLACE(c.RegNumber, ' ', ''), '-', '') AS regNum
+	FROM dbo.Cars  c;
+
+WITH CTE_Oly_Cars
+AS
+(
+	(
+		SELECT REPLACE(REPLACE(i.MEZZO_TITOLARE, ' ', ''), '-', '') AS Oly_RegNum
+			FROM import.Oly i
+			WHERE i.MEZZO_TITOLARE IS NOT NULL
+	) UNION (
+		SELECT REPLACE(REPLACE(i.MEZZO_DI_RISERVA_1, ' ', ''), '-', '') AS Oly_RegNum
+			FROM import.Oly i
+			WHERE i.MEZZO_DI_RISERVA_1 IS NOT NULL
+	) UNION (
+		SELECT REPLACE(REPLACE(i.MEZZO_DI_RISERVA_2, ' ', ''), '-', '') AS Oly_RegNum
+			FROM import.Oly i
+			WHERE i.MEZZO_DI_RISERVA_2 IS NOT NULL
+	)
+)
+-- SELECT * FROM CTE_Oly_Cars
+UPDATE import.Car_Translate
+	SET Oly_RegNum = c.Oly_RegNum
+	FROM import.Car_Translate i
+	INNER JOIN CTE_Oly_Cars c
+		ON i.RegNum = c.Oly_RegNum;
+GO
+
+-- ----------------------------------------------
+
 USE CtaLineaDb
 GO
 
 BEGIN TRAN;
 
+-- corse
 INSERT INTO [dbo].[Runs]
 			(RunId
            ,[ContractId]
@@ -87,6 +154,7 @@ INSERT INTO [dbo].[Runs]
 			[note_appalto]
 		FROM import.Oly i;
 
+-- Varianti delle corse
 INSERT INTO [dbo].[RunVariations]
            ([RunId]
            ,[StartDate]
@@ -123,7 +191,118 @@ INSERT INTO [dbo].[RunVariations]
 				THEN 'nr posti con dei problemi: ' + [Posti_autobus]
 			ELSE NULL
 			END AS note
-			
 		FROM import.Oly i;
+
+-- nodi
+WITH CTE_Nodes AS
+(
+SELECT * FROM 
+(
+(
+	SELECT i.OlyId,
+			1 AS Progr,
+			i.ora_part AS Time,
+			i.Cod_Fermata_Partenza AS CodFermata
+		FROM import.Oly i
+) UNION ALL (
+	SELECT i.OlyId,
+			2 AS Progr,
+			i.ora_arr AS Time,
+			i.Cod_Fermata_Arrivo AS CodFermata
+		FROM import.Oly i
+) 
+) AS t
+)
+INSERT INTO dbo.RunNodes
+		(RunVariationId, ProgrNumber, Hour, CollectionPointId)
+	SELECT v.RunVariationId,
+			n.Progr,
+			n.Time,
+			n.CodFermata
+		FROM CTE_Nodes n
+		INNER JOIN dbo.RunVariations v
+			ON n.OlyId = v.RunId
+			AND v.StartDate IS NULL
+		LEFT JOIN dbo.CollectionPoints cp
+			ON n.CodFermata = cp.CollectionPointId
+		WHERE cp.CollectionPointId IS NOT NULL
+		;
+
+-- periodi
+INSERT INTO dbo.RunPeriods
+	(RunId)
+	SELECT  i.OlyId
+		FROM import.Oly i;
+
+-- mezzi  - titolari
+INSERT INTO dbo.RunCars
+	(RunPEriodId, CarType, AssociateId, CarId)
+	SELECT p.RunPEriodId,
+			'P' AS CarTYpe,
+			a.AssociateId,
+			ct.CarId
+		FROM import.Oly i
+		INNER JOIN dbo.RunPeriods p
+			ON i.OlyId = p.RunId
+		INNER JOIN import.Associate_Translate t
+			ON i.DITTA = t.Oly_Descr
+		INNER JOIN dbo.Associates a
+			ON t.A_Descr = a.Description
+		INNER JOIN import.Car_Translate ct
+			ON REPLACE(REPLACE(i.MEZZO_TITOLARE, ' ', ''), '-', '') = ct.Oly_RegNum
+		
+-- mezzi  - prima  scorta
+INSERT INTO dbo.RunCars
+	(RunPEriodId, CarType, AssociateId, CarId)
+	SELECT p.RunPEriodId,
+			'S' AS CarTYpe,
+			a.AssociateId,
+			ct.CarId
+		FROM import.Oly i
+		INNER JOIN dbo.RunPeriods p
+			ON i.OlyId = p.RunId
+		INNER JOIN import.Associate_Translate t
+			ON i.DITTA = t.Oly_Descr
+		INNER JOIN dbo.Associates a
+			ON t.A_Descr = a.Description
+		INNER JOIN import.Car_Translate ct
+			ON REPLACE(REPLACE(i.MEZZO_DI_RISERVA_1, ' ', ''), '-', '') = ct.Oly_RegNum
+		
+
+-- mezzi scorta 2
+-- mezzi  - prima  scorta
+INSERT INTO dbo.RunCars
+	(RunPEriodId, CarType, AssociateId, CarId)
+	SELECT p.RunPEriodId,
+			'S' AS CarTYpe,
+			a.AssociateId,
+			ct.CarId
+		FROM import.Oly i
+		INNER JOIN dbo.RunPeriods p
+			ON i.OlyId = p.RunId
+		INNER JOIN import.Associate_Translate t
+			ON i.DITTA = t.Oly_Descr
+		INNER JOIN dbo.Associates a
+			ON t.A_Descr = a.Description
+		INNER JOIN import.Car_Translate ct
+			ON REPLACE(REPLACE(i.MEZZO_DI_RISERVA_2, ' ', ''), '-', '') = ct.Oly_RegNum
+
+-- costi dei mezzi
+INSERT INTO dbo.RunCarCosts 
+	(RunCarId, DayPrice, KmPrice, DayIntegration, DayForfait)
+	SELECT rc.RunCarId, 
+			-- i.costo_corsa,
+			 0,
+			 0,
+			NULL, NULL
+			FROM import.Oly i
+			INNER JOIN dbo.RunPeriods p
+				ON i.OlyId = p.RunId
+			INNER JOIN import.Car_Translate ct
+				ON REPLACE(REPLACE(i.MEZZO_TITOLARE, ' ', ''), '-', '') = ct.Oly_RegNum
+			INNER JOIN dbo.RunCars rc
+				ON rc.RunPEriodId = p.RunPEriodId
+				AND rc.CarId = ct.CarId;
+
 
 ROLLBACK;

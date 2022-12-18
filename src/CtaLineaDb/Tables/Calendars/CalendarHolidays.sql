@@ -2,7 +2,7 @@
 (
 	[CalendarId] INT NOT NULL , 
     [Holiday] DATE NOT NULL, 
-    [HolidayDescription] NCHAR(10) NULL, 
+    [HolidayDescription] VARCHAR(50) NULL, 
 
     PRIMARY KEY ([CalendarId], [Holiday]), 
     CONSTRAINT [FK_Holidays_Calendar] 
