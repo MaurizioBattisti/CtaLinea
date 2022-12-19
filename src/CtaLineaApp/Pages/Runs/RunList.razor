@@ -1,4 +1,5 @@
 ﻿@page "/runs"
+@using CtaLinea.Model.QueryModel;
 @inject IQueryUtilityService queryService
 @attribute [Authorize]
 
@@ -20,7 +21,7 @@
                 PageSize=@(Settings?.PageSize ?? 5)
                 Count="@RowCount"
                 LoadData="@LoadData"
-                Data="@this.Data" TItem="TtServiceQueryItem"
+                Data="@this.Data" TItem="RunItemQueryModel"
                 AllowFiltering="true"
                 AllowColumnResize="true"
                 AllowPaging="true" 
@@ -30,64 +31,125 @@
                 ShowPagingSummary="true"
                 >
     <EmptyTemplate>
-        <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun servizio trovato !</p>
+        <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessuna corsa trovato !</p>
     </EmptyTemplate>
     <Columns>
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="Id" Title="Id Servizio" Visible=false />
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="LineNumber" Title="Nr Linea" Width="100px"/>
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="RunNumber" Title="Nr Corsa" Width="100px"/>
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Id" Title="Id Servizio" Visible=false />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="ContractRowNumber" Title="Riga Appalto" Width="100px" />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Extra" Title="Extra" Width="100px">
+            <Template Context="data">
+                @if (data.Extra)
+                {
+                    <RadzenIcon Icon="check"  />
+                }
+            </Template>
+        </RadzenDataGridColumn>
 
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="LineDescription" Title="Desrizione Linea" Width="200px"/>
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="PathDescription" Title="Percorso" Width="200px"/>
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="Km" Title="Km" Width="100px"/>
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="StartDate" Title="Inizio" FormatString="{0:dd/MM/yyyy}" Width="150px" />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="EndDate" Title="Fine " FormatString="{0:dd/MM/yyyy}" Width="150px" />
 
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="StartDate" Title="Inizio" FormatString="{0:dd/MM/yyyy}" Width="150px"/>
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="EndDate" Title="Fine " FormatString="{0:dd/MM/yyyy}" Width="150px"/>
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedDays" Title="GG Richiesti" Width="100px" />
 
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="FrequencyDescription" Title="Frequenza" Width="200px"/>
-
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="StartingLocation" Title="Partenza" Width="200px"/>
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="EndingLocation" Title="Destinazione" Width="200px"/>
-
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="StartHour" Title="Ora inizio" FormatString="{0:hh:mm}" Width="100px"/>
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="EndHour" Title="Ora fine" FormatString="{0:hh:mm}" Width="100px"/>
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="AssociatesDescr" Title="Ditte" Width="200px" />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="PrimaryCarsDescr" Title="Mezzi Titolari" Width="200px" />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="SpareCarsDescr" Title="Mezzi di riserva" Width="200px" />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="CalendarsDescr" Title="Calendari usati" Width="200px" />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="PathsDescr" Title="PErcorsi" Width="200px" />
         
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="RequestedSittings" Title="nr Posti" Width="100px"/>
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="LineNumber" Title="Nr. Linea" Width="100px" />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunNumber" Title="Nr. Corsa" Width="100px" />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="StartTime" Title="Ora inizio"  Width="100px" >
+            <Template Context="data">
+                @FormatTime(data?.StartTime)
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="EndTime" Title="Ora fine" Width="100px" >
+            <Template Context="data">
+                @FormatTime(data?.EndTime)
+            </Template>
+        </RadzenDataGridColumn>
+
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Monday" Title="Lunedì" Width="100px" >
+            <Template Context="data">
+                @if (data.Monday)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Tuesday" Title="Martedì" Width="100px" >
+            <Template Context="data">
+                @if (data.Tuesday)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Wednesday" Title="Mercoledì" Width="100px" >
+            <Template Context="data">
+                @if (data.Wednesday)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Thursday" Title="Giovedì" Width="100px" >
+            <Template Context="data">
+                @if (data.Thursday)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Friday" Title="Venerdì" Width="100px" >
+            <Template Context="data">
+                @if (data.Friday)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Saturday" Title="Sabato" Width="100px" >
+            <Template Context="data">
+                @if (data.Saturday)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Sunday" Title="Domenica" Width="100px" >
+            <Template Context="data">
+                @if (data.Sunday)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
         
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="SpecReference" Title="Rif. Spec." Width="200px"/>
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="RunType" Title="Tipo corsa." Width="200px"/>
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="ServiceTypeDescr" Title="Tipo Servizio." Width="200px"/>
-        
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="RunInHoursBook" Title="In Orario." Width="100px"/>
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedFrequency" Title="Frequenza richiesta" Width="200px" />
 
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="Company" Title="Ditta" Width="200px"/>
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="Company1" Title="Ditta 1" Width="200px"/>
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="Company2" Title="Ditta 2" Width="200px"/>
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="Company3" Title="Ditta 3" Width="200px"/>
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="DestinationTable" Title="Tabella Destinazioni" Width="200px"/>
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Km" Title="Km" Width="100px" />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedCapacity" Title="Capienza richiesta" Width="150px" />
 
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="Note" Title="Note" Width="400px"/>
-
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="InsertDate" Title="Inserimetno" FormatString="{0:dd/MM/yyyy hh:mm}" Width="200px"/>
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="ModifyDate" Title="Modifica " FormatString="{0:dd/MM/yyyy hh:mm}" Width="200px"/>
-        <RadzenDataGridColumn TItem="TtServiceQueryItem" Property="LastUpdateDate" Title="Ultimo agg. " FormatString="{0:dd/MM/yyyy hh:mm}" Width="200px"/>
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunNote" Title="Note Generali" Width="200px" />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="VariationNote" Title="Note prima Variante" Width="200px" />
     </Columns>
 </RadzenDataGrid>
 
 @code {
     [CascadingParameter]
     CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
-    RadzenDataGrid<TtServiceQueryItem>? grdData;
+    RadzenDataGrid<RunItemQueryModel>? grdData;
 
     QueryDefinition _servicesQueryDef = new QueryDefinition();
-    TtServiceQueryItem[]? Data = null; 
+    RunItemQueryModel[]? Data = null;
     int RowCount = 0;
     bool isLoading = false;
     string FullTextSearch = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        this._servicesQueryDef.EndPoint = Constants.Endpoint_TtServies;
+        this._servicesQueryDef.EndPoint = Constants.Endpoint_RunList;
         await Task.CompletedTask;
         this.StateHasChanged();
     }
@@ -97,13 +159,22 @@
         this.grdData?.Reload();
     }
 
+    private string FormatTime(
+        TimeSpan? time)
+    {
+        if (time == null) return string.Empty;
+        var dt = new DateTime(1, 1, 1);
+        dt = dt.Add(time.Value);
+        return string.Format("{0:HH:mm}", dt);
+    }
+
     private async Task LoadData(LoadDataArgs args)
     {
         this.isLoading = true;
         this.StateHasChanged();
 
-        this._servicesQueryDef.Filter = args.GetQueryFilter<TtServiceQueryItem> ();
-        this._servicesQueryDef.Sort = args.GetQuerySort(nameof(TtServiceQueryItem.Id));
+        this._servicesQueryDef.Filter = args.GetQueryFilter<RunItemQueryModel>();
+        this._servicesQueryDef.Sort = args.GetQuerySort(nameof(RunItemQueryModel.Id));
         this._servicesQueryDef.FullText = this.FullTextSearch;
 
         this._servicesQueryDef.Page = args.GetQueryPage();
@@ -111,7 +182,7 @@
 
         try
         {
-            var result = await queryService.GetListAsync<TtServiceQueryItem>(
+            var result = await queryService.GetListAsync<RunItemQueryModel>(
                         this._servicesQueryDef);
 
             if (result != null)

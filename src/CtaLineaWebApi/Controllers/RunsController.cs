@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using ZzSoft.Api.Utility.Base;
 using ZzSoft.CtaLinea.Dal.Queries;
 using CtaLinea.QueryModel;
+using CtaLinea.Model.QueryModel;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -20,46 +21,41 @@ namespace CtaLineaWebApi.Controllers
     public class RunsController
         : ZControllerBase
     {
+        private readonly IRunQueries _queries;
         public RunsController(
-            )
+			IRunQueries queries)
         {
-        }
+			_queries = queries;
+		}
 
         [SwaggerOperation("Elenco delle corse")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Object>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<RunItemQueryModel>))]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            /*
-            var result = await this._queries.GetAssociateListAsync(
+            var result = await this._queries.GetRunListAsycn(
                 this.FilteringContext)
                 .ConfigureAwait(false);
 
             return await this.ModelOKAsync(result)
                 .ConfigureAwait(false);
-            */
-            
-            await Task.CompletedTask;
-            return Ok(); 
         }
         [SwaggerOperation("Dati della singola corsa nel formato della lista")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Object))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RunItemQueryModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
         [Route("{id}/detail")]
         public async Task<IActionResult> GetDetailedOneAsync(
             Guid id)
         {
-            /*
-            var result = await this._queries.GetOneAssociateAsync(id)
+            var result = await this._queries.GetOneRunAsync(id)
                 .ConfigureAwait(false);
 
             return await this.ModelOKAsync(result)
                 .ConfigureAwait(false);
-            **/
-            await Task.CompletedTask;
-            return Ok();
         }
+
+
         [SwaggerOperation("Dati strutturati della singola corsa")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RunItem))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

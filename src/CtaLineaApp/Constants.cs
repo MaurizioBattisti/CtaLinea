@@ -37,6 +37,8 @@ namespace CtaLineaApp
 
 
         // endpoints
+        internal const string Endpoint_RunList = "/api/runs";
+
         internal const string Endpoint_Associates = "/api/associates";
         internal const string Endpoint_Cars = "/api/cars";
         internal const string Endpoint_Drivers = "/api/drivers";

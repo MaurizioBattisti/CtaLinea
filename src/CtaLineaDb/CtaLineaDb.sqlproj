@@ -66,6 +66,7 @@
     <Folder Include="Tables\Calendars" />
     <Folder Include="Functions" />
     <Folder Include="Functions\Calendars" />
+    <Folder Include="Views\Runs" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post_Deploy.sql" />
@@ -101,5 +102,11 @@
     <Build Include="Functions\Calendars\tvf_CalendarDays.sql" />
     <Build Include="Functions\Calendars\tvf_CalendarTree.sql" />
     <Build Include="Functions\Calendars\tvf_Days.sql" />
+    <Build Include="Views\Runs\vw_RunAssociates.sql" />
+    <Build Include="Views\Runs\vw_RunPrimaryCars.sql" />
+    <Build Include="Views\Runs\vw_RunSpareCars.sql" />
+    <Build Include="Views\Runs\vw_RunCalendars.sql" />
+    <Build Include="Views\Runs\vw_RunPaths.sql" />
+    <Build Include="Views\Runs\vw_Runs.sql" />
   </ItemGroup>
 </Project>

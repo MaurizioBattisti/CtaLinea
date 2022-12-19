@@ -180,6 +180,9 @@ namespace CtaLineaWebApi
                 IAssociatesQueries,
                 AssociatesQueries>();
             services.AddScoped<
+                IRunQueries,
+                RunQueries>();
+            services.AddScoped<
                 ICollectionPointsQueries,
                 CollectionPointsQueries>();
             services.AddScoped<
