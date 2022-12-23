@@ -34,6 +34,24 @@ namespace CtaLineaApp.Application.Services.Utility
                                 filterOp = "$like(";
                                 filterVal = "'" + filterVal + "'";
                             }
+                            else if (prop.PropertyType == typeof(DateTime)
+                                || prop.PropertyType == typeof(Nullable<DateTime>)
+                                || prop.PropertyType == typeof(DateOnly)
+                                || prop.PropertyType == typeof(Nullable<DateOnly>)
+                                )
+                            {
+                                filterVal = string.Format("{0:yyyy-MM-dd}", f.FilterValue);
+                            }
+                            else if ((
+                                    prop.PropertyType == typeof(TimeSpan)
+                                    || prop.PropertyType == typeof(Nullable<TimeSpan>)
+                                ) && (
+                                    f.FilterValue.GetType() == typeof(DateTime)
+                                    || f.FilterValue.GetType() == typeof(Nullable<DateTime>)
+                                ))
+                            {
+                                filterVal = string.Format("{0:HH:mm:ss}", f.FilterValue);
+                            }
                             singleFilter = filterOp + f.Property + "," + filterVal + ")";
                             ++filterCount;
                         }

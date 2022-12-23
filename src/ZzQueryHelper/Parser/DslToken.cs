@@ -88,6 +88,23 @@ namespace ZzSoft.QueryHelper.Parser
             }
             return dt;
         }
+        internal TimeSpan GetTimeValue()
+        {
+            if (this.TokenType != TokenType.TimeValue)
+            {
+                throw new InvalidOperationException("Cannot get a Time value of a token that isn't a DateTime value");
+            }
+            DateTime dt;
+            if (this.Value.Length > 5)
+            {
+                dt = DateTime.ParseExact(this.Value, "HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None);
+            }
+            else
+            {
+                dt = DateTime.ParseExact(this.Value, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None);
+            }
+            return new TimeSpan(dt.Hour, dt.Minute, dt.Second);
+        }
         internal string GetStringValue ()
         {
             if (this.TokenType != TokenType.StringValue)

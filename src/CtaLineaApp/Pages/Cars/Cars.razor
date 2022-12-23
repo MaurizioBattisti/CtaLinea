@@ -17,18 +17,17 @@
 <RadzenDataGrid @ref="@grdData" 
         FilterMode="FilterMode.Simple"
         IsLoading=@isLoading
-        PageSize=@(Settings?.PageSize ?? 5)
+        PageSize=50
         Count="@RowCount"
         LoadData="@LoadData"
         Data="@this.Data" TItem="Car"
         AllowFiltering="true"
         AllowColumnResize="true"
-        AllowPaging="true" 
         AllowSorting="true"
         LogicalFilterOperator="LogicalFilterOperator.And"
-        PagerHorizontalAlign="HorizontalAlign.Left" 
-        ShowPagingSummary="true"
-        >
+        AllowVirtualization=true
+        Style="height:100%"
+    >
     <EmptyTemplate>
         <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun mezzo trovato !</p>
     </EmptyTemplate>

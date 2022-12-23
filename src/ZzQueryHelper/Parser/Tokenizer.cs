@@ -37,6 +37,7 @@ namespace ZzSoft.QueryHelper.Parser
                 new TokenDefinition(TokenType.NotContains, @"^\$notlike\("),
 
                 new TokenDefinition(TokenType.DateTimeValue, @"^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d|^\d\d\d\d-\d\d-\d\d"),
+                new TokenDefinition(TokenType.TimeValue, @"^\d\d:\d\d:\d\d|^\d\d:\d\d"),
                 new TokenDefinition(TokenType.StringValue, @"^'[^']*'"),
                 new TokenDefinition(TokenType.Number, @"^\d+"),
                 new TokenDefinition(TokenType.TrueValue, @"^true"),

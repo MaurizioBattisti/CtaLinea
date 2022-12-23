@@ -17,18 +17,21 @@
 
 <RadzenDataGrid @ref="@grdData" 
                 FilterMode="FilterMode.Simple"
-                IsLoading=@isLoading
-                PageSize=@(Settings?.PageSize ?? 5)
                 Count="@RowCount"
+                IsLoading=@isLoading
                 LoadData="@LoadData"
                 Data="@this.Data" TItem="RunItemQueryModel"
+                PageSize="50"
+                AllowSorting="true"
                 AllowFiltering="true"
                 AllowColumnResize="true"
-                AllowPaging="true" 
-                AllowSorting="true"
                 LogicalFilterOperator="LogicalFilterOperator.And"
-                PagerHorizontalAlign="HorizontalAlign.Left" 
+                AllowVirtualization="true"
+                Density="Density.Compact"
+                PagerHorizontalAlign="HorizontalAlign.Left"
                 ShowPagingSummary="true"
+                Style="height:100%" SelectionMode="DataGridSelectionMode.Single"
+                @bind-Value=@SelectedRuns
                 >
     <EmptyTemplate>
         <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessuna corsa trovato !</p>
@@ -45,8 +48,16 @@
             </Template>
         </RadzenDataGridColumn>
 
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="StartDate" Title="Inizio" FormatString="{0:dd/MM/yyyy}" Width="150px" />
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="EndDate" Title="Fine " FormatString="{0:dd/MM/yyyy}" Width="150px" />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="StartDate" Title="Inizio" FormatString="{0:dd/MM/yyyy}" Width="180px" FilterValue=@Filter_StartDate>
+            <FilterTemplate>
+                <DateSelector @bind-Value="Filter_StartDate" AllowClear=true Changed=@StartDate_Changed />
+            </FilterTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="EndDate" Title="Fine " FormatString="{0:dd/MM/yyyy}" Width="180px" FilterValue=@Filter_EndDate>
+            <FilterTemplate>
+                <DateSelector @bind-Value="Filter_EndDate" AllowClear=true Changed=@EndDate_Changed />
+            </FilterTemplate>
+        </RadzenDataGridColumn>
 
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedDays" Title="GG Richiesti" Width="100px" />
 
@@ -58,12 +69,18 @@
         
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="LineNumber" Title="Nr. Linea" Width="100px" />
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunNumber" Title="Nr. Corsa" Width="100px" />
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="StartTime" Title="Ora inizio"  Width="100px" >
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="StartTime" Title="Ora inizio" Width="120px" FilterOperator="FilterOperator.Equals" FilterValue=@Filter_StartTime_2>
+            <FilterTemplate>
+                <TimeSelector @bind-Value="Filter_StartTime" AllowClear=true Changed=@StartTime_Changed />
+            </FilterTemplate>
             <Template Context="data">
                 @FormatTime(data?.StartTime)
             </Template>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="EndTime" Title="Ora fine" Width="100px" >
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="EndTime" Title="Ora fine" Width="120px" FilterOperator="FilterOperator.Equals" FilterValue=@Filter_EndTime_2>
+            <FilterTemplate>
+                <TimeSelector @bind-Value="Filter_EndTime" AllowClear=true Changed=@EndTime_Changed />
+            </FilterTemplate>
             <Template Context="data">
                 @FormatTime(data?.EndTime)
             </Template>
@@ -147,11 +164,53 @@
     bool isLoading = false;
     string FullTextSearch = string.Empty;
 
+    IList<RunItemQueryModel> SelectedRuns = new List<RunItemQueryModel> ();
+
+    #region filtri
+    // ORe di inizioe fine
+    private DateTime? Filter_StartTime_2;
+    private TimeSpan? Filter_StartTime;
+    private void StartTime_Changed (object value)
+    {
+        DateTime? dt = null;
+        if (Filter_StartTime  != null)
+        {
+            dt = new DateTime(1, 1, 1, Filter_StartTime.Value.Hours, Filter_StartTime.Value.Minutes, Filter_StartTime.Value.Seconds);
+        }
+
+        Filter_StartTime_2 = dt;
+        this.grdData?.Reload();
+    }
+    private DateTime? Filter_EndTime_2;
+    private TimeSpan? Filter_EndTime;
+    private void EndTime_Changed(object value)
+    {
+        DateTime? dt = null;
+        if (Filter_EndTime != null)
+        {
+            dt = new DateTime(1, 1, 1, Filter_EndTime.Value.Hours, Filter_EndTime.Value.Minutes, Filter_EndTime.Value.Seconds);
+        }
+
+        Filter_EndTime_2 = dt;
+        this.grdData?.Reload();
+    }
+    private DateTime? Filter_StartDate;
+    private void StartDate_Changed(object value)
+    {
+        this.grdData?.Reload();
+    }
+    private DateTime? Filter_EndDate;
+    private void EndDate_Changed(object value)
+    {
+        this.grdData?.Reload();
+    }
+
+    #endregion
+
     protected override async Task OnInitializedAsync()
     {
         this._servicesQueryDef.EndPoint = Constants.Endpoint_RunList;
-        await Task.CompletedTask;
-        this.StateHasChanged();
+        await base.OnInitializedAsync();
     }
 
     void FullText_OnChange(string value)

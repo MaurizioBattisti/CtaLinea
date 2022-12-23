@@ -637,6 +637,7 @@ namespace ZzSoft.QueryHelper
             {
                 TokenType.Number => token.GetDecimalNumericValue(),
                 TokenType.DateTimeValue => token.GetDatetTimeValue(),
+                TokenType.TimeValue => token.GetTimeValue(),
                 TokenType.StringValue => token.GetStringValue(),
                 TokenType.TrueValue => true,
                 TokenType.FalseValue => false,

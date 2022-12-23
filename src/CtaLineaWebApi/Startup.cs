@@ -88,6 +88,7 @@ namespace CtaLineaWebApi
                 System.Reflection.Assembly.GetAssembly(typeof(ICalendaQueries))
                 );
 
+
             // Gestione dei servizi in backgrouond
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
@@ -176,29 +177,16 @@ namespace CtaLineaWebApi
             
 
             // servizi di qeury al DB
-            services.AddScoped<
-                IAssociatesQueries,
-                AssociatesQueries>();
-            services.AddScoped<
-                IRunQueries,
-                RunQueries>();
-            services.AddScoped<
-                ICollectionPointsQueries,
-                CollectionPointsQueries>();
-            services.AddScoped<
-                ICalendaQueries,
-                CalendaQueries>();
-            services.AddScoped<
-                ITtServicesQueries,
-                TtServicesQueries>();
+            services.AddScoped<IAssociatesQueries,AssociatesQueries>();
+            services.AddScoped<IRunQueries,RunQueries>();
+            services.AddScoped<ICollectionPointsQueries,CollectionPointsQueries>();
+            services.AddScoped<ICalendaQueries,CalendaQueries>();
+            services.AddScoped<ITtServicesQueries,TtServicesQueries>();
 
             // repository per le importazioni da TT
-            services.AddScoped<
-                IUserRepository,
-                UserRepository>();
-            services.AddScoped<
-                ITtServiceRepository,
-                TtServiceRepository>();
+            services.AddScoped<IUserRepository,UserRepository>();
+            services.AddScoped<IRunRepository, RunRepository>();
+            services.AddScoped<ITtServiceRepository,TtServiceRepository>();
 
 
             return services;

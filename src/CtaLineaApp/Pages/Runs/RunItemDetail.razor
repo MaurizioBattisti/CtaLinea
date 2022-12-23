@@ -1,0 +1,72 @@
+﻿@page "/run-detail/{Id:guid}"
+@inject IRunRepository _repo
+@inject IQueryUtilityService queryService
+@inject IRunModelService RunModelService
+@inject IContractService ContractService
+@inject DialogService DialogService
+@attribute [Authorize]
+
+<PageTitle>@Constants.App_Title - Corsa</PageTitle>
+
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Nuova corsa" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<BaseRunDataView CurrentRun=@CurrentRun EditMode=@EditMode />
+
+<RadzenButton Click=@Btn_Click Text="Schiza !"></RadzenButton>
+<RadzenButton Click=@Btn_2_Click Text="imposta mezzo !"></RadzenButton>
+
+<AssociateAndCarDropDown @bind-AssociateId="yAssociateId" @bind-CarId="MyCarId" AllowClear=true />
+<DateRangeSelector @bind-StartDate="MyStart" @bind-EndDate="MyEnd" Inline=true />
+<TimeRangeSelector @bind-StartTime="MyStartTime" @bind-EndTime="MyEndTime" Inline=true />
+
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    bool EditMode = false;
+
+    RunItem CurrentRun = new RunItem();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.CompletedTask;
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        var run = await _repo.GetOneAsync(this.Id);
+        if (run!=  null)
+        {
+            this.CurrentRun = run;
+        }
+    }
+
+    DateTime? MyStart = null;
+    DateTime? MyEnd = null;
+    TimeSpan? MyStartTime = null;
+    TimeSpan? MyEndTime = null;
+
+    Guid? yAssociateId = null;
+    Guid? MyCarId = null;
+    private void Btn_Click()
+    {
+        this.EditMode = !this.EditMode;
+        this.StateHasChanged();
+    }
+    private void Btn_2_Click()
+    {
+        this.MyCarId = new Guid("58E2C252-D8A5-4619-A7F9-019D41195F8D");
+        this.yAssociateId = new Guid("3EFD51DE-E4D8-4FC6-820B-064C61A423E8");
+
+        this.StateHasChanged();
+    }
+}

@@ -10,7 +10,7 @@ namespace CtaLinea.Model.Runs
         private const string CarTYpe_Spare_2 = "2";
         private const string CarTYw_Replacement = "R";
 
-        public Guid RunPeriodCarId { get; set; }
+        public Guid RunCarId { get; set; }
 
         public string? CarType { get; set; }
         #region car type as enumeration
@@ -62,7 +62,7 @@ namespace CtaLinea.Model.Runs
         public Guid AssociateId { get; set; }   
         public Associate? AssociateData { get; set; }
         public Guid CarId { get; set; }
-        public CarQueryItem? CarData { get; set; }
+        public Car? CarData { get; set; }
         public string? Note { get; set; }
 
         public IList<RunCarCost>? CarCosts { get; set; }

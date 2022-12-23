@@ -1,13 +1,13 @@
 ﻿CREATE TABLE [dbo].[RunCarReplacementDetails]
 (
-	[CarReplacement] UNIQUEIDENTIFIER NOT NULL , 
+	[CarReplacementId] UNIQUEIDENTIFIER NOT NULL , 
     [OriginaRunCarId] UNIQUEIDENTIFIER NOT NULL, 
     [ReplacedRunCarId] UNIQUEIDENTIFIER NOT NULL, 
 
-    PRIMARY KEY ([CarReplacement], [ReplacedRunCarId], [OriginaRunCarId]), 
+    PRIMARY KEY ([CarReplacementId], [ReplacedRunCarId], [OriginaRunCarId]), 
     CONSTRAINT [FK_Details_Replacement] 
-        FOREIGN KEY ([CarReplacement]) 
-        REFERENCES [dbo].[RunCarReplacements]([CarReplacement])
+        FOREIGN KEY ([CarReplacementId]) 
+        REFERENCES [dbo].[RunCarReplacements]([CarReplacementId])
         ON DELETE CASCADE
         ON UPDATE CASCADE,
     CONSTRAINT [FK_Details_OriginalRunCar] 

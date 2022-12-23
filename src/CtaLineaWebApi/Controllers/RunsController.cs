@@ -11,6 +11,9 @@ using ZzSoft.Api.Utility.Base;
 using ZzSoft.CtaLinea.Dal.Queries;
 using CtaLinea.QueryModel;
 using CtaLinea.Model.QueryModel;
+using CtaLineaWebApi.Application.Commands.Runs;
+using MediatR;
+using NPOI.OpenXmlFormats.Wordprocessing;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -22,9 +25,13 @@ namespace CtaLineaWebApi.Controllers
         : ZControllerBase
     {
         private readonly IRunQueries _queries;
+        private readonly ISender _mediator;
+
         public RunsController(
-			IRunQueries queries)
+            ISender mediator,
+            IRunQueries queries)
         {
+            _mediator = mediator;
 			_queries = queries;
 		}
 
@@ -54,9 +61,7 @@ namespace CtaLineaWebApi.Controllers
             return await this.ModelOKAsync(result)
                 .ConfigureAwait(false);
         }
-
-
-        [SwaggerOperation("Dati strutturati della singola corsa")]
+        [SwaggerOperation("Dati della singola corsa nel formato dell'albero di tutti i dati della corsa")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RunItem))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
@@ -64,15 +69,12 @@ namespace CtaLineaWebApi.Controllers
         public async Task<IActionResult> GetOneAsync(
             Guid id)
         {
-            /*
-            var result = await this._queries.GetOneAssociateAsync(id)
+            var request = new GetOneRunItemRequest(id);
+            var result = await _mediator.Send(request)
                 .ConfigureAwait(false);
 
             return await this.ModelOKAsync(result)
                 .ConfigureAwait(false);
-            **/
-            await Task.CompletedTask;
-            return Ok();
         }
         [SwaggerOperation("Cre3a una nuova corsa")]
         [ProducesResponseType(StatusCodes.Status201Created)]

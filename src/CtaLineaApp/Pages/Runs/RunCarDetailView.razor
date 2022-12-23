@@ -59,10 +59,12 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        if (this.Model.RunCarType == CarTypeEnum.Primary
-            || this.Model.RunCarType == CarTypeEnum.Replacement
+        if ((
+                this.Model.RunCarType == CarTypeEnum.Primary
+                || this.Model.RunCarType == CarTypeEnum.Replacement
+            )
             && (this.Model.CarCosts != null
-                && this.Model.CarCosts.Count > 0)
+            && this.Model.CarCosts.Count > 0)
             )
         {
             this.Costs = (from cc in this.Model.CarCosts
@@ -70,8 +72,11 @@
                           select cc
                         ).ToList();
         }
-
-        this.Costs = new List<RunCarCost>() { new RunCarCost() { DayPrice = 100, KmPrice = 12 } };
+        else
+        {
+            // TODO: togliere la creazione di costi finti
+            this.Costs = new List<RunCarCost>() { new RunCarCost() { DayPrice = 100, KmPrice = 12 } };
+        }
 
         await base.OnParametersSetAsync();
     }

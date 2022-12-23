@@ -166,7 +166,7 @@ namespace CtaLineaApp.Application.Services.Run
         {
             var period = new RunPeriod()
             {
-                RunPEriodId = Guid.NewGuid(),
+                RunPeriodId = Guid.NewGuid(),
                 StartDate = startDate,
                 EndDate = endDate,
 
@@ -193,7 +193,7 @@ namespace CtaLineaApp.Application.Services.Run
         {
             var periodCar = new RunPeriodCar()
             {
-                RunPeriodCarId = Guid.NewGuid(),
+                RunCarId = Guid.NewGuid(),
 
                 RunCarType = runCarType,
                 AssociateId = associateId ?? Guid.Empty,

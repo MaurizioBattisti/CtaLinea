@@ -56,7 +56,7 @@
 		IEnumerable<Guid> ids)
 	{
 		var cars = (from c in period.Cars
-					where ids.Contains(c.RunPeriodCarId)
+					where ids.Contains(c.RunCarId)
 					select c);
 		return cars;
 	}

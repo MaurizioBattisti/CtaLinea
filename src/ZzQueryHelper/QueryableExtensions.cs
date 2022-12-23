@@ -245,6 +245,7 @@ public static IQueryable<TEntity> ApplyFilter<TEntity, TProperty>(
             {
                 TokenType.Number => token.GetNumericValue(dsiredType),
                 TokenType.DateTimeValue => token.GetDatetTimeValue(),
+                TokenType.TimeValue => token.GetTimeValue(),
                 TokenType.StringValue => token.GetStringValue(),
                 TokenType.TrueValue => true,
                 TokenType.FalseValue => false,

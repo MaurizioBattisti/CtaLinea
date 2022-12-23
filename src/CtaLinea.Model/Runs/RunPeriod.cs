@@ -4,7 +4,7 @@ namespace CtaLinea.Model.Runs
 {
     public class RunPeriod
     {
-        public Guid RunPEriodId { get; set; }
+        public Guid RunPeriodId { get; set; }
 
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }

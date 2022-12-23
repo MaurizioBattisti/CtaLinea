@@ -59,8 +59,8 @@
                         CarReplacementId = Guid.NewGuid(),
                         StartDate = new DateTime(2022, 11, 01),
                         EndDate = new DateTime(2023, 03, 31),
-                        OriginalPEriodCarIds = new List<Guid> () { period.Cars?[0]?.RunPeriodCarId ?? Guid.Empty },
-                        ReplacedPEriodCarIds = new List<Guid> () { rc.RunPeriodCarId },
+                        OriginalPEriodCarIds = new List<Guid> () { period.Cars?[0]?.RunCarId ?? Guid.Empty },
+                        ReplacedPEriodCarIds = new List<Guid> () { rc.RunCarId },
                         Note = "do re mi fa sol"
                     }
                 );

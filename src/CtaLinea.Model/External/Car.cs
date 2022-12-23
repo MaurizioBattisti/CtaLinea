@@ -8,7 +8,7 @@ namespace CtaLinea.Model.External
 {
     public class Car
     {
-        public Guid Id { get; set; }
+        public Guid CarId { get; set; }
         public Guid AssociateId { get; set; }
         public string Description { get; set; } = string.Empty;
         public int NrSittings { get; set; }
@@ -25,7 +25,7 @@ namespace CtaLinea.Model.External
         {
             var other = o as Car;
 
-            return other?.Id == Id;
+            return other?.CarId == CarId;
         }
 
         public override string ToString()
@@ -35,7 +35,7 @@ namespace CtaLinea.Model.External
 
         public override int GetHashCode()
         {
-            return this.Id.GetHashCode();
+            return this.CarId.GetHashCode();
         }
     }
 }

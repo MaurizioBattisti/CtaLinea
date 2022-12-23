@@ -165,7 +165,8 @@
 		// recupera la variante di default
 		if (this.CurrentRun !=null)
 		{
-			var variation = this.GetVariationList().FirstOrDefault();
+			var list = this.GetVariationList();
+			var variation =list?.FirstOrDefault();
 			if (variation == null) variation = new RunVariation();
 			this.CurrentVariation = variation;
 
@@ -197,7 +198,8 @@
 					orderby v.StartDate ascending
 					select v
 				);
-		return qry.Union(qry2).ToList();
+		var vv = qry.Union(qry2).ToList();
+		return vv;
 	}
 
 	private string GetSuspensionHeader (

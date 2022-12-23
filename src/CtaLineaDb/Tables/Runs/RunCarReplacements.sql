@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[RunCarReplacements]
 (
-	[CarReplacement] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY, 
+	[CarReplacementId] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY, 
     [RunPeriodId] UNIQUEIDENTIFIER NOT NULL, 
     [StartDate] DATE NOT NULL, 
     [EndDate] DATE NOT NULL, 

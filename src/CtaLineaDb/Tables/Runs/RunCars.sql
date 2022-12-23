@@ -7,13 +7,13 @@
 CREATE TABLE [dbo].[RunCars]
 (
 	[RunCarId] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(), 
-    [RunPEriodId] UNIQUEIDENTIFIER NOT NULL, 
+    [RunPeriodId] UNIQUEIDENTIFIER NOT NULL, 
     [CarType] CHAR NOT NULL DEFAULT 'P', 
     [AssociateId] UNIQUEIDENTIFIER NOT NULL, 
     [CarId] UNIQUEIDENTIFIER NOT NULL, 
 
     CONSTRAINT [FK_Cars_Run] 
-        FOREIGN KEY ([RunPEriodId]) 
+        FOREIGN KEY ([RunPeriodId]) 
         REFERENCES [dbo].[RunPeriods](RunPEriodId)
         ON DELETE CASCADE
         ON UPDATE CASCADE, 

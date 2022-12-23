@@ -30,6 +30,7 @@
         // costanti
         StringValue,
         DateTimeValue,
+        TimeValue,
         Number,
         TrueValue,
         FalseValue,

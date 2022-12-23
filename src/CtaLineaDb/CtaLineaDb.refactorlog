@@ -623,4 +623,25 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="CarId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="8d1ebad8-205f-440c-9299-4e65964214bc" ChangeDateTime="12/21/2022 17:49:31">
+    <Property Name="ElementName" Value="[dbo].[RunCarReplacements].[CarReplacement]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[RunCarReplacements]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="CarReplacementId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="fff211cb-5643-4017-bc96-289b9c7f32c4" ChangeDateTime="12/21/2022 17:49:38">
+    <Property Name="ElementName" Value="[dbo].[RunCarReplacementDetails].[CarReplacement]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[RunCarReplacementDetails]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="CarReplacementId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ee6e8ef5-7609-42bb-b3b4-fc33f23982b1" ChangeDateTime="12/22/2022 17:50:35">
+    <Property Name="ElementName" Value="[dbo].[RunCars].[RunPEriodId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[RunCars]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="RunPeriodId" />
+  </Operation>
 </Operations>

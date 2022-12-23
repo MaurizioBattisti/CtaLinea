@@ -73,6 +73,11 @@ namespace ZzSoft.Api.Utility.Base
             )
             where T : class
         {
+            if (model == null)
+            {
+                await Task.CompletedTask;
+                return this.NotFound();
+            }
             // restituisce il modello
             return this.Ok(
                 await Task.FromResult(model)
