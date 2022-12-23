@@ -28,6 +28,7 @@ namespace CtaLineaApp
                 // radzen registration
                 .AddScoped<NotificationService>()
                 .AddScoped<DialogService>()
+                .AddScoped<ContextMenuService>()
 
                 // My
                 .AddScoped<IApplicationSettings, ApplicationSettings>()

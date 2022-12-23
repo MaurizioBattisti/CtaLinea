@@ -172,12 +172,18 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             }
 
             // assegna le diette e i mezzi ai  perido cars
-            foreach (var p in item.SubPeriods)
+            if (item.SubPeriods != null)
             {
-                foreach (var pc in p.Cars)
+                foreach (var p in item.SubPeriods)
                 {
-                    pc.AssociateData = allAssociates.Where(a => a.AssociateId == pc.AssociateId).SingleOrDefault();
-                    pc.CarData = allCars.Where(c => c.CarId == pc.CarId).SingleOrDefault();
+                    if (p.Cars != null)
+                    {
+                        foreach (var pc in p.Cars)
+                        {
+                            pc.AssociateData = allAssociates.Where(a => a.AssociateId == pc.AssociateId).SingleOrDefault();
+                            pc.CarData = allCars.Where(c => c.CarId == pc.CarId).SingleOrDefault();
+                        }
+                    }
                 }
             }
             #endregion

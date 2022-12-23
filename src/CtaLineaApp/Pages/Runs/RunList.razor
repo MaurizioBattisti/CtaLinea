@@ -1,6 +1,8 @@
 ﻿@page "/runs"
 @using CtaLinea.Model.QueryModel;
 @inject IQueryUtilityService queryService
+@inject ContextMenuService ContextMenuService
+@inject DialogService DialogService
 @attribute [Authorize]
 
 <PageTitle>@Constants.App_Title - Corse</PageTitle>
@@ -32,6 +34,7 @@
                 ShowPagingSummary="true"
                 Style="height:100%" SelectionMode="DataGridSelectionMode.Single"
                 @bind-Value=@SelectedRuns
+                CellContextMenu="@RowActionCellContextMenu"
                 >
     <EmptyTemplate>
         <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessuna corsa trovato !</p>
@@ -255,5 +258,35 @@
             this.isLoading = false;
             this.StateHasChanged();
         }
+    }
+
+    private void RowActionCellContextMenu(DataGridCellMouseEventArgs<RunItemQueryModel> args)
+    {
+        SelectedRuns = new List<RunItemQueryModel>() { args.Data };
+
+        ContextMenuService.Open(args,
+            new List<ContextMenuItem> {
+                    new ContextMenuItem(){ Text = "Dettagli della corsa", Value = 1 },
+                    new ContextMenuItem(){ Text = "Modifica la Corsa", Value = 2} ,
+                    new ContextMenuItem(){ Text = "Elimina la Corsa", Value =  3  }
+            },
+        async (e) =>
+        {
+            await Task.CompletedTask;
+            ContextMenuService.Close();
+
+            switch ((int)e.Value)
+            {
+                case 1:
+                    await DialogService.OpenSideAsync<RunItemDetail>($"Dettaglio della Corsa",
+                        new Dictionary<string, object>() { { "Id", args.Data.Id } },
+                        options: new SideDialogOptions() { CloseDialogOnOverlayClick = true , Width="88%"}
+                        );
+                    break;
+
+                default:
+                    break;
+            };
+        });
     }
 }
