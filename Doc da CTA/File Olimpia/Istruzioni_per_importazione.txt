@@ -133,6 +133,8 @@ GO
 
 BEGIN TRAN;
 
+DELETE FROM dbo.runs;
+
 -- corse
 INSERT INTO [dbo].[Runs]
 			(RunId
@@ -237,7 +239,7 @@ INSERT INTO dbo.RunPeriods
 -- mezzi  - titolari
 INSERT INTO dbo.RunCars
 	(RunPEriodId, CarType, AssociateId, CarId)
-	SELECT p.RunPEriodId,
+	SELECT DISTINCT p.RunPEriodId,
 			'P' AS CarTYpe,
 			a.AssociateId,
 			ct.CarId
@@ -250,11 +252,11 @@ INSERT INTO dbo.RunCars
 			ON t.A_Descr = a.Description
 		INNER JOIN import.Car_Translate ct
 			ON REPLACE(REPLACE(i.MEZZO_TITOLARE, ' ', ''), '-', '') = ct.Oly_RegNum
-		
+
 -- mezzi  - prima  scorta
 INSERT INTO dbo.RunCars
 	(RunPEriodId, CarType, AssociateId, CarId)
-	SELECT p.RunPEriodId,
+	SELECT DISTINCT p.RunPEriodId,
 			'S' AS CarTYpe,
 			a.AssociateId,
 			ct.CarId
@@ -273,7 +275,7 @@ INSERT INTO dbo.RunCars
 -- mezzi  - prima  scorta
 INSERT INTO dbo.RunCars
 	(RunPEriodId, CarType, AssociateId, CarId)
-	SELECT p.RunPEriodId,
+	SELECT DISTINCT p.RunPEriodId,
 			'S' AS CarTYpe,
 			a.AssociateId,
 			ct.CarId
@@ -287,10 +289,11 @@ INSERT INTO dbo.RunCars
 		INNER JOIN import.Car_Translate ct
 			ON REPLACE(REPLACE(i.MEZZO_DI_RISERVA_2, ' ', ''), '-', '') = ct.Oly_RegNum
 
+
 -- costi dei mezzi
 INSERT INTO dbo.RunCarCosts 
 	(RunCarId, DayPrice, KmPrice, DayIntegration, DayForfait)
-	SELECT rc.RunCarId, 
+	SELECT DISTINCT rc.RunCarId, 
 			-- i.costo_corsa,
 			 0,
 			 0,

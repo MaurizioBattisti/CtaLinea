@@ -4,6 +4,10 @@
 @inject IRunModelService RunModelService
 @inject IContractService ContractService
 @inject DialogService DialogService
+
+@inject RouterSessionService RouterSessionService
+@inherits EditorComponentBase
+
 @attribute [Authorize]
 
 <PageTitle>@Constants.App_Title - Corsa</PageTitle>
@@ -38,7 +42,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await Task.CompletedTask;
+        await base.OnInitializedAsync();
     }
     protected override async Task OnParametersSetAsync()
     {
@@ -59,6 +63,7 @@
     Guid? MyCarId = null;
     private void Btn_Click()
     {
+        this.IsClean = !IsClean;
         this.EditMode = !this.EditMode;
         this.StateHasChanged();
     }

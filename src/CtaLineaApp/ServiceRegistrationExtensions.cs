@@ -6,6 +6,8 @@ using CtaLineaApp.Application.Services.Utility;
 using CtaLineaApp.Application.Services.Run;
 using CtaLineaApp.Application.Services.Base;
 using Radzen;
+using CtaLineaApp.Pages.Services;
+using CEC.Routing;
 
 namespace CtaLineaApp
 {
@@ -29,6 +31,9 @@ namespace CtaLineaApp
                 .AddScoped<NotificationService>()
                 .AddScoped<DialogService>()
                 .AddScoped<ContextMenuService>()
+
+                // Cfc Routing
+                .AddCECRouting()
 
                 // My
                 .AddScoped<IApplicationSettings, ApplicationSettings>()
