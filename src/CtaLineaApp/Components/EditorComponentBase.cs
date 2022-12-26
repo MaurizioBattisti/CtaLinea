@@ -59,15 +59,22 @@ namespace CtaLineaApp.Components
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        protected void OnNavigationCancelled(object sender, EventArgs e)
+        protected async void OnNavigationCancelled(object sender, EventArgs e)
         {
             this.ExitAttempt = true;
-            DialogService.Alert(
-                "Ci sono dati non salvati nella pagina salvare o annullare le modifiche prima di abbandonare",
+            var result = await  DialogService.Confirm(
+                "Ci sono dati non salvati nella pagina. Desideri comunque abbandonarla ?",
                 "Dati non Salvati",
-                new AlertOptions() { OkButtonText = "Ok" }
+                new ConfirmOptions() { OkButtonText = "Si, abbandona !", CancelButtonText= "No, rimani qui !" }
                 );
             this.StateHasChanged();
+
+            if (result == true)
+            {
+                this.IsClean = true;
+                this.ExitAttempt = false;
+                this.NavManager.NavigateTo(this.RouterSessionService.NavigationCancelledUrl);
+            }
         }
 
         public void Dispose()

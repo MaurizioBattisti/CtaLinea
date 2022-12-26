@@ -1,6 +1,8 @@
 ﻿@using CtaLinea.QueryModel
 @inject IQueryUtilityService queryService
 
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
 <RadzenDropDown 
     Disabled=@Disabled
     Data=@Data 
@@ -20,10 +22,9 @@
 </RadzenDropDown>
 
 @code {
-    /*
     [CascadingParameter]
     CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
-    */
+
     private Guid? _AssociateId;
     [Parameter]
     public Guid? AssociateId 
@@ -113,10 +114,17 @@
         CarQueryItem? car)
     {
         if (car == null) return string.Empty;
-        if (car.PrimaryCar) return "alert-success";
-        if (car.SpareCar) return "alert-warning";
-        if (car.Active == false || car.AssociateActive == false) return "alert-danger";
-        return string.Empty;
+        if (car.Active == false || car.AssociateActive == false) return this.GetStyle(this.Settings.InactiveCarBgStyle, this.Settings.InactiveCarFgStyle);
+        if (car.PrimaryCar) return this.GetStyle(this.Settings.PrimaryCarBgStyle, this.Settings.PrimaryCarFgStyle);
+        if (car.SpareCar) return this.GetStyle(this.Settings.SpareCarBgStyle, this.Settings.SpareCarFgStyle);
+        return this.GetStyle(this.Settings.OtherCarBgStyle, this.Settings.OtherCarFStyle);
+    }
+
+    private string GetStyle (
+        params string[] styles)
+    {
+        var str = string.Join(' ', styles);
+        return str.Trim();
     }
 
     private void SelectItem (Guid? carId)
