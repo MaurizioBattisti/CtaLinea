@@ -1,0 +1,73 @@
+﻿@using CtaLinea.Model.External;
+@inject IRunModelService RunModelService
+
+@if (this.IsCostVisible() == true)
+{
+    <p>costi dei mezzi</p>
+    <RadzenTabs Change=@OnTabChange
+            TabPosition="TabPosition.Top"
+            Class="w-100 my-1 mx-auto"
+            RenderMode="TabRenderMode.Client">
+        <Tabs>
+            @foreach (var c in this.GetCarCostList())
+            {
+                <RadzenTabsItem Text="@GetCarCostHeader(c)">
+                    <CarCostView CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@RunPeriod PeriodCar=@PeriodCar CarCost=@c />
+                </RadzenTabsItem>
+            }
+        </Tabs>
+    </RadzenTabs>
+}
+
+@code {
+    [Parameter]
+    public RunItem CurrentRun { get; set; } = new RunItem();
+    [Parameter]
+    public bool EditMode { get; set; } = false;
+    [Parameter]
+    public RunPeriod RunPeriod { get; set; } = new RunPeriod();
+    [Parameter]
+    public RunPeriodCar? PeriodCar { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+
+        await base.OnParametersSetAsync();
+    }
+
+    private bool IsCostVisible()
+    {
+        if (this.PeriodCar == null) return false;
+        return (this.PeriodCar.RunCarType == CarTypeEnum.Primary
+            || this.PeriodCar.RunCarType == CarTypeEnum.Replacement);
+    }
+    private IList<RunCarCost> GetCarCostList()
+    {
+        if (this.PeriodCar?.CarCosts == null) return new List<RunCarCost>();
+        return (from cc in this.PeriodCar.CarCosts
+                orderby cc.StartDate
+                select cc
+                    ).ToList();
+    }
+    private string GetCarCostHeader(RunCarCost cost)
+    {
+        string header = "dall''inizio";
+        if (cost.StartDate != null)
+        {
+            header = string.Format("dal: {0:dd/MM/yyyy}", cost.StartDate);
+        }
+
+        return header;
+    }
+
+    void OnTabChange(int index)
+    {
+
+    }
+}

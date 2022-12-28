@@ -1,15 +1,23 @@
 ﻿@inject IRunModelService RunModelService
 
-<p> Originale/i </p>
-@foreach(var c in this.OriginalCars)
-{
-	<RunCarDetailView CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@SubPeriod Model=@c ShowCosts=false />
-}
-<p> Sostituito/i da </p>
-@foreach(var c in this.ReplacingCars)
-{
-	<RunCarDetailView CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@SubPeriod Model=@c />
-}
+
+<RadzenSplitter Orientation="Orientation.Horizontal" Style="min-height: 350px">
+    <RadzenSplitterPane Size="300px">
+		<div>
+		<p> Originale/i </p>
+		<RunCarList CarList=@OriginalCars />
+		</div>
+	</RadzenSplitterPane>
+	<RadzenSplitterPane Size="400px">
+		<div>
+		<p> Sostituito/i da </p>
+		<RunCarList @bind-Value=@CurrentPeriodCar CarList=@GetReplacedCarList() />
+		</div>
+	</RadzenSplitterPane>
+	<RadzenSplitterPane>
+		<CarCostListView CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@SubPeriod PeriodCar=@CurrentPeriodCar />
+	</RadzenSplitterPane>
+</RadzenSplitter>
 
 @code {
 	[Parameter]
@@ -25,6 +33,13 @@
 	private IList<RunPeriodCar> OriginalCars = new List<RunPeriodCar>();
 	// lista dei mezzi in sostituzione
 	private IList<RunPeriodCar> ReplacingCars = new List<RunPeriodCar>();
+
+	private RunPeriodCar? CurrentPeriodCar { get; set; }
+
+	private IList<RunPeriodCar> GetReplacedCarList ()
+	{
+		return ReplacingCars;
+	}
 
 	protected override async Task OnInitializedAsync()
 	{

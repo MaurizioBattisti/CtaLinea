@@ -1,0 +1,115 @@
+﻿@using CtaLinea.Model.External;
+@inject IRunModelService RunModelService
+
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<RadzenSplitter Orientation="Orientation.Horizontal" Style="min-height: 350px">
+    <RadzenSplitterPane Size="450px">
+        <RunCarList @bind-Value=@CurrentPeriodCar CarList=@GetPeriodCarList() />
+
+        @if (this.EditMode == true)
+        {
+            <RadzenButton Text="Aggiungi Mezzo"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Icon="calendar_month"
+                      Click=@AddNewCar_Click />
+        }
+    </RadzenSplitterPane>
+    <RadzenSplitterPane>
+        <CarCostListView CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@RunPeriod PeriodCar=@CurrentPeriodCar />
+    </RadzenSplitterPane>
+</RadzenSplitter>
+
+@code {
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+    [Parameter]
+    public RunItem CurrentRun { get; set; } = new RunItem();
+    [Parameter]
+    public bool EditMode { get; set; } = false;
+    [Parameter]
+    public RunPeriod RunPeriod { get; set; } = new RunPeriod();
+    [Parameter]
+    public CarReplacement? Replacement { get; set; }
+
+    private RunPeriodCar? CurrentPeriodCar { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+
+        await base.OnParametersSetAsync();
+    }
+
+    private IEnumerable<RunPeriodCar> GetPeriodCarList()
+    {
+        IEnumerable<RunPeriodCar>? list = null;
+        if (this.RunPeriod != null)
+        {
+            // contorlla se è stato indicato il replacemtn
+            if (this.Replacement != null)
+            {
+                if (this.Replacement.ReplacedPEriodCarIds != null
+                    && this.RunPeriod.Cars != null)
+                {
+                    list = (from c in this.RunPeriod.Cars
+                            where this.Replacement.ReplacedPEriodCarIds.Contains(c.RunCarId)
+                            select c)
+                                .ToList();
+                }
+            }
+            else if (this.RunPeriod.Cars != null)
+            {
+                list = this.RunPeriod.Cars.Where(c => c.RunCarType == CarTypeEnum.Primary)
+                            .Union(
+                                this.RunPeriod.Cars.Where(c => c.RunCarType == CarTypeEnum.Spare)
+                            )
+                            .ToList();
+            }
+        }
+
+        return list ?? new List<RunPeriodCar>();
+    }
+
+    private bool IsCostVisible()
+    {
+        if (this.CurrentPeriodCar == null) return false;
+        return (this.CurrentPeriodCar.RunCarType == CarTypeEnum.Primary
+            || this.CurrentPeriodCar.RunCarType == CarTypeEnum.Replacement);
+    }
+    private IList<RunCarCost> GetCarCostList()
+    {
+        if (this.CurrentPeriodCar?.CarCosts == null) return new List<RunCarCost>();
+        return (from cc in this.CurrentPeriodCar.CarCosts
+                orderby cc.StartDate
+                select cc
+                    ).ToList();
+    }
+    private string GetCarCostHeader(RunCarCost cost)
+    {
+        string header = "dall''inizio";
+        if (cost.StartDate != null)
+        {
+            header = string.Format("dal: {0:dd/MM/yyyy}", cost.StartDate);
+        }
+
+        return header;
+    }
+
+    void OnTabChange(int index)
+    {
+
+    }
+
+    private void AddNewCar_Click()
+    {
+
+    }
+}
+

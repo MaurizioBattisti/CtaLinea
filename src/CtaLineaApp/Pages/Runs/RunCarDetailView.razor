@@ -1,4 +1,7 @@
-﻿@inject IRunModelService RunModelService
+﻿@using CtaLinea.Model.External;
+@inject IRunModelService RunModelService
+
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
 
 <RadzenCard>
 	 <div class="d-flex flex-row p-1">
@@ -11,7 +14,7 @@
             <RadzenText TextStyle="TextStyle.Body1"><strong>@Model.AssociateData?.Description</strong></RadzenText>
 
             <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Mezzo</RadzenText>
-            <RadzenText TextStyle="TextStyle.Body1"><strong>@Model.CarData?.RegNumber </strong></RadzenText>
+            <RadzenText TextStyle="TextStyle.Body1"><div class=@GetClassByStatus(Model.CarData)><strong>@Model.CarData?.RegNumber </strong></div> </RadzenText>
             <RadzenText TextStyle="TextStyle.Body1"><strong>@Model.CarData?.NrSittings </strong></RadzenText>
         </div>
         @if (this.IsCostVisible())
@@ -38,6 +41,9 @@
 </RadzenCard>
 
 @code {
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
     [Parameter]
     public RunItem CurrentRun { get; set; } = new RunItem();
     [Parameter]
@@ -93,8 +99,7 @@
             case CarTypeEnum.Replacement:
                 style = IconStyle.Warning;
                 break;
-            case CarTypeEnum.Spare1:
-            case CarTypeEnum.Spare2:
+            case CarTypeEnum.Spare:
                 style = IconStyle.Secondary;
                 break;
         }
@@ -113,8 +118,7 @@
             case CarTypeEnum.Replacement:
                 descr = "Sostituzione";
                 break;
-            case CarTypeEnum.Spare1:
-            case CarTypeEnum.Spare2:
+            case CarTypeEnum.Spare:
                 descr = "Scorta";
                 break;
         }
@@ -141,5 +145,22 @@
     void OnTabChange(int index)
 	{
         
+    }
+
+    private string GetClassByStatus(
+        Car? car)
+    {
+        if (car == null) return string.Empty;
+        if (car.Active == false ) return this.GetStyle(this.Settings.InactiveCarBgStyle, this.Settings.InactiveCarFgStyle);
+        if (car.PrimaryCar) return this.GetStyle(this.Settings.PrimaryCarBgStyle, this.Settings.PrimaryCarFgStyle);
+        if (car.SpareCar) return this.GetStyle(this.Settings.SpareCarBgStyle, this.Settings.SpareCarFgStyle);
+        return this.GetStyle(this.Settings.OtherCarBgStyle, this.Settings.OtherCarFStyle);
+    }
+
+    private string GetStyle(
+        params string[] styles)
+    {
+        var str = string.Join(' ', styles);
+        return str.Trim();
     }
 }

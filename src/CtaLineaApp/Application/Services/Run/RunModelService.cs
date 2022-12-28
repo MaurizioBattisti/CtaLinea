@@ -176,8 +176,7 @@ namespace CtaLineaApp.Application.Services.Run
 
             // aggiunge i mezzi predefiniti vuoti
             this.CreatePeriodCar(period, CarTypeEnum.Primary);
-            this.CreatePeriodCar(period, CarTypeEnum.Spare1);
-            this.CreatePeriodCar(period, CarTypeEnum.Spare2);
+            this.CreatePeriodCar(period, CarTypeEnum.Spare);
 
             if (run.SubPeriods == null) run.SubPeriods = new List<RunPeriod>() { period };
             else run.SubPeriods.Add(period);

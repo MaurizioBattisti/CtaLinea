@@ -68,6 +68,7 @@
     <Folder Include="Functions\Calendars" />
     <Folder Include="Views\Runs" />
     <Folder Include="StoredProc\Run" />
+    <Folder Include="Functions\Run" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post_Deploy.sql" />
@@ -110,5 +111,6 @@
     <Build Include="Views\Runs\vw_RunPaths.sql" />
     <Build Include="Views\Runs\vw_Runs.sql" />
     <Build Include="StoredProc\Run\up_GetOneRunItem.sql" />
+    <Build Include="Functions\Run\tvf_AttendedRunDays.sql" />
   </ItemGroup>
 </Project>

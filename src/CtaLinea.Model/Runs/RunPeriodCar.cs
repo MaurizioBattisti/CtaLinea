@@ -6,8 +6,7 @@ namespace CtaLinea.Model.Runs
     public class RunPeriodCar
     {
         private const string CarTYpe_PRimary = "P";
-        private const string CarTYpe_Spare_1 = "1";
-        private const string CarTYpe_Spare_2 = "2";
+        private const string CarTYpe_Spare = "S";
         private const string CarTYw_Replacement = "R";
 
         public Guid RunCarId { get; set; }
@@ -23,11 +22,8 @@ namespace CtaLinea.Model.Runs
                     case CarTYpe_PRimary:
                         result = CarTypeEnum.Primary;
                         break;
-                    case CarTYpe_Spare_1:
-                        result = CarTypeEnum.Spare1;
-                        break;
-                    case CarTYpe_Spare_2:
-                        result = CarTypeEnum.Spare2;
+                    case CarTYpe_Spare:
+                        result = CarTypeEnum.Spare;
                         break;
                     case CarTYw_Replacement:
                         result = CarTypeEnum.Replacement;
@@ -42,11 +38,8 @@ namespace CtaLinea.Model.Runs
                     case CarTypeEnum.Primary:
                         this.CarType = CarTYpe_PRimary;
                         break;
-                    case CarTypeEnum.Spare1:
-                        this.CarType = CarTYpe_Spare_1;
-                        break;
-                    case CarTypeEnum.Spare2:
-                        this.CarType = CarTYpe_Spare_2;
+                    case CarTypeEnum.Spare:
+                        this.CarType = CarTYpe_Spare;
                         break;
                     case CarTypeEnum.Replacement:
                         this.CarType = CarTYw_Replacement;
@@ -71,8 +64,7 @@ namespace CtaLinea.Model.Runs
     public enum CarTypeEnum
     {
         Primary,
-        Spare1,
-        Spare2,
+        Spare,
         Replacement
     }
 }

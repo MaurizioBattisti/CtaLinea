@@ -8,27 +8,24 @@
 	<Tabs>
 @foreach(var p in this.SubPeriods)
 {
-		<RadzenTabsItem Text="@p.GetWeekDaysDescr()">
-			<RadzenLabel Text="Mezzi titolari e scorte" />
-			@foreach (var c in this.GetPeriodCars(p))
-			{
-				<RunCarDetailView CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@p Model=@c />
-			}
-			@if(this.HasReplacements(p))
-			{
-				<RadzenLabel Text="Sostituzioni" />
-				<RadzenAccordion 
-					Multiple="true" >
-					<Items>
-					@foreach(var r in this.GetReplacementList(p))
-					{
-						<RadzenAccordionItem Text="@this.GetReplacementDescriotion(r)" Icon="find_replace" Selected=false>
-							<CarReplacementItemView CurrentRun=@CurrentRun EditMode=@EditMode SubPeriod=@p Replacement=@r />
-						</RadzenAccordionItem>
-					}
-					</Items>
-				</RadzenAccordion>
-			}
+	<RadzenTabsItem Text="@p.GetWeekDaysDescr()">
+		<RunCarListView CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@p Replacement=null />
+			
+		@if(this.HasReplacements(p))
+		{
+			<RadzenLabel Text="Sostituzioni" />
+			<RadzenAccordion 
+				Multiple="true" >
+				<Items>
+				@foreach(var r in this.GetReplacementList(p))
+				{
+					<RadzenAccordionItem Text="@this.GetReplacementDescriotion(r)" Icon="find_replace" Selected=false>
+						<CarReplacementItemView CurrentRun=@CurrentRun EditMode=@EditMode SubPeriod=@p Replacement=@r />
+					</RadzenAccordionItem>
+				}
+				</Items>
+			</RadzenAccordion>
+		}
 		</RadzenTabsItem>
 }
 	</Tabs>
@@ -71,8 +68,7 @@
 	{
 		return (from c in period.Cars
 				where c.RunCarType == CarTypeEnum.Primary
-					|| c.RunCarType == CarTypeEnum.Spare1
-					|| c.RunCarType == CarTypeEnum.Spare2
+					|| c.RunCarType == CarTypeEnum.Spare
 				orderby c.RunCarType ascending, c.AssociateId, c.CarId
 				select c);
 	}
