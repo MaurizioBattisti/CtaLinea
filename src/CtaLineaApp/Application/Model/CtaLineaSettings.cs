@@ -4,7 +4,7 @@ namespace CtaLineaApp.Application.Model
 {
     public class CtaLineaSettings
     {
-        public int PageSize { get; set; } = 10;
+        public int PageSize { get; set; } = 50;
 
         // densità delle righe nelle griglie
         public Density Density { get; set; } = Density.Compact;

@@ -36,6 +36,8 @@ namespace CtaLineaApp
                 .AddCECRouting()
 
                 // My
+                .AddScoped(typeof(IAutoLoadDataList<>), typeof(AutoLoadDataList<>))
+
                 .AddScoped<IApplicationSettings, ApplicationSettings>()
                 .AddScoped<IAccountService, AccountService>()
                 // .AddScoped<IAlertService, AlertService>()

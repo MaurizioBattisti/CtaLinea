@@ -1,5 +1,5 @@
 ﻿@page "/cars"
-@inject IQueryUtilityService queryService
+@inject IAutoLoadDataList<Car> AutoLoad;
 @attribute [Authorize]
 
 <PageTitle>@Constants.App_Title - Mezzi</PageTitle>
@@ -9,25 +9,28 @@
         <RadzenLabel Text="Mezzi" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
     </PageTitle>
     <TopLine>
-        <RadzenTextBox @bind-Value="FullTextSearch" Placeholder="Cerca..." Change=@(args => FullText_OnChange(args)) Class="w-100" />
+        <RadzenTextBox @bind-Value="AutoLoad.FullTextSearch" Placeholder="Cerca..." Change=@(args => FullText_OnChange(args)) Class="w-100" />
     </TopLine>
 </LayoutSetter>
 <CtaLineaSttingsNotifier Changed=@StateHasChanged />
 
 <RadzenDataGrid @ref="@grdData" 
         FilterMode="FilterMode.Simple"
-        IsLoading=@isLoading
-        PageSize=50
-        Count="@RowCount"
-        LoadData="@LoadData"
-        Data="@this.Data" TItem="Car"
+        IsLoading=@AutoLoad.isLoading
+        Count="@AutoLoad.RowCount"
+        LoadData="@this.AutoLoad.LoadData"
+        Data="@this.AutoLoad.Data" TItem="Car"
         AllowFiltering="true"
         AllowColumnResize="true"
         AllowSorting="true"
         LogicalFilterOperator="LogicalFilterOperator.And"
-        AllowVirtualization=true
         Style="height:100%"
-    >
+        AllowPaging="true"
+        PagerHorizontalAlign="HorizontalAlign.Left"
+        ShowPagingSummary="true"
+        Density=@Settings.Density
+        PageSize=@(Settings?.PageSize ?? 5)
+        >
     <EmptyTemplate>
         <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun mezzo trovato !</p>
     </EmptyTemplate>
@@ -58,15 +61,12 @@
     CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
     RadzenDataGrid<Car>? grdData;
 
-    QueryDefinition _servicesQueryDef = new QueryDefinition();
-    Car[]? Data = null; 
-    int RowCount = 0;
-    bool isLoading = false;
-    string FullTextSearch = string.Empty;
-
     protected override async Task OnInitializedAsync()
     {
-        this._servicesQueryDef.EndPoint = Constants.Endpoint_Cars;
+        AutoLoad.Initilize (
+            Constants.Endpoint_Cars
+            );
+
         await Task.CompletedTask;
         this.StateHasChanged();
     }
@@ -74,35 +74,5 @@
     void FullText_OnChange(string value)
     {
         this.grdData?.Reload();
-    }
-
-    private async Task LoadData(LoadDataArgs args)
-    {
-        this.isLoading = true;
-        this.StateHasChanged();
-
-        this._servicesQueryDef.Filter = args.GetQueryFilter<Car> ();
-        this._servicesQueryDef.Sort = args.GetQuerySort(nameof(Car.RegNumber));
-        this._servicesQueryDef.FullText = this.FullTextSearch;
-
-        this._servicesQueryDef.Page = args.GetQueryPage();
-        this._servicesQueryDef.PageSize = args.GetQueryPageSize();
-
-        try
-        {
-            var result = await queryService.GetListAsync<Car>(
-                        this._servicesQueryDef);
-
-            if (result != null)
-            {
-                this.Data = result.Items;
-                this.RowCount = result.TotalRows;
-            }
-        }
-        finally
-        {
-            this.isLoading = false;
-            this.StateHasChanged();
-        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿@page "/runs"
 @using CtaLinea.Model.QueryModel;
-@inject IQueryUtilityService queryService
+@inject IAutoLoadDataList<RunItemQueryModel> AutoLoad;
 @inject ContextMenuService ContextMenuService
 @inject DialogService DialogService
 @attribute [Authorize]
@@ -12,29 +12,30 @@
         <RadzenLabel Text="Corse" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
     </PageTitle>
     <TopLine>
-        <RadzenTextBox @bind-Value="FullTextSearch" Placeholder="Cerca..." Change=@(args => FullText_OnChange(args)) Class="w-100" />
+        <RadzenTextBox @bind-Value="AutoLoad.FullTextSearch" Placeholder="Cerca..." Change=@(args => FullText_OnChange(args)) Class="w-100" />
     </TopLine>
 </LayoutSetter>
 <CtaLineaSttingsNotifier Changed=@StateHasChanged />
 
 <RadzenDataGrid @ref="@grdData" 
                 FilterMode="FilterMode.Simple"
-                Count="@RowCount"
-                IsLoading=@isLoading
-                LoadData="@LoadData"
-                Data="@this.Data" TItem="RunItemQueryModel"
-                PageSize="50"
+                Count="@AutoLoad.RowCount"
+                IsLoading=@AutoLoad.isLoading
+                LoadData="@AutoLoad.LoadData"
+                Data="@this.AutoLoad.Data" TItem="RunItemQueryModel"
                 AllowSorting="true"
                 AllowFiltering="true"
                 AllowColumnResize="true"
                 LogicalFilterOperator="LogicalFilterOperator.And"
-                AllowVirtualization="true"
-                Density="Density.Compact"
-                PagerHorizontalAlign="HorizontalAlign.Left"
-                ShowPagingSummary="true"
-                Style="height:100%" SelectionMode="DataGridSelectionMode.Single"
+                SelectionMode="DataGridSelectionMode.Single"
                 @bind-Value=@SelectedRuns
                 CellContextMenu="@RowActionCellContextMenu"
+                Style="height:100%" 
+                AllowPaging="true"
+                PagerHorizontalAlign="HorizontalAlign.Left"
+                ShowPagingSummary="true"
+                Density=@Settings.Density
+                PageSize=@(Settings?.PageSize ?? 5)
                 >
     <EmptyTemplate>
         <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessuna corsa trovato !</p>
@@ -161,12 +162,6 @@
     CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
     RadzenDataGrid<RunItemQueryModel>? grdData;
 
-    QueryDefinition _servicesQueryDef = new QueryDefinition();
-    RunItemQueryModel[]? Data = null;
-    int RowCount = 0;
-    bool isLoading = false;
-    string FullTextSearch = string.Empty;
-
     IList<RunItemQueryModel> SelectedRuns = new List<RunItemQueryModel> ();
 
     #region filtri
@@ -212,8 +207,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        this._servicesQueryDef.EndPoint = Constants.Endpoint_RunList;
+        AutoLoad.Initilize(
+            Constants.Endpoint_RunList
+            );
+
         await base.OnInitializedAsync();
+        this.StateHasChanged();
     }
 
     void FullText_OnChange(string value)
@@ -228,36 +227,6 @@
         var dt = new DateTime(1, 1, 1);
         dt = dt.Add(time.Value);
         return string.Format("{0:HH:mm}", dt);
-    }
-
-    private async Task LoadData(LoadDataArgs args)
-    {
-        this.isLoading = true;
-        this.StateHasChanged();
-
-        this._servicesQueryDef.Filter = args.GetQueryFilter<RunItemQueryModel>();
-        this._servicesQueryDef.Sort = args.GetQuerySort(nameof(RunItemQueryModel.Id));
-        this._servicesQueryDef.FullText = this.FullTextSearch;
-
-        this._servicesQueryDef.Page = args.GetQueryPage();
-        this._servicesQueryDef.PageSize = args.GetQueryPageSize();
-
-        try
-        {
-            var result = await queryService.GetListAsync<RunItemQueryModel>(
-                        this._servicesQueryDef);
-
-            if (result != null)
-            {
-                this.Data = result.Items;
-                this.RowCount = result.TotalRows;
-            }
-        }
-        finally
-        {
-            this.isLoading = false;
-            this.StateHasChanged();
-        }
     }
 
     private void RowActionCellContextMenu(DataGridCellMouseEventArgs<RunItemQueryModel> args)

@@ -52,6 +52,6 @@ namespace CtaLineaApp
 
         internal const string Endpoint_TT_Import = "/api/utility/ttservices";
 
-        internal const int Default_PageSize = 20;
+        // internal const int Default_PageSize = 20;
     }
 }
