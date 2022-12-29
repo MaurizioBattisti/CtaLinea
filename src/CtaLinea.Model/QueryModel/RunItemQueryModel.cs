@@ -18,8 +18,8 @@ namespace CtaLinea.Model.QueryModel
 		public int? ContractId { get; set; }
 
 		public bool Extra { get; set; }
-		[SqlField(SortPosition = 0, FullText = true)]
-        public string? ContractRowNumber { get; set; }
+		[SqlField(SortPosition = 0)]
+        public int? ContractRowNumber { get; set; }
 
 		[SqlField(SortPosition = 1)]
 		public DateTime? StartDate { get; set; }
@@ -42,7 +42,8 @@ namespace CtaLinea.Model.QueryModel
 		public string? PathsDescr { get; set; }
 
 		public Guid RunVariationId { get; set; }
-		public int? CalendarId { get; set; }
+        public DateTime? VariationStartDate { get; set; }
+        public int? CalendarId { get; set; }
 		[SqlField(FullText = true)]
 		public string? CalendarName { get; set; }
 		public int? LineNumber { get; set; }
@@ -72,5 +73,8 @@ namespace CtaLinea.Model.QueryModel
 		public string? ContractDescription { get; set; }
 		public DateTime? ContractStart { get; set; }
 		public DateTime? ctrEndDAte { get; set; }
-	}
+
+		public int VariationCount { get; set; }
+
+    }
 }

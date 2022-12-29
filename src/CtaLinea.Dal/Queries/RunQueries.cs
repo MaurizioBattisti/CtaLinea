@@ -16,8 +16,10 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 		: IRunQueries
 	{
 		private const string RunItemListSql_Table = "[dbo].[vw_Runs] r";
+        private const string RunVariationList_Table = "[dbo].[vw_RunVariations] v";
+        
 
-		private CtaDbContext _context;
+        private CtaDbContext _context;
 
 		public RunQueries(
 			CtaDbContext context)
@@ -43,7 +45,7 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 			var queryDef = new QueryDefinition<RunItemQueryModel>(
 				RunItemListSql_Table,
 				null,
-				"a.RunId = @RunId",
+                "r.RunId = @RunId",
 				new { RunId = id });
 
 			IDbConnection conn = this._context.Database.GetDbConnection();
@@ -51,5 +53,37 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 				queryDef)
 				.ConfigureAwait(false);
 		}
-	}
+
+        public async Task<QueryItemList<RunVariationQueryModel>> GetRunVariationsAsync(
+            Guid runId,
+            IFilteringContext filterContext)
+		{
+            var queryDef = new QueryDefinition<RunVariationQueryModel>(
+                RunVariationList_Table,
+                filterContext,
+				"v.RunId = @RunId",
+				new { RunId = runId });
+
+            IDbConnection conn = this._context.Database.GetDbConnection();
+            return await conn.QueryListAsync(
+                queryDef)
+                .ConfigureAwait(false);
+        }
+        public async Task<RunVariationQueryModel> GetOneVariationAsync(
+            Guid id)
+		{
+            var queryDef = new QueryDefinition<RunVariationQueryModel>(
+                RunVariationList_Table,
+                null,
+                "v.RunVariationId = @RunVariationId",
+                new { RunVariationId = id });
+
+            IDbConnection conn = this._context.Database.GetDbConnection();
+            return await conn.QueryOneAsync(
+                queryDef)
+                .ConfigureAwait(false);
+
+        }
+
+    }
 }

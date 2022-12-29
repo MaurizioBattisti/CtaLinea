@@ -14,6 +14,7 @@ using CtaLinea.Model.QueryModel;
 using CtaLineaWebApi.Application.Commands.Runs;
 using MediatR;
 using NPOI.OpenXmlFormats.Wordprocessing;
+using System.Linq.Expressions;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -152,5 +153,23 @@ namespace CtaLineaWebApi.Controllers
             await Task.CompletedTask;
             return this.Created("/il_mio_id", null);
         }
+
+        #region dettagli
+        [SwaggerOperation("Elenco  delle varianti di una corsa")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<RuntimeVariablesExpression>))]
+        [HttpGet]
+        [Route("{id}/variations")]
+        public async Task<IActionResult> GetRunVariantListAsync(
+            Guid id)
+        {
+            var result = await this._queries.GetRunVariationsAsync(
+                id,
+                this.FilteringContext)
+                .ConfigureAwait(false);
+
+            return await this.ModelOKAsync(result)
+                .ConfigureAwait(false);
+        }
+        #endregion
     }
 }

@@ -3,7 +3,7 @@
 	[RunId] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(), 
     [ContractId] INT NOT NULL, 
     [Extra] BIT NOT NULL DEFAULT 0, 
-    [ContractRowNumber] VARCHAR(20) NULL,
+    [ContractRowNumber] INT NULL,
     [StartDate] DATE NULL, 
     [EndDate] DATE NULL, 
     [RequestedDays] INT NULL, 

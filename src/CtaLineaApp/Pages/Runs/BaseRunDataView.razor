@@ -28,7 +28,7 @@
 					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Riga dell'appalto</RadzenText>
 					@if (this.EditMode == true)
 					{
-						<RadzenTextBox @bind-Value="this.CurrentRun.ContractRowNumber" MaxLength="20" Class="w-100" />
+						<RadzenNumeric @bind-Value="this.CurrentRun.ContractRowNumber" Class="w-100" />
 
 						<div class="row-flex-row">
 							<RadzenCheckBox @bind-Value=@this.CurrentRun.Extra Name="ExtraContract" TValue="bool" />
@@ -37,7 +37,7 @@
 					}
 					else
 					{
-						<RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentRun.ContractRowNumber</strong></RadzenText>
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentRun?.ContractRowNumber?.ToString()</strong></RadzenText>
 						@if (this.CurrentRun.Extra == true)
 						{
 							<RadzenText TextStyle="TextStyle.Body1"><strong>Extra capitolato</strong></RadzenText>

@@ -149,12 +149,30 @@ INSERT INTO [dbo].[Runs]
 			i.OlyId,
 			1 AS ContractID,
 			CASE WHEN i.n_righe_capitolato_928 LIKE '%extra%' THEN  1 ELSE 0 END AS Extra_Appalto,
-			n_righe_capitolato_928,
-	        [data_inizio],
+			TRY_CAST(
+			REPLACE(REPLACE(n_righe_capitolato_928, 'bis', ''), ' ', '')
+			AS INT) AS RigaAppalto,
+			[data_inizio],
 			[data_fine],
 			[nr_gg],
-			[note_appalto]
+			ISNULL([note_appalto] + ' - ' , '') + n_righe_capitolato_928
 		FROM import.Oly i;
+-- corregge le date di inizioe  fine dlele corse
+-- riportandole nel ragen del contratto
+UPDATE dbo.Runs
+	SET StartDate = NULL
+	FROM dbo.Runs r
+	INNER JOIN dbo.Contracts  c
+		ON  r.ContractId = c.ContractId
+	WHERE r.StartDate <= c.StartDate;
+
+UPDATE dbo.Runs
+	SET EndDate = NULL
+	FROM dbo.Runs r
+	INNER JOIN dbo.Contracts  c
+		ON  r.ContractId = c.ContractId
+	WHERE r.EndDate >= c.EndDate;
+
 
 -- Varianti delle corse
 INSERT INTO [dbo].[RunVariations]

@@ -10,7 +10,7 @@ namespace CtaLinea.Model.Runs
 
         public bool Extra { get; set; } = false;
 
-        public string? ContractRowNumber { get; set; }
+        public int? ContractRowNumber { get; set; }
 
         public DateTime? StartDate { get; set; }
 

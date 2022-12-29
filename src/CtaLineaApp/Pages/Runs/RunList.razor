@@ -2,6 +2,7 @@
 @using CtaLinea.Model.QueryModel;
 @inject IAutoLoadDataList<RunItemQueryModel> AutoLoad;
 @inject ContextMenuService ContextMenuService
+@inject IQueryUtilityService QueryService
 @inject DialogService DialogService
 @attribute [Authorize]
 
@@ -30,6 +31,11 @@
                 SelectionMode="DataGridSelectionMode.Single"
                 @bind-Value=@SelectedRuns
                 CellContextMenu="@RowActionCellContextMenu"
+                
+                ExpandMode="DataGridExpandMode.Single"
+                RowRender=@RowRender
+                RowExpand=@RowExpand
+
                 Style="height:100%" 
                 AllowPaging="true"
                 PagerHorizontalAlign="HorizontalAlign.Left"
@@ -40,6 +46,101 @@
     <EmptyTemplate>
         <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessuna corsa trovato !</p>
     </EmptyTemplate>
+    <Template Context="runItem">
+        <RadzenCard >
+            <h4>Varianti</h4>
+            <RadzenDataGrid 
+                IsLoading=@DetailIsLoading
+                Data="@this.Details" 
+                TItem="RunVariationQueryModel"
+                AllowSorting="true"
+                AllowColumnResize="true"                
+                Density=@Settings.Density
+                >
+                <Columns>
+                    <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Id" Title="Id variante" Visible=false />
+                    <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="VariationStartDate" Title="Inizio var." FormatString="{0:dd/MM/yyyy}" Width="120px" />
+                    
+                    <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="LineNumber" Title="Nr. Linea" Width="100px" />
+                    <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="RunNumber" Title="Nr. Corsa" Width="100px" />
+                    <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="StartTime" Title="Ora inizio" Width="120px" >
+                        <Template Context="data">
+                            @FormatTime(data?.StartTime)
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="EndTime" Title="Ora fine" Width="120px" >
+                        <Template Context="data">
+                            @FormatTime(data?.EndTime)
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Monday" Title="Lunedì" Width="100px">
+                        <Template Context="data">
+                            @if (data.Monday)
+                            {
+                                <RadzenIcon Icon="check" />
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Tuesday" Title="Martedì" Width="100px">
+                        <Template Context="data">
+                            @if (data.Tuesday)
+                            {
+                                <RadzenIcon Icon="check" />
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Wednesday" Title="Mercoledì" Width="100px">
+                        <Template Context="data">
+                            @if (data.Wednesday)
+                            {
+                                <RadzenIcon Icon="check" />
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Thursday" Title="Giovedì" Width="100px">
+                        <Template Context="data">
+                            @if (data.Thursday)
+                            {
+                                <RadzenIcon Icon="check" />
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Friday" Title="Venerdì" Width="100px">
+                        <Template Context="data">
+                            @if (data.Friday)
+                            {
+                                <RadzenIcon Icon="check" />
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Saturday" Title="Sabato" Width="100px">
+                        <Template Context="data">
+                            @if (data.Saturday)
+                            {
+                                <RadzenIcon Icon="check" />
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Sunday" Title="Domenica" Width="100px">
+                        <Template Context="data">
+                            @if (data.Sunday)
+                            {
+                                <RadzenIcon Icon="check" />
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="RequestedFrequency" Title="Frequenza richiesta" Width="200px" />
+
+                    <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Km" Title="Km" Width="100px" />
+                    <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="RequestedCapacity" Title="Capienza richiesta" Width="150px" />
+
+                    <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="VariationNote" Title="Note prima Variante" Width="200px" />
+                </Columns>
+            </RadzenDataGrid>
+        </RadzenCard>
+    </Template>
     <Columns>
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Id" Title="Id Servizio" Visible=false />
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="ContractRowNumber" Title="Riga Appalto" Width="100px" />
@@ -71,6 +172,11 @@
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="CalendarsDescr" Title="Calendari usati" Width="200px" />
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="PathsDescr" Title="PErcorsi" Width="200px" />
         
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="VariationStartDate" Title="Inizio var." FormatString="{0:dd/MM/yyyy}" Width="180px" FilterValue=@Filter_StartDate>
+            <FilterTemplate>
+                <DateSelector @bind-Value="Filter_VariationStartDate" AllowClear=true Changed=@VariationStartDate_Changed />
+            </FilterTemplate>
+        </RadzenDataGridColumn>
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="LineNumber" Title="Nr. Linea" Width="100px" />
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunNumber" Title="Nr. Corsa" Width="100px" />
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="StartTime" Title="Ora inizio" Width="120px" FilterOperator="FilterOperator.Equals" FilterValue=@Filter_StartTime_2>
@@ -164,6 +270,12 @@
 
     IList<RunItemQueryModel> SelectedRuns = new List<RunItemQueryModel> ();
 
+    #region  details
+    private bool DetailIsLoading = false;
+    private IEnumerable<RunVariationQueryModel>? Details;
+    #endregion
+
+
     #region filtri
     // ORe di inizioe fine
     private DateTime? Filter_StartTime_2;
@@ -203,6 +315,11 @@
         this.grdData?.Reload();
     }
 
+    private DateTime? Filter_VariationStartDate;
+    private void VariationStartDate_Changed(object value)
+    {
+        this.grdData?.Reload();
+    }
     #endregion
 
     protected override async Task OnInitializedAsync()
@@ -227,6 +344,40 @@
         var dt = new DateTime(1, 1, 1);
         dt = dt.Add(time.Value);
         return string.Format("{0:HH:mm}", dt);
+    }
+
+    private void RowRender(RowRenderEventArgs<RunItemQueryModel> args)
+    {
+        args.Expandable = args.Data.VariationCount >1;
+    }
+    private async Task RowExpand(RunItemQueryModel runItem)
+    {
+        await Task.CompletedTask;
+        this.Details = null;
+        if (runItem.Id == runItem.Id)
+        {
+            var queryDef = new QueryDefinition();
+            queryDef.EndPoint = string.Format(Constants.Endpoint_RunVariationList, runItem.Id);
+
+            DetailIsLoading = true;
+
+            queryDef.Page = 0;
+            queryDef.PageSize = 1000000;
+            try
+            {
+                var result = await QueryService.GetListAsync<RunVariationQueryModel>(
+                        queryDef);
+
+                if (result != null)
+                {
+                    this.Details = result.Items;
+                }
+            }
+            finally
+            {
+                DetailIsLoading = false;
+            }
+        }
     }
 
     private void RowActionCellContextMenu(DataGridCellMouseEventArgs<RunItemQueryModel> args)

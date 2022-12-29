@@ -472,7 +472,8 @@ namespace ZzSoft.QueryHelper
                 if (tokenEnum.MoveNext() == false) return null;
                 var ExpressionList = new List<string>();
                 while (tokenEnum.Current.TokenType != TokenType.CloseParenthesis
-                    && ExpressionList.Count <= 2)
+                    // && ExpressionList.Count <= 2
+                    )
                 {
                     var expr = this.GetLogicalExpression(tokenEnum);
                     tokenEnum.MoveNext();

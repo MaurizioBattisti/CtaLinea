@@ -5,11 +5,24 @@
  ************************************************* */
 CREATE VIEW [dbo].[vw_Runs]
 AS 
-WITH CTE_Variants AS
+WITH CTE_Variants_Base AS
 (
-	SELECT *
+	SELECT v.*,
+			ROW_NUMBER() OVER (PARTITION BY v.RunId ORDER BY COALESCE (v.StartDate, '1900-01-01') DESC) AS num
 		FROM dbo.RunVariations v
-		WHERE V.StartDate  IS NULL
+		WHERE v.StartDate IS NULL
+			OR v.StartDate < GETDATE()
+), CTE_Variants AS
+(
+	SELECT v.*
+		FROM CTE_Variants_Base v
+		WHERE v.num = 1
+), CTE_VarCount AS
+(
+	SELECT v.RunId,
+			COUNT(*) As VariationCount
+	FROM dbo.RunVariations v
+	GROUP BY v.RunId
 )
 SELECT  r.RunId,
 		r.ContractId, r.Extra,
@@ -29,6 +42,7 @@ SELECT  r.RunId,
 		v.CalendarId,
 		c.CalendarName,
 		v.LineNumber, v.RunNumber,
+		v.StartDate AS VariationStartDate,
 		v.StartTime, v.EndTime,
 		v.Monday, v.Tuesday, v.Wednesday, v.Thursday, v.Friday, v.Saturday, v.Sunday,
 		v.Path, v.RequestedFrequency,
@@ -37,7 +51,8 @@ SELECT  r.RunId,
 
 		ctr.ContractDescription,
 		ctr.StartDate AS ContractStart,
-		ctr.EndDate AS ctrEndDAte
+		ctr.EndDate AS ctrEndDAte,
+		COALESCE(vc.VariationCount, 0) as VariationCount
 	FROM dbo.Runs r
 	INNER JOIN CTE_Variants v
 		ON R.RunId = v.RunId
@@ -45,6 +60,8 @@ SELECT  r.RunId,
 		ON V.CalendarId =  c.CalendarId
 	INNER JOIN dbo.Contracts ctr
 		ON R.ContractId = ctr.ContractId
+	LEFT JOIN CTE_VarCount vc
+		ON r.RunId = vc.RunId
 	LEFT JOIN dbo.vw_RunAssociates rAss
 		ON r.RunId = rAss.RunId
 	LEFT JOIN dbo.vw_RunPrimaryCars rPrimCar

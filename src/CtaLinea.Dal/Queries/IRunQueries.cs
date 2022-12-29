@@ -15,5 +15,11 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 			IFilteringContext filterContext);
 		Task<RunItemQueryModel> GetOneRunAsync(
 			Guid id);
-	}
+
+		Task<QueryItemList<RunVariationQueryModel>> GetRunVariationsAsync(
+			Guid runId,
+			IFilteringContext filterContext);
+        Task<RunVariationQueryModel> GetOneVariationAsync(
+            Guid id);
+    }
 }
