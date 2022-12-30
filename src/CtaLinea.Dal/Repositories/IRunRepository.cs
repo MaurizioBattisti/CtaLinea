@@ -6,6 +6,11 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 {
     public interface IRunRepository
     {
-        Task<RunItem?> GetOneRunItemAsync(Guid runId);
+        Task<RunItem> GetOneRunItemAsync(Guid runId);
+
+        Task DeleteRunAsync(
+            Guid runId);
+        Task SaveRuAsync(
+            RunItem runItem);
     }
 }

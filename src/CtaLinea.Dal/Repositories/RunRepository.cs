@@ -3,15 +3,11 @@ using CtaLinea.Model.External;
 using CtaLinea.Model.Runs;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using ZzSoft.CtaLinea.Dal.Context;
 using ZzSoft.CtaLinea.Dal.Model.Runs;
@@ -19,9 +15,20 @@ using ZzSoft.CtaLinea.Dal.Model.Runs;
 namespace ZzSoft.CtaLinea.Dal.Repositories
 {
     public class RunRepository 
-        : IRunRepository
+        : RepositoryBase
+        , IRunRepository
     {
         private const string SQL_up_GetOneRunItem = "[dbo].[up_GetOneRunItem]";
+        
+        private const string SQL_Table_Runs = "[dbo].[Runs]";
+        private const string SQL_Table_RunVariations = "[dbo].[RunVariations]";
+        private const string SQL_Table_RunNodes = "[dbo].[RunNodes]";
+        private const string SQL_Table_RunPeriods = "[dbo].[RunPeriods]";
+        private const string SQL_Table_RunCars = "[dbo].[RunCars]";
+        private const string SQL_Table_RunCarCosts = "[dbo].[RunCarCosts]";
+        private const string SQL_Table_CarReplacements = "[dbo].[RunCarReplacements]";
+        private const string SQL_Table_CarReplacementDetails = "[dbo].[RunCarReplacementDetails]";
+        private const string SQL_Table_RunSuspensions = "[dbo].[RunSuspensions]";
 
         private readonly CtaDbContext _context;
         private readonly ILogger _logger;
@@ -35,12 +42,333 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             _logger = logger;
         }
 
-        public async Task<RunItem?> GetOneRunItemAsync(
+        public async Task<RunItem> GetOneRunItemAsync(
             Guid runId)
         {
             using IDbConnection conn = this._context.Database.GetDbConnection();
             conn.Open();
 
+            return await this.InternalGetOneRunItemAsync(
+                runId,
+                conn, null
+                );
+        }
+
+        public async Task DeleteRunAsync (
+            Guid runId)
+        {
+            using IDbConnection conn = this._context.Database.GetDbConnection();
+            conn.Open();
+            var tran = conn.BeginTransaction();
+
+            await Task.CompletedTask;
+
+            try
+            {
+                // elimina tutta una corsa
+                await this.DeleteTableAsync(
+                    SQL_Table_Runs,
+                    conn, tran,
+                    this.GetRunKey(runId)
+                    );
+
+                tran.Commit();
+                tran = null;
+            }
+            finally
+            {
+                if (tran != null ) 
+                { 
+                    tran.Rollback();
+                }
+            }
+        }
+        public async Task SaveRuAsync(
+            RunItem runItem)
+        {
+            using IDbConnection conn = this._context.Database.GetDbConnection();
+            conn.Open();
+            var tran = conn.BeginTransaction();
+
+            await Task.CompletedTask;
+
+            // se l'id della corsa è vuoto n ne crea uno nuovo
+            if (runItem.RunId == Guid.Empty) runItem.RunId = Guid.NewGuid();
+
+            try
+            {
+                var oldRun = await this.InternalGetOneRunItemAsync(runItem.RunId, conn, tran, false);
+                if (oldRun == null)
+                {
+                    // è un nuovo inserimetno
+                    #region inserisce la corsa
+                    await this.InsertTableAsync(
+                        SQL_Table_Runs,
+                        conn, tran,
+                        this.JoinObjects(
+                            this.GetRunKey(runItem.RunId),
+                            this.GetRunData(runItem)
+                            )
+                        );
+                    #region inserisce tutte le varianti
+                    if (runItem.Variations != null)
+                    {
+                        foreach (var v in runItem.Variations)
+                        {
+                            await this.InsertVariationAsync(runItem.RunId, v, conn, tran);
+                        }
+                    }
+                    #endregion
+
+                    #region inserisce i periodi di operatività dei mezzi
+                    if (runItem.SubPeriods != null)
+                    {
+                        foreach (var period in runItem.SubPeriods)
+                        {
+                            await this.InsertPeriodAsync(runItem.RunId, period, conn, tran);
+                        }
+                    }
+                    #endregion
+
+                    #region inserisce le sospensioni
+                    if (runItem.Suspensions != null)
+                    {
+                        foreach (var suspension in runItem.Suspensions)
+                        {
+                            await this.InsertSuspensionAsync(runItem.RunId, suspension, conn, tran);
+                        }
+                    }
+                    #endregion
+
+                    #endregion
+                }
+                else
+                {
+                    // è un update
+                    #region aggiorna i dati della corsa
+                    await this.UpdateTableAsync(
+                        SQL_Table_Runs,
+                        conn, tran,
+                        this.GetRunKey(runItem.RunId),
+                        this.GetRunData(runItem)
+                        );
+                    #endregion
+
+                    #region gestisce le variazioni
+                    // inserisce le nuove variatni
+                    await this.FindNewAsync(
+                        oldRun.Variations,
+                        runItem.Variations,
+                        (v) => v.RunVariationId,
+                        async (variant) => await this.InsertVariationAsync(runItem.RunId, variant, conn, tran)
+                        );
+
+                    // aggiorna le varianti
+                    await this.FindUpdatedAsync(
+                        oldRun.Variations,
+                        runItem.Variations,
+                        (v) => v.RunVariationId,
+                        (n, o) => o.RunVariationId == n.RunVariationId,
+                        async (variant, oldVariant) =>
+                        {
+                            await this.UpdateVariationAsync(runItem.RunId, variant, conn, tran);
+
+                            // inserisce i nuovi nodi
+                            await this.FindNewAsync(
+                                oldVariant.Nodes,
+                                variant .Nodes,
+                                (v) => v.RunNodeId,
+                                async (node) => await this.InsertNodeAsync(variant.RunVariationId, node, conn, tran)
+                                );
+
+                            // aggiorna i nodi
+                            await this.FindUpdatedAsync(
+                                oldVariant.Nodes,
+                                variant.Nodes,
+                                (v) => v.RunNodeId,
+                                (n, o) => o.RunNodeId == n.RunNodeId,
+                                async (node, oldNode) => await this.UpdateNodeAsync (variant.RunVariationId, node, conn, tran)
+                                );
+
+                            // elimina i nodi da cancellare
+                            await this.FindDeletedAsync(
+                                oldVariant.Nodes,
+                                variant.Nodes,
+                                (v) => v.RunNodeId,
+                                async (k) => await this.DeleteVariationAsync(variant.RunVariationId, k, conn, tran)
+                                );
+                        });
+
+                    // identifica le varianti da eliminare
+                    await this.FindDeletedAsync(
+                        oldRun.Variations,
+                        runItem.Variations,
+                        (v) => v.RunVariationId,
+                        async (k) => await this.DeleteVariationAsync(runItem.RunId, k, conn, tran)
+                        );
+                    #endregion
+
+                    #region gestisce i periodi
+                    // inserisce i nuovi periodi
+                    await this.FindNewAsync(
+                        oldRun.SubPeriods,
+                        runItem.SubPeriods,
+                        (v) => v.RunPeriodId,
+                        async (period) => await this.InsertPeriodAsync(runItem.RunId, period, conn, tran)
+                        );
+
+                    // aggiorna i periodi
+                    await this.FindUpdatedAsync(
+                        oldRun.SubPeriods,
+                        runItem.SubPeriods,
+                        (v) => v.RunPeriodId,
+                        (n, o) => o.RunPeriodId == n.RunPeriodId,
+                        async (period, oldperiod) =>
+                        {
+                            await this.UpdatePeriodAsync(runItem.RunId, period, conn, tran);
+
+                            // inserisce i nuovi mezzi
+                            await this.FindNewAsync(
+                                oldperiod.Cars,
+                                period.Cars,
+                                (v) => v.RunCarId,
+                                async (car) => await this.InsertRunCarAsync(period.RunPeriodId, car, conn, tran)
+                                );
+
+                            // aggiorna i mezzi da aggiornare
+                            await this.FindUpdatedAsync(
+                                oldperiod.Cars,
+                                period.Cars,
+                                (v) => v.RunCarId,
+                                (n, o) => o.RunCarId == n.RunCarId,
+                                async (car, oldCar) =>
+                                {
+                                    await this.UpdateRunCarAsync(period.RunPeriodId, car, conn, tran);
+
+                                    // inserisce i nuovi costi
+                                    await this.FindNewAsync(
+                                        oldCar.CarCosts,
+                                        car.CarCosts,
+                                        (v) => v.RunCarCostId,
+                                        async (cost) => await this.InsertCarCostAsync(car.RunCarId, cost, conn, tran)
+                                        );
+
+                                    // modifica i costi
+                                    await this.FindUpdatedAsync(
+                                        oldCar.CarCosts,
+                                        car.CarCosts,
+                                        (v) => v.RunCarCostId,
+                                        (n, o) => o.RunCarCostId == n.RunCarCostId,
+                                        async (cost, oldCost) => await this.UpdateCarCostAsync(car.RunCarId, cost, conn, tran)
+                                        );
+
+                                    // elimina i costi da eliminare
+                                    await this.FindDeletedAsync(
+                                        oldCar.CarCosts,
+                                        car.CarCosts,
+                                        (v) => v.RunCarCostId,
+                                        async (k) => await this.DeleteCarCostAsync(period.RunPeriodId, k, conn, tran)
+                                        );
+                                });
+
+                            // inserisce le nuove sostituzioni
+                            await this.FindNewAsync(
+                                oldperiod.CarReplacements,
+                                period.CarReplacements,
+                                (v) => v.CarReplacementId,
+                                async (replacement) => await this.InsertReplacementAsync(period.RunPeriodId, replacement, conn, tran)
+                                );
+
+                            // aggiorna le sostituzioni
+                            await this.FindUpdatedAsync(
+                                oldperiod.CarReplacements,
+                                period.CarReplacements,
+                                (v) => v.CarReplacementId,
+                                (n, o) => o.CarReplacementId == n.CarReplacementId,
+                                async (replacement, oldreplacement) =>
+                                {
+                                    await this.UpdateReplacementAsync(period.RunPeriodId, replacement, conn, tran);
+
+                                    // aggiorna il dettaglio delle sostituzioni
+                                    await this.UpdateReplacementDetailsAsync(replacement, conn, tran);
+                                });
+
+                            // elimina le sostituzioni
+                            await this.FindDeletedAsync(
+                                oldperiod.CarReplacements,
+                                period.CarReplacements,
+                                (v) => v.CarReplacementId,
+                                async (k) => await this.DeleteReplacementAsync(period.RunPeriodId, k, conn, tran)
+                                );
+
+                            // elimina i mezzi
+                            await this.FindDeletedAsync(
+                                oldperiod.Cars,
+                                period.Cars,
+                                (v) => v.RunCarId,
+                                async (k) => await this.DeleteRunCarAsync(period.RunPeriodId, k, conn, tran)
+                                );
+                        });
+
+                    // elimina i periodi da cancellare
+                    await this.FindDeletedAsync(
+                        oldRun.SubPeriods,
+                        runItem.SubPeriods,
+                        (v) => v.RunPeriodId,
+                        async (k) => await this.DeletePeriodAsync(runItem.RunId, k, conn, tran)
+                        );
+                    #endregion
+
+                    #region gestisce le sospensioni
+                    // inserisce le nuove sospensioni
+                    await this.FindNewAsync(
+                        oldRun.Suspensions,
+                        runItem.Suspensions,
+                        (v) => v.RunSuspensionId,
+                        async (suspension) => await this.InsertSuspensionAsync(runItem.RunId, suspension, conn, tran)
+                        );
+
+                    // aggiorna le sospensioni
+                    await this.FindUpdatedAsync(
+                        oldRun.Suspensions,
+                        runItem.Suspensions,
+                        (v) => v.RunSuspensionId,
+                        (n, o) => o.RunSuspensionId == n.RunSuspensionId,
+                        async (suspension, oldsuspension) =>
+                        {
+                            await this.UpdateSuspensionAsync(runItem.RunId, suspension, conn, tran);
+                        });
+
+                    // identifica le sospensioni da eliminare
+                    await this.FindDeletedAsync(
+                        oldRun.Suspensions,
+                        runItem.Suspensions,
+                        (v) => v.RunSuspensionId,
+                        async (k) => await this.DeleteSuspensionAsync(runItem.RunId, k, conn, tran)
+                        );
+                    #endregion
+                }
+
+                tran.Commit();
+                tran = null;
+            }
+            finally
+            {
+                if (tran != null ) 
+                { 
+                    tran.Rollback ();
+                }
+            }
+        }
+
+        #region carica un intera corsa
+        private async Task<RunItem> InternalGetOneRunItemAsync(
+            Guid runId,
+            IDbConnection conn,
+            IDbTransaction tran = null,
+            bool loadLookups = true
+            )
+        {
             var reader = await conn.QueryMultipleAsync(
                 SQL_up_GetOneRunItem,
                 param: new { RunId = runId }, 
@@ -159,29 +487,32 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             #endregion
 
             #region loockups
-            item.ContractData = reader.Read<Contract>().SingleOrDefault();
-
-            var allCalendars = reader.Read<Calendar>().ToList();
-            var allAssociates = reader.Read<Associate>().ToList();
-            var allCars = reader.Read<Car>().ToList();
-
-            // assegna i calendari a lle varianti
-            foreach (var v in item.Variations)
+            if (loadLookups == true)
             {
-                v.CalendarData = allCalendars.Where (c =>  c.CalendarId == v.CalendarId).SingleOrDefault();
-            }
+                item.ContractData = reader.Read<Contract>().SingleOrDefault();
 
-            // assegna le diette e i mezzi ai  perido cars
-            if (item.SubPeriods != null)
-            {
-                foreach (var p in item.SubPeriods)
+                var allCalendars = reader.Read<Calendar>().ToList();
+                var allAssociates = reader.Read<Associate>().ToList();
+                var allCars = reader.Read<Car>().ToList();
+
+                // assegna i calendari a lle varianti
+                foreach (var v in item.Variations)
                 {
-                    if (p.Cars != null)
+                    v.CalendarData = allCalendars.Where(c => c.CalendarId == v.CalendarId).SingleOrDefault();
+                }
+
+                // assegna le diette e i mezzi ai  perido cars
+                if (item.SubPeriods != null)
+                {
+                    foreach (var p in item.SubPeriods)
                     {
-                        foreach (var pc in p.Cars)
+                        if (p.Cars != null)
                         {
-                            pc.AssociateData = allAssociates.Where(a => a.AssociateId == pc.AssociateId).SingleOrDefault();
-                            pc.CarData = allCars.Where(c => c.CarId == pc.CarId).SingleOrDefault();
+                            foreach (var pc in p.Cars)
+                            {
+                                pc.AssociateData = allAssociates.Where(a => a.AssociateId == pc.AssociateId).SingleOrDefault();
+                                pc.CarData = allCars.Where(c => c.CarId == pc.CarId).SingleOrDefault();
+                            }
                         }
                     }
                 }
@@ -190,6 +521,642 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 
             return item;
         }
+        #endregion
 
+        #region operazioni singole sulle parti
+
+        #region runs
+        private object GetRunData(
+            RunItem runItem)
+        {
+            return new
+            {
+                runItem.StartDate,
+                runItem.EndDate,
+                runItem.ContractId,
+                runItem.ContractRowNumber,
+                runItem.Extra,
+
+                runItem.Note
+            };
+        }
+        private object GetRunKey(
+            Guid runId)
+        {
+            return new
+            {
+                RunId = runId
+            };
+        }
+        #endregion
+
+        #region variatiants
+        private object GetVariationData (
+            RunVariation variation)
+        {
+            return new
+            {
+                variation.StartDate,
+                
+                variation.StartTime,
+                variation.EndTime,
+                variation.CalendarId,
+
+                variation.LineNumber,
+                variation.RunNumber,
+
+                variation.Path,
+                variation.RequestedFrequency,
+
+                variation.Km,
+                variation.RequestedCapacity,
+
+                variation.Monday,
+                variation.Tuesday,
+                variation.Wednesday,
+                variation.Thursday,
+                variation.Friday,
+                variation.Saturday,
+                variation.Sunday,
+
+                variation.Note
+            };
+        }
+        private object GetVariationKey(
+            Guid runId,
+            Guid runVariationId)
+        {
+            return new
+            {
+                RunId = runId,
+                RunVariationId = runVariationId
+            };
+        }
+
+        private async Task InsertVariationAsync(
+            Guid runId,
+            RunVariation variation,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            if (variation.RunVariationId == Guid.Empty) variation.RunVariationId = Guid.NewGuid();
+
+            await this.InsertTableAsync(
+                SQL_Table_RunVariations,
+                conn, tran,
+                this.JoinObjects (
+                    this.GetVariationKey(runId, variation.RunVariationId),
+                    this.GetVariationData(variation)
+                    )
+                );
+
+            // inserisce i nodi della variante
+            #region inserisce tutti i nodi
+            if (variation.Nodes != null)
+            {
+                foreach (var node in variation.Nodes)
+                {
+                    await this.InsertNodeAsync(variation.RunVariationId, node, conn, tran);
+                }
+            }
+            #endregion
+        }
+        private async Task UpdateVariationAsync(
+            Guid runId,
+            RunVariation variation,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.UpdateTableAsync(
+                SQL_Table_RunVariations,
+                conn, tran,
+                this.GetVariationKey(runId, variation.RunVariationId),
+                this.GetVariationData(variation)
+                );
+        }
+        private async Task DeleteVariationAsync(
+            Guid runId,
+            Guid runVariationId,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.DeleteTableAsync(
+                SQL_Table_RunVariations,
+                conn, tran,
+                this.GetVariationKey(runId, runVariationId)
+                );
+        }
+        #endregion
+
+        #region nodes
+        private object GetNodeData(
+            RunNode node)
+        {
+            return new
+            {
+                node.ProgrNumber,
+                node.Hour,
+                node.CollectionPointId
+            };
+        }
+        private object GetNodeKey(
+            Guid runVariationId,
+            Guid runNodeId)
+        {
+            return new
+            {
+                RunVariationId = runVariationId,
+                RunNodeId = runNodeId
+            };
+        }
+
+        private async Task InsertNodeAsync(
+            Guid runVariationId,
+            RunNode node,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            if (node.RunNodeId == Guid.Empty) node.RunNodeId = Guid.NewGuid();
+
+            await this.InsertTableAsync(
+                SQL_Table_RunNodes,
+                conn, tran,
+                this.JoinObjects(
+                    this.GetNodeKey(runVariationId, node.RunNodeId),
+                    this.GetNodeData(node)
+                    )
+                );
+        }
+        private async Task UpdateNodeAsync(
+            Guid runVariationId,
+            RunNode node,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.UpdateTableAsync(
+                SQL_Table_RunNodes,
+                conn, tran,
+                this.GetNodeKey(runVariationId, node.RunNodeId),
+                this.GetNodeData(node)
+                );
+        }
+        private async Task DeleteNodeAsync(
+            Guid runVariationId,
+            Guid runNodeId,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.DeleteTableAsync(
+                SQL_Table_RunNodes,
+            conn, tran,
+                this.GetNodeKey(runVariationId, runNodeId)
+                );
+        }
+        #endregion
+
+        #region periodi
+        private object GetPeriodData(
+            RunPeriod period)
+        {
+            return new
+            {
+                period.StartDate,
+                period.EndDate,
+
+                period.Monday,
+                period.Tuesday,
+                period.Wednesday,
+                period.Thursday,
+                period.Friday,
+                period.Saturday,
+                period.Sunday,
+
+                period.Note
+            };
+        }
+        private object GetPeriodKey(
+            Guid runId,
+            Guid runPeriodId)
+        {
+            return new
+            {
+                RunId = runId,
+                RunPeriodId = runPeriodId
+            };
+        }
+
+        private async Task InsertPeriodAsync(
+            Guid runId,
+            RunPeriod period,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            if (period.RunPeriodId == Guid.Empty) period.RunPeriodId = Guid.NewGuid();
+
+            await this.InsertTableAsync(
+                SQL_Table_RunPeriods,
+                conn, tran,
+                this.JoinObjects(
+                    this.GetPeriodKey(runId, period.RunPeriodId),
+                    this.GetPeriodData(period)
+                    )
+                );
+
+            // aggiunge i mezzi del periodo
+            if (period.Cars != null)
+            {
+                foreach (var runCar in period.Cars)
+                {
+                    await this.InsertRunCarAsync(period.RunPeriodId, runCar, conn, tran);
+                }
+            }
+            // aggiunge le sostituzioni dei mezzi del periodo
+            if (period.CarReplacements != null)
+            {
+                foreach (var replacement in period.CarReplacements)
+                {
+                    await this.InsertReplacementAsync(period.RunPeriodId, replacement, conn, tran);
+                }
+            }
+        }
+        private async Task UpdatePeriodAsync(
+            Guid runId,
+            RunPeriod period,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.UpdateTableAsync(
+                SQL_Table_RunPeriods,
+                conn, tran,
+                this.GetPeriodKey(runId, period.RunPeriodId),
+                this.GetPeriodData(period)
+                );
+        }
+        private async Task DeletePeriodAsync(
+            Guid runId,
+            Guid runPeriodId,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.DeleteTableAsync(
+                SQL_Table_RunPeriods,
+                conn, tran,
+                this.GetPeriodKey(runId, runPeriodId)
+                );
+        }
+        #endregion
+
+        #region mezzi del periodo
+        private object GetRunCarData(
+            RunPeriodCar periodCar)
+        {
+            return new
+            {
+                periodCar.AssociateId,
+                periodCar.CarId,
+                periodCar.CarType,
+
+                periodCar.Note
+            };
+        }
+        private object GetRunCarKey(
+            Guid runPeriodId,
+            Guid runCarId)
+        {
+            return new
+            {
+                RunPeriodId = runPeriodId,
+                RunCarId = runCarId
+            };
+        }
+
+        private async Task InsertRunCarAsync(
+            Guid runPeriodId,
+            RunPeriodCar periodCar,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            if (periodCar.RunCarId == Guid.Empty) periodCar.RunCarId = Guid.NewGuid();
+
+            await this.InsertTableAsync(
+                SQL_Table_RunCars,
+                conn, tran,
+                this.JoinObjects(
+                    this.GetRunCarKey(runPeriodId, periodCar.RunCarId),
+                    this.GetRunCarData(periodCar)
+                    )
+                );
+
+            // aggiunge i costi del mezzo
+            if (periodCar.CarCosts != null)
+            {
+                foreach (var carCost in periodCar.CarCosts )
+                {
+                    await this.InsertCarCostAsync(periodCar.RunCarId, carCost, conn, tran );
+                }
+            }
+        }
+        private async Task UpdateRunCarAsync(
+            Guid runPeriodId,
+            RunPeriodCar periodCar,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.UpdateTableAsync(
+                SQL_Table_RunCars,
+                conn, tran,
+                this.GetRunCarKey(runPeriodId, periodCar.RunCarId),
+                this.GetRunCarData(periodCar)
+                );
+        }
+        private async Task DeleteRunCarAsync(
+            Guid runPeriodId,
+            Guid runCarId,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.DeleteTableAsync(
+                SQL_Table_RunCars,
+                conn, tran,
+                this.GetRunCarKey(runPeriodId, runCarId)
+                );
+        }
+        #endregion
+
+        #region costi dei mezzi
+        private object GetCarCostData(
+            RunCarCost carCost)
+        {
+            return new
+            {
+                carCost.StartDate,
+
+                carCost.KmPrice,
+                carCost.DayPrice,
+                carCost.DayForfait,
+                carCost.DayIntegration
+            };
+        }
+        private object GetCarCostKey(
+            Guid runCarId,
+            Guid carCostId)
+        {
+            return new
+            {
+                RunCarId = runCarId,
+                RunCarCostId = carCostId
+            };
+        }
+
+        private async Task InsertCarCostAsync(
+            Guid runCarId,
+            RunCarCost carCost,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            if (carCost.RunCarCostId == Guid.Empty) carCost.RunCarCostId = Guid.NewGuid();
+
+            await this.InsertTableAsync(
+                SQL_Table_RunCarCosts,
+                conn, tran,
+                this.JoinObjects(
+                    this.GetCarCostKey(runCarId, carCost.RunCarCostId),
+                    this.GetCarCostData(carCost)
+                    )
+                );
+        }
+        private async Task UpdateCarCostAsync(
+            Guid runCarId,
+            RunCarCost carCost,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.UpdateTableAsync(
+                SQL_Table_RunCarCosts,
+                conn, tran,
+                this.GetCarCostKey(runCarId, carCost.RunCarCostId),
+                this.GetCarCostData(carCost)
+                );
+        }
+        private async Task DeleteCarCostAsync(
+            Guid runCarId,
+            Guid carCostId,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.DeleteTableAsync(
+                SQL_Table_RunCarCosts,
+                conn, tran,
+                this.GetCarCostKey(runCarId, carCostId)
+                );
+        }
+        #endregion
+
+        #region sostituzioni dei mezzi
+        private object GetReplacementData(
+            CarReplacement replacement)
+        {
+            return new
+            {
+                replacement.StartDate,
+                replacement.EndDate,
+                replacement.Note
+            };
+        }
+        private object GetReplacementKey(
+            Guid runPeriodId,
+            Guid carReplacementId)
+        {
+            return new
+            {
+                RunPeriodId = runPeriodId,
+                CarReplacementId = carReplacementId
+            };
+        }
+        private async Task InsertReplacementAsync(
+            Guid runPeriodId,
+            CarReplacement replacement,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            if (replacement.CarReplacementId == Guid.Empty) replacement.CarReplacementId = Guid.NewGuid();
+
+            await this.InsertTableAsync(
+                SQL_Table_CarReplacements,
+                conn, tran,
+                this.JoinObjects(
+                    this.GetReplacementKey(runPeriodId, replacement.CarReplacementId),
+                    this.GetReplacementData(replacement)
+                    )
+                );
+
+            // aggiunge il dettaglio delle sostituazioni dei mezzi
+            await this.UpdateReplacementDetailsAsync(replacement, conn, tran);
+        }
+        private async Task UpdateReplacementAsync(
+            Guid runPeriodId,
+            CarReplacement replacement,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.UpdateTableAsync(
+                SQL_Table_CarReplacements,
+                conn, tran,
+                this.GetReplacementKey(runPeriodId, replacement.CarReplacementId),
+                this.GetReplacementData(replacement)
+                );
+        }
+        private async Task DeleteReplacementAsync(
+            Guid runPeriodId,
+            Guid carReplacementId,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.DeleteTableAsync(
+                SQL_Table_CarReplacements,
+                conn, tran,
+                this.GetReplacementKey(runPeriodId, carReplacementId)
+                );
+        }
+        #endregion
+
+        #region dettaglio sostitutzioni
+        private object GetReplacementDetailDeleteKey(
+            Guid carReplacementId)
+        {
+            return new
+            {
+                CarReplacementId = carReplacementId
+            };
+        }
+
+        private async Task UpdateReplacementDetailsAsync (
+            CarReplacement replacement,
+            IDbConnection conn,
+            IDbTransaction tran)
+        {
+            // elimina tutti i dettagli e li reinserisce
+            await this.DeleteTableAsync(
+                SQL_Table_CarReplacementDetails,
+                conn, tran,
+                this.GetReplacementDetailDeleteKey(replacement.CarReplacementId)
+                );
+
+            // reinserisce tutti i dati
+            if (replacement.OriginalPEriodCarIds != null
+                && replacement.OriginalPEriodCarIds.Count > 0
+                && replacement.ReplacedPEriodCarIds != null
+                && replacement.ReplacedPEriodCarIds.Count > 0
+                )
+            {
+                foreach (var orgId in replacement.OriginalPEriodCarIds)
+                {
+                    foreach (var newId in replacement.ReplacedPEriodCarIds)
+                    {
+                        await this.InsertTableAsync(
+                            SQL_Table_CarReplacementDetails,
+                            conn, tran,
+                            new
+                            {
+                                CarReplacementId = replacement.CarReplacementId,
+                                OriginaRunCarId = orgId,
+                                ReplacedRunCarId = newId
+                            });
+                    }
+                }
+            }
+        }
+        #endregion
+
+        #region sospensioni
+        private object GetSuspensionData(
+            RunSuspension suspension)
+        {
+            return new
+            {
+                suspension.StartDate,
+                suspension.EndDate,
+                suspension.SuspensionTypeId,
+
+                suspension.SuspensionNote
+            };
+        }
+        private object GetSuspensionKey(
+            Guid runId,
+            Guid runSuspensionId)
+        {
+            return new
+            {
+                RunId = runId,
+                RunSuspensionId = runSuspensionId
+            };
+        }
+
+        private async Task InsertSuspensionAsync(
+            Guid runId,
+            RunSuspension suspension,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            if (suspension.RunSuspensionId == Guid.Empty) suspension.RunSuspensionId = Guid.NewGuid();
+
+            await this.InsertTableAsync(
+                SQL_Table_RunSuspensions,
+                conn, tran,
+                this.JoinObjects(
+                    this.GetSuspensionKey(runId, suspension.RunSuspensionId),
+                    this.GetSuspensionData(suspension)
+                    )
+                );
+        }
+        private async Task UpdateSuspensionAsync(
+            Guid runId,
+            RunSuspension suspension,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.UpdateTableAsync(
+                SQL_Table_RunSuspensions,
+                conn, tran,
+                this.GetSuspensionKey(runId, suspension.RunSuspensionId),
+                this.GetSuspensionData(suspension)
+                );
+        }
+        private async Task DeleteSuspensionAsync(
+            Guid runId,
+            Guid runSuspensionId,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.DeleteTableAsync(
+                SQL_Table_RunSuspensions,
+                conn, tran,
+                this.GetSuspensionKey(runId, runSuspensionId)
+                );
+        }
+        #endregion
+
+        #endregion
     }
 }
