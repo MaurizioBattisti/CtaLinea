@@ -59,6 +59,25 @@ namespace CtaLinea.Model.Runs
         public string? Note { get; set; }
 
         public IList<RunCarCost>? CarCosts { get; set; }
+
+        public string SearchText => (CarData?.Description ?? string.Empty) + " " + (AssociateData?.Description ?? string.Empty);
+
+        public RunPeriodCar CreateCopy ()
+        {
+            return new RunPeriodCar()
+            {
+                RunCarId = this.RunCarId,
+                CarType = this.CarType,
+                AssociateId = this.AssociateId,
+                AssociateData = this.AssociateData,
+                CarId= this.CarId,
+                CarData = this.CarData ,
+
+                CarCosts = this.CarCosts ,
+
+                Note= this.Note
+            };
+        }
     }
 
     public enum CarTypeEnum

@@ -1,4 +1,5 @@
-﻿@using CtaLinea.QueryModel
+﻿@using CtaLinea.QueryModel;
+@using CtaLinea.Model.QueryModel
 @inject IQueryUtilityService queryService
 
 <CtaLineaSttingsNotifier Changed=@StateHasChanged />
@@ -25,19 +26,8 @@
     [CascadingParameter]
     CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
 
-    private Guid? _AssociateId;
     [Parameter]
-    public Guid? AssociateId 
-    {
-        get { return _AssociateId; }
-        set
-        {
-            if (value != _AssociateId)
-            {
-                InvokeAsync(async() => await this.LoadData(value));
-            }
-        }
-    }
+    public Guid? AssociateId  { get; set; }
 
     private Guid? _CarId;
 
@@ -48,7 +38,7 @@
         set
         {
             _CarId = value;
-            this.SelectItem (this._CarId);
+            this.SelectItem(this._CarId);
         }
     }
     [Parameter]
@@ -66,23 +56,40 @@
     int RowCount = 0;
     bool isLoading = false;
     CarQueryItem? CurrentItem = null;
+    private bool SuccesfullyInitialized = false;
+
+    public CarQueryItem? SelectedCarData
+    {
+        get
+        {
+            return this.CurrentItem;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
         this._servicesQueryDef.EndPoint = Constants.Endpoint_Cars;
+        SuccesfullyInitialized = true;
         this.StateHasChanged();
+        await base.OnInitializedAsync();
     }
     protected override async Task OnParametersSetAsync()
     {
-        await Task.CompletedTask;
+        await LoadDataAsync();
+        await base.OnParametersSetAsync();
     }
 
-    private async Task LoadData (Guid? associateId)
+    private Guid? LastAssociateId = null;
+    private async Task LoadDataAsync ()
     {
+        var id = this.AssociateId;
         await Task.CompletedTask;
-        _AssociateId = associateId;
 
-        if (_AssociateId == null)
+        if (SuccesfullyInitialized == false) return;
+        if (id == LastAssociateId && id != null) return;
+        LastAssociateId = id;
+
+        if (id == null)
         {
             this.Data = null;
             this.RowCount = 0;
@@ -91,7 +98,7 @@
             return;
         }
 
-        this._servicesQueryDef.Filter = string.Format("$eq(associateId,'{0}')", _AssociateId.Value);
+        this._servicesQueryDef.Filter = string.Format("$eq(associateId,'{0}')", id.Value);
         this._servicesQueryDef.Sort = "regNumber";
         this._servicesQueryDef.FullText = string.Empty;
 

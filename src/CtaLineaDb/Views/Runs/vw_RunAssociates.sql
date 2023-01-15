@@ -11,7 +11,7 @@ WITH CTE_Associates AS
 			rc.AssociateId
 		FROM  dbo.RunCars rc
 		INNER JOIN dbo.RunPeriods rp
-			ON Rc.RunPEriodId = rp.RunPEriodId
+			ON Rc.RunPEriodId = rp.[RunPeriodId]
 )
 SELECT rc.RunId,
 		STRING_AGG(a.Description, ', ') AS AssociatesDescr

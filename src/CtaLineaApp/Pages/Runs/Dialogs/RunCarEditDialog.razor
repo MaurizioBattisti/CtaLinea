@@ -1,0 +1,130 @@
+﻿@using CtaLinea.Model.External;
+
+<RadzenCard>
+	@if (CanEditType == true)
+	{
+		<div>
+			<RadzenText TextStyle="TextStyle.Overline" Text="Tipo di mezzo" />
+			<RadzenDropDown @bind-Value=@PeriodCar.RunCarType
+						AllowClear="false"
+						TValue="CarTypeEnum"
+						Class="w-100"
+						Data=@CarTypeList
+						ValueProperty="Id"
+						TextProperty="Description" />
+		</div>
+	}
+	<div>
+		<AssociateAndCarDropDown 
+			@ref="@AssAndCars"
+			@bind-AssociateId=@AssociateId
+			@bind-CarId=@CarId
+			AllowClear=false />
+	</div>
+</RadzenCard>
+
+@code {
+	class CCarType
+	{
+		public CarTypeEnum Id { get; set ; }
+		public string Description { get; set; } = string.Empty;
+	}
+
+	private AssociateAndCarDropDown? AssAndCars;
+
+	[Parameter]
+	public RunPeriodCar PeriodCar { get; set; } = new RunPeriodCar();
+	[Parameter]
+	public bool CanEditType { get; set; } = true;
+
+	private IEnumerable<CCarType> CarTypeList = new List<CCarType>()
+	{
+		new CCarType { Id = CarTypeEnum.Primary,  Description  ="Titolare" },
+		new CCarType { Id = CarTypeEnum.Spare,  Description  = "Scorta" }
+	};
+
+	private Guid? CarId
+	{
+		get 
+		{
+			if (this.PeriodCar.CarId == Guid.Empty) return null;
+			return this.PeriodCar.CarId; 
+		}
+		set
+		{
+			if (value  != null)
+			{
+				this.PeriodCar.CarId = value.Value;
+				if (this.AssAndCars?.SelectedCarData != null)
+				{
+					var c = this.AssAndCars?.SelectedCarData;
+					this.PeriodCar.CarData = new Car
+					{
+						CarId = c.Id,
+						BsCarId = c.BsCarId,
+						RegNumber = c.RegNumber,
+						Description = c.Description,
+						AssociateId = c.AssociateId,
+						NrSittings = c.NrSittings,
+
+						FirstRegistration = c.FirstRegistration,
+						DiscontinuationDate = c.DiscontinuationDate,
+
+						ChassisNumber = c.ChassisNumber,
+						PrimaryCar = c.PrimaryCar,
+						SpareCar = c.SpareCar,
+						Active = c.Active
+					};
+				}
+				else
+				{
+					this.PeriodCar.CarData = null;
+				}
+			}
+			else
+			{
+				this.PeriodCar.CarData = null;
+				this.StateHasChanged();
+			}
+
+		}
+	}
+	private Guid? AssociateId 
+	{
+		get 
+		{
+			if (PeriodCar.AssociateId == Guid.Empty) return null;
+			return this.PeriodCar.AssociateId; 
+		}
+		set
+		{
+			if (value != null)
+			{
+				this.PeriodCar.AssociateId = value.Value;
+				if (this.AssAndCars?.SelectedASsociateData != null)
+				{
+					var a = this.AssAndCars?.SelectedASsociateData;
+					this.PeriodCar.AssociateData = new CtaLinea.Model.External.Associate ()
+					{
+						AssociateId = a.Id,
+						Description = a.Description,
+						BsCustomerCode = a.BsCustomerCode,
+						BsSupplierCode = a.BsSupplierCode,
+						Email = a.Email,
+						Active = a.Active
+					};
+				}
+				else
+				{
+					this.PeriodCar.AssociateData = null;
+				}
+			}
+			else
+			{
+				this.PeriodCar.AssociateData = null;
+				this.StateHasChanged();
+			}
+
+		}
+	}
+}

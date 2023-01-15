@@ -1,4 +1,5 @@
-﻿@using CtaLinea.QueryModel
+﻿@using CtaLinea.Model.QueryModel;
+@using CtaLinea.QueryModel;
 @inject IQueryUtilityService queryService
 
 <RadzenDropDown 
@@ -91,6 +92,7 @@
         {
             this.Data = result.Items;
             this.RowCount = result.TotalRows;
+            SelectItem(this.AssociateId);
         }
     }
 

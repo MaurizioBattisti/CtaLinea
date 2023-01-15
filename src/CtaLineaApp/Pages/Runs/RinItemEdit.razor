@@ -1,0 +1,130 @@
+﻿@page "/run-edit/{Id:guid}"
+@page "/run-new"
+@using CtaLineaApp.Components.Base
+@inject IRunRepository _repo
+@inject IQueryUtilityService queryService
+@inject IRunModelService RunModelService
+@inject IContractService ContractService
+@inject DialogService DialogService
+
+@inject RouterSessionService RouterSessionService
+@inherits EditorComponentBase
+
+@attribute [Authorize]
+
+<PageTitle>@Constants.App_Title - Corsa</PageTitle>
+
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Corsa" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+        
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+@if (IsBusy == true)
+{
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+}
+else
+{
+    <BaseRunDataView CurrentRun=@CurrentRun EditMode=@EditMode />
+
+    <RadzenCard>
+        @if(this.IsNew == true)
+        {
+        <RadzenButton Click=@(async () => await CreateOrSaveAsync(this.IsNew)) IsBusy=@IsSaving Text="Crea Corsa" BusyText="Creazione...." ButtonStyle="ButtonStyle.Primary" />
+        }
+        else
+        {
+        <RadzenButton Click=@(async () => await CreateOrSaveAsync(this.IsNew)) IsBusy=@IsSaving Text="Salva Corsa" BusyText="Salvataggio...." ButtonStyle="ButtonStyle.Primary" />
+        }
+    </RadzenCard>
+}
+@code {
+    [Parameter]
+    public Guid Id { get; set; } = Guid.Empty;
+
+    bool EditMode = true;
+    RunItem CurrentRun = new RunItem();
+    private bool IsBusy = true;
+    private bool IsSaving = false;
+    private bool IsNew = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+
+        await base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                if (this.Id != Guid.Empty)
+                {
+                    this.IsNew = false;
+                    var run = await _repo.GetOneAsync(this.Id);
+                    if (run != null)
+                    {
+                        this.CurrentRun = run;
+                    }
+                }
+            }
+            finally
+            {
+                this.IsBusy = false;
+                this.StateHasChanged();
+            }
+        }
+    }
+
+    private async Task CreateOrSaveAsync (bool create)
+    {
+        await Task.CompletedTask;
+        IsSaving = true;
+
+        try
+        {
+            // prima chiama la funzione di check dei dati
+
+            // chiama la funzione di salvataggio
+            if (create == true)
+            {
+                await this._repo.AddNewOneAsync(this.CurrentRun);
+                this.Id = this.CurrentRun.RunId;
+                this.IsNew = false;
+            }
+            else
+            {
+                await this._repo.SaveRunAsync(
+                    this.Id, this.CurrentRun);
+            }
+        }
+        catch (Exception ex)
+        {
+            string s = ex.ToString();
+        }
+        finally
+        {
+            IsSaving = false;
+        }
+    }
+
+    /*
+    private void Btn_Click()
+    {
+        this.IsClean = !IsClean;
+        this.EditMode = !this.EditMode;
+        this.StateHasChanged();
+    }
+    */
+}

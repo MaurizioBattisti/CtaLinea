@@ -1,0 +1,4 @@
+﻿CREATE TABLE [dbo].[Runs_NeedsDayRecalc]
+(
+	[RunId] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY
+)

@@ -1,23 +1,28 @@
 ﻿@inject IRunModelService RunModelService
 
-
-<RadzenSplitter Orientation="Orientation.Horizontal" Style="min-height: 350px">
-    <RadzenSplitterPane Size="300px">
-		<div>
-		<p> Originale/i </p>
-		<RunCarList CarList=@OriginalCars />
+<RadzenCard>
+	<div class="d-flex flex-row p-1">
+		<div class="col-4">
+			<RunCarList CarList=@OriginalCars />
 		</div>
-	</RadzenSplitterPane>
-	<RadzenSplitterPane Size="400px">
-		<div>
-		<p> Sostituito/i da </p>
-		<RunCarList @bind-Value=@CurrentPeriodCar CarList=@GetReplacedCarList() />
+		<div class="col-8">
+			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Note</RadzenText>
+			@if (this.EditMode == true)
+			{
+				<RadzenTextArea @bind-Value=@Replacement.Note Class="w-100 h-100" />
+			}
+			else
+			{
+				<RadzenText TextStyle="TextStyle.Body1"><strong>@Replacement.Note</strong></RadzenText>
+			}
 		</div>
-	</RadzenSplitterPane>
-	<RadzenSplitterPane>
-		<CarCostListView CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@SubPeriod PeriodCar=@CurrentPeriodCar />
-	</RadzenSplitterPane>
-</RadzenSplitter>
+	</div>
+</RadzenCard>
+<RunCarListView 
+	CurrentRun=@CurrentRun
+	EditMode=@EditMode
+	RunPeriod=@SubPeriod 
+	Replacement=@Replacement/>
 
 @code {
 	[Parameter]

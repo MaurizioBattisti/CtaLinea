@@ -97,7 +97,7 @@
 		this.RunModelService.RemoveNode(
 			this.Variation,
 			node);
-		
+
 		this.StateHasChanged();
 		await Task.CompletedTask;
 	}
@@ -137,12 +137,13 @@
 	private async Task<bool> ShowNodeDialog (
 		string title)
 	{
+		var okText = "OK";
 		bool? result = await DialogService.OpenAsync(
 			title,
 			ds =>
 				@<div>
 					<RunNodeEditDialog Node=@DialogNode />
-					<RadzenButton Text="Ok" Click="()=>ds.Close(true)" ButtonStyle="ButtonStyle.Primary" />
+					<RadzenButton Text="@okText" Click="()=>ds.Close(true)" ButtonStyle="ButtonStyle.Primary" />
 					<RadzenButton Text="Annulla" Click="()=>ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" />
 				</div>
 			, new DialogOptions() { Width = "1000px" }

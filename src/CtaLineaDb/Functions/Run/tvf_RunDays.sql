@@ -4,18 +4,22 @@
 	Calcola il numero di giorni attesi per una determinata corsa
 	le sospensioni vengono idncate con un glaìg
 ******************************************************************************/
-CREATE FUNCTION [dbo].[tvf_AttendedRunDays]
+CREATE FUNCTION [dbo].[tvf_RunDays]
 (
 	@RunId	uniqueidentifier
 )
 RETURNS @Tbl_Days TABLE
 (
-		RunId		uniqueidentifier NOT NULL,
-		Day			datetime NOT NULL,
-		WeekDay		int NOT NULL,
-		Suspended	bit NOT NULL DEFAULT 0,
+	RunId			uniqueidentifier NOT NULL,
+	Day				datetime NOT NULL,
 
-		PRIMARY KEY (RunId, Day)
+	RunVariationId	uniqueidentifier NOT NULL,
+	RunPeriodId		uniqueidentifier,
+	WeekDay			int NOT NULL,
+	Suspended		bit NOT NULL DEFAULT 0,
+	OutOfPeriod		bit NOT NULL DEFAULT 0,
+
+	PRIMARY KEY (RunId, Day)
 )
 AS
 BEGIN
@@ -30,6 +34,7 @@ BEGIN
 
 	DECLARE @StartDate Date;
 	DECLARE @EndDAte AS DAte;
+	DECLARE @RunEndDAte AS DAte;
 
 	DECLARE @Tbl_Calendars AS TABLE
 	(
@@ -41,7 +46,14 @@ BEGIN
 	); 
 	
 	SELECT @StartDate = CASE WHEN  COALESCE(r.StartDate, c.StartDate) < c.StartDate THEN C.StartDAte ELSE COALESCE(r.StartDate, c.StartDate) END,
-			@EndDAte = CASE WHEN  COALESCE(r.EndDate, c.EndDate) > c.EndDate THEN C.EndDate ELSE COALESCE(r.EndDate, c.EndDate) END
+			@RunEndDAte = CASE WHEN  COALESCE(r.EndDate, c.EndDate) > c.EndDate THEN C.EndDate ELSE COALESCE(r.EndDate, c.EndDate) END,
+			@EndDAte = CASE 
+					WHEN r.Extra = 0 THEN
+						-- se è una corsa da capitolato tiene conto di una data più lunga per avere i giorni come se fossero
+						c.EndDate
+					ELSE
+						(CASE WHEN  COALESCE(r.EndDate, c.EndDate) > c.EndDate THEN C.EndDate ELSE COALESCE(r.EndDate, c.EndDate) END)
+					END
 		FROM dbo.Runs r
 		INNER JOIN Dbo.Contracts c
 			ON R.ContractId = c.ContractId
@@ -74,7 +86,7 @@ BEGIN
 	DECLARE @Cal_id				int;
 	DECLARE @Cal_Start			date;
 	DECLARE @Cal_End			date;
-	DECLARE @Cal_VariantID	uniqueidentifier;
+	DECLARE @Cal_VariantID		uniqueidentifier;
 	
 	DECLARE @MaxID int;
 	SELECT @MaxID = MAX(Id) FROM @Tbl_Calendars;
@@ -98,10 +110,12 @@ BEGIN
 				FROM dbo.tvf_CalendarDays(@Cal_id, @Cal_Start, @Cal_End) d
 		)
 		INSERT INTO @Tbl_Days
-				(RunId, Day, WeekDay)
+				(RunId, Day, WeekDay, RunVariationId, OutOfPeriod)
 			SELECT d.RunId, 
 					d.Day,
-					d.WeekDay
+					d.WeekDay,
+					v.RunVariationId,
+					CASE WHEN d.day > @RunEndDAte AND d.day <= @EndDAte THEN 1 ELSE 0 END
 				FROM CTE_Days d
 				CROSS JOIN Dbo.RunVariations v
 				WHERE V.RunVariationId = @Cal_VariantID
@@ -115,7 +129,42 @@ BEGIN
 						OR (d.WeekDay = @Sunday AND  v.Sunday = 1)
 						)
 				;
-	END
+	END;
+
+	-- gestisce i periodi
+	WITH CTE_PeriodDay_base AS
+	(
+		SELECT p.*,
+				COALESCE(p.StartDate, @StartDate) AS NewStart,
+				COALESCE(p.EndDate, @EndDate) AS NEwEnd
+			FROM dbo.RunPeriods p
+	) , CTE_PeriodDay AS
+	(
+		SELECT p.[RunPeriodId],
+				p.RunId,
+				d.Day,
+				ROW_NUMBER() OVER (PARTITION BY p.RunId, d.DAy ORDER BY p.NewStart, p.NewEnd) AS Num
+			FROM CTE_PeriodDay_base p
+			INNER JOIN @Tbl_Days d
+				ON d.RunId = p.RunId
+				AND d.Day BETWEEN p.NewStart AND p.NEwEnd
+				AND (
+					(d.WeekDay = @Monday AND  p.Monday = 1)
+					OR (d.WeekDay = @Tuesday AND  p.Tuesday = 1)
+					OR (d.WeekDay = @Wednesday AND  p.Wednesday = 1)
+					OR (d.WeekDay = @Thursday AND  p.Thursday = 1)
+					OR (d.WeekDay = @Friday AND  p.Friday = 1)
+					OR (d.WeekDay = @Saturday AND  p.Saturday = 1)
+					OR (d.WeekDay = @Sunday AND  p.Sunday = 1)
+					)			
+	)
+	UPDATE @Tbl_Days 
+		SET RunPeriodId = pd.[RunPeriodId]
+		FROM @Tbl_Days d 
+		INNER JOIN CTE_PeriodDay pd
+		ON d.RunId = pd.RunId
+		AND d.Day = pd.Day
+		AND pd.Num = 1;
 
 	-- segna i giorni sospesi come "sospesi" appunto
 	UPDATE @Tbl_Days 

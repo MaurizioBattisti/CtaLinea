@@ -18,6 +18,7 @@ namespace ZzSoft.QueryHelper
 
         public string Name { get; set; } = string.Empty;
         public int SortPosition { get; set; } = -1;
+        public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
         public bool FullText { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using CtaLinea.Model.Runs;
+using System.Text;
 
 namespace CtaLineaApp.Application.Model
 {
@@ -6,6 +7,8 @@ namespace CtaLineaApp.Application.Model
     {
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set;}
+
+        public IList<RunPeriod> SubPeriods { get; set; } = new List<RunPeriod>();
 
         public override string ToString()
         {

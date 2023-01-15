@@ -30,7 +30,7 @@ BEGIN
 	SELECT c.* 
 		FROM dbo.RunCars c 
 		INNER JOIN dbo.RunPeriods p 
-			ON c.RunPEriodId = p.RunPEriodId 
+			ON c.RunPEriodId = p.[RunPeriodId] 
 		WHERE p.RunId = @RunId;
 	-- costi dei mezzi
 	SELECT cc.* 
@@ -38,14 +38,14 @@ BEGIN
 		INNER JOIN dbo.RunCars c 
 			ON cc.RunCarId = c.RunCarId
 		INNER JOIN dbo.RunPeriods p 
-			ON c.RunPEriodId = p.RunPEriodId 
+			ON c.RunPEriodId = p.[RunPeriodId] 
 		WHERE p.RunId = @RunId;
 	
 	-- sostituzioni dei mezzi
 	SELECT r.*
 		FROM dbo.RunCarReplacements r
 		INNER JOIN dbo.RunPeriods p
-			ON r.RunPeriodId = p.RunPEriodId
+			ON r.RunPeriodId = p.[RunPeriodId]
 		WHERE p.RunId = @RunId;
 	-- dettaglio sostituzioni
 	SELECT d.*
@@ -53,7 +53,7 @@ BEGIN
 		INNER JOIN dbo.RunCarReplacements r
 			ON d.CarReplacementId = r.CarReplacementId
 		INNER JOIN dbo.RunPeriods p
-			ON r.RunPeriodId = p.RunPEriodId
+			ON r.RunPeriodId = p.[RunPeriodId]
 		WHERE p.RunId = @RunId;
 
 	-- Sospensioni (RunSuspensions=
@@ -80,7 +80,7 @@ BEGIN
 		INNER JOIN dbo.RunCars c 
 			ON a.AssociateId = c.AssociateId
 		INNER JOIN dbo.RunPeriods p 
-			ON c.RunPEriodId = p.RunPEriodId 
+			ON c.RunPEriodId = p.[RunPeriodId] 
 		WHERE p.RunId = @RunId;
 	
 	-- mezzi
@@ -89,7 +89,7 @@ BEGIN
 		INNER JOIN dbo.RunCars c 
 			ON car.CarId = c.CarId
 		INNER JOIN dbo.RunPeriods p 
-			ON c.RunPEriodId = p.RunPEriodId 
+			ON c.RunPEriodId = p.[RunPeriodId] 
 		WHERE p.RunId = @RunId;
 
 	RETURN 0;

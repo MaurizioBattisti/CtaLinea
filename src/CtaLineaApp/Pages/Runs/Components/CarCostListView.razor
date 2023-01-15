@@ -1,0 +1,259 @@
+﻿@using CtaLinea.Model.External;
+@using CtaLineaApp.Pages.Runs.Dialogs
+@inject IRunModelService RunModelService
+@inject DialogService DialogService
+@inject NotificationService notificationService
+
+@if (this.IsCostVisible() == true)
+{
+    @if (this.EditMode == true)
+    {
+        <RadzenButton Text="Aggiungi Costo"
+              ButtonStyle="ButtonStyle.Primary"
+              Icon="point_of_sale"
+              Click=@AddCarCost_Click />
+    }
+    <RadzenCard>
+        <RadzenSelectBar @bind-Value=@CurrentCarCost
+                     Multiple=false
+                     Data=@GetCarCosts()
+                     TextProperty="Text" />
+    </RadzenCard>
+    @if(this.CurrentCarCost != null)
+    {
+        <CarCostView CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@RunPeriod PeriodCar=@PeriodCar CarCost=@CurrentCarCost />
+        @if (this.EditMode == true)
+        {
+            <div>
+                <RadzenButton Text="Modifica inizio"
+                    ButtonStyle="ButtonStyle.Warning"
+                    Disabled=@(!CanEditAndDelete())
+                    Icon="point_of_sale"
+                    Click="@EditCarCost_Click" />
+                <RadzenButton Text = "Elimina Costo"
+                    ButtonStyle = "ButtonStyle.Danger"
+                    Disabled=@(!CanEditAndDelete())
+                    Icon = "point_of_sale"
+                    Click = "@DeleteCarCost_Click" />
+            </div>
+       }
+    }
+}
+
+@code {
+    [Parameter]
+    public RunItem CurrentRun { get; set; } = new RunItem();
+    [Parameter]
+    public bool EditMode { get; set; } = false;
+    [Parameter]
+    public RunPeriod RunPeriod { get; set; } = new RunPeriod();
+    [Parameter]
+    public RunPeriodCar? PeriodCar { get; set; }
+
+    public RunCarCost? CurrentCarCost = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        this.SelectCarCost();
+        await base.OnParametersSetAsync();
+    }
+
+    private IList<RunCarCost> GetCarCosts()
+    {
+        IList<RunCarCost> list = new List<RunCarCost>();
+        if (this.PeriodCar?.CarCosts != null)
+        {
+            list = (from cc in this.PeriodCar?.CarCosts
+                    orderby cc.StartDate ascending
+                    select cc).ToList();
+        }
+
+        return list;
+    }
+
+    private RunCarCost? GetSelectedCarCost ()
+    {
+        RunCarCost? cost = null;
+        if (this.PeriodCar?.CarCosts != null)
+        {
+            cost = (from cc in this.PeriodCar?.CarCosts
+                    where cc.StartDate == null
+                        || cc.StartDate <= DateTime.Today
+                    orderby cc.StartDate descending
+                    select cc).FirstOrDefault();
+        }
+        return cost;
+    }
+    private void SelectCarCost ()
+    {
+        this.CurrentCarCost = GetSelectedCarCost();
+    }
+
+    private bool IsCostVisible()
+    {
+        if (this.PeriodCar == null) return false;
+        return (this.PeriodCar.RunCarType == CarTypeEnum.Primary
+            || this.PeriodCar.RunCarType == CarTypeEnum.Replacement);
+    }
+
+
+    private async Task<bool> CheckDataAsync (
+        string dialogTitle,
+        DateTime? startDate,
+        RunCarCost? oldCost)
+    {
+        bool valid = true;
+
+        // cerca se eiste già unacosto che inizia alla data indicata
+        var cost = (from cc in this.GetCarCosts()
+                    where cc.StartDate == startDate
+                        && cc != oldCost
+                    select cc).FirstOrDefault();
+        if (cost != null)
+        {
+            valid = false;
+            this.notificationService.Notify(
+                NotificationSeverity.Warning,
+                dialogTitle,
+                "Esiste già un costo che inizia alla stessa data idnicata, usare il costo già esistnete o scegliere una data diversa per l'inizio della validità del costo");
+        }
+
+        return await Task.FromResult(valid);
+    }
+
+    private async Task AddCarCost_Click ()
+    {
+        // crea un fake cost
+        var fakeCost = new RunCarCost();
+        var title = "Crea nuovo Costo";
+        if (await this.AskDateAsync (
+            title, "Crea", fakeCost
+            ) == true)
+        {
+            // se il costo è valido
+            if(await this.CheckDataAsync(title, fakeCost.StartDate, null) == true )
+            {
+                if (this.PeriodCar != null)
+                {
+                    var cost = this.RunModelService.CreateRunCarCost(this.PeriodCar, fakeCost.StartDate);
+                    if (cost != null)
+                    {
+                        this.CurrentCarCost = cost;
+                        this.StateHasChanged();
+                    }
+                }
+            }
+        }
+    }
+    private async Task EditCarCost_Click()
+    {
+        await Task.CompletedTask;
+        if (CurrentCarCost != null)
+        {
+            // crea un fake cost
+            var fakeCost = new RunCarCost()
+            {
+                StartDate = this.CurrentCarCost.StartDate
+            };
+            var title = "Cambia inizio Costo";
+            if (await this.AskDateAsync(
+                title, "Cambia", fakeCost
+                ) == true)
+            {
+                // se il costo è valido
+                if (await this.CheckDataAsync(title, fakeCost.StartDate, null) == true)
+                {
+                    this.CurrentCarCost.StartDate = fakeCost.StartDate;
+                    this.StateHasChanged();
+                }
+            }
+        }
+    }
+    private async Task DeleteCarCost_Click()
+    {
+        await Task.CompletedTask;
+        if (CurrentCarCost != null)
+        {
+            // chiede conferma per la cancellazione del costo
+            if (await this.DialogService.Confirm (
+                "Sei sicuro di voler eliminare il costo associato al mezzo ?",
+                "Elimina costo",
+                new ConfirmOptions
+                {
+                    OkButtonText = "si, Elimina !",
+                    CancelButtonText = "Annulla"
+                }
+                ) == true)
+            {
+                // elimina il costo
+                if (this.PeriodCar?.CarCosts != null)
+                {
+                    this.PeriodCar.CarCosts.Remove(this.CurrentCarCost);
+                }
+                this.SelectCarCost();
+                this.StateHasChanged();
+            }
+        }
+    }
+    private async Task<bool> AskDateAsync (
+        string title,
+        string okText,
+        RunCarCost cost
+        )
+    {
+        return await ShowGenericDialog(
+            title,
+            ds =>
+            @<div>
+                <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Data di inizio</RadzenText>
+                <DateSelector @bind-Value=@cost.StartDate
+                  Min=@this.RunModelService.GetMinValidDate(this.CurrentRun, DateTime.MinValue, this.RunPeriod)
+                  Max=@this.RunModelService.GetMaxValidDate(this.CurrentRun, DateTime.MaxValue, this.RunPeriod) 
+                ShowSetTodayButton=true />
+        </div>
+    , okText
+            );
+    }
+    private bool CanEditAndDelete()
+    {
+        bool canDelete = false;
+        if (this.CurrentCarCost != null)
+        {
+            if (CurrentCarCost.StartDate != null)
+            {
+                canDelete = (this.GetCarCosts().Count() > 1);
+            }
+        }
+        return canDelete;
+    }
+
+    #region funzioni gestione dialog box
+    private async Task<bool> ShowGenericDialog(
+        string title,
+        RenderFragment<DialogService> renderFragment,
+        string okText = "OK",
+        string cancelText = "Annulla",
+        string width = "1000px")
+    {
+        bool? result = await DialogService.OpenAsync(
+            title,
+            ds =>
+            @<div>
+                @renderFragment(ds)
+                <RadzenButton Text="@okText" Click="()=>ds.Close(true)" ButtonStyle="ButtonStyle.Primary" />
+                <RadzenButton Text="@cancelText" Click="()=>ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" />
+            </div>
+            , new DialogOptions() { Width = width }
+            );
+
+        return (result != null && result == true);
+    }
+    #endregion
+
+}

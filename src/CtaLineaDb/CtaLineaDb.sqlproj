@@ -69,6 +69,10 @@
     <Folder Include="Views\Runs" />
     <Folder Include="StoredProc\Run" />
     <Folder Include="Functions\Run" />
+    <Folder Include="Tables\Runs\Utilties" />
+    <Folder Include="StoredProc\Utility" />
+    <Folder Include="StoredProc\Costs" />
+    <Folder Include="Functions\Costs" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post_Deploy.sql" />
@@ -111,7 +115,16 @@
     <Build Include="Views\Runs\vw_RunPaths.sql" />
     <Build Include="Views\Runs\vw_Runs.sql" />
     <Build Include="StoredProc\Run\up_GetOneRunItem.sql" />
-    <Build Include="Functions\Run\tvf_AttendedRunDays.sql" />
+    <Build Include="Functions\Run\tvf_RunDays.sql" />
     <Build Include="Views\Runs\vw_RunVariations.sql" />
+    <Build Include="Functions\Run\tvf_RunDaysWithCars.sql" />
+    <Build Include="Tables\Runs\Utilties\RunDays.sql" />
+    <Build Include="StoredProc\Utility\uo_RecalcRunDays.sql" />
+    <Build Include="Tables\Base\Tags.sql" />
+    <Build Include="Tables\Runs\Utilties\RunTags.sql" />
+    <Build Include="StoredProc\Costs\up_GetCosts.sql" />
+    <Build Include="Functions\Costs\tvf_RunCostDetails.sql" />
+    <Build Include="Tables\Runs\Utilties\Runs_NeedsDayRecalc.sql" />
+    <Build Include="StoredProc\Utility\uo_RecalcRunDays_Massive.sql" />
   </ItemGroup>
 </Project>

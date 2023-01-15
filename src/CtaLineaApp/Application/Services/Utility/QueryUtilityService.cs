@@ -80,12 +80,21 @@ namespace CtaLineaApp.Application.Services.Utility
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    var items = await response.Content.ReadFromJsonAsync<TResul[]>();
+                    try
+                    {
+                        var items = await response.Content.ReadFromJsonAsync<TResul[]>();
 
-                    totalRows = response.Headers.ParseInt(Constants.ResponseHeader_TotalRows);
+                        totalRows = response.Headers.ParseInt(Constants.ResponseHeader_TotalRows);
 
-                    // se tutto OK
-                    return new QueryResult<TResul>(items, totalRows, queryDef.Page);
+                        // se tutto OK
+                        return new QueryResult<TResul>(items, totalRows, queryDef.Page);
+                    }
+                    catch (Exception exc)
+                    {
+                        Console.WriteLine("Errore durante la deserializzazione: " + exc.Message);
+                        Console.WriteLine(await response.Content.ReadAsStringAsync());
+                        throw;
+                    }
                 }
                 return null;
             }

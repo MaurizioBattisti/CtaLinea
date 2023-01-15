@@ -369,8 +369,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             bool loadLookups = true
             )
         {
-            var reader = await conn.QueryMultipleAsync(
+            using var reader = await conn.QueryMultipleAsync(
                 SQL_up_GetOneRunItem,
+                transaction: tran,
                 param: new { RunId = runId }, 
                 commandType: CommandType.StoredProcedure);
 
@@ -439,7 +440,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                          select costs);
             foreach (var costGroup in carCosts)
             {
-                var car = item.SubPeriods.SelectMany(p => p.Cars.Where(c => c.CarId == costGroup.Key)).FirstOrDefault();
+                var car = item.SubPeriods.SelectMany(p => p.Cars.Where(c => c.RunCarId == costGroup.Key)).FirstOrDefault();
                 if (car != null) 
                 {
                     car.CarCosts = (from c in costGroup select c as RunCarCost).ToList();

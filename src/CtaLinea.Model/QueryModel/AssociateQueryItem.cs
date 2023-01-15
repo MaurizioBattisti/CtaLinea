@@ -1,6 +1,6 @@
 ﻿using ZzSoft.QueryHelper;
 
-namespace CtaLinea.QueryModel
+namespace CtaLinea.Model.QueryModel
 {
     [SqlAlias("a")]
     public class AssociateQueryItem
@@ -9,7 +9,7 @@ namespace CtaLinea.QueryModel
         public Guid Id { get; set; }
 
         [SqlField(SortPosition = 0, FullText = true)]
-        public string Description { get; set; } = String.Empty;
+        public string Description { get; set; } = string.Empty;
         [SqlField(FullText = true)]
         public string? BsSupplierCode { get; set; }
         [SqlField(FullText = true)]

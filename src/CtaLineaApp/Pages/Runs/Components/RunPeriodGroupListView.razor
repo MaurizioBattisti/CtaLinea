@@ -1,0 +1,289 @@
+﻿@using CtaLineaApp.Pages.Runs.Dialogs
+@inject IRunModelService RunModelService
+@inject DialogService DialogService
+@inject NotificationService notificationService
+
+<RadzenPanel AllowCollapse="true" Style="auto;">
+	<HeaderTemplate>
+		<h4 class="m-0 d-flex align-items-center">
+			<RadzenIcon Icon="calendar_view_month" Class="me-1" />Periodi di attività dei mezzi
+		</h4>
+	</HeaderTemplate>
+	<ChildContent>
+		<RadzenSplitter Orientation="Orientation.Horizontal" Style="min-height: 350px">
+			<RadzenSplitterPane Size="200px">
+				@if (this.EditMode == true)
+				{
+					<RadzenButton Text="Nuovo Periodo"
+							  ButtonStyle="ButtonStyle.Primary"
+							  Icon="calendar_view_month"
+							  Click=@AddPeriod_Click />
+				}
+				<RadzenListBox @bind-Value=@CurrentPeriodGroup
+							   Data=@PeriodGroupList
+							   Style="height: 300px"
+							   Class="w-100">
+					<Template>
+						@((context as RunPeriodGroup)?.ToString()))
+					</Template>
+				</RadzenListBox>
+			</RadzenSplitterPane>
+			<RadzenSplitterPane>
+				@if (CurrentPeriodGroup != null)
+				{
+					<RunPeriodView CurrentRun=@CurrentRun EditMode=@EditMode PeriodGroup=@CurrentPeriodGroup />
+					@if (this.EditMode == true)
+					{
+						<div>
+							<RadzenButton Text="Modifica Periodo"
+								  ButtonStyle="ButtonStyle.Warning"
+								  Icon="calendar_view_month"
+								  Click=@DEditPeriod_Click />
+							<RadzenButton Text="Elimina Periodo"
+								  ButtonStyle="ButtonStyle.Danger"
+								  Icon="calendar_view_month"
+								  Click=@DeletePeriod_Click />
+						</div>
+					}
+				}
+			</RadzenSplitterPane>
+		</RadzenSplitter>
+	</ChildContent>
+</RadzenPanel>
+
+@code {
+	[Parameter]
+	public RunItem CurrentRun { get; set; } = new RunItem();
+	[Parameter]
+	public bool EditMode { get; set; } = false;
+
+	private IList<RunPeriodGroup> PeriodGroupList { get; set; }
+	private RunPeriodGroup? CurrentPeriodGroup { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		await base.OnParametersSetAsync();
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		this.PeriodGroupList = GetPeriodGroups();
+
+		this.SelectCurrentGroup();
+
+		await base.OnParametersSetAsync();
+	}
+
+	private void SelectCurrentGroup ()
+	{
+		// seleziona un period appropriato
+		this.CurrentPeriodGroup = (from pg in this.PeriodGroupList
+											where pg.StartDate == null || pg.StartDate <= DateTime.Today
+											orderby pg.StartDate descending
+											select pg).FirstOrDefault();
+	}
+	private void SelectSpecificPEriod (
+		DateTime? startDate,
+		DateTime? endDate)
+	{
+		this.CurrentPeriodGroup = (from pg in this.PeriodGroupList
+											where pg.StartDate == startDate 
+											&& pg.EndDate == endDate
+											select pg).FirstOrDefault();
+	}
+
+	private IList<RunPeriodGroup> GetPeriodGroups ()
+	{
+		if (this.CurrentRun != null)
+		{
+			return this.RunModelService.GetPeriodGroups(this.CurrentRun);
+		}
+		return new List<RunPeriodGroup>();
+	}
+
+	private async Task AddPeriod_Click()
+	{
+		string title = "Nuoov periodo";
+		var periodGroup = new RunPeriodGroup()
+			{
+				StartDate = null,
+				EndDate = null
+			};
+		var result = await this.AskPeriodGroup(
+			title,
+			"Crea Periodo",
+			periodGroup);
+		if (result == true)
+		{
+			bool addNew = false;
+			// controlla i valorei immessi
+			if (PeriodGroupList != null)
+			{
+				var per = (from p in this.PeriodGroupList
+									where p.StartDate == periodGroup.StartDate
+										&& p.EndDate == periodGroup.EndDate
+									select p).FirstOrDefault();
+				if (per != null)
+				{
+					// indica che non è possibile aggiungere un periodo identico a quello già presente
+					this.notificationService.Notify(
+						NotificationSeverity.Warning,
+						title,
+						"Non è possibile inserire un periodoo già esistenete, almeno una delle due date deve essere differente.");
+				}
+				else
+				{
+					addNew = true;
+				}
+			}
+			else
+			{
+				addNew = true;
+			}
+
+			if (addNew == true)
+			{
+				if (this.PeriodGroupList == null) this.PeriodGroupList = new List<RunPeriodGroup>();
+
+				var period = this.RunModelService.CreateNewPeriod(
+					this.CurrentRun,
+					periodGroup.StartDate,
+					periodGroup.EndDate);
+				periodGroup.SubPeriods.Add(period);
+				this.PeriodGroupList.Add(periodGroup);
+				this.CurrentPeriodGroup = periodGroup;
+			}
+		}
+	}
+	private async Task DEditPeriod_Click ()
+	{
+		if (this.CurrentPeriodGroup != null)
+		{
+			string title = "Modifica periodo";
+			var periodGroup = new RunPeriodGroup()
+				{
+					StartDate = CurrentPeriodGroup.StartDate,
+					EndDate = CurrentPeriodGroup.EndDate
+				};
+			var result = await this.AskPeriodGroup(
+				title,
+				"Cambia Date",
+				periodGroup);
+
+			if (result == true)
+			{
+				// controlla che il periodo non vada a sovrapporsi con un'altro
+				var other = (from p in this.PeriodGroupList
+								where p.StartDate == periodGroup.StartDate
+								&& p.EndDate  == periodGroup.EndDate
+								&& p != this.CurrentPeriodGroup
+								select p).FirstOrDefault();
+				if (other != null)
+				{
+					// indica che non è possibile aggiungere un periodo identico a quello già presente
+					this.notificationService.Notify(
+						NotificationSeverity.Warning,
+						title,
+						"Non è possibile assenare le stesse date di un altro epridoo almeno una deve essere diversa.");
+				}
+				else
+				{
+					if (this.CurrentRun.SubPeriods != null)
+					{
+						// modifica tutte le date dei periodi
+						var toChange = (from p in this.CurrentRun.SubPeriods
+										where p.StartDate == this.CurrentPeriodGroup.StartDate
+										&& p.EndDate == this.CurrentPeriodGroup.EndDate
+										select p).ToList();
+						foreach (var p in toChange)
+						{
+							p.StartDate = periodGroup.StartDate;
+							p.EndDate = periodGroup.EndDate;
+						}
+
+						this.PeriodGroupList.Remove(this.CurrentPeriodGroup);
+						this.PeriodGroupList.Add(periodGroup);
+						this.CurrentPeriodGroup = periodGroup;
+					}
+				}
+			}
+		}
+	}
+	private async Task DeletePeriod_Click ()
+	{
+		var period = this.CurrentPeriodGroup;
+		if (period != null)
+		{
+			// chiede conferma per la cancellazione del periodo selezionato
+			var result = await DialogService.Confirm(
+				string.Format("Desideri veramente eliminare il periodo {0} ? tutti i dati associati saranno persi", period.ToString()),
+				"Elimina gruppo",
+				new ConfirmOptions
+				{
+					OkButtonText = "Si, Elimina il periodo !",
+					CancelButtonText = "No ! Annulla"
+				} );
+
+			if (result == true)
+			{
+				// elimina tutti i sottoperiodi dalla corsa che corrispondono al gruppo
+				if (this.CurrentRun.SubPeriods != null)
+				{
+					var toDelo = (from p in this.CurrentRun.SubPeriods
+										where p.StartDate == period.StartDate
+											&& p.EndDate == period.EndDate
+										select p).ToList();
+
+					foreach (var p in toDelo)
+					{
+						CurrentRun.SubPeriods.Remove(p);
+					}
+					this.PeriodGroupList.Remove(this.CurrentPeriodGroup);
+					this.SelectCurrentGroup();
+				}
+			}
+		}
+	}
+	private async Task<bool> AskPeriodGroup (
+		string title,
+		string okText,
+		RunPeriodGroup periodGroup)
+	{
+		return await ShowGenericDialog(
+			title,
+			ds => 
+			@<div>
+				<RunPeriodGroupEditDialog 
+					PeriodGroup=@periodGroup
+					MinDate=@this.RunModelService.GetMinValidDate(this.CurrentRun, DateTime.MinValue) 
+					MaxDate=@(this.RunModelService.GetMaxValidDate(this.CurrentRun, DateTime.MaxValue))
+					/>
+			</div>
+			, okText
+			);		
+	}
+
+	#region funzioni gestione dialog box
+	private async Task<bool> ShowGenericDialog(
+		string title,
+		RenderFragment<DialogService> renderFragment,
+		string okText = "OK",
+		string cancelText = "Annulla",
+		string width = "1000px")
+	{
+		bool? result = await DialogService.OpenAsync(
+		title,
+		ds =>
+	@<div>
+		@renderFragment(ds)
+		<RadzenButton Text="@okText" Click="()=>ds.Close(true)" ButtonStyle="ButtonStyle.Primary" />
+		<RadzenButton Text="@cancelText" Click="()=>ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" />
+	</div>
+	, new DialogOptions() { Width = width }
+	);
+
+		return (result != null && result == true);
+	}
+	#endregion
+}

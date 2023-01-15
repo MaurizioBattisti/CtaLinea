@@ -1,0 +1,83 @@
+﻿
+<DateRangeSelector @bind-StartDate=@Replacement.StartDate
+	@bind-EndDate=@Replacement.EndDate
+	Min=@MinDate
+	Max=@MaxDate
+	AllowClear=false
+	Inline=true/>
+<div>
+	<RadzenText TextStyle="TextStyle.Overline" Text="Mezzi da sostituire" />
+	<div style="height: 350px">
+		<RunPeriodCarSelector 
+			PeriodCars=@GetSelectablePeriodCars()
+			@bind-SelectedIds=@SelectedIds />
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public RunPeriod Period { get; set; } = new RunPeriod();
+
+	[Parameter]
+	public CarReplacement Replacement { get; set; } = new CarReplacement();
+
+	[Parameter]
+	public DateTime? MinDate { get; set; }
+	[Parameter]
+	public DateTime? MaxDate { get; set; }
+
+	private IEnumerable<Guid>? SelectedIds
+	{
+		get 
+		{ 
+			if (this.Replacement.OriginalPEriodCarIds != null
+				&& this.Replacement.OriginalPEriodCarIds.Count() == 0)
+			{
+				return null;
+			}
+			return this.Replacement.OriginalPEriodCarIds; 
+		}
+		set
+		{
+			if (value == null)
+			{
+				this.Replacement.OriginalPEriodCarIds = new List<Guid>();
+			}
+			else
+			{
+				this.Replacement.OriginalPEriodCarIds = value.ToList();
+			}
+		}
+	}
+
+
+	protected override async Task OnInitializedAsync()
+	{
+
+
+
+		await base.OnParametersSetAsync();
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+
+
+
+		await base.OnParametersSetAsync();
+	}
+
+	private IEnumerable<RunPeriodCar> GetSelectablePeriodCars()
+	{
+		var list = new List<RunPeriodCar>();
+		if (this.Period.Cars != null)
+		{
+			list = (from c in this.Period.Cars
+					where c.RunCarType == CarTypeEnum.Primary
+					select c).ToList();
+		}
+
+		return list;
+	}
+
+}

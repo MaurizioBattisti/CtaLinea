@@ -1,6 +1,6 @@
 ﻿using ZzSoft.QueryHelper;
 
-namespace CtaLinea.QueryModel
+namespace CtaLinea.Model.QueryModel
 {
     [SqlAlias("c")]
     public class CarQueryItem
@@ -9,15 +9,15 @@ namespace CtaLinea.QueryModel
         public Guid Id { get; set; }
 
         [SqlField(FullText = true)]
-        public string Description { get; set; } = String.Empty;
+        public string Description { get; set; } = string.Empty;
         [SqlField(FullText = true)]
-        public string RegNumber { get; set; } = String.Empty;
+        public string RegNumber { get; set; } = string.Empty;
 
         public int NrSittings { get; set; }
 
         [SqlField(FullText = true)]
         public string? BsCarId { get; set; }
-        
+
         [SqlField(FullText = true)]
         public string? ChassisNumber { get; set; }
         public DateTime? FirstRegistration { get; set; }
@@ -42,17 +42,17 @@ namespace CtaLinea.QueryModel
         {
             var other = o as CarQueryItem;
 
-            return (other == null ? false : other.Id == Id);
+            return other == null ? false : other.Id == Id;
         }
 
         public override string ToString()
         {
-            return this.Description;
+            return Description;
         }
 
         public override int GetHashCode()
         {
-            return this.Id.GetHashCode();
+            return Id.GetHashCode();
         }
     }
 }

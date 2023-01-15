@@ -3,9 +3,8 @@ using System;
 using System.Data;
 using System.Threading.Tasks;
 using ZzSoft.CtaLinea.Dal.Context;
-using CtaLinea.QueryModel;
 using ZzSoft.QueryHelper;
-
+using CtaLinea.Model.QueryModel;
 
 namespace ZzSoft.CtaLinea.Dal.Queries
 {
@@ -36,7 +35,7 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 .ConfigureAwait(false);
         }
         public async Task<CalendarQueryItem> GetOneCalendarAsync(
-            string id)
+            int id)
         {
             var queryDef = new QueryDefinition<CalendarQueryItem>(
                 CalendarsSql_Table,

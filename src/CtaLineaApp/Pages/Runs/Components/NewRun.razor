@@ -50,21 +50,47 @@
                 run.Variations[0].EndTime = new TimeSpan(10, 25, 55);
             }
             var period = run.SubPeriods?[0];
-            if (period != null)
+            var xrc = period?.Cars?.FirstOrDefault();
+            if (xrc != null)
             {
-                var rc = RunModelService.CreatePeriodCar(period, CarTypeEnum.Replacement);
-                period.CarReplacements?.Add(
-                    new CarReplacement()
+                xrc.CarCosts = new List<RunCarCost>();
+
+                xrc.CarCosts.Add(
+                    new RunCarCost()
                     {
-                        CarReplacementId = Guid.NewGuid(),
-                        StartDate = new DateTime(2022, 11, 01),
-                        EndDate = new DateTime(2023, 03, 31),
-                        OriginalPEriodCarIds = new List<Guid> () { period.Cars?[0]?.RunCarId ?? Guid.Empty },
-                        ReplacedPEriodCarIds = new List<Guid> () { rc.RunCarId },
-                        Note = "do re mi fa sol"
-                    }
-                );
+                        RunCarCostId = Guid.NewGuid(),
+                        StartDate = null,
+                        DayForfait = 100,
+                        DayPrice = 25,
+                        DayIntegration = 75,
+                        KmPrice = 1
+                    });
+                xrc.CarCosts.Add(
+                    new RunCarCost()
+                    {
+                        RunCarCostId = Guid.NewGuid(),
+                        StartDate = new DateTime(2022, 11, 1),
+                        DayForfait = 90,
+                        DayPrice = 20,
+                        DayIntegration = 60,
+                        KmPrice = 3 / 2
+                    });
             }
+            if (period != null)
+                {
+                    var rc = RunModelService.CreatePeriodCar(period, CarTypeEnum.Replacement);
+                    period.CarReplacements?.Add(
+                        new CarReplacement()
+                        {
+                            CarReplacementId = Guid.NewGuid(),
+                            StartDate = new DateTime(2022, 11, 01),
+                            EndDate = new DateTime(2023, 03, 31),
+                            OriginalPEriodCarIds = new List<Guid> () { period.Cars?[0]?.RunCarId ?? Guid.Empty },
+                            ReplacedPEriodCarIds = new List<Guid> () { rc.RunCarId },
+                            Note = "do re mi fa sol"
+                        }
+                    );
+                }
 
             // aggiunge un paiod i sospensioni
             run.Suspensions?.Add(

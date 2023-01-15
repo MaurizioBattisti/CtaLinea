@@ -1,0 +1,120 @@
+﻿@using CtaLinea.QueryModel;
+@using CtaLinea.Model.QueryModel
+@inject IQueryUtilityService queryService
+
+<RadzenDropDown 
+    Disabled=@Disabled
+    Data=@Data 
+    @bind-Value="CurrentItem"
+    TValue="CalendarQueryItem" 
+    AllowClear=@AllowClear
+    Change=@OnChange
+    TextProperty="CalendarName"
+    AllowFiltering=true
+    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+    FilterOperator="StringFilterOperator.Contains"
+    Class="w-100">
+</RadzenDropDown>
+
+@code {
+    /*
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+    */
+
+    public int? _CalendarId;
+    [Parameter]
+    public int? CalendarId 
+    {
+        get { return this._CalendarId;  }
+        set
+        {
+            if (_CalendarId != value)
+            {
+                _CalendarId = value;
+                this.SelectItem(this._CalendarId);
+            }
+        }
+    }
+    [Parameter]
+    public EventCallback<int?> CalendarIdChanged { get; set; }
+
+    [Parameter]
+    public bool AllowClear { get; set; } = false;
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<object> Changed { get; set; }
+
+    QueryDefinition _servicesQueryDef = new QueryDefinition();
+    CalendarQueryItem[]? Data = null;
+    int RowCount = 0;
+    bool isLoading = false;
+    CalendarQueryItem? CurrentItem = null;
+
+    public CalendarQueryItem? SelectedCalendarData
+    {
+        get
+        {
+            return this.CurrentItem;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        this._servicesQueryDef.EndPoint = Constants.Endpoint_Calendars;
+
+        await LoadData();
+        this.StateHasChanged();
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+
+        await Task.CompletedTask;
+    }
+
+    private async Task LoadData ()
+    {
+        await Task.CompletedTask;
+
+        this._servicesQueryDef.Filter = string.Empty;
+        this._servicesQueryDef.Sort = string.Empty;
+        this._servicesQueryDef.FullText = string.Empty;
+
+        this._servicesQueryDef.Page = 0;
+        this._servicesQueryDef.PageSize = 100000;
+
+        var result = await queryService.GetListAsync<CalendarQueryItem>(
+                    this._servicesQueryDef);
+
+        if (result != null)
+        {
+            this.Data = result.Items;
+            this.RowCount = result.TotalRows;
+            this.SelectItem(this.CalendarId);
+        }
+    }
+
+    private void SelectItem (int? calendarId)
+    {
+        if (calendarId != null
+            && this.Data != null)
+        {
+            this.CurrentItem = (from d in this.Data
+                                where d.Id == calendarId
+                                select d).SingleOrDefault();
+        }
+        else
+        {
+            this.CurrentItem = null;
+        }        
+    }
+
+    private async Task OnChange (object value)
+    {
+        this._CalendarId = (value as CalendarQueryItem)?.Id;
+        await CalendarIdChanged.InvokeAsync(this.CalendarId);
+        await Changed.InvokeAsync(this);
+    }
+}

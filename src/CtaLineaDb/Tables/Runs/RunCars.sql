@@ -12,9 +12,10 @@ CREATE TABLE [dbo].[RunCars]
     [AssociateId] UNIQUEIDENTIFIER NOT NULL, 
     [CarId] UNIQUEIDENTIFIER NOT NULL, 
 
+    [Note] VARCHAR(MAX) NULL, 
     CONSTRAINT [FK_Cars_Run] 
         FOREIGN KEY ([RunPeriodId]) 
-        REFERENCES [dbo].[RunPeriods](RunPEriodId)
+        REFERENCES [dbo].[RunPeriods]([RunPeriodId])
         ON DELETE CASCADE
         ON UPDATE CASCADE, 
     CONSTRAINT [FL_RunCars_Associate] 

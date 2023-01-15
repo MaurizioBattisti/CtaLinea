@@ -42,11 +42,7 @@
                         </div>
                        <div class="row justify-content-center">
                             <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
-                                @if (loading) 
-                                {
-                                    <span class="spinner-border spinner-border-sm mr-1"></span>
-                                }
-                                <RadzenButton Disabled="@loading" Text="Login" ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary" />
+                                <RadzenButton IsBusy=@loading Text="Login" ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary" />
                             </div>
                         </div>
                     </RadzenTemplateForm>

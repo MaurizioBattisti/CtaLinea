@@ -29,5 +29,15 @@ namespace CtaLineaApp.Application.Services.Run
 
 		void ReorderNodes(
             RunVariation variation);
-	}
+
+        DateTime? GetMinValidDate(
+            RunItem runItem,
+            DateTime? defaultDate,
+            RunPeriod? period = null);
+        DateTime? GetMaxValidDate(
+            RunItem runItem,
+            DateTime? defaultDate,
+            RunPeriod? period = null);
+
+    }
 }

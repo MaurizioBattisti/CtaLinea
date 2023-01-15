@@ -1,0 +1,172 @@
+﻿@using CtaLineaApp.Pages.Runs.Dialogs
+@inject IRunModelService RunModelService
+@inject DialogService DialogService
+
+<RadzenSplitter Orientation="Orientation.Horizontal" 
+    Style="min-height: 400x">
+	<RadzenSplitterPane Size="190px">
+		@if (this.EditMode == true)
+		{
+			<RadzenButton Text="Nuova Sostituzione"
+					  ButtonStyle="ButtonStyle.Primary"
+					  Icon="find_replace"
+					  Click=@NewReplacement_Click />
+		}
+		<RadzenListBox @bind-Value=@CurrentReplacement
+					   Data=@GetReplacementList()
+					   Class="w-100">
+			<Template>
+				@GetReplacementDescriotion(context as CarReplacement)
+			</Template>
+		</RadzenListBox>
+	</RadzenSplitterPane>
+	<RadzenSplitterPane>
+		@if(CurrentReplacement != null)
+		{
+			<CarReplacementItemView CurrentRun=@CurrentRun EditMode=@EditMode SubPeriod=@RunPeriod Replacement=@CurrentReplacement />
+			@if(EditMode == true)
+			{
+				<div>
+					<RadzenButton Text="Modifica Sostituzione"
+						  ButtonStyle="ButtonStyle.Warning"
+						  Icon="find_replace"
+						  Click=@EditReplacement_Click />
+					<RadzenButton Text="Elimina Sostituzione"
+						  ButtonStyle="ButtonStyle.Danger"
+						  Icon="find_replace"
+						  Click=@DeleteReplacement_Click />
+				</div>
+			}
+		}
+	</RadzenSplitterPane>
+</RadzenSplitter>
+
+@code {
+	[Parameter]
+	public RunItem CurrentRun { get; set; } = new RunItem();
+	[Parameter]
+	public bool EditMode { get; set; } = false;
+	[Parameter]
+	public RunPeriod RunPeriod { get; set; } = new RunPeriod();
+
+	private CarReplacement? CurrentReplacement { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+
+
+
+		await base.OnParametersSetAsync();
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+
+
+		await base.OnParametersSetAsync();
+	}
+	private IEnumerable<CarReplacement> GetReplacementList()
+	{
+		if (RunPeriod.CarReplacements == null) return new List<CarReplacement>();
+
+		return (from c in RunPeriod.CarReplacements
+				orderby c.StartDate
+				select c);
+	}
+
+	private string GetReplacementDescriotion(CarReplacement? replacement)
+	{
+		if (replacement == null) return null;
+		return string.Format("{0:dd/MM/yyyy} - {1:dd/MM/yyyy}",
+			replacement.StartDate,
+			replacement.EndDate
+			);
+	}
+
+	#region sostituzioni
+	private async Task NewReplacement_Click()
+	{
+		var replacement = new CarReplacement()
+			{
+				CarReplacementId = Guid.NewGuid()
+			};
+		var title = "Nuova Sostituzione";
+		if (await this.AskEditReplacementAsync(title, "Crea", replacement) == true)
+		{
+			// aggiunge la nuova sosituzione
+			if (this.RunPeriod.CarReplacements == null)
+			{
+				this.RunPeriod.CarReplacements = new List<CarReplacement>() { replacement };
+			}
+			else
+			{
+				this.RunPeriod.CarReplacements.Add(replacement);
+			}
+			CurrentReplacement = replacement;
+		}
+	}
+
+	private async Task EditReplacement_Click()
+	{
+		await Task.CompletedTask;
+
+		if (this.CurrentReplacement != null)
+		{
+
+
+
+
+		}
+	}
+	private async Task DeleteReplacement_Click()
+	{
+		await Task.CompletedTask;
+
+		if (this.CurrentReplacement != null)
+		{
+
+
+
+
+		}
+	}
+
+	private async Task<bool> AskEditReplacementAsync(
+		string title,
+		string okText,
+		CarReplacement replacement)
+	{
+		var minDate = this.RunModelService.GetMinValidDate(this.CurrentRun, DateTime.MinValue, this.RunPeriod);
+		var maxDate = this.RunModelService.GetMaxValidDate(this.CurrentRun, DateTime.MinValue, this.RunPeriod);
+
+		return await ShowGenericDialog(
+			title,
+		ds => @<CarReplacementEditDialog Period=@RunPeriod Replacement=@replacement MinDate=@minDate MaxDate=@maxDate />
+			, okText
+		);
+	}
+	#endregion
+
+	#region funzioni gestione dialog box
+	private async Task<bool> ShowGenericDialog(
+		string title,
+		RenderFragment<DialogService> renderFragment,
+		string okText = "OK",
+		string cancelText = "Annulla",
+		string width = "1000px")
+	{
+		bool? result = await DialogService.OpenAsync(
+			title,
+			ds =>
+				@<div>
+					@renderFragment(ds)
+					<RadzenButton Text="@okText" Click="()=>ds.Close(true)" ButtonStyle="ButtonStyle.Primary" />
+					<RadzenButton Text="@cancelText" Click="()=>ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" />
+				</div>
+				, new DialogOptions() { Width = width }
+				);
+
+		return (result != null && result == true);
+	}
+	#endregion
+}

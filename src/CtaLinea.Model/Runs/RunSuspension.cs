@@ -7,8 +7,22 @@ namespace CtaLinea.Model.Runs
         public Guid RunSuspensionId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public int SuspensionTypeId { get; set; }
+        public int? SuspensionTypeId { get; set; }
         public SuspensionType? SuspensionTypeData { get; set; }
         public string? SuspensionNote { get; set; }
-    }
+
+        public RunSuspension GetCopy ()
+        {
+            return new RunSuspension()
+            {
+				RunSuspensionId = this.RunSuspensionId,
+				StartDate = this.StartDate,
+				EndDate = this.EndDate,
+				SuspensionTypeId = this.SuspensionTypeId,
+				SuspensionTypeData = this.SuspensionTypeData,
+				SuspensionNote = this.SuspensionNote
+		    };  
+
+		}
+	}
 }

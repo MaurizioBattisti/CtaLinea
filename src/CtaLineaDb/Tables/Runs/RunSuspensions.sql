@@ -4,7 +4,7 @@
     [RunId] UNIQUEIDENTIFIER NOT NULL, 
     [StartDate] DATE NOT NULL, 
     [EndDate] DATE NOT NULL, 
-    [SuspensionTypeId] INT NOT NULL, 
+    [SuspensionTypeId] INT NULL, 
     [SuspensionNote] VARCHAR(MAX) NULL, 
 
     CONSTRAINT [FK_Suspensions_Run] 

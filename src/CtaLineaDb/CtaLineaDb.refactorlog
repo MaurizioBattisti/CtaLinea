@@ -644,4 +644,39 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="RunPeriodId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="1c3bd659-e779-4e62-9ccf-f92b3f24aee3" ChangeDateTime="01/13/2023 18:07:56">
+    <Property Name="ElementName" Value="[dbo].[RunPeriods].[RunPEriodId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[RunPeriods]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[RunPeriodId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="40fb9279-9786-4c8a-844c-aab78f578757" ChangeDateTime="01/14/2023 10:12:00">
+    <Property Name="ElementName" Value="[dbo].[RunDays].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[RunDays]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="RunId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ad123717-a008-428b-b55e-7c3800bf58fe" ChangeDateTime="01/14/2023 11:16:29">
+    <Property Name="ElementName" Value="[dbo].[Tags].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Tags]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TagId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="eda7d550-57b2-401d-9257-4252379e41bb" ChangeDateTime="01/14/2023 11:19:04">
+    <Property Name="ElementName" Value="[dbo].[RunTags].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[RunTags]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="RunId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f9b7742b-781d-4522-9ed7-58fe60449267" ChangeDateTime="01/14/2023 13:16:59">
+    <Property Name="ElementName" Value="[dbo].[Runs_NeedsDayRecalc].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Runs_NeedsDayRecalc]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="RunId" />
+  </Operation>
 </Operations>

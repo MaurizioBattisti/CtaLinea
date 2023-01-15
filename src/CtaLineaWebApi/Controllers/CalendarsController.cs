@@ -7,7 +7,7 @@ using System.Net.Mime;
 using System.Threading.Tasks;
 using ZzSoft.Api.Utility.Base;
 using ZzSoft.CtaLinea.Dal.Queries;
-using CtaLinea.QueryModel;
+using CtaLinea.Model.QueryModel;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -44,7 +44,7 @@ namespace CtaLineaWebApi.Controllers
         [HttpGet]
         [Route("{id}")]
         public async Task<ActionResult<CalendarQueryItem>> GetOneAsync(
-            string id)
+            int id)
         {
             var result = await this._queries.GetOneCalendarAsync(id)
                 .ConfigureAwait(false);

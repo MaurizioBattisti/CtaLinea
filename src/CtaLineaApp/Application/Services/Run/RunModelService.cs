@@ -4,6 +4,7 @@ using CtaLineaApp.Application.Model;
 using System.Security.Cryptography;
 using Radzen.Blazor.Rendering;
 using System.Xml.Linq;
+using System.Data.SqlTypes;
 
 namespace CtaLineaApp.Application.Services.Run
 {
@@ -214,15 +215,36 @@ namespace CtaLineaApp.Application.Services.Run
             DateTime? startdate = null)
         {
             if (periodCar.RunCarType != CarTypeEnum.Primary
-                || periodCar.RunCarType != CarTypeEnum.Replacement)
+                && periodCar.RunCarType != CarTypeEnum.Replacement)
             {
                 return null;
+            }
+
+            // recupera i costi e li propone sul nuovo costo
+            RunCarCost oldCost = new RunCarCost();
+            if (periodCar.CarCosts != null
+                && startdate != null)
+            {
+                var mayBeCost = (from cc in periodCar.CarCosts
+                                 where cc.StartDate == null
+                                 || cc.StartDate <= startdate
+                                 orderby cc.StartDate descending
+                                 select cc).FirstOrDefault();
+                if (mayBeCost != null)
+                {
+                    oldCost = mayBeCost;
+                }
             }
 
             var cost = new RunCarCost()
             {
                 RunCarCostId = Guid.NewGuid(),
-                StartDate = startdate
+                StartDate = startdate,
+
+                KmPrice = oldCost.KmPrice,
+                DayPrice = oldCost.DayPrice,
+                DayForfait = oldCost.DayForfait,
+                DayIntegration = oldCost.DayIntegration
             };
 
             if (periodCar.CarCosts == null) periodCar.CarCosts = new List<RunCarCost>() { cost };
@@ -260,14 +282,44 @@ namespace CtaLineaApp.Application.Services.Run
             if (run.SubPeriods != null)
             {
                 list = (from p in run.SubPeriods
+                        group p by new { p.StartDate, p.EndDate } into g
+                        select new RunPeriodGroup
+                        {
+                            StartDate = g.Key.StartDate,
+                            EndDate = g.Key.EndDate,
+                            SubPeriods = g.ToList()
+                        }).OrderBy(p => p.StartDate)
+						.ToList();
+
+                /*                
+                list = (from p in run.SubPeriods
                             select new RunPeriodGroup () { StartDate = p.StartDate, EndDate = p.EndDate }
                              ).Distinct ()
                              .OrderBy (p => p.StartDate )
                              .ToList ();
+                */
             }
 
             return list;
         }
+
+		public DateTime? GetMinValidDate(
+	        RunItem runItem,
+            DateTime? defaultDate,
+            RunPeriod? period = null)
+        {
+            return this.Coalesce (period?.StartDate,
+                runItem.StartDate, runItem?.ContractData?.StartDate, defaultDate);
+		}
+		public DateTime? GetMaxValidDate(
+			RunItem runItem,
+			DateTime? defaultDate,
+            RunPeriod? period = null)
+        {
+			return this.Coalesce(period?.EndDate,
+                runItem.EndDate, runItem?.ContractData?.EndDate, defaultDate);
+		}
+
 		#region funzioni private di clonazione
 		private RunVariation CloneVariation (RunVariation source)
         {
@@ -302,12 +354,32 @@ namespace CtaLineaApp.Application.Services.Run
 				var nodes = (from n in source.Nodes
 							 select n.GetClone())
 						 .ToList();
-                
+                foreach (var n in nodes)
+                {
+                    n.RunNodeId = Guid.NewGuid();
+                }
                 variation.Nodes = nodes;
 			}
 
             return variation;
 		}
-		#endregion
-	}
+        #endregion
+
+        #region funzioni helper di gestione di dati
+        private T Coalesce<T> (params T[] items)
+        {
+			T value = default;
+            foreach (var item in items)
+            {
+                if (item != null) 
+                {
+                    value = item; 
+                    break; 
+                }
+            }
+            return value;
+        }
+
+        #endregion
+    }
 }

@@ -49,7 +49,7 @@ namespace CtaLineaWebApi.Controllers
                 return BadRequest(
                     new ValidationProblemDetails (new Dictionary<string, string[]>())
                     {
-                        Title = "Login FAllito",
+                        Title = "Login Fallito",
                         Detail = "Utente o password errati"
                     });
             }

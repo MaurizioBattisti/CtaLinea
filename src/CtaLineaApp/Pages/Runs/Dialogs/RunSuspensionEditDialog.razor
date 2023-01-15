@@ -1,0 +1,50 @@
+﻿
+<RadzenCard>
+    <div>
+        <RadzenIcon Icon="block" IconStyle=IconStyle.Warning />
+    </div>
+    <div>
+        <DateRangeSelector 
+            @bind-StartDate="StartDate" 
+            @bind-EndDate="EndDate" 
+            Inline=true 
+            Min=@MinDate
+            Max=@MaxDate
+            AllowClear=false
+            />
+    </div>
+    <!-- inserire qui la combo box e la possibilità generare un nuovo tipo di sospensine-->
+    <div>
+        <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Annotazioni sospensione</RadzenText>
+        <RadzenTextArea @bind-Value=@Suspension.SuspensionNote Class="w-100 h-100" />
+    </div>
+</RadzenCard>
+
+@code {
+    [Parameter]
+    public RunSuspension Suspension { get; set; } = new RunSuspension();
+
+    [Parameter]
+    public DateTime? MinDate { get; set; }
+    [Parameter]
+    public DateTime? MaxDate { get; set; }
+
+    private DateTime? StartDate
+    {
+        get { return this.Suspension.StartDate; }
+        set
+        {
+            if (value != null) Suspension.StartDate = value.Value;
+            else this.StateHasChanged();
+        }
+    }
+    private DateTime? EndDate
+    {
+        get { return this.Suspension.EndDate; }
+        set
+        {
+            if (value != null) Suspension.EndDate = value.Value;
+            else this.StateHasChanged();
+        }
+    }
+}

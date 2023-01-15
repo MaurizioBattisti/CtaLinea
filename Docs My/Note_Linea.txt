@@ -36,26 +36,11 @@ poi esistono corse che sono completamente extra capitolato
 file olimpia
 - la frequenza della corsa è la colonna AB
 
-calcolo costi
-/*
-- una tariffa giornaliera per mezzo e per periodo colonna BT
-- unq integrazione sulla corssa sul mezzo sul periodo con frequenza diversa della corsa stessa da sommare alla tariffa
-- forfati  *** per il momento sospesa
-- tariffa al chilometro 
-- tarifa al chilometo anche sulla singola corsa  potenialmente
-*/
 
 - importaizone mezzi
   importare tutti i mezzi e no solo quelli con gli usi specifici
     assegnare i vari flags  e permettere di selezionare q quasliasi mezzo anche se non titolare e scorta
 
-/*	
-nelle combo box visualizzare i mezzi con dei colori
-- verde titolare
-- giallo le scorette
-- normale - tutti gli altri  attivii
-- rossi i non attivii
-*/
 
 funzionalità
 - invio mail con n giorni di anticipo per indicare cosa deve essere fatto e cosa non deve essere fatto
@@ -90,10 +75,67 @@ se la corsa con l'incongruenza viene modificata, lìincongruenza marcata come no
 
 note  12/12/2022
 - bisognerebbe torvare un modo di gestire i calendari "a inclusione"
-/*
-- integrazione giornaliera
-- forfait giornaliera
-- forati annuale separato messo via per mezzo e per anno
-*/
 
+-- grid mezzi parte finale opzioni
+
+	AllowVirtualization="true"
+		
+<RadzenTabs 
+	Change=@OnTabChange 
+	TabPosition="TabPosition.Top" 
+	Class="w-100 my-1 mx-auto" 
+	RenderMode="TabRenderMode.Client" >
+	<Tabs>
+@foreach (var p in this.GetSubPEriods())
+{
+	<RadzenTabsItem Text="@p.GetWeekDaysDescr()">
+		@if (this.EditMode == false)
+		{
+			@if (string.IsNullOrWhiteSpace(p.Note) == false)
+			{
+				<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Note</RadzenText>
+				<RadzenText TextStyle="TextStyle.Body1"><strong>@p.Note</strong></RadzenText>
+			}
+		}
+		else
+		{
+			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Note</RadzenText>
+			<RadzenTextArea @bind-Value="p.Note" Class="w-100 h-100" />
+		}
+
+		<RunCarListView CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@p Replacement=null />
+
+		<RadzenLabel Text="Sostituzioni" />
+		@if (this.EditMode == true)
+		{
+			<RadzenButton Text="Nuova Sostituzione"
+					ButtonStyle="ButtonStyle.Primary"
+					Icon="find_replace"
+					Click=@NewReplacement_Click />
+		}
+		@if(this.HasReplacements(p))
+		{
+			<RadzenAccordion 
+				Multiple="true" >
+				<Items>
+				@foreach(var r in this.GetReplacementList(p))
+				{
+					<RadzenAccordionItem Text="@this.GetReplacementDescriotion(r)" Icon="find_replace" Selected=false>
+						<CarReplacementItemView CurrentRun=@CurrentRun EditMode=@EditMode SubPeriod=@p Replacement=@r />
+					</RadzenAccordionItem>
+				}
+				</Items>
+			</RadzenAccordion>
+		}
+
+		@if (this.EditMode == true)
+		{
+			<RadzenButton Text="Elimina giorni"
+					ButtonStyle="ButtonStyle.Danger"
+							Icon="calendar_view_week"
+					Click=@DeleteDays_Click />
+		}
+		</RadzenTabsItem>
+}	</Tabs>
+</RadzenTabs>
 

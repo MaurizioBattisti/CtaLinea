@@ -36,13 +36,18 @@ namespace CtaLineaApp
         internal const string ImportDescr_TT = "TT Service";
 
 
-        // endpoints
-        internal const string Endpoint_RunList = "/api/runs";
-        internal const string Endpoint_OneRun_Frm= "/api/runs/{0}";
-        internal const string Endpoint_RunVariationList = "/api/runs/{0}/variations";
 
+        // endpoints
+        internal const string Endpoint_Runs = "/api/runs";
+        internal const string Endpoint_RunList = Endpoint_Runs;
+        internal const string Endpoint_OneRun_Frm= Endpoint_Runs  +"/{0}";
+        internal const string Endpoint_RunVariationList_Fmt = Endpoint_OneRun_Frm  + "/variations";
+
+        internal const string Endpoint_Calendars = "/api/calendars";
+        internal const string Endpoint_Contracts = "/api/contracts";        
         internal const string Endpoint_Associates = "/api/associates";
         internal const string Endpoint_Cars = "/api/cars";
+
         internal const string Endpoint_Drivers = "/api/drivers";
         internal const string Endpoint_PendingImport = "/api/importlogs/pending/{0}";
         internal const string Endpoint_ImportLog = "/api/importlogs";

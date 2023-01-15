@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using CtaLinea.Model.QueryModel;
 using CtaLinea.QueryModel;
 using ZzSoft.QueryHelper;
 

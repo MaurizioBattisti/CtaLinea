@@ -1,0 +1,36 @@
+﻿
+<RadzenCard>
+	<div>
+		<RadzenCheckBox @bind-Value=@this.Period.Monday Name="chkMonday" TValue="bool" />
+		<RadzenLabel Text="Lunedì" Component="chkMonday" Style="margin-left: 8px; vertical-align: middle;" />
+	</div>
+	<div>
+		<RadzenCheckBox @bind-Value=@this.Period.Tuesday Name="chkTuesday" TValue="bool" />
+		<RadzenLabel Text="Martedì" Component="chkTuesday" Style="margin-left: 8px; vertical-align: middle;" />
+	</div>
+	<div>
+		<RadzenCheckBox @bind-Value=@this.Period.Wednesday Name="chkWednesday" TValue="bool" />
+		<RadzenLabel Text="Mercoledì" Component="chkWednesday" Style="margin-left: 8px; vertical-align: middle;" />
+	</div>
+	<div>
+		<RadzenCheckBox @bind-Value=@this.Period.Thursday Name="chkThursday" TValue="bool" />
+		<RadzenLabel Text="Giovedì" Component="chkThursday" Style="margin-left: 8px; vertical-align: middle;" />
+	</div>
+	<div>
+		<RadzenCheckBox @bind-Value=@this.Period.Friday Name="chkFriday" TValue="bool" />
+		<RadzenLabel Text="Venerdì" Component="chkFriday" Style="margin-left: 8px; vertical-align: middle;" />
+	</div>
+	<div>
+		<RadzenCheckBox @bind-Value=@this.Period.Saturday Name="chkSaturday" TValue="bool" />
+		<RadzenLabel Text="Sabato" Component="chkSaturday" Style="margin-left: 8px; vertical-align: middle;" />
+	</div>
+	<div>
+		<RadzenCheckBox @bind-Value=@this.Period.Sunday Name="chkSunday" TValue="bool" />
+		<RadzenLabel Text="Domenica" Component="chkSunday" Style="margin-left: 8px; vertical-align: middle;" />
+	</div>
+</RadzenCard>
+
+@code {
+    [Parameter]
+	public RunPeriod Period { get; set; } = new RunPeriod();
+}

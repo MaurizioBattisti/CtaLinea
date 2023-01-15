@@ -1,0 +1,288 @@
+﻿@using CtaLineaApp.Pages.Runs.Dialogs
+@inject IRunModelService RunModelService
+@inject DialogService DialogService
+
+@if (this.EditMode == true)
+{
+	<RadzenButton Text="Nuovi giorni"
+			  ButtonStyle="ButtonStyle.Primary"
+			  Icon="calendar_view_week"
+			  Click=@NewDays_Click />
+}
+<RadzenCard>
+	<RadzenSelectBar @bind-Value=@CurrentPeriod
+					 Multiple=false 
+					 Data=@GetPeriods()
+					 TextProperty="Text"
+					 />
+	@if (CurrentPeriod != null)
+	{
+		<div>
+			@if (this.EditMode == false)
+			{
+				@if (string.IsNullOrWhiteSpace(CurrentPeriod.Note) == false)
+				{
+					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Note</RadzenText>
+					<RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentPeriod.Note</strong></RadzenText>
+				}
+			}
+			else
+			{
+				<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Note</RadzenText>
+				<RadzenTextArea @bind-Value="CurrentPeriod.Note" Class="w-100 h-100" />
+			}
+		</div>
+	}
+</RadzenCard>
+@if (CurrentPeriod != null)
+{
+<RadzenTabs 
+		Change=@OnTabChange 
+		TabPosition="TabPosition.Top" 
+		Class="w-100 my-1 mx-auto" 
+		RenderMode="TabRenderMode.Client" >
+		<Tabs>
+			<RadzenTabsItem Text="Mezzi">
+				<RunCarListView CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@CurrentPeriod Replacement=null />
+			</RadzenTabsItem>
+			<RadzenTabsItem Text="Sostituzioni">
+				@if (CurrentPeriod != null )
+				{
+					<RunPeriodReplacementListView CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@CurrentPeriod />
+				}
+			</RadzenTabsItem>
+		</Tabs>
+	</RadzenTabs>
+	@if (this.EditMode == true)
+	{
+		<div>
+			<RadzenButton Text="Modifica giorni"
+				  ButtonStyle="ButtonStyle.Warning"
+				  Icon="calendar_view_week"
+				  Click=@EditDays_Click />
+			<RadzenButton Text="Elimina giorni"
+				  ButtonStyle="ButtonStyle.Danger"
+				  Icon="calendar_view_week"
+				  Click=@DeleteDays_Click />
+		</div>
+	}
+}
+<RadzenAlert Visible=@AreDaysUsedMoreThanOnce() AllowClose="false" AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Darker">
+	uno o più giorni della settimana sono stati s usati in diversi blocchi di giorni
+</RadzenAlert>
+
+@code {
+	[Parameter]
+	public RunItem CurrentRun { get; set; } = new RunItem();
+	[Parameter]
+	public bool EditMode { get; set; } = false;
+	[Parameter]
+	public RunPeriodGroup PeriodGroup { get; set; } = new RunPeriodGroup();
+
+	private RunPeriod? CurrentPeriod = null;
+
+	private IEnumerable<RunPeriod> GetPeriods()
+	{
+		IEnumerable<RunPeriod> list = new List<RunPeriod>();
+		if (PeriodGroup?.SubPeriods != null)
+		{
+			list = PeriodGroup.SubPeriods.OrderBy(p => p.GetDaysHash()).ToList();
+		}
+		return list;
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		await base.OnParametersSetAsync();
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		this.SelectCurrentPeriod();
+
+		this.StateHasChanged();
+		await base.OnParametersSetAsync();
+	}
+
+	private void SelectCurrentPeriod ()
+	{
+		// assegna il periodo selezionato
+		CurrentPeriod = this.GetPeriods().FirstOrDefault();
+	}
+
+	public IEnumerable<RunPeriodCar> GetPeriodCars (RunPeriod period)
+	{
+		return (from c in period.Cars
+				where c.RunCarType == CarTypeEnum.Primary
+					|| c.RunCarType == CarTypeEnum.Spare
+				orderby c.RunCarType ascending, c.AssociateId, c.CarId
+				select c);
+	}
+
+
+	void OnTabChange(int index)
+	{
+
+	}
+
+	private bool AreDaysUsedMoreThanOnce ()
+	{
+		bool monday = false;
+		bool tuesday = false;
+		bool wednesday = false;
+		bool thursday = false;
+		bool friday = false;
+		bool saturday = false;
+		bool sunday = false;
+
+		foreach (var p in PeriodGroup.SubPeriods)
+		{
+			if (p.Monday == true && monday == true) return true;
+			if (p.Monday == true) monday = true;
+			if (p.Tuesday == true && tuesday == true) return true;
+			if (p.Tuesday == true) tuesday = true;
+			if (p.Wednesday == true && wednesday == true) return true;
+			if (p.Wednesday == true) wednesday = true;
+			if (p.Thursday == true && thursday == true) return true;
+			if (p.Thursday == true) thursday = true;
+			if (p.Friday == true && friday == true) return true;
+			if (p.Friday == true) friday = true;
+			if (p.Saturday == true && saturday == true) return true;
+			if (p.Saturday == true) saturday = true;
+			if (p.Sunday == true && sunday == true) return true;
+			if (p.Sunday == true) sunday = true;
+		}
+		return false;
+	}
+
+	private bool AtLeastOneDay (RunPeriod period)
+	{
+		return false == (period.Monday == false
+			&& period.Tuesday == false
+			&& period.Wednesday == false
+			&& period.Thursday == false
+			&& period.Friday == false
+			&& period.Saturday == false
+			&& period.Sunday == false);
+	}
+
+	private async Task NewDays_Click()
+	{
+		var period = new RunPeriod()
+			{
+				RunPeriodId = Guid.NewGuid(),
+				StartDate = this.PeriodGroup.StartDate,
+				EndDate = this.PeriodGroup.EndDate,
+				Cars = new List<RunPeriodCar>(),
+				CarReplacements = new List<CarReplacement>()
+			};
+		var title = "Nuovi gionri";
+		var result = await this.ASkDaysAsync(title, "Crea Giorni", period);
+		if (result == true)
+		{
+			if (this.AtLeastOneDay (period) == false)
+			{
+				await DialogService.Alert("Almeno un giorno deve essere selezionato", title);
+				return;
+			}
+			// aggiunge il periodo al gruppo
+			if (this.PeriodGroup.SubPeriods == null) this.PeriodGroup.SubPeriods = new List<RunPeriod>();
+			this.PeriodGroup.SubPeriods.Add(period);
+			// e lo aggiunge anche alla lista vera
+			if (this.CurrentRun.SubPeriods == null) this.CurrentRun.SubPeriods = new List<RunPeriod>();
+			this.CurrentRun.SubPeriods.Add(period);
+			this.CurrentPeriod = period;
+			this.StateHasChanged();
+		}
+	}
+	private async Task EditDays_Click ()
+	{
+		await Task.CompletedTask;
+
+		if (this.CurrentPeriod != null)
+		{
+			var period = this.CurrentPeriod.CreateCopy();
+			var title = "Modifica gionri";
+			var result = await this.ASkDaysAsync(title, "Cambia", period);
+			if (result == true)
+			{
+				if (this.AtLeastOneDay(period) == false)
+				{
+					await DialogService.Alert("Almeno un giorno deve essere selezionato", title);
+					return;
+				}
+				// aggiunge il periodo al gruppo
+				if (this.PeriodGroup.SubPeriods == null) this.PeriodGroup.SubPeriods = new List<RunPeriod>();
+				this.PeriodGroup.SubPeriods.Remove(this.CurrentPeriod);
+				this.PeriodGroup.SubPeriods.Add(period);
+				// e lo aggiunge anche alla lista vera
+				if (this.CurrentRun.SubPeriods == null) this.CurrentRun.SubPeriods = new List<RunPeriod>();
+				this.CurrentRun.SubPeriods.Remove(this.CurrentPeriod);
+				this.CurrentRun.SubPeriods.Add(period);
+				this.CurrentPeriod = period;
+				this.StateHasChanged();
+			}
+		}
+	}
+	private async Task DeleteDays_Click()
+	{
+		await Task.CompletedTask;
+
+		if (this.CurrentPeriod != null)
+		{
+			var result = await DialogService.Confirm(
+				"Sei sicuro di voler eliminare  il blocco di giorni del periodo ?",
+				"eliminaizone giorni",
+				new ConfirmOptions
+					{
+						OkButtonText = "Si, Elimina !",
+						CancelButtonText = "annulla"
+					});
+			if (result == true)
+			{
+				// aggiunge il periodo al gruppo
+				if (this.PeriodGroup.SubPeriods != null) this.PeriodGroup.SubPeriods.Remove(this.CurrentPeriod);
+				// e lo aggiunge anche alla lista vera
+				if (this.CurrentRun.SubPeriods != null) this.CurrentRun.SubPeriods.Remove(this.CurrentPeriod);
+
+				this.SelectCurrentPeriod();
+				this.StateHasChanged();
+			}
+		}
+	}
+	private async Task<bool> ASkDaysAsync(
+		string title,
+		string okText,
+		RunPeriod period)
+	{
+		return await ShowGenericDialog(
+			title,
+			ds => @<RunPeriodDaysDialog Period=@period />
+			, okText
+			);
+	}
+
+	#region funzioni gestione dialog box
+	private async Task<bool> ShowGenericDialog(
+		string title,
+		RenderFragment<DialogService> renderFragment,
+		string okText = "OK",
+		string cancelText = "Annulla",
+		string width = "1000px")
+	{
+		bool? result = await DialogService.OpenAsync(
+			title,
+			ds =>
+				@<div>
+					@renderFragment(ds)
+					<RadzenButton Text="@okText" Click="()=>ds.Close(true)" ButtonStyle="ButtonStyle.Primary" />
+					<RadzenButton Text="@cancelText" Click="()=>ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" />
+				</div>
+				, new DialogOptions() { Width = width }
+				);
+
+		return (result != null && result == true);
+	}
+	#endregion
+}

@@ -7,7 +7,7 @@
             Min=@Min Max=@StartMax()
             Disabled=@Disabled
             ShowSetTodayButton=true
-            AllowClear=true
+            AllowClear=@AllowClear
             />
     </div>
     <div class="@GetColumnClass()" >
@@ -18,7 +18,7 @@
             Min=@EndMin() Max=@Max
             Disabled=@Disabled
             ShowSetTodayButton=true
-            AllowClear=true
+            AllowClear=@AllowClear
             />
     </div>
 </div>
@@ -45,6 +45,9 @@
     public bool Disabled { get; set; } = false;
     [Parameter]
     public bool Inline { get; set; } = false;
+
+    [Parameter]
+    public bool AllowClear { get; set; } = true;
 
     private DateTime? StartMax ()
     {

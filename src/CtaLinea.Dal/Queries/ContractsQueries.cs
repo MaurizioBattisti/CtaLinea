@@ -1,0 +1,52 @@
+﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Data;
+using System.Threading.Tasks;
+using ZzSoft.CtaLinea.Dal.Context;
+using ZzSoft.QueryHelper;
+using CtaLinea.Model.QueryModel;
+
+namespace ZzSoft.CtaLinea.Dal.Queries
+{
+    public class ContractsQueries
+        : IContractsQueries
+    {
+        private const string ContractsSql_Table = "dbo.Contracts c";
+
+        private CtaDbContext _context;
+
+        public ContractsQueries(
+            CtaDbContext context)
+        {
+            this._context = context;
+        }
+
+        // Calendari
+        public async Task<QueryItemList<ContractQueryItem>> GetContractListAsync(
+            IFilteringContext filterContext)
+        {
+            var queryDef = new QueryDefinition<ContractQueryItem>(
+                ContractsSql_Table,
+                filterContext);
+
+            IDbConnection conn = this._context.Database.GetDbConnection();
+            return await conn.QueryListAsync(
+                queryDef)
+                .ConfigureAwait(false);
+        }
+        public async Task<ContractQueryItem> GetOneContractAsync(
+            int id)
+        {
+            var queryDef = new QueryDefinition<ContractQueryItem>(
+                ContractsSql_Table,
+                null,
+                "c.ContractId = @ContractId",
+                new { ContractId = id });
+
+            IDbConnection conn = this._context.Database.GetDbConnection();
+            return await conn.QueryOneAsync(
+                queryDef)
+                .ConfigureAwait(false);
+        }
+    }
+}

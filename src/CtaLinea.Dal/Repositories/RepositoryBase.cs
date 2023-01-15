@@ -20,12 +20,11 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             )
             where T : class
         {
-            Type tData = data.GetType();
             var sql = string.Format(
                 "INSERT INTO {0} ({1}) VALUES ({2})",
                 tableName,
-                this.GetFieldListString(tData),
-                this.GetArgsListString(tData));
+                this.GetFieldListString(data),
+                this.GetArgsListString(data));
             await conn.ExecuteAsync(
                 sql,
                 data,
@@ -42,14 +41,11 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             where TData : class
             where TKey : class
         {
-            Type tData = data.GetType();
-            Type tKey = key.GetType();
-
             var sql = string.Format(
                 "UPDATE {0} SET {1} WHERE {2}",
                 tableName,
-                this.GetFieldEqualArgString(tData, ","),
-                this.GetFieldEqualArgString(tKey, "AND"));
+                this.GetFieldEqualArgString(data, ","),
+                this.GetFieldEqualArgString(key, "AND"));
 
             // fonde i dati con le chiavi
             var newData = this.JoinObjects(data, key);
@@ -67,12 +63,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             )
             where TKey : class
         {
-            Type tKey = key.GetType();
-
             var sql = string.Format(
                 "DELETE FROM {0} WHERE {1}",
                 tableName,
-                this.GetFieldEqualArgString(tKey, "AND"));
+                this.GetFieldEqualArgString(key, "AND"));
 
             await conn.ExecuteAsync(
                 sql,
@@ -81,39 +75,51 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         }
 
         protected IEnumerable<string> GetPropertiesList(
-            Type type,
+            object value,
             string preFix,
             string postFix)
         {
-            var proprs = type.GetProperties();
-            foreach (var p in proprs)
+            var dict = value as IDictionary<string, object>;
+            if (dict == null)
             {
-                yield return preFix + p.Name + postFix;
+                Type type = value.GetType();
+                var proprs = type.GetProperties();
+                foreach (var p in proprs)
+                {
+                    yield return preFix + p.Name + postFix;
+                }
+            }
+            else
+            {
+                foreach (var k in dict.Keys)
+                {
+                    yield return preFix + k + postFix;
+                }
             }
         }
         protected string GetFieldListString(
-            Type type)
+            object value)
         {
             return string.Join(
                 ",",
-                this.GetPropertiesList(type, "[", "]")
+                this.GetPropertiesList(value, "[", "]")
                 ); ;
         }
         protected string GetArgsListString(
-            Type type)
+            object value)
         {
             return string.Join(
                 ",",
-                this.GetPropertiesList(type, "@", string.Empty)
+                this.GetPropertiesList(value, "@", string.Empty)
                 ); ;
         }
         protected string GetFieldEqualArgString(
-            Type type,
+            object value,
             string separator)
         {
-            var items = (from p in this.GetPropertiesList(type, string.Empty, string.Empty)
-                         select "[" + p + "] = @" + p
-                         );
+            var items = (from p in this.GetPropertiesList(value, string.Empty, string.Empty)
+                            select " [" + p + "] = @" + p + " "
+                            );
 
             return string.Join(
                 separator,
@@ -165,7 +171,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             where T : class
         {
             if (newList == null) return;
-            if (oldList == null) new List<T>(); ;
+            if (oldList == null) oldList = new List<T>();
 
             foreach (var data in newList.Where(v => oldList.Select(ov => selectKey(ov)).ToList().Contains(selectKey(v)) == false))
             {
@@ -182,8 +188,8 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             where T : class
         {
             if (newList == null && oldList == null) return;
-            if (newList == null) new List<T>(); ; ;
-            if (oldList == null) new List<T>(); ;
+            if (newList == null) newList= new List<T>(); ; ;
+            if (oldList == null) oldList=  new List<T>(); ;
 
             foreach (var data in newList.Where(v => oldList.Select(ov => selectKey(ov)).ToList().Contains(selectKey(v))))
             {

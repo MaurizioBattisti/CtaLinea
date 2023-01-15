@@ -1,0 +1,22 @@
+﻿<RadzenCard>
+    <div>
+        <DateRangeSelector 
+            @bind-StartDate=@PeriodGroup.StartDate
+            @bind-EndDate=@PeriodGroup.EndDate 
+            Inline=true 
+            Min=@MinDate
+            Max=@MaxDate
+            AllowClear=false
+            />
+    </div>
+</RadzenCard>
+
+@code {
+    [Parameter]
+    public RunPeriodGroup PeriodGroup { get; set; } = new RunPeriodGroup();
+
+    [Parameter]
+    public DateTime? MinDate { get; set; }
+    [Parameter]
+    public DateTime? MaxDate { get; set; }
+}

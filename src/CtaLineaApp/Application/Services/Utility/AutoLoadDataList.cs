@@ -35,7 +35,6 @@ namespace CtaLineaApp.Application.Services.Utility
         LoadDataArgs args)
     {
         if (_hasBeenInitialized == false) return;
-
         isLoading = true;
 
         _QueryDef.Filter = args.GetQueryFilter<TItem>();

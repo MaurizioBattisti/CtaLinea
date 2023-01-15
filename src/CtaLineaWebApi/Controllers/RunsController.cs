@@ -84,15 +84,27 @@ namespace CtaLineaWebApi.Controllers
         public async Task<IActionResult> NewOneAsync(
             [FromBody] RunItem model)
         {
-            /*
-            var result = await this._queries.GetOneAssociateAsync(id)
-                .ConfigureAwait(false);
+            var request = new SaveRunRequest()
+            {
+                RunId = null,
+                RunItem = model
+            };
 
-            return await this.ModelOKAsync(result)
-                .ConfigureAwait(false);
-            **/
-            await Task.CompletedTask;
-            return this.Created("/il_mio_id", null);
+            var result = await this._mediator.Send(request)
+                .ConfigureAwait (false);
+            if (result.Success == false)
+            {
+                return BadRequest(
+                    new ValidationProblemDetails(new Dictionary<string, string[]>())
+                    {
+                        Title = "Salvataggio corsa Fallito",
+                        Detail = result.Message
+                    });
+            }
+
+            return this.Created(
+                string.Format ("/{0}", result.Data),
+                null);
         }
         [SwaggerOperation("Aggiorna i dati di una corsa")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -104,14 +116,24 @@ namespace CtaLineaWebApi.Controllers
             Guid id,
             [FromBody] RunItem model)
         {
-            /*
-            var result = await this._queries.GetOneAssociateAsync(id)
-                .ConfigureAwait(false);
+            var request = new SaveRunRequest()
+            {
+                RunId = id,
+                RunItem = model
+            };
 
-            return await this.ModelOKAsync(result)
+            var result = await this._mediator.Send(request)
                 .ConfigureAwait(false);
-            **/
-            await Task.CompletedTask;
+            if (result.Success == false)
+            {
+                return BadRequest(
+                    new ValidationProblemDetails(new Dictionary<string, string[]>())
+                    {
+                        Title = "Salvataggio corsa Fallito",
+                        Detail = result.Message
+                    });
+            }
+
             return Ok();
         }
         [SwaggerOperation("Elimina una corsa")]
@@ -123,17 +145,25 @@ namespace CtaLineaWebApi.Controllers
         public async Task<IActionResult> DeleteOneAsync(
             Guid id)
         {
-            /*
-            var result = await this._queries.GetOneAssociateAsync(id)
-                .ConfigureAwait(false);
+            var request = new DeleteRunRequest()
+            {
+                RunId = id
+            };
 
-            return await this.ModelOKAsync(result)
+            var result = await this._mediator.Send(request)
                 .ConfigureAwait(false);
-            **/
-            await Task.CompletedTask;
+            if (result.Success == false)
+            {
+                return Conflict(
+                    new ValidationProblemDetails(new Dictionary<string, string[]>())
+                    {
+                        Title = "Salvataggio corsa Fallito",
+                        Detail = result.Message
+                    });
+            }
+
             return NoContent();
         }
-
 
         [SwaggerOperation("Esegue un controllo su tutti i dati di una corsa")]
         [ProducesResponseType(StatusCodes.Status200OK)]

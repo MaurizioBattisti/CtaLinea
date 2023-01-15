@@ -4,6 +4,7 @@
 @inject ContextMenuService ContextMenuService
 @inject IQueryUtilityService QueryService
 @inject DialogService DialogService
+@inject NavigationManager NavigationManager
 @attribute [Authorize]
 
 <PageTitle>@Constants.App_Title - Corse</PageTitle>
@@ -274,8 +275,6 @@
     private bool DetailIsLoading = false;
     private IEnumerable<RunVariationQueryModel>? Details;
     #endregion
-
-
     #region filtri
     // ORe di inizioe fine
     private DateTime? Filter_StartTime_2;
@@ -329,7 +328,6 @@
             );
 
         await base.OnInitializedAsync();
-        this.StateHasChanged();
     }
 
     void FullText_OnChange(string value)
@@ -356,27 +354,32 @@
         this.Details = null;
         if (runItem.Id == runItem.Id)
         {
-            var queryDef = new QueryDefinition();
-            queryDef.EndPoint = string.Format(Constants.Endpoint_RunVariationList, runItem.Id);
-
-            DetailIsLoading = true;
-
-            queryDef.Page = 0;
-            queryDef.PageSize = 1000000;
-            try
-            {
-                var result = await QueryService.GetListAsync<RunVariationQueryModel>(
-                        queryDef);
-
-                if (result != null)
+            var t = InvokeAsync(
+                async () =>
                 {
-                    this.Details = result.Items;
-                }
-            }
-            finally
-            {
-                DetailIsLoading = false;
-            }
+                    var queryDef = new QueryDefinition();
+                    queryDef.EndPoint = string.Format(Constants.Endpoint_RunVariationList_Fmt, runItem.Id);
+
+                    DetailIsLoading = true;
+
+                    queryDef.Page = 0;
+                    queryDef.PageSize = 1000000;
+                    try
+                    {
+                        var result = await QueryService.GetListAsync<RunVariationQueryModel>(
+                            queryDef);
+
+                        if (result != null)
+                        {
+                            this.Details = result.Items;
+                        }
+                    }
+                    finally
+                    {
+                        DetailIsLoading = false;
+                        this.StateHasChanged();
+                    }
+                });
         }
     }
 
@@ -402,6 +405,13 @@
                         new Dictionary<string, object>() { { "Id", args.Data.Id } },
                         options: new SideDialogOptions() { CloseDialogOnOverlayClick = true , Width="88%"}
                         );
+                    break;
+                case 2:
+                    NavigationManager.NavigateTo(
+                        string.Format("/run-edit/{0}", args.Data.Id)
+                        );
+                    break;
+                case 3:
                     break;
 
                 default:

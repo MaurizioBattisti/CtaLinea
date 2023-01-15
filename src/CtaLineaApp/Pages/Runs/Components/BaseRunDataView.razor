@@ -1,0 +1,683 @@
+﻿@using CtaLineaApp.Components.Base
+@using CtaLineaApp.Pages.Runs.Dialogs
+@inject IRunModelService RunModelService
+@inject DialogService DialogService
+@inject NotificationService notificationService
+
+<RadzenPanel AllowCollapse="true" Style="auto;">
+	<HeaderTemplate>
+		<h4 class="m-0 d-flex align-items-center">
+			<RadzenIcon Icon="info" Class="me-1" />Dati Generali della Corsa
+		</h4>
+	</HeaderTemplate>
+	<ChildContent>
+		<RadzenCard>
+			<div class="d-flex flex-row p-1">
+				@if (this.CurrentRun.Extra == true)
+				{
+					<RadzenIcon Icon="health_and_safety" IconStyle=IconStyle.Warning />
+				}
+				<div class="col-4">
+					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Riferimento appalto</RadzenText>
+					@if (this.SuperEditMode == true)
+					{
+						<ContractDropDown @ref="@Contracts" @bind-ContractId="Select6edContractId" AllowClear=false />
+					}
+					else
+					{
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentRun.ContractData?.ContractDescription</strong></RadzenText>
+					}
+
+					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Riga dell'appalto</RadzenText>
+					@if (this.EditMode == true)
+					{
+						<RadzenNumeric @bind-Value="this.CurrentRun.ContractRowNumber" Class="w-100" />
+
+						<div class="row-flex-row">
+							<RadzenCheckBox @bind-Value=@this.CurrentRun.Extra Name="ExtraContract" TValue="bool" />
+							<RadzenLabel Text="Extra Capitolato" Component="Corsa furoi dal conteggio del capitolato di appalto" Style="margin-left: 8px; vertical-align: middle;" />
+						</div>
+					}
+					else
+					{
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentRun?.ContractRowNumber?.ToString()</strong></RadzenText>
+						@if (this.CurrentRun.Extra == true)
+						{
+							<RadzenText TextStyle="TextStyle.Body1"><strong>Extra capitolato</strong></RadzenText>
+						}
+					}
+					@if (this.EditMode == true)
+					{
+						@if(this.SuperEditMode == false)
+						{
+							<RadzenButton Text="PErmetti modifica contratto"
+								ButtonStyle="ButtonStyle.Warning"
+								Icon="assignment_turned_in"
+								Click=@ActivateContractEdit_Click />
+						}
+						else
+						{
+							<RadzenButton Text="Impedisci modifica contratto"
+								  ButtonStyle="ButtonStyle.Success"
+								  Icon="assignment_turned_in"
+								  Click=@DeactivateContractEdit_Click />
+
+						}
+					}
+				</div>
+				<div class="col-2">
+					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Appalto</RadzenText>
+					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Inizio</RadzenText>
+					<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDate(CurrentRun.ContractData?.StartDate)</strong></RadzenText>
+
+					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Fine</RadzenText>
+					<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDate(CurrentRun.ContractData?.EndDate)</strong></RadzenText>
+				</div>
+				<div class="col-2">
+					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Cors</RadzenText>
+					@if (this.EditMode == true)
+					{
+						<DateRangeSelector @bind-StartDate="CurrentRun.StartDate"
+										@bind-EndDate="CurrentRun.EndDate"
+										Min=@CurrentRun.ContractData?.StartDate
+										Max=@CurrentRun.ContractData?.EndDate />
+					}
+					else
+					{
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Inizio</RadzenText>
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDate(CurrentRun.StartDate)</strong></RadzenText>
+						<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Fine</RadzenText>
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDate(CurrentRun.EndDate)</strong></RadzenText>
+					}
+					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Giorni richiesti</RadzenText>
+					@if (this.EditMode == true)
+					{
+						<RadzenNumeric TValue="int?" @bind-Value="CurrentRun.RequestedDays" Class="w-100" />
+					}
+					else
+					{
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentRun.RequestedDays</strong></RadzenText>
+					}
+				</div>
+				<div class="col-4">
+					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Note</RadzenText>
+					@if (this.EditMode == true)
+					{
+						<RadzenTextArea @bind-Value="CurrentRun.Note" Class="w-100 h-100" />
+					}
+					else
+					{
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentRun.Note</strong></RadzenText>
+					}
+				</div>
+			</div>
+		</RadzenCard>
+	</ChildContent>
+</RadzenPanel>
+<RadzenPanel AllowCollapse="true" Style="auto;">
+	<HeaderTemplate>
+		<h4 class="m-0 d-flex align-items-center">
+			<RadzenIcon Icon="calendar_month" Class="me-1" />Varianti della Corsa
+		</h4>
+	</HeaderTemplate>
+	<ChildContent>
+		<RadzenSplitter Orientation="Orientation.Horizontal" Style="min-height: 350px">
+			<RadzenSplitterPane Size="200px">
+				@if (this.EditMode == true)
+				{
+					<RadzenButton Text="Nuova Variante"
+							  ButtonStyle="ButtonStyle.Primary"
+							  Icon="calendar_month"
+							  Click=@AddVariation_Click />
+				}
+				<RadzenListBox @bind-Value=@CurrentVariation
+							   Data=@GetVariationList()
+							   Style="height: 300px"
+							   Class="w-100">
+					<Template>
+						@GetVariantDescr((context as RunVariation)?.StartDate))
+					</Template>
+				</RadzenListBox>
+			</RadzenSplitterPane>
+			<RadzenSplitterPane>
+				@if (this.CurrentVariation != null)
+				{
+					<RunVariationView CurrentRun=@CurrentRun Variation=@CurrentVariation EditMode=@EditMode />
+					@if (this.EditMode == true)
+					{
+						<RadzenButton Text="Modifica Inizio"
+							Disabled=@(CanDeleteVariation(this.CurrentVariation)!=true)
+							ButtonStyle="ButtonStyle.Warning"
+							Icon="calendar_month"
+							Click=@EditVariation_Click />
+						<RadzenButton Text="Elimina Variante"
+							Disabled=@(CanDeleteVariation(this.CurrentVariation)!=true)
+							ButtonStyle="ButtonStyle.Danger"
+							Icon="calendar_month"
+							Click=@DeleteVariation_Click />
+					}
+				}
+			</RadzenSplitterPane>
+		</RadzenSplitter>
+	</ChildContent>
+</RadzenPanel>
+
+<RunPeriodGroupListView CurrentRun=@CurrentRun EditMode=@EditMode /> 
+
+<RadzenPanel AllowCollapse="true" Collapsed=@SuspnesionsIsCollapsed() Style="auto;">
+	<HeaderTemplate>
+		<h4 class="m-0 d-flex align-items-center">
+			<RadzenIcon Icon="block" Class="me-1" />Sospensioni
+			@if (GetSuspnesionCount() > -1)
+			{
+				<RadzenBadge BadgeStyle="BadgeStyle.Primary" Shade="Shade.Lighter" IsPill=true Text=@GetSuspnesionCount().ToString() Class="ml-2" />
+			}
+		</h4>
+	</HeaderTemplate>
+	<ChildContent>
+		<RadzenSplitter Orientation="Orientation.Horizontal" Style="min-height: 350px">
+			<RadzenSplitterPane Size="200px">
+				@if (this.EditMode == true)
+				{
+					<RadzenButton Text="Nuova Sospensione"
+							  ButtonStyle="ButtonStyle.Primary"
+							  Icon="block"
+							  Click=@AddSuspension_Click />
+				}
+				<RadzenListBox @bind-Value=@Current_Suspension
+							   Data=@this.GetSuspensionList()
+							   Style="height: 300px"
+							   Class="w-100">
+					<Template>
+						@this.GetSuspensionHeader((context as RunSuspension)).ToString()
+					</Template>
+				</RadzenListBox>
+			</RadzenSplitterPane>
+			<RadzenSplitterPane>
+				@if (Current_Suspension != null)
+				{
+					<RunSuspnesionView CurrentRun=@CurrentRun EditMode=@EditMode Suspension=@Current_Suspension />
+					@if (this.EditMode == true)
+					{
+						<RadzenButton Text="Modifica Sospensione"
+							  ButtonStyle="ButtonStyle.Warning"
+							  Icon="block"
+							  Click=@DEditSuspension_Click />
+						<RadzenButton Text="Elimina Sospensione"
+							  ButtonStyle="ButtonStyle.Danger"
+							  Icon="block"
+							  Click=@DeleteSuspension_Click />
+					}
+				}
+			</RadzenSplitterPane>
+		</RadzenSplitter>
+	</ChildContent>
+</RadzenPanel>
+
+@code {
+	[Parameter]
+	public RunItem CurrentRun { get; set; } = new RunItem();
+	[Parameter]
+	public bool EditMode { get; set; } = false;
+	private bool SuperEditMode = false;
+
+	public RunVariation? CurrentVariation { get; set; }
+	private RunSuspension? Current_Suspension { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		await base.OnParametersSetAsync();
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		// recupera la variante di default
+		if (this.CurrentRun !=null)
+		{
+
+
+			this.SelectCurrentItems();
+		}
+		await base.OnParametersSetAsync();
+	}
+
+	private void SelectCurrentVariation()
+	{
+		var list = this.GetVariationList();
+		var variation = list?.FirstOrDefault();
+		this.CurrentVariation = variation;
+	}
+	private void SelectCurrentSuspension()
+	{
+		// verifica se deve selezionare una sospensione
+		var susList = this.GetSuspensionList();
+		this.Current_Suspension = (from s in susList
+											where s.StartDate <= DateTime.Today
+										&& s.EndDate >= DateTime.Today
+											select s).FirstOrDefault();
+	}
+
+	private void SelectCurrentItems ()
+	{
+		SelectCurrentVariation();
+
+		// verifica se deve selezionare una sospensione
+		this.SelectCurrentSuspension();
+		this._SuspensionColapsed = this.Current_Suspension == null;
+	}
+
+	private IEnumerable<RunVariation> GetVariationList ()
+	{
+		if (this.CurrentRun?.Variations == null) return null;
+		var qry = (from v in this.CurrentRun.Variations
+							where v.StartDate == null
+							select v
+					);
+		var qry2 = (from v in this.CurrentRun.Variations
+					where v.StartDate != null
+					orderby v.StartDate ascending
+					select v
+				);
+		var vv = qry.Union(qry2).ToList();
+		return vv;
+	}
+
+	private string GetSuspensionHeader (
+		RunSuspension? suspension)
+	{
+		if (suspension == null) return "Sospensione inesistente";
+		return string.Format("dal {0:dd/MM/yyyy} - al {1:dd/MM/yyyy}",
+			suspension.StartDate,
+			suspension.EndDate
+			);
+	}
+
+	private string GetVariantDescr (
+		DateTime? date)
+	{
+		var descr = FormatDate(date);
+		if (string.IsNullOrEmpty(descr) == true)
+		{
+			descr = "Inizale";
+		}
+		return descr;
+	}
+	private string FormatDate (
+		DateTime? date)
+	{
+		if (date == null) return string.Empty;
+		return string.Format("{0:dd/MM/yyyy}", date);
+	}
+
+	void OnTabChange(int index)
+	{
+
+	}
+
+	#region Appalto (Contract)
+	private ContractDropDown? Contracts;
+	private int? Select6edContractId
+	{
+		get { return this.CurrentRun.ContractId; }
+		set
+		{
+			if (value != null)
+			{
+				this.CurrentRun.ContractId = value.Value;
+				if (Contracts != null)
+				{
+					var contract = Contracts.SelectedContractData;
+					if (contract == null)
+					{
+						this.CurrentRun.ContractData = null;
+					}
+					else
+					{
+						this.CurrentRun.ContractData = new Contract()
+							{
+								ContractId= contract.Id,
+								ContractName = contract.ContractName,
+								ContractDescription = contract.ContractDescription,
+								StartDate = contract.StartDate,
+								EndDate = contract.EndDate
+							};
+					}
+				}
+			}
+			else
+			{
+				this.StateHasChanged();
+			}
+		}
+	}
+	private async Task ActivateContractEdit_Click ()
+	{
+		var result = await this.DialogService.Confirm(
+			"Attivare la modalità per modificare il contratto ?",
+			"Consenti modifica contratto",
+			new ConfirmOptions
+			{
+				OkButtonText = "Si, attiva !",
+				CancelButtonText = "Annulla"
+			});
+		if (result != null && result== true)
+		{
+			this.SuperEditMode = true;
+		}
+	}
+	private async Task DeactivateContractEdit_Click()
+	{
+		this.SuperEditMode = false;
+	}
+	#endregion
+
+	#region gestione varianti
+	private async Task AddVariation_Click ()
+	{
+		string title = "Nuova Variante";
+		DateTime? askStartDate = null;
+		bool result = await this.ShowGenericDialog(
+			title,
+			(ds) =>
+			@<div>
+				<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Data di inizio</RadzenText>
+				<DateSelector @bind-Value="askStartDate" Min=@this.RunModelService.GetMinValidDate(this.CurrentRun, DateTime.MinValue) Max=@(this.RunModelService.GetMaxValidDate(this.CurrentRun, DateTime.MaxValue)) ShowSetTodayButton=true />
+		</div>
+			, "Crea Variante"
+			);
+
+		if (result == true) 
+		{
+			var date = askStartDate;
+			if (date == null)
+			{
+				this.notificationService.Notify(
+					NotificationSeverity.Warning,
+					title,
+					"Non è possible creare una variante che pata dall'inizio");
+			}
+			else
+			{
+				// controlla che nonc i siano variazioni che partono alla stessa data
+				var already = (from v in this.CurrentRun.Variations
+										where v.StartDate == date
+										select v).FirstOrDefault ();
+				if (already != null)
+				{
+					this.notificationService.Notify(
+						NotificationSeverity.Warning,
+						title,
+						string.Format("Esiste già una variante che inizia il {0:dd/MM/yyyy}", date));
+				}
+				else
+				{
+					// crea la nuova variante
+					var newVar = this.RunModelService.CreateNewVariation(this.CurrentRun, date);
+					this.CurrentVariation = newVar;
+					this.StateHasChanged();
+				}
+			}
+		}
+		askStartDate = null;
+		return;
+	}
+	private async Task EditVariation_Click()
+	{
+		string title = "Cambia Inizio Variante ";
+		DateTime? askStartDate = this.CurrentVariation?.StartDate;
+		bool result = await this.ShowGenericDialog(
+		title,
+		(ds) =>
+			@<div>
+				<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Data di inizio</RadzenText>
+				<DateSelector @bind-Value="askStartDate" Min=@this.RunModelService.GetMinValidDate(this.CurrentRun, DateTime.MinValue) Max=@(this.RunModelService.GetMaxValidDate(this.CurrentRun, DateTime.MaxValue)) ShowSetTodayButton=true />
+		</div>
+			, "Cambia Inizio"
+			);
+
+		if (result == true)
+		{
+			var date = askStartDate;
+			if (date == null)
+			{
+				this.notificationService.Notify(
+					NotificationSeverity.Warning,
+					title,
+					"Non è possibile modificare la data di inizio in modo che sostituisca la variante iniziale , modificare i dati della variante iniziale");
+			}
+			else
+			{
+				// controlla che nonc i siano variazioni che partono alla stessa data
+				var already = (from v in this.CurrentRun.Variations
+										where v.StartDate == date
+											&& v != this.CurrentVariation
+										select v).FirstOrDefault();
+				if (already != null)
+				{
+					this.notificationService.Notify(
+						NotificationSeverity.Warning,
+						title,
+						string.Format("Esiste già una variante che inizia il {0:dd/MM/yyyy}", date));
+				}
+				else
+				{
+					// aggiorna il valore della data di inizio
+					if (this.CurrentVariation != null)
+					{
+						this.CurrentVariation.StartDate = date;
+						this.StateHasChanged();
+					}
+				}
+			}
+		}
+		askStartDate = null;
+		return;
+	}
+
+	private async Task DeleteVariation_Click ()
+	{
+		string start = " dall'inizio";
+		if (this.CurrentVariation?.StartDate != null)
+		{
+			start = string.Format("{0:dd/MM/yyyy}", this.CurrentVariation.StartDate);
+		}
+		var result = await this.DialogService.Confirm(
+			string.Format("Sei sicuro di voler eliminare la variante che inizia il {0} ?", start),
+			"Eliminazione variante",
+			new ConfirmOptions
+				{
+					OkButtonText = "Elimina",
+					CancelButtonText = "Annulla"
+				}
+		);
+		if (result == true)
+		{
+			if (this.CurrentVariation != null)
+			{
+				this.CurrentRun?.Variations?.Remove(
+					this.CurrentVariation
+				);
+				this.CurrentVariation = null;
+				this.SelectCurrentVariation();
+			}
+		}
+	}
+
+	private bool CanDeleteVariation (RunVariation? variation)
+	{
+		if (variation == null) return false;
+		bool canDelete = (this.CurrentRun.Variations != null
+			&& this.CurrentRun.Variations.Count() > 1);
+		if (canDelete == true)
+		{
+			canDelete = (variation.StartDate != null);
+		}
+
+		return canDelete;
+	}
+	#endregion
+
+	#region sospensioni
+	private bool _SuspensionColapsed = true;
+	private int GetSuspnesionCount ()
+	{
+		if (this.CurrentRun.Suspensions == null) return 0;
+		return this.CurrentRun.Suspensions.Count();
+	}
+	private IEnumerable<RunSuspension> GetSuspensionList ()
+	{
+		IEnumerable < RunSuspension > list = new List<RunSuspension>();
+		if (this.CurrentRun.Suspensions != null)
+		{
+			var susp = (from s in this.CurrentRun.Suspensions
+						orderby s.StartDate
+						select s)
+					.ToList();
+
+			if (susp != null)
+			{
+				list = susp;
+			}
+		}
+		return list;
+	}
+
+	private async Task AddSuspension_Click ()
+	{
+		var dtStart = this.RunModelService.GetMinValidDate(this.CurrentRun, DateTime.MinValue);
+		var dtEnd = this.RunModelService.GetMaxValidDate(this.CurrentRun, DateTime.MaxValue);
+
+		var suspnesion = new RunSuspension()
+		{
+			RunSuspensionId =Guid.NewGuid(),
+
+			StartDate = DateTime.Today,
+			EndDate = DateTime.Today.AddDays(7)
+		};
+		if (suspnesion.StartDate <dtStart) suspnesion.StartDate = dtStart.Value;
+		if (suspnesion.StartDate > dtEnd) suspnesion.StartDate = dtEnd.Value;
+		if (suspnesion.EndDate < dtStart) suspnesion.EndDate = dtStart.Value;
+		if (suspnesion.EndDate > dtEnd) suspnesion.EndDate = dtEnd.Value;
+
+		var result = await this.ShowEditSuspensionDialog(
+			"Aggiungi nuova Sospensione",
+			"Aggiungi",
+			suspnesion
+			);
+		if (result == true)
+		{
+			// aggiunge la sospensione
+			if (CurrentRun.Suspensions == null)
+			{
+				CurrentRun.Suspensions = new List<RunSuspension>() { suspnesion };
+			}
+			else
+			{
+				CurrentRun.Suspensions.Add(suspnesion);
+			}
+			this.Current_Suspension = suspnesion;
+		}
+	}
+	private async Task DEditSuspension_Click()
+	{
+		if (this.Current_Suspension != null)
+		{
+			// clona la sopensione per permetterne la modifica
+			var suspnesion = this.Current_Suspension.GetCopy();
+
+			var result = await this.ShowEditSuspensionDialog(
+				"Modifica Sospensione",
+				"Modifica",
+				suspnesion
+				);
+			if (result == true)
+			{
+				// TODO: due strade 1.elimina  la sospensione modificata dalla lista  e la reinserisce
+				this.CurrentRun.Suspensions?.Remove(
+					this.Current_Suspension);
+				if (this.CurrentRun.Suspensions == null)
+				{
+					this.CurrentRun.Suspensions = new List<RunSuspension>() { suspnesion };
+				}
+				else
+				{
+					this.CurrentRun.Suspensions.Add(suspnesion);
+				}
+				this.Current_Suspension = suspnesion;
+			}
+		}
+	}
+	private async Task DeleteSuspension_Click ()
+	{
+		if (Current_Suspension != null)
+		{
+			var result = await this.DialogService.Confirm(
+				string.Format("Sei sicuro di voler eliminare la sospensione dal {0:dd/MM/yyyy} al {1:dd/MM/yyyy☼} ?",
+					this.Current_Suspension.StartDate,
+					this.Current_Suspension.EndDate),
+				"Eliminazione Sospensione",
+				new ConfirmOptions
+					{
+						OkButtonText = "Elimina",
+						CancelButtonText = "Annulla"
+					}
+				);
+			if (result == true)
+			{
+				this.CurrentRun?.Suspensions?.Remove(
+					this.Current_Suspension
+				);
+				this.Current_Suspension = null;
+				this.SelectCurrentSuspension();
+			}
+		}
+	}
+	private bool SuspnesionsIsCollapsed ()
+	{
+		return _SuspensionColapsed;
+	}
+
+	private async Task<bool> ShowEditSuspensionDialog (
+		string title,		
+		string okText,
+		RunSuspension suspension)
+	{
+		return await ShowGenericDialog(
+			title,
+			ds => 
+			@<div>
+				<RunSuspensionEditDialog 
+				Suspension=@suspension
+				MinDate=@this.RunModelService.GetMinValidDate(this.CurrentRun, DateTime.MinValue) 
+				MaxDate=@(this.RunModelService.GetMaxValidDate(this.CurrentRun, DateTime.MaxValue))
+				/>
+			</div>
+			, okText
+			);
+	}
+	#endregion
+
+	#region funzioni gestione dialog box
+	private async Task<bool> ShowGenericDialog (
+		string title,
+		RenderFragment<DialogService> renderFragment,
+		string okText = "OK",
+		string cancelText = "Annulla",
+		string width = "1000px")
+	{
+		bool? result = await DialogService.OpenAsync(
+			title,
+			ds =>
+				@<div>
+					@renderFragment(ds)
+					<RadzenButton Text="@okText" Click="()=>ds.Close(true)" ButtonStyle="ButtonStyle.Primary" />
+					<RadzenButton Text="@cancelText" Click="()=>ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" />
+				</div>
+			, new DialogOptions() { Width = width }
+			);
+
+		return (result != null && result == true);
+	}
+	#endregion
+}

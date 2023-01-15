@@ -11,7 +11,7 @@ WITH CTE_Cars AS
 			rc.CarId
 		FROM  dbo.RunCars rc
 		INNER JOIN dbo.RunPeriods rp
-			ON Rc.RunPEriodId = rp.RunPEriodId
+			ON Rc.RunPEriodId = rp.[RunPeriodId]
 		WHERE rc.CarType IN ('P', 'R')
 )
 SELECT rc.RunId,

@@ -1,0 +1,117 @@
+﻿@using CtaLinea.Model.Runs
+@using CtaLinea.Model.External
+@using CtaLinea.QueryModel
+@using CtaLinea.Model.QueryModel
+@inject IQueryUtilityService queryService
+
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<RadzenListBox 
+    AllowFiltering="true" 
+    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+    @bind-Value=@SelectedIds
+    Multiple="true"
+    Data=@PeriodCars
+    Change=@OnChange
+    TextProperty="SearchText"
+    ValueProperty="RunCarId"
+    Class="w-100" >
+    <Template  >
+        <div class="row">
+            <div class="col-1">
+                <RadzenIcon Icon="directions_bus" IconStyle="@GetIconStyle((context as RunPeriodCar))" class="align-item-center" />
+            </div>
+            <div class="col-11">
+                <div class="row"><strong>@GetRunCarTypeDescr((context as RunPeriodCar))</strong></div>
+                <div class="row">
+                    <strong>@((context as RunPeriodCar)?.AssociateData?.Description)</strong>
+                </div>
+                <div class="row">
+                    <duv class=@GetClassByStatus((context as RunPeriodCar)?.CarData)>
+                        <strong>@((context as RunPeriodCar)?.CarData?.Description)</strong>
+                    </duv>
+                </div>
+            </div>
+        </div>
+    </Template>
+</RadzenListBox>
+
+@code {
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+    [Parameter]
+    public IEnumerable<RunPeriodCar> PeriodCars { get; set; } = new List<RunPeriodCar>();
+
+    [Parameter]
+    public IEnumerable<Guid>? SelectedIds { get; set; }
+    [Parameter]
+    public EventCallback<IEnumerable<Guid>?> SelectedIdsChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<object> Changed { get; set; }
+
+    private IconStyle GetIconStyle (RunPeriodCar? car)
+    {
+        IconStyle style = IconStyle.Danger;
+
+        if (car != null)
+        {
+            switch (car.RunCarType)
+            {
+                case CarTypeEnum.Primary:
+                    style = IconStyle.Success;
+                    break;
+                case CarTypeEnum.Replacement:
+                    style = IconStyle.Warning;
+                    break;
+                case CarTypeEnum.Spare:
+                    style = IconStyle.Info;
+                    break;
+            }
+        }
+
+        return style;
+    }
+    private string GetRunCarTypeDescr (RunPeriodCar? car)
+    {
+        var descr = string.Empty;
+        if (car != null)
+        {
+            switch (car.RunCarType)
+            {
+                case CarTypeEnum.Primary:
+                    descr = "Titolare";
+                    break;
+                case CarTypeEnum.Replacement:
+                    descr = "Sostituzione";
+                    break;
+                case CarTypeEnum.Spare:
+                    descr = "Scorta";
+                    break;
+            }
+        }
+        return descr;
+    }
+    private string GetClassByStatus(
+        Car? car)
+    {
+        if (car == null) return string.Empty;
+        if (car.Active == false) return this.GetStyle(this.Settings.InactiveCarBgStyle, this.Settings.InactiveCarFgStyle);
+        if (car.PrimaryCar) return this.GetStyle(this.Settings.PrimaryCarBgStyle, this.Settings.PrimaryCarFgStyle);
+        if (car.SpareCar) return this.GetStyle(this.Settings.SpareCarBgStyle, this.Settings.SpareCarFgStyle);
+        return this.GetStyle(this.Settings.OtherCarBgStyle, this.Settings.OtherCarFStyle);
+    }
+    private string GetStyle(
+        params string[] styles)
+    {
+        var str = string.Join(' ', styles);
+        return str.Trim();
+    }
+
+    private async Task OnChange(object value)
+    {
+        await SelectedIdsChanged.InvokeAsync(this.SelectedIds);
+        await Changed.InvokeAsync(this);
+    }
+}

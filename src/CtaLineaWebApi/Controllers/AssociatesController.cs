@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ZzSoft.Api.Utility.Base;
 using ZzSoft.CtaLinea.Dal.Queries;
 using CtaLinea.QueryModel;
+using CtaLinea.Model.QueryModel;
 
 namespace CtaLineaWebApi.Controllers
 {

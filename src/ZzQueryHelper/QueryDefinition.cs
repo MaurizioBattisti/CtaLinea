@@ -154,12 +154,13 @@ namespace ZzSoft.QueryHelper
             var type = typeof(T);
             var defaultAliasPart = this.GetDefaultAlias();
             PropertyInfo firstProp = type.GetProperties().FirstOrDefault();
+            SqlFieldAttribute attr = null;
 
             var list = new List<Tuple<PropertyInfo, SqlFieldAttribute>>();
             foreach (var prop in type.GetProperties())
             {
                 if (firstProp == null) firstProp = prop;
-                var attr = (from a in prop.GetCustomAttributes<SqlFieldAttribute>()
+                attr = (from a in prop.GetCustomAttributes<SqlFieldAttribute>()
                             where a.SortPosition >= 0
                             select a)
                            .SingleOrDefault();
@@ -173,20 +174,39 @@ namespace ZzSoft.QueryHelper
             {
                 var props = (from l in list
                              orderby l.Item2.SortPosition ascending
-                             select l.Item1);
+                             select l);
 
                 foreach (var prop in props)
                 {
                     if (sb.Length > 0) sb.Append(SqlField_Separator);
 
-                    var fieldName = this.GetDbFieldName(prop, false, defaultAliasPart);
+                    var fieldName = this.GetDbFieldName(prop.Item1, false, defaultAliasPart);
                     sb.Append(fieldName);
+                    if (prop.Item2.SortDirection == SortDirection.Ascending)
+                    {
+                        sb.Append(SqlSorteAscending);
+                    }
+                    else if(prop.Item2.SortDirection == SortDirection.Descending)
+                    {
+                        sb.Append(SqlSorteDescending);
+                    }
                 }
             }
             else
             {
                 var fieldName = this.GetDbFieldName(firstProp, false, defaultAliasPart);
                 sb.Append(fieldName);
+                if (attr != null)
+                {
+                    if (attr.SortDirection == SortDirection.Ascending)
+                    {
+                        sb.Append(SqlSorteAscending);
+                    }
+                    else if (attr.SortDirection == SortDirection.Descending)
+                    {
+                        sb.Append(SqlSorteDescending);
+                    }
+                }
             }
             return sb.ToString();
         }

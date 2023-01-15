@@ -7,15 +7,33 @@
 
     <RadzenPanelMenuItem Text="Test" Path="/newrun" Icon="home"></RadzenPanelMenuItem>
 
-
     <RadzenPanelMenuItem Text="Gestione" Icon="work">
         <RadzenPanelMenuItem Text="Elenco Corse" Path="/runs" Icon="departure_board"></RadzenPanelMenuItem>
-        <RadzenPanelMenuItem Text="Una Corsa a caso" Path="/run-detail/797A9121-E8D6-4784-A83C-DE922C9DE36E"  Icon="departure_board"></RadzenPanelMenuItem>
-        <RadzenPanelMenuItem Text="Contratti" Path="/contracts" Icon="handshake"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Nuova Corsa" Path="/run-new" Icon="domain_add"></RadzenPanelMenuItem>
+
+        <RadzenPanelMenuItem Text="Una Corsa a caso" Path="/run-edit/797A9121-E8D6-4784-A83C-DE922C9DE36E"  Icon="departure_board"></RadzenPanelMenuItem>
+
+        <RadzenPanelMenuItem Text="Utility" Icon="construction">
+            <RadzenPanelMenuItem Text="Planning" Path="/cars" Icon="calendar_view_week"></RadzenPanelMenuItem>
+        </RadzenPanelMenuItem>
     </RadzenPanelMenuItem>
 
-    <hr class="separator">
-    <RadzenPanelMenuItem Text="Anagrafiche" Icon="inventory">
+    <RadzenPanelMenuItem Text="Anagrafiche" Icon="folder">
+        <RadzenPanelMenuItem Text="Contratti" Icon="assignment_turned_in">
+            <RadzenPanelMenuItem Text="Lista Contratti" Path="/cars" Icon="assignment"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Nuovo Contratto" Path="/cars" Icon="assignment"></RadzenPanelMenuItem>
+        </RadzenPanelMenuItem>
+
+        <RadzenPanelMenuItem Text="Calendari" Icon="calendar_month">
+            <RadzenPanelMenuItem Text="Lista Calendari" Path="/cars" Icon="calendar_today"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Nuovo Calendario" Path="/cars" Icon="edit_calendar"></RadzenPanelMenuItem>
+        </RadzenPanelMenuItem>
+
+        <RadzenPanelMenuItem Text="Gestione Tupi Sospensione" Path="/cars" Icon="block"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Gestione Etichette" Path="/cars" Icon="local_offer"></RadzenPanelMenuItem>
+    </RadzenPanelMenuItem>
+    
+    <RadzenPanelMenuItem Text="Dati" Icon="inventory">
         <RadzenPanelMenuItem Text="Ditte" Path="/companies" Icon="business"></RadzenPanelMenuItem>
         <RadzenPanelMenuItem Text="Mezzi" Path="/cars" Icon="directions_bus"></RadzenPanelMenuItem>
         
@@ -23,6 +41,7 @@
     </RadzenPanelMenuItem>
 
     <!--
+    <hr class="separator">
     <RadzenPanelMenuItem Text="Ricerche" Icon="saved_search">
         <RadzenPanelMenuItem Text="Mezzi" Path="/cars" Icon="departure_board"></RadzenPanelMenuItem>
 

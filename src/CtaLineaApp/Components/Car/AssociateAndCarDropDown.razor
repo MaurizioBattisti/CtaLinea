@@ -1,14 +1,15 @@
-﻿@using CtaLinea.QueryModel
+﻿@using CtaLinea.QueryModel;
+@using CtaLinea.Model.QueryModel
 @inject IQueryUtilityService queryService
 
 <div class="@GetGeneralClass()">
     <div class="@GetDivPartClass(ColumnType.ASsociate)" >
         <RadzenText TextStyle="TextStyle.Overline" Text="Ditta" />
-        <AssociateDropDown Disabled=@Disabled @bind-AssociateId="AssociateId" AllowClear=@AllowClear Changed=@AssociateChanged />
+        <AssociateDropDown @ref="@Associates"   Disabled=@Disabled @bind-AssociateId="AssociateId" AllowClear=@AllowClear Changed=@AssociateChanged />
     </div>
     <div class="@GetDivPartClass(ColumnType.Car)" >
         <RadzenText TextStyle="TextStyle.Overline" Text="Mezzo" />
-        <ChildCarDropDown Disabled=@CarDisabled() AssociateId=@AssociateId @bind-CarId="CarId" AllowClear=@AllowClear Changed=@CarChanged />
+        <ChildCarDropDown @ref="@Cars" Disabled=@CarDisabled() AssociateId=@AssociateId @bind-CarId="CarId" AllowClear=@AllowClear Changed=@CarChanged />
     </div>
 </div>
 
@@ -19,6 +20,9 @@
         ASsociate,
         Car
     }
+
+    private AssociateDropDown? Associates;
+    private ChildCarDropDown? Cars;
 
     [Parameter]
     public Guid? AssociateId { get; set; }
@@ -40,9 +44,23 @@
     [Parameter]
     public EventCallback<object> Changed { get; set; }
 
+    public AssociateQueryItem? SelectedASsociateData
+    {
+        get
+        {
+            return this.Associates?.SelectedASsociateData;
+        }
+    }
+    public CarQueryItem? SelectedCarData
+    {
+        get
+        {
+            return this.Cars?.SelectedCarData;
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
-
         await Task.CompletedTask;
         this.StateHasChanged();
     }

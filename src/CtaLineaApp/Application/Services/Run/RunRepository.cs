@@ -22,5 +22,25 @@ namespace CtaLineaApp.Application.Services.Run
             var run = await _http.Get<RunItem>(url);
             return run;
         }
+        public async Task SaveRunAsync (
+            Guid runId,
+            RunItem model)
+        {
+            string url = string.Format(Constants.Endpoint_OneRun_Frm, runId);
+            await _http.Put(url, model);
+
+            // TODO: in realtà deve gestire i valroi di ritorno
+
+
+        }
+        public async Task AddNewOneAsync(
+            RunItem model
+            )
+        {
+            await _http.Post(Constants.Endpoint_Runs, model);
+
+            // TODO: in realtà deve gestire i valroi di ritorno
+        }
+
     }
 }

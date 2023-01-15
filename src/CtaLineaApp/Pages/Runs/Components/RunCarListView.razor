@@ -1,0 +1,539 @@
+﻿@using CtaLinea.Model.External;
+@using CtaLineaApp.Pages.Runs.Dialogs
+@inject IRunModelService RunModelService
+@inject DialogService DialogService
+@inject NotificationService notificationService
+
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<RadzenSplitter Orientation="Orientation.Horizontal" 
+    Style="min-height: 200px">
+    <RadzenSplitterPane Size="450px">
+        @if (this.EditMode == true)
+        {
+            @if(this.Replacement == null)
+            {
+            <RadzenButton Text="Aggiungi Mezzo"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Icon="airport_shuttle"
+                      Click=@AddNewCar_Click />
+            }
+            else
+            {
+            <RadzenButton Text="Aggiungi Mezzo Sostituito"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Icon="airport_shuttle"
+                      Click=@AddNewReplacementCar_Click />
+            }
+        }
+        <RunCarList @bind-Value=@CurrentPeriodCar CarList=@GetPeriodCarList() />
+    </RadzenSplitterPane>
+    <RadzenSplitterPane>
+        @if (CurrentPeriodCar != null)
+        {
+            <RadzenCard>
+                <div class="d-flex flex-row p-1">
+                    <div class="col-4">
+					    <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Capienza mezzo</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentPeriodCar.CarData?.NrSittings</strong></RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Codice Bus Stop</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentPeriodCar.CarData?.BsCarId</strong></RadzenText>
+
+                        @if (this.EditMode == true && CurrentPeriodCar != null)
+                        {
+                            <RadzenButton Text="Verifica attività"
+                                      ButtonStyle="ButtonStyle.Secondary"
+                                      Icon="airport_shuttle"
+                                      Click=@VerifyCarActivity_Click />
+                        }
+                    </div>
+                    <div class="col-12">
+                        <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Note</RadzenText>
+                        @if (this.EditMode == true && CurrentPeriodCar != null)
+					    {
+                            <RadzenTextArea @bind-Value="CurrentPeriodCar.Note" Class="w-100 h-100" />
+					    }
+					    else
+					    {
+						    <RadzenText TextStyle="TextStyle.Body1"><strong>@CurrentPeriodCar?.Note</strong></RadzenText>
+					    }
+                    </div>
+                </div>
+                <div class="d-flex flex-row p-1">
+
+                </div>
+            </RadzenCard>
+            <CarCostListView CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@RunPeriod PeriodCar=@CurrentPeriodCar />
+            @if (this.EditMode == true)
+            {
+                <duv>
+                    <RadzenButton Text="Modifica Mezzo"
+                              ButtonStyle="ButtonStyle.Warning"
+                              Icon="airport_shuttle"
+                              Click=@EditeCar_Click />
+                    <RadzenButton Text="Elimina Mezzo"
+                          ButtonStyle="ButtonStyle.Danger"
+                          Icon="airport_shuttle"
+                          Click=@DeleteCar_Click />
+                </duv>
+            }
+        }
+    </RadzenSplitterPane>
+</RadzenSplitter>
+
+@code {
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+    [Parameter]
+    public RunItem CurrentRun { get; set; } = new RunItem();
+    [Parameter]
+    public bool EditMode { get; set; } = false;
+    [Parameter]
+    public RunPeriod RunPeriod { get; set; } = new RunPeriod();
+    [Parameter]
+    public CarReplacement? Replacement { get; set; }
+
+    private RunPeriodCar? CurrentPeriodCar { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        this.SelectCurrentPeriodCar();
+        await base.OnParametersSetAsync();
+    }
+
+    private void SelectCurrentPeriodCar ()
+    {
+        CurrentPeriodCar = this.GetFirstPEriodCar (this.Replacement != null);
+    }
+    private RunPeriodCar? GetFirstPEriodCar (bool userReplacement = false)
+    {
+        RunPeriodCar? current = null;
+        if (this.RunPeriod.Cars != null)
+        {
+            if (userReplacement == false)
+            {
+                current = (from c in this.RunPeriod.Cars
+                           where c.RunCarType == CarTypeEnum.Primary
+                           || c.RunCarType == CarTypeEnum.Replacement
+                           orderby c.CarData?.RegNumber
+                           select c).FirstOrDefault();
+                if (current == null)
+                {
+                    current = (from c in this.RunPeriod.Cars
+                               orderby c.CarData?.RegNumber
+                               select c).FirstOrDefault();
+                }
+            }
+            else
+            {
+                current = this.GetPeriodCarList()
+                            .FirstOrDefault();
+            }
+        }
+        return current;
+    }
+
+    private IEnumerable<RunPeriodCar> GetPeriodCarList()
+    {
+        IEnumerable<RunPeriodCar>? list = null;
+        if (this.RunPeriod != null)
+        {
+            // contorlla se è stato indicato il replacemtn
+            if (this.Replacement != null)
+            {
+                if (this.Replacement.ReplacedPEriodCarIds != null
+                    && this.RunPeriod.Cars != null)
+                {
+                    list = (from c in this.RunPeriod.Cars
+                            where this.Replacement.ReplacedPEriodCarIds.Contains(c.RunCarId)
+                            select c)
+                                .ToList();
+                }
+            }
+            else if (this.RunPeriod.Cars != null)
+            {
+                list = this.RunPeriod.Cars.Where(c => c.RunCarType == CarTypeEnum.Primary)
+                            .Union(
+                                this.RunPeriod.Cars.Where(c => c.RunCarType == CarTypeEnum.Spare)
+                            )
+                            .ToList();
+            }
+        }
+
+        return list ?? new List<RunPeriodCar>();
+    }
+
+    private bool IsCostVisible()
+    {
+        if (this.CurrentPeriodCar == null) return false;
+        return (this.CurrentPeriodCar.RunCarType == CarTypeEnum.Primary
+            || this.CurrentPeriodCar.RunCarType == CarTypeEnum.Replacement);
+    }
+    private IList<RunCarCost> GetCarCostList()
+    {
+        if (this.CurrentPeriodCar?.CarCosts == null) return new List<RunCarCost>();
+        return (from cc in this.CurrentPeriodCar.CarCosts
+                orderby cc.StartDate
+                select cc
+                    ).ToList();
+    }
+    private string GetCarCostHeader(RunCarCost cost)
+    {
+        string header = "dall''inizio";
+        if (cost.StartDate != null)
+        {
+            header = string.Format("dal: {0:dd/MM/yyyy}", cost.StartDate);
+        }
+
+        return header;
+    }
+
+    void OnTabChange(int index)
+    {
+
+    }
+    private RunCarCost GetREplacementCost (
+    CarReplacement replacement)
+    {
+        var cost = new RunCarCost()
+        {
+            RunCarCostId = Guid.NewGuid()
+        };
+        IList<Guid> ids = new List<Guid>();
+        if (replacement.OriginalPEriodCarIds != null) ids = replacement.OriginalPEriodCarIds;
+        IList<Guid> replIds = new List<Guid>();
+        if (replacement.ReplacedPEriodCarIds != null) replIds = replacement.ReplacedPEriodCarIds;
+
+        var cars = (from c in this.RunPeriod.Cars
+                    where (
+                        c.RunCarType == CarTypeEnum.Primary
+                        && ids.Contains(c.RunCarId)
+                    ) || (
+                        c.RunCarType == CarTypeEnum.Replacement
+                        && replIds.Contains(c.RunCarId)
+                    )
+                    select c);
+
+        var start = replacement.StartDate;
+
+        var originalcosts = new List<RunCarCost>();
+        var replacedCosts = new List<RunCarCost>();
+        foreach (var c in cars)
+        {
+            RunCarCost? theCost = null;
+
+            if (c.CarCosts != null)
+            {
+                if (start == null)
+                {
+                    theCost = (from cc in c.CarCosts
+                               orderby cc.StartDate ascending
+                               select cc).FirstOrDefault();
+
+                }
+                else
+                {
+                    theCost = (from cc in c.CarCosts
+                               where cc.StartDate == null
+                                   || cc.StartDate <= start
+                               orderby cc.StartDate descending
+                               select cc).FirstOrDefault();
+
+                }
+                if (theCost != null)
+                {
+                    if (c.RunCarType == CarTypeEnum.Primary) originalcosts.Add(theCost);
+                    else if (c.RunCarType == CarTypeEnum.Replacement ) replacedCosts.Add(theCost);
+                }
+            }
+        }
+        // somma tutti i costi originali
+        foreach (var cc in originalcosts)
+        {
+            cost.KmPrice += cc.KmPrice;
+            cost.DayPrice += cc.DayPrice;
+            if (cc.DayForfait != null)
+            {
+                if (cost.DayForfait == null) cost.DayForfait = cc.DayForfait;
+                else cost.DayForfait += cc.DayForfait;
+            }
+            if (cc.DayIntegration != null)
+            {
+                if (cost.DayIntegration == null) cost.DayIntegration = cc.DayIntegration;
+                else cost.DayIntegration += cc.DayIntegration;
+            }
+        }
+        // sottrae tutti i costi già assegnati
+        foreach (var cc in replacedCosts)
+        {
+            cost.KmPrice -= cc.KmPrice;
+            cost.DayPrice -= cc.DayPrice;
+            if (cc.DayForfait != null)
+            {
+                if (cost.DayForfait == null) cost.DayForfait = -1 * cc.DayForfait;
+                else cost.DayForfait -= cc.DayForfait;
+            }
+            if (cc.DayIntegration != null)
+            {
+                if (cost.DayIntegration == null) cost.DayIntegration = -1 * cc.DayIntegration;
+                else cost.DayIntegration -= cc.DayIntegration;
+            }
+        }
+
+        return cost;
+    }
+
+    private async Task<bool> CheckEdiCar(
+        RunPeriodCar periodCar,
+        RunPeriodCar? oldPeriodCar,
+        string dialogTitle)
+    {
+        bool valid = true;
+        // controlla che sia statoassegnaqto il emzzo
+        if (periodCar.CarId == Guid.Empty)
+        {
+            valid = false;        
+            this.notificationService.Notify(
+                NotificationSeverity.Warning,
+                dialogTitle,
+                "Deve essere selezionato il mezzo");
+        }
+        // contorlla che il mezzo non  sia già stato usato
+        if (RunPeriod.Cars != null)
+        {
+            foreach (var c in RunPeriod.Cars)
+            {
+                if (c.CarId == periodCar.CarId 
+                    && c.RunCarId != periodCar.RunCarId
+                    && c != oldPeriodCar)
+                {
+                    valid = false;
+                    this.notificationService.Notify(
+                        NotificationSeverity.Warning,
+                        dialogTitle,
+                        "Il mezzo è già stato usato nello stesso blocco di giorni per lo stesso periodo");
+                    break;
+                }
+            }
+        }
+        if (valid == true && oldPeriodCar != null)
+        {
+            if (oldPeriodCar.RunCarType == CarTypeEnum.Primary 
+                && periodCar.RunCarType == CarTypeEnum.Spare)
+            {
+                // indica che è stato cambiato da titolare a  scorta se si vuole modificare
+                if (await this.DialogService.Confirm(
+                        "Il tipo di mezzo è stato cambiato da Titolare  ascorta, questo provocherà l'eliminaizone di tutti i costi associati, sei sicuro di voler procedere con la modifica ?", 
+                        dialogTitle,
+                        new ConfirmOptions
+                        {
+                            OkButtonText = "Si, Procei !",
+                            CancelButtonText = "Annulla"
+                        }) == true )
+                {
+                    periodCar.CarCosts = new List<RunCarCost>();
+                }
+                else
+                {
+                    valid = false;
+                }
+            }
+        }
+
+        return await Task.FromResult(valid);
+    }
+    private async Task AddNewCar_Click()
+    {
+        var title = "Nuovo mezzo";
+        await this.AddNewCar(title, CarTypeEnum.Primary);
+    }
+    private async Task AddNewReplacementCar_Click()
+    {
+        var title = "Aggiungi mezzo sostituito";
+        await this.AddNewCar(title, CarTypeEnum.Replacement);
+    }
+
+    private async Task AddNewCar(
+        string title,
+        CarTypeEnum carTYpe)
+    {
+        var assId = Guid.Empty;
+        var first = this.GetFirstPEriodCar(this.Replacement != null);
+        if (first == null)
+        {
+            first = this.GetFirstPEriodCar(false);
+        }
+        if (first != null) assId = first.AssociateId;
+
+        var periodCar = new RunPeriodCar()
+        {
+            RunCarId = Guid.NewGuid(),
+            AssociateId = assId,
+            RunCarType = carTYpe
+        };
+
+        if (await this.AskEditCarAsync(title, "Aggiungi", periodCar) == true)
+        {
+            if (await CheckEdiCar(periodCar, null, title) == true)
+            {
+                // aggiunge il mezzo alla lista
+                if (this.RunPeriod.Cars != null)
+                {
+                    this.RunPeriod.Cars.Add(periodCar);
+                }
+                else
+                {
+                    this.RunPeriod.Cars = new List<RunPeriodCar>() { periodCar };
+                }
+                if (this.Replacement != null)
+                {
+                    // aggiunge il costo alla lista dei costi
+                    var cost = this.GetREplacementCost(this.Replacement);
+                    if (periodCar.CarCosts == null) periodCar.CarCosts = new List<RunCarCost>() { cost };
+                    else periodCar.CarCosts.Add(cost);
+
+                    // esegue la gestione anche sulla sotituzione
+                    if (Replacement.ReplacedPEriodCarIds == null)
+                    {
+                        Replacement.ReplacedPEriodCarIds = new List<Guid>() { periodCar.RunCarId };
+                    }
+                    else
+                    {
+                        Replacement.ReplacedPEriodCarIds.Add(periodCar.RunCarId );
+                    }
+                }
+                this.CurrentPeriodCar = periodCar;
+                this.StateHasChanged();
+            }
+        }
+    }
+    private async Task EditeCar_Click()
+    {
+        await Task.CompletedTask;
+        if (this.CurrentPeriodCar != null)
+        {
+            var periodCar = this.CurrentPeriodCar.CreateCopy();
+            var title = "Cambia mezzo";
+            if (await this.AskEditCarAsync(title, "Cambia", periodCar) == true)
+            {
+                if (await CheckEdiCar(periodCar, this.CurrentPeriodCar, title) == true)
+                {
+                    // gestisce la sostituzione
+                    if (this.Replacement != null)
+                    {
+                        // esegue la gestione anche sulla sotituzione
+                        if (Replacement.ReplacedPEriodCarIds == null)
+                        {
+                            Replacement.ReplacedPEriodCarIds = new List<Guid>() { periodCar.RunCarId };
+                        }
+                        else
+                        {
+                            Replacement.ReplacedPEriodCarIds.Remove(this.CurrentPeriodCar.RunCarId);
+                            Replacement.ReplacedPEriodCarIds.Add(periodCar.RunCarId);
+                        }
+                    }
+
+                    // elimina il mezzo dalla lista e  lo reinserisce
+                    if (this.RunPeriod.Cars != null)
+                    {
+                        this.RunPeriod.Cars.Remove(this.CurrentPeriodCar);
+                        this.RunPeriod.Cars.Add(periodCar);
+                    }
+                    else
+                    {
+                        this.RunPeriod.Cars = new List<RunPeriodCar>() { periodCar };
+                    }
+                    this.CurrentPeriodCar = periodCar;
+                    this.StateHasChanged();
+                }
+            }
+        }
+    }
+    private async Task DeleteCar_Click()
+    {
+        await Task.CompletedTask;
+        if (this.CurrentPeriodCar != null)
+        {
+            var title = "Eliminazione mezzo";
+            if (await this.DialogService.Confirm(
+                        "SDesideri veramente eliminare il emzzo dalla lista di qeulli utilizzati nel blocco di giorni del periodo ?",
+                    title,
+                        new ConfirmOptions
+                        {
+                            OkButtonText = "Si, Elimina !",
+                            CancelButtonText = "Annulla"
+                        }) == true )
+            {
+                // gestisce la sostituzione
+                if (this.Replacement != null)
+                {
+                    // esegue la gestione anche sulla sotituzione
+                    if (Replacement.ReplacedPEriodCarIds != null)
+                    {
+                        Replacement.ReplacedPEriodCarIds.Remove (this.CurrentPeriodCar.RunCarId);
+                    }
+                }
+
+                // elimina il mezzo dalla lista e  lo reinserisce
+                if (this.RunPeriod.Cars != null)
+                {
+                    this.RunPeriod.Cars.Remove(this.CurrentPeriodCar);
+                }
+                this.SelectCurrentPeriodCar();
+                this.StateHasChanged();
+            }
+
+        }
+    }
+    private async Task<bool> AskEditCarAsync (
+        string title,
+        string okText,
+        RunPeriodCar periodCar)
+    {
+        bool canEditType = this.Replacement == null;
+
+        return await ShowGenericDialog(
+            title,
+        ds => @<RunCarEditDialog PeriodCar=@periodCar CanEditType=@canEditType />
+            , okText
+        );
+    }
+
+    private async Task VerifyCarActivity_Click()
+    {
+
+
+        await Task.CompletedTask;
+    }
+
+    #region funzioni gestione dialog box
+    private async Task<bool> ShowGenericDialog(
+        string title,
+        RenderFragment<DialogService> renderFragment,
+        string okText = "OK",
+        string cancelText = "Annulla",
+        string width = "1000px")
+    {
+        bool? result = await DialogService.OpenAsync(
+        title,
+        ds =>
+            @<div>
+                @renderFragment(ds)
+                <RadzenButton Text="@okText" Click="()=>ds.Close(true)" ButtonStyle="ButtonStyle.Primary" />
+                <RadzenButton Text="@cancelText" Click="()=>ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" />
+            </div>
+            , new DialogOptions() { Width = width }
+        );
+
+        return (result != null && result == true);
+    }
+    #endregion
+}
+
