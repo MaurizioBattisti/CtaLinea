@@ -43,7 +43,7 @@ namespace CtaLineaApp.Application.Services.Account
 
         public async Task Login(LoginModel model)
         {
-            this.User = await _httpService.Post<UserModel>("api/auth/login", model);
+            this.User = await _httpService.Post<UserModel, string>("api/auth/login", model);
             await _localStorageService.SetItem(Constants.LoalStorageKey_User, this.User);
         }
         public async Task Logout()

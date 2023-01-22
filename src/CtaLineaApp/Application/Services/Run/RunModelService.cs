@@ -12,12 +12,14 @@ namespace CtaLineaApp.Application.Services.Run
         : IRunModelService
     {
         public RunItem CreateNewRun(
-            Contract contract)
+            Contract contract,
+            Calendar calendar)
         {
             var run = new RunItem()
             {
                 RunId = Guid.NewGuid(),
                 ContractId = contract.ContractId,
+                ContractData = contract,
                 Extra = false,
 
                 Variations = new List<RunVariation>(),
@@ -26,9 +28,12 @@ namespace CtaLineaApp.Application.Services.Run
             };
 
             // aggiune la variante di default
-            this.CreateNewVariation(run);
+            var variation = this.CreateNewVariation(run);
+            variation.CalendarData = calendar;
+            variation.CalendarId = calendar.CalendarId;
+
             // crea il periodo di default
-            this.CreateNewPeriod(run);
+            // this.CreateNewPeriod(run);
 
             return run;
         }
@@ -344,6 +349,8 @@ namespace CtaLineaApp.Application.Services.Run
                 RunNumber= source.RunNumber,
                 Km= source.Km,
                 RequestedFrequency = source.RequestedFrequency,
+                Path = source.Path,
+                RequestedCapacity= source.RequestedCapacity,    
                 Note= source.Note,
 
                 Nodes = new List<RunNode>()
@@ -366,9 +373,9 @@ namespace CtaLineaApp.Application.Services.Run
         #endregion
 
         #region funzioni helper di gestione di dati
-        private T Coalesce<T> (params T[] items)
+        private T? Coalesce<T> (params T?[] items)
         {
-			T value = default;
+			T? value = default;
             foreach (var item in items)
             {
                 if (item != null) 

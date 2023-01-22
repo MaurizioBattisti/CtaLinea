@@ -1,0 +1,179 @@
+﻿@page "/run-new"
+@inject IRunRepository _repo
+@inject IQueryUtilityService queryService
+@inject IRunModelService RunModelService
+@inject IContractService ContractService
+@inject NotificationService notificationService
+@inject DialogService DialogService
+@inject RouterSessionService RouterSessionService
+@inject NavigationManager NavigationManager
+@inject IRunChecker runChecker
+@inherits EditorComponentBase
+@attribute [Authorize]
+
+<PageTitle>@Constants.App_Title - Nuova Corsa</PageTitle>
+
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Nuova Corsa" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+        
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+@if (IsBusy == true)
+{
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+}
+else
+{
+    @if (CurrentRun != null)
+    {
+        <CheckREsultView CheckResult=@CheckResult
+                 ShowSuccessMessage=true />
+
+        <BaseRunDataView CurrentRun=@CurrentRun EditMode=@EditMode />
+
+        <RadzenCard>
+            <RadzenButton Click=@Save_Click IsBusy=@IsSaving Text="Crea Corsa" BusyText="Creazione...." ButtonStyle="ButtonStyle.Primary" />
+        </RadzenCard>
+    }
+    else
+    {
+        <RadzenCard>
+            <div class="d-flex flex-row p-1">
+                <div class="col-md-6">
+                    <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Riferimento appalto</RadzenText>
+                    <ContractDropDown @ref=@Contracts @bind-ContractId="ContractId" AllowClear=false Changed=@(() => this.StateHasChanged()) />
+
+                    <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Calendario</RadzenText>
+                    <CalendarDropDown @ref=@Calendars @bind-CalendarId=@CalendarId AllowClear=false Changed=@(() => this.StateHasChanged()) />
+                </div>
+            </div>
+        </RadzenCard>
+        <RadzenCard>
+            <RadzenButton 
+                Disabled=@(!this.CanPRocede())
+                Click=@Start_Click Text="PRocedi" ButtonStyle="ButtonStyle.Primary" />
+        </RadzenCard>
+    }
+}
+@code {
+    ContractDropDown? Contracts;
+    CalendarDropDown? Calendars;
+
+    bool EditMode = true;
+    RunItem? CurrentRun = null;
+    private bool IsBusy = false;
+    private bool IsSaving = false;
+
+    // dati da chiedere prima di tutto
+    private int? ContractId { get; set; }
+    private int? CalendarId { get; set; }
+
+    private RunCheckResult? CheckResult { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+
+        await base.OnParametersSetAsync();
+    }
+
+    private bool CanPRocede ()
+    {
+        return (this.ContractId != null
+            && this.CalendarId != null);
+    }
+
+    private async Task Start_Click ()
+    {
+        var contr = this.Contracts?.SelectedContractData;
+        var cal = this.Calendars?.SelectedCalendarData;
+
+        if (contr != null
+            && cal != null)
+        {
+            var contract = new Contract()
+            {
+                ContractId = contr.Id,
+                ContractName = contr.ContractName,
+                ContractDescription = contr.ContractDescription,
+
+                StartDate = contr.StartDate,
+                EndDate = contr.EndDate
+            };
+
+            var calendar = new Calendar()
+            {
+                CalendarId = cal.Id,
+                BaseCalendarId = cal.BaseCalendarId,
+                CalendarName = cal.CalendarName
+            };
+
+            // crea un nuovo run e lo piazza nel current run
+            var run = this.RunModelService.CreateNewRun(
+                contract,
+                calendar);
+
+            // imposta al corsa come "Extra capitolato"
+            run.Extra = true;
+
+            this.CurrentRun = run;                
+
+            this.StateHasChanged();
+            await Task.CompletedTask;
+        }
+    }
+
+    private async Task Save_Click()
+    {
+        if (this.CurrentRun == null)
+        {
+            await Task.CompletedTask;
+            return;
+        }
+        IsSaving = true;
+
+        try
+        {
+            await this._repo.AddNewOneAsync(this.CurrentRun);
+            var id = this.CurrentRun.RunId;
+
+            this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
+
+            // se il salvataggio è ok passa alla finestra di edint della corsa
+            NavigationManager.NavigateTo(
+                string.Format("/run-edit/{0}", id)
+                );
+        }
+        catch (BadRequestException<RunCheckResult> ex)
+        {
+            this.CheckResult = ex.Payload;
+
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Dati non corretti",
+                "verificare i dati prima di procedere con il salvataggio"
+            );
+        }
+        catch (Exception ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Creazione corsa Fallita !",
+                ex.Message
+            );
+        }
+        finally
+        {
+            IsSaving = false;
+            this.StateHasChanged();
+        }
+    }
+}

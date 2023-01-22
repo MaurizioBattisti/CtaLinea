@@ -15,6 +15,8 @@ using CtaLineaWebApi.Application.Commands.Runs;
 using MediatR;
 using NPOI.OpenXmlFormats.Wordprocessing;
 using System.Linq.Expressions;
+using CtaLineaWebApi.Application.Services;
+using CtaLinea.Model.Helpers;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -27,12 +29,15 @@ namespace CtaLineaWebApi.Controllers
     {
         private readonly IRunQueries _queries;
         private readonly ISender _mediator;
+        private readonly ICompleteRunCheckerService _Checker;
 
         public RunsController(
             ISender mediator,
+            ICompleteRunCheckerService checker,
             IRunQueries queries)
         {
             _mediator = mediator;
+            _Checker = checker;
 			_queries = queries;
 		}
 
@@ -79,11 +84,20 @@ namespace CtaLineaWebApi.Controllers
         }
         [SwaggerOperation("Cre3a una nuova corsa")]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [HttpPost]
         public async Task<IActionResult> NewOneAsync(
             [FromBody] RunItem model)
         {
+            // per prima cosa contorlli dati in ingresso
+            var checkResult = await _Checker.CheckRunAsync(model);
+            // controll il sirultato del check
+            if (checkResult.Status == CheckStatus.Failed)
+            {
+                return this.BadRequest(checkResult);
+            }
+
             var request = new SaveRunRequest()
             {
                 RunId = null,
@@ -110,12 +124,21 @@ namespace CtaLineaWebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
         [HttpPut]
         [Route("{id}")]
         public async Task<IActionResult> UpdateOneAsync(
             Guid id,
             [FromBody] RunItem model)
         {
+            // per prima cosa contorlli dati in ingresso
+            var checkResult = await _Checker.CheckRunAsync(model);
+            // controll il sirultato del check
+            if (checkResult.Status == CheckStatus.Failed)
+            {
+                return this.BadRequest(checkResult);
+            }
+
             var request = new SaveRunRequest()
             {
                 RunId = id,
@@ -166,22 +189,15 @@ namespace CtaLineaWebApi.Controllers
         }
 
         [SwaggerOperation("Esegue un controllo su tutti i dati di una corsa")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RunCheckResult))]
         [HttpPost]
         [Route("/check")]
         public async Task<IActionResult> CheckOneAsync(
             [FromBody] RunItem model)
         {
-            /*
-            var result = await this._queries.GetOneAssociateAsync(id)
-                .ConfigureAwait(false);
-
-            return await this.ModelOKAsync(result)
-                .ConfigureAwait(false);
-            **/
-            await Task.CompletedTask;
-            return this.Created("/il_mio_id", null);
+            // per prima cosa contorlli dati in ingresso
+            var checkResult = await _Checker.CheckRunAsync(model);
+            return this.Ok(checkResult);
         }
 
         #region dettagli

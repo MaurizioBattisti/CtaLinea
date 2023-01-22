@@ -8,6 +8,8 @@ using CtaLineaApp.Application.Services.Base;
 using Radzen;
 using CtaLineaApp.Pages.Services;
 using CEC.Routing;
+using CtaLinea.Model.ModelServices;
+using CtaLineaApp.Application.Services.Costs;
 
 namespace CtaLineaApp
 {
@@ -44,8 +46,9 @@ namespace CtaLineaApp
                 .AddScoped<IHttpService, HttpService>()
                 .AddScoped<ILocalStorageService, LocalStorageService>()
                 .AddScoped<IQueryUtilityService, QueryUtilityService>()
+                .AddScoped<ICostService, CostService> ()
                 
-                // servizio per la gestiond ei contratti
+                // servizio per la gestion dei contratti
                 .AddScoped<IContractService, ContractService> ()
                 // Serivizo per la gestiondei calendari
                 .AddScoped<ICalendarService, CalendarService>()
@@ -54,6 +57,9 @@ namespace CtaLineaApp
 
                 // repository dei dati
                 .AddScoped<IRunRepository, RunRepository> ()
+
+                // servizio di controllo delle corse
+                .AddScoped<IRunChecker, RunChecker> ()
                 ;
 
             /*

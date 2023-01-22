@@ -1,0 +1,96 @@
+﻿
+@if(CheckResult ==null || this.CheckResult?.Status == CheckStatus.Success)
+{
+    <div>
+        <RadzenAlert Title="Dati corretti" AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Shade="Shade.Lighter">
+            Nulla da segnaalre i dati sono corretti
+        </RadzenAlert>
+    </div>
+}
+@if(CheckResult != null)
+{
+    <div>
+        @foreach (var err in this.GetERrorList())
+        {
+            <RadzenAlert Title=@err.Title AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter">
+                @err.Description
+            </RadzenAlert>
+        }
+        @foreach (var err in this.GetWarningList())
+        {
+            <RadzenAlert Title=@err.Title AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter">
+                @err.Description
+            </RadzenAlert>
+        }
+        @foreach (var err in this.getInformationList())
+        {
+            <RadzenAlert Title=@err.Title AlertStyle="AlertStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter">
+                @err.Description
+            </RadzenAlert>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public RunCheckResult? CheckResult { get; set; }
+    [Parameter]
+    public bool ShowSuccessMessage { get; set; } = false;
+
+    [Parameter]
+    public string? Category { get; set; }
+    [Parameter]
+    public Guid? RefId { get; set; }
+
+    private IEnumerable<CheckResultItem> GetERrorList ()
+    {
+        return this.GetList(CheckResult?.Errors);
+    }
+    private IEnumerable<CheckResultItem> GetWarningList()
+    {
+        return this.GetList(CheckResult?.Warnings);
+    }
+    private IEnumerable<CheckResultItem> getInformationList()
+    {
+        return this.GetList(CheckResult?.Informations);
+    }
+
+    private IEnumerable<CheckResultItem> GetList (
+        IEnumerable<CheckResultItem>? checkResultItemList)
+    {
+        IEnumerable<CheckResultItem>? list = null;
+
+        if (CheckResult != null
+            && CheckResult.Status != CheckStatus.Success)
+        {
+            if (string.IsNullOrWhiteSpace(Category) == true
+                && this.RefId == null)
+            {
+                list = checkResultItemList;
+            }
+            else
+            {
+                if (checkResultItemList != null)
+                {
+                    list = (from e in checkResultItemList
+                            where e.Category == this.Category
+                            && e.Id == this.RefId
+                            select e);
+                }
+            }
+        }
+        return list ?? new List<CheckResultItem>();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+
+        await base.OnParametersSetAsync();
+    }
+}

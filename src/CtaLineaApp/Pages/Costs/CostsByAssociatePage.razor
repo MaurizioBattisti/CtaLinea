@@ -1,0 +1,170 @@
+﻿@page "/costbyassociate"
+@inject ICostService _CostService;
+@attribute [Authorize]
+
+<PageTitle>@Constants.App_Title - Costi per Ditta</PageTitle>
+
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Costi per ditta" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<RadzenLayout class="rz-shadow-3" Style="height: 100%; grid-template-areas: 'rz-header' 'rz-body'">
+    <RadzenHeader>
+        <RadzenCard>
+            <div class="d-flex flex-row p-1">
+                <div class="col-md-11">
+                    <div class="d-flex flex-row p-1">
+                        <div class="col-md-6">
+                            <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Riferimento appalto</RadzenText>
+                            <ContractDropDown @bind-ContractId="ContractId" AllowClear=false Changed=@(() => this.StateHasChanged()) />
+                        </div>
+                        <div class="col-md-6">
+                            <DateRangeSelector @bind-StartDate=@StartDate @bind-EndDate=@EndDate Inline=true AllowClear=true />
+                        </div>
+                    </div>
+                    <div class="d-flex flex-row p-1">
+                        <div class="col-md-12">
+                            <AssociateAndCarDropDown @bind-AssociateId=@AssociateId @bind-CarId=@CarId Inline=true AllowClear=true />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <RadzenButton Text="Carica..."
+                        IsBusy=@isLoading
+                        BusyText="Ricerca..."
+                        Click=@LoadDataAsync
+                        />
+                </div>
+            </div>
+        </RadzenCard>
+    </RadzenHeader>
+    <RadzenBody>
+        <RadzenDataGrid @ref="@grdData"
+                        FilterMode="FilterMode.Simple"
+                        IsLoading=@isLoading
+                        Data="@this.Data" TItem="CostsByAssociate_Master"
+                        AllowFiltering="true"
+                        AllowSorting="true"
+                        AllowColumnResize="true"
+                        LogicalFilterOperator="LogicalFilterOperator.And"
+                        Style="height:100%"
+                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                        Density=@Settings.Density
+                        ExpandMode="DataGridExpandMode.Multiple">
+            <EmptyTemplate>
+                <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun dato da visaulizzare !</p>
+            </EmptyTemplate>
+            <Template Context="master">
+                <RadzenDataGrid Data="@master.CarCosts"
+                                TItem="CostsByAssociate"
+                                AllowSorting="true"
+                                AllowColumnResize="true"
+                                Density=@Settings.Density>
+                    <Columns>
+                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="CarDescr" Title="Mezzo" Width="470px" />
+
+                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_Km" Title="Tot. Km" Width="100px" />
+
+                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_KmCost" Title="Tot. Costo Km" Width="150px" />
+                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_DayPrice" Title="Tot. Costo Giorno" Width="150px" />
+                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_DayForfait" Title="Tot. Forfait" Width="150px" />
+                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_DayIntegration" Title="Tot. Integrazione" Width="150px" />
+                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot" Title="Totale" Width="150px" />
+                    </Columns>
+                </RadzenDataGrid>
+            </Template>
+            <Columns>
+                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="ContractName" Title="Appalto" Width="200px" />
+                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="AssociateDescr" Title="Ditta" Width="200px" />
+                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="CarCount" Title="Mezzi" Width="70px" />
+
+                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_Km" Title="Tot. Km" Width="100px" />
+
+                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_KmCost" Title="Tot. Costo Km" Width="150px" />
+                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_DayPrice" Title="Tot. Costo Giorno" Width="150px" />
+                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_DayForfait" Title="Tot. Forfait" Width="150px" />
+                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_DayIntegration" Title="Tot. Integrazione" Width="150px" />
+                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot" Title="Totale" Width="150px" />
+            </Columns>
+        </RadzenDataGrid>
+    </RadzenBody>    
+</RadzenLayout>
+
+@code {
+    private class CostsByAssociate_Master
+    : CostsByAssociate
+    {
+        public int CarCount { get; set; }
+        public IEnumerable<CostsByAssociate> CarCosts { get; set; }
+    }
+
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+    RadzenDataGrid<CostsByAssociate_Master>? grdData;
+
+    private bool isLoading = false;
+    private IEnumerable<CostsByAssociate_Master>? Data = null;
+
+    // argomenti
+    private int? ContractId { get; set; } = null;
+    private DateTime? StartDate { get; set; } = null;
+    private DateTime? EndDate { get; set; } = null;
+    private Guid? AssociateId { get; set; } = null;
+    private Guid? CarId { get; set; } = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // await this.LoadDataAsync();
+        }
+    }
+    private async Task LoadDataAsync ()
+    {
+        try
+        {
+            this.isLoading = true;
+            var data = await this._CostService.GetCostsByAssociateAsync(
+                this.ContractId,
+                this.StartDate, this.EndDate,
+                this.AssociateId, this.CarId,
+                null);
+
+            this.Data= (from c in data
+                         group c by new { c.ContractName, c.ContractId, c.AssociateDescr, c.AssociateId } into d
+                         select new CostsByAssociate_Master()
+                             {
+                                 ContractName = d.Key.ContractName,
+                                 AssociateDescr = d.Key.AssociateDescr,
+                                 ContractId = d.Key.ContractId,
+                                 AssociateId = d.Key.AssociateId,
+                                 CarCount = d.Count(),
+                                 Tot_Km = d.Sum(c => c.Tot_Km),
+                                 Tot_DayPrice = d.Sum(c => c.Tot_DayPrice),
+                                 Tot_KmCost = d.Sum(c => c.Tot_KmCost),
+                                 Tot_DayForfait = d.Sum(c => c.Tot_DayForfait),
+                                 Tot_DayIntegration = d.Sum(c => c.Tot_DayIntegration),
+                                 Tot = d.Sum(c => c.Tot),
+
+                                 CarCosts = d
+                            });
+        }
+        finally
+        {
+            this.isLoading = false;
+            this.StateHasChanged();
+        }
+    }
+}

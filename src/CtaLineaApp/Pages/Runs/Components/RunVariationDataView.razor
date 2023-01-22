@@ -46,6 +46,9 @@
 
 			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Frequenza</RadzenText>
 			<RadzenTextBox @bind-Value="Variation.RequestedFrequency" MaxLength="200" Class="w-100" />
+
+			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Km</RadzenText>
+			<KmInput @bind-Value="Variation.Km" />
 		}
 		else
 		{
@@ -54,6 +57,9 @@
 
 			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Frequenza</RadzenText>
 			<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.RequestedFrequency</strong></RadzenText>
+
+			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Km</RadzenText>
+			<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.Km</strong></RadzenText>
 		}
 	</div>
 	<div class="col-2">
@@ -89,16 +95,16 @@
 	<div class="col-4">
 		@if(this.EditMode == true)
 		{
-			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Km</RadzenText>
-			<KmInput @bind-Value="Variation.Km" />
+			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Percorso</RadzenText>
+			<RadzenTextArea @bind-Value="Variation.Path" Class="w-100" />
 
 			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Annotazioni</RadzenText>
 			<RadzenTextArea @bind-Value="Variation.Note" Class="w-100"  />
 		}
 		else
 		{
-			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Km</RadzenText>
-			<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.Km</strong></RadzenText>
+			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Percorso</RadzenText>
+			<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.Path</strong></RadzenText>
 
 			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Annotazioni</RadzenText>
 			<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.Note</strong></RadzenText>

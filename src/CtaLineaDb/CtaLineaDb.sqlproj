@@ -72,7 +72,7 @@
     <Folder Include="Tables\Runs\Utilties" />
     <Folder Include="StoredProc\Utility" />
     <Folder Include="StoredProc\Costs" />
-    <Folder Include="Functions\Costs" />
+    <Folder Include="Views\Costs" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post_Deploy.sql" />
@@ -123,8 +123,8 @@
     <Build Include="Tables\Base\Tags.sql" />
     <Build Include="Tables\Runs\Utilties\RunTags.sql" />
     <Build Include="StoredProc\Costs\up_GetCosts.sql" />
-    <Build Include="Functions\Costs\tvf_RunCostDetails.sql" />
     <Build Include="Tables\Runs\Utilties\Runs_NeedsDayRecalc.sql" />
     <Build Include="StoredProc\Utility\uo_RecalcRunDays_Massive.sql" />
+    <Build Include="Views\Costs\vw_Costs.sql" />
   </ItemGroup>
 </Project>

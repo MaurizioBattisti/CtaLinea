@@ -16,6 +16,8 @@ using ZzSoft.CtaLinea.Dal.Repositories;
 using Microsoft.IdentityModel.Tokens;
 using CtaLineaWebApi.Utility.BackGround;
 using CtaLineaWebApi.Auth;
+using CtaLinea.Model.ModelServices;
+using CtaLineaWebApi.Application.Services;
 
 namespace CtaLineaWebApi
 {
@@ -172,22 +174,29 @@ namespace CtaLineaWebApi
             // registra il contesto di database
             services.AddScoped<CtaDbContext, CtaDbContext>();
 
-
-
             
 
             // servizi di qeury al DB
-            services.AddScoped<IAssociatesQueries,AssociatesQueries>();
-            services.AddScoped<IRunQueries,RunQueries>();
-            services.AddScoped<ICollectionPointsQueries,CollectionPointsQueries>();
-            services.AddScoped<ICalendaQueries,CalendaQueries>();
-            services.AddScoped<IContractsQueries, ContractsQueries>();
-            services.AddScoped<ITtServicesQueries,TtServicesQueries>();
+            services.AddScoped<IAssociatesQueries,AssociatesQueries>()
+                .AddScoped<IRunQueries,RunQueries>()
+                .AddScoped<ICollectionPointsQueries,CollectionPointsQueries>()
+                .AddScoped<ICalendaQueries,CalendaQueries>()
+                .AddScoped<IContractsQueries, ContractsQueries>()
+                .AddScoped<ITtServicesQueries,TtServicesQueries>()
+                .AddScoped<ICostQueries, CostQueries> ()
+                ;
+            
 
             // repository per le importazioni da TT
-            services.AddScoped<IUserRepository,UserRepository>();
-            services.AddScoped<IRunRepository, RunRepository>();
-            services.AddScoped<ITtServiceRepository,TtServiceRepository>();
+            services.AddScoped<IUserRepository,UserRepository>()
+                .AddScoped<IRunRepository, RunRepository>()
+                .AddScoped<ITtServiceRepository,TtServiceRepository>()
+                ;
+
+            // servizi per il contorllo dei dati
+            services.AddScoped<IRunChecker, RunChecker>()
+                .AddScoped<ICompleteRunCheckerService, CompleteRunCheckerService>()
+                ;
 
 
             return services;

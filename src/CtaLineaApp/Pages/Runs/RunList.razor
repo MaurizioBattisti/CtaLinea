@@ -132,6 +132,7 @@
                         </Template>
                     </RadzenDataGridColumn>
 
+                    <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Path" Title="Percorso" Width="200px" />
                     <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="RequestedFrequency" Title="Frequenza richiesta" Width="200px" />
 
                     <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Km" Title="Km" Width="100px" />
@@ -171,7 +172,7 @@
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="PrimaryCarsDescr" Title="Mezzi Titolari" Width="200px" />
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="SpareCarsDescr" Title="Mezzi di riserva" Width="200px" />
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="CalendarsDescr" Title="Calendari usati" Width="200px" />
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="PathsDescr" Title="PErcorsi" Width="200px" />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="PathsDescr" Title="PErcorso (Nodi)" Width="200px" />
         
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="VariationStartDate" Title="Inizio var." FormatString="{0:dd/MM/yyyy}" Width="180px" FilterValue=@Filter_StartDate>
             <FilterTemplate>
@@ -254,6 +255,7 @@
             </Template>
         </RadzenDataGridColumn>
         
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Path" Title="Percorso" Width="200px" />
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedFrequency" Title="Frequenza richiesta" Width="200px" />
 
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Km" Title="Km" Width="100px" />

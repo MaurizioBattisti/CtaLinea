@@ -3,6 +3,7 @@ using CtaLineaApp.Application.Model.Utility;
 using CtaLineaApp.Application.Services.Helper;
 using CtaLineaApp.Helpers;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -45,43 +46,62 @@ namespace CtaLineaApp.Application.Services.Helper
         public async Task<T?> Get<T>(string uri)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
-            return await SendRequest<T>(request);
+            return await SendRequest<T, string>(request);
+        }
+        public async Task<T?> Get<T, TBadRequestREsult>(string uri)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            return await SendRequest<T, TBadRequestREsult>(request);
         }
 
         public async Task Post(string uri, object value)
         {
             var request = createRequest(HttpMethod.Post, uri, value);
-            await sendRequest(request);
+            await sendRequest<string> (request);
         }
-
-        public async Task<T?> Post<T>(string uri, object value)
+        public async Task Post<TBadRequestREsult>(string uri, object value)
         {
             var request = createRequest(HttpMethod.Post, uri, value);
-            return await SendRequest<T>(request);
+            await sendRequest<TBadRequestREsult>(request);
+        }
+        public async Task<T?> Post<T, TBadRequestREsult>(string uri, object value)
+        {
+            var request = createRequest(HttpMethod.Post, uri, value);
+            return await SendRequest<T, TBadRequestREsult>(request);
         }
 
         public async Task Put(string uri, object value)
         {
             var request = createRequest(HttpMethod.Put, uri, value);
-            await sendRequest(request);
+            await sendRequest<string> (request);
         }
-
-        public async Task<T?> Put<T>(string uri, object value)
+        public async Task Put<TBadRequestREsult> (string uri, object value)
         {
             var request = createRequest(HttpMethod.Put, uri, value);
-            return await SendRequest<T>(request);
+            await sendRequest<TBadRequestREsult>(request);
+        }
+        public async Task<T?> Put<T, TBadRequestREsult>(string uri, object value)
+        {
+            var request = createRequest(HttpMethod.Put, uri, value);
+            return await SendRequest<T, TBadRequestREsult>(request);
         }
 
         public async Task Delete(string uri)
         {
             var request = createRequest(HttpMethod.Delete, uri);
-            await sendRequest(request);
+            await sendRequest<string>(request);
         }
 
-        public async Task<T?> Delete<T>(string uri)
+        public async Task Delete<TBadRequestREsult> (string uri)
         {
             var request = createRequest(HttpMethod.Delete, uri);
-            return await SendRequest<T>(request);
+            await sendRequest<TBadRequestREsult>(request);
+        }
+
+        public async Task<T?> Delete<T, TBadRequestREsult>(string uri)
+        {
+            var request = createRequest(HttpMethod.Delete, uri);
+            return await SendRequest<T, TBadRequestREsult>(request);
         }
 
         // helper methods
@@ -96,7 +116,7 @@ namespace CtaLineaApp.Application.Services.Helper
             return request;
         }
 
-        private async Task sendRequest(HttpRequestMessage request)
+        private async Task sendRequest<TBadRequestREsult> (HttpRequestMessage request)
         {
             await AddJwtHeader(request);
 
@@ -110,10 +130,10 @@ namespace CtaLineaApp.Application.Services.Helper
                 return;
             }
 
-            await HandleErrors(response);
+            await HandleErrors<TBadRequestREsult>(response);
         }
 
-        private async Task<T?> SendRequest<T>(
+        private async Task<T?> SendRequest<T, TBadRequestREsult>(
             HttpRequestMessage request)
         {
             // send request
@@ -126,7 +146,7 @@ namespace CtaLineaApp.Application.Services.Helper
                 return default;
             }
 
-            await HandleErrors(response);
+            await HandleErrors<TBadRequestREsult>(response);
 
             var options = new JsonSerializerOptions();
             options.PropertyNameCaseInsensitive = true;
@@ -156,19 +176,37 @@ namespace CtaLineaApp.Application.Services.Helper
             }
         }
 
-        private async Task HandleErrors(
+        private async Task HandleErrors<TBadRequestREsult>(
             HttpResponseMessage response)
         {
             // throw exception on error response
             if (!response.IsSuccessStatusCode)
             {
+                var options = new JsonSerializerOptions();
+                options.PropertyNameCaseInsensitive = true;
+                options.Converters.Add(new StringConverter());
+
+                // gestisce in modo ad hoc il Bad Request
+                if (response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    // tenta di deserializzare il tipo indicato dal chiamante
+                    try
+                    {
+                        var checkResult = await response.Content.ReadFromJsonAsync<TBadRequestREsult>(options);
+                        if (checkResult != null)
+                        {
+                            throw new BadRequestException<TBadRequestREsult>("Bad Request", checkResult);
+                        }
+                    }
+                    catch
+                    {
+                        // si mangia l'errore e ci riprova
+                    }
+                }
+
                 LineaProblemDetailsException? probelmExc = null;
                 try
                 {
-                    var options = new JsonSerializerOptions();
-                    options.PropertyNameCaseInsensitive = true;
-                    options.Converters.Add(new StringConverter());
-
                     var myPRob = await response.Content.ReadFromJsonAsync<LineaProblemDetails>(options);
                     if (myPRob != null)
                     {

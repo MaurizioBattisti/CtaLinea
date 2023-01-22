@@ -1,22 +1,21 @@
 ﻿@page "/run-edit/{Id:guid}"
-@page "/run-new"
-@using CtaLineaApp.Components.Base
 @inject IRunRepository _repo
 @inject IQueryUtilityService queryService
 @inject IRunModelService RunModelService
 @inject IContractService ContractService
 @inject DialogService DialogService
-
+@inject NotificationService notificationService
 @inject RouterSessionService RouterSessionService
-@inherits EditorComponentBase
+@inject IRunChecker runChecker
 
+@inherits EditorComponentBase
 @attribute [Authorize]
 
-<PageTitle>@Constants.App_Title - Corsa</PageTitle>
+<PageTitle>@Constants.App_Title - Modifcia Corsa</PageTitle>
 
 <LayoutSetter>
     <PageTitle>
-        <RadzenLabel Text="Corsa" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+        <RadzenLabel Text="Modifcia Corsa" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
     </PageTitle>
     <TopLine>
         
@@ -30,17 +29,15 @@
 }
 else
 {
+    <CheckREsultView
+        CheckResult=@CheckResult
+        ShowSuccessMessage=true
+        />
+
     <BaseRunDataView CurrentRun=@CurrentRun EditMode=@EditMode />
 
     <RadzenCard>
-        @if(this.IsNew == true)
-        {
-        <RadzenButton Click=@(async () => await CreateOrSaveAsync(this.IsNew)) IsBusy=@IsSaving Text="Crea Corsa" BusyText="Creazione...." ButtonStyle="ButtonStyle.Primary" />
-        }
-        else
-        {
-        <RadzenButton Click=@(async () => await CreateOrSaveAsync(this.IsNew)) IsBusy=@IsSaving Text="Salva Corsa" BusyText="Salvataggio...." ButtonStyle="ButtonStyle.Primary" />
-        }
+        <RadzenButton Click=@Save_Click IsBusy=@IsSaving Text="Salva Corsa" BusyText="Salvataggio...." ButtonStyle="ButtonStyle.Primary" />
     </RadzenCard>
 }
 @code {
@@ -51,7 +48,8 @@ else
     RunItem CurrentRun = new RunItem();
     private bool IsBusy = true;
     private bool IsSaving = false;
-    private bool IsNew = true;
+
+    private RunCheckResult? CheckResult { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -69,14 +67,15 @@ else
         {
             try
             {
-                if (this.Id != Guid.Empty)
+                var run = await _repo.GetOneAsync(this.Id);
+                if (run != null)
                 {
-                    this.IsNew = false;
-                    var run = await _repo.GetOneAsync(this.Id);
-                    if (run != null)
-                    {
-                        this.CurrentRun = run;
-                    }
+                    this.CurrentRun = run;
+                    this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
+                }
+                else
+                {
+                    // TODO: segnala un problema
                 }
             }
             finally
@@ -87,35 +86,40 @@ else
         }
     }
 
-    private async Task CreateOrSaveAsync (bool create)
+    private async Task Save_Click()
     {
         await Task.CompletedTask;
         IsSaving = true;
 
         try
         {
-            // prima chiama la funzione di check dei dati
+            await this._repo.SaveRunAsync(
+                this.Id, this.CurrentRun);
 
-            // chiama la funzione di salvataggio
-            if (create == true)
-            {
-                await this._repo.AddNewOneAsync(this.CurrentRun);
-                this.Id = this.CurrentRun.RunId;
-                this.IsNew = false;
-            }
-            else
-            {
-                await this._repo.SaveRunAsync(
-                    this.Id, this.CurrentRun);
-            }
+            this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
+        }
+        catch (BadRequestException<RunCheckResult> ex)
+        {
+            this.CheckResult = ex.Payload;
+
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Dati non corretti",
+                "verificare i dati prima di procedere con il salvataggio"
+            );
         }
         catch (Exception ex)
         {
-            string s = ex.ToString();
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Salvataggio corsa Fallito !",
+                ex.Message
+            );
         }
         finally
         {
             IsSaving = false;
+            this.StateHasChanged();
         }
     }
 
