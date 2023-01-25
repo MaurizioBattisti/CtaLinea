@@ -349,6 +349,11 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                     #endregion
                 }
 
+                // esegue il ricalcolo
+                await this.AddToRecalcNeededAsync(
+                    conn, tran,
+                    runItem.RunId);
+
                 tran.Commit();
                 tran = null;
             }
@@ -359,6 +364,29 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                     tran.Rollback ();
                 }
             }
+        }
+
+        private async Task AddToRecalcNeededAsync (
+            IDbConnection conn,
+            IDbTransaction tran,
+            Guid? runId = null,
+            int? calendarId = null,
+            int? contractId = null,
+            int? tagId = null
+            )
+        {
+            await conn.ExecuteAsync(
+            sql: "[dbo].[uo_RunsNeedRecalc]",
+                param: new
+                {
+                    RunId = runId,
+                    CalendarId = calendarId,
+                    ContractId = contractId,
+                    TagId = tagId
+                },
+                transaction: tran,
+                commandType: CommandType.StoredProcedure
+                );
         }
 
         #region carica un intera corsa

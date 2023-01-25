@@ -14,6 +14,9 @@ CREATE PROCEDURE [dbo].[up_GetCosts]
 )
 AS
 BEGIN
+	-- si assicura che tutti i dati da ricalcolare siano ricalcolati
+	EXEC [dbo].[uo_RecalcRunDays_Massive] 0;
+
 	WITH CTE_BaseCosts AS
 	(
 		SELECT  DISTINCT c.RunId,

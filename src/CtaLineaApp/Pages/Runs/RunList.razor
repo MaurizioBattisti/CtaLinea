@@ -14,7 +14,15 @@
         <RadzenLabel Text="Corse" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
     </PageTitle>
     <TopLine>
-        <RadzenTextBox @bind-Value="AutoLoad.FullTextSearch" Placeholder="Cerca..." Change=@(args => FullText_OnChange(args)) Class="w-100" />
+         <RadzenStack 
+             Orientation="Orientation.Horizontal" 
+             Gap="5px" Wrap="FlexWrap.NoWrap"
+             JustifyContent="JustifyContent.End" 
+             AlignItems="AlignItems.Center" >
+            <RadzenButton Text="Ricarica" Click=@ReloadData />
+            <RadzenTextBox @bind-Value="AutoLoad.FullTextSearch" Placeholder="Cerca..." Change=@(args => FullText_OnChange(args)) Class="w-100" />
+         </RadzenStack>
+        
     </TopLine>
 </LayoutSetter>
 <CtaLineaSttingsNotifier Changed=@StateHasChanged />
@@ -267,6 +275,13 @@
 </RadzenDataGrid>
 
 @code {
+    private enum RunMenuItems
+    {
+        Detail,
+        Edit,
+        Delete
+    };
+
     [CascadingParameter]
     CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
     RadzenDataGrid<RunItemQueryModel>? grdData;
@@ -336,6 +351,10 @@
     {
         this.grdData?.Reload();
     }
+    void ReloadData ()
+    {
+        this.grdData?.Reload();
+    }
 
     private string FormatTime(
         TimeSpan? time)
@@ -389,36 +408,42 @@
     {
         SelectedRuns = new List<RunItemQueryModel>() { args.Data };
 
-        ContextMenuService.Open(args,
-            new List<ContextMenuItem> {
-                    new ContextMenuItem(){ Text = "Dettagli della corsa", Value = 1 },
-                    new ContextMenuItem(){ Text = "Modifica la Corsa", Value = 2} ,
-                    new ContextMenuItem(){ Text = "Elimina la Corsa", Value =  3  }
-            },
-        async (e) =>
+        ContextMenuService.Open(args, ds =>
+            @<RadzenMenu Click=@((e)=>OnMenuItemClick(args, e)) >
+                <RadzenMenuItem Text="Mostra i dettagli" Value=@RunMenuItems.Detail />
+                <RadzenMenuItem Text="Modifica..." Value=@RunMenuItems.Edit />
+                <hr class="separator">
+                <RadzenMenuItem Text="Elimina..." Value=@RunMenuItems.Delete />
+            </RadzenMenu>
+        );
+    }
+
+    private async Task OnMenuItemClick (
+        DataGridCellMouseEventArgs<RunItemQueryModel> args,
+        MenuItemEventArgs e
+        )
+    {
+        await Task.CompletedTask;
+        ContextMenuService.Close();
+
+        switch ((RunMenuItems)e.Value)
         {
-            await Task.CompletedTask;
-            ContextMenuService.Close();
+            case RunMenuItems.Detail:
+                await DialogService.OpenSideAsync<RunItemDetail>($"Dettaglio della Corsa",
+                    new Dictionary<string, object>() { { "Id", args.Data.Id } },
+                    options: new SideDialogOptions() { CloseDialogOnOverlayClick = true, Width = "88%" }
+                    );
+                break;
+            case RunMenuItems.Edit:
+                NavigationManager.NavigateTo(
+                    string.Format("/run-edit/{0}", args.Data.Id)
+                    );
+                break;
+            case RunMenuItems.Delete:
+                break;
 
-            switch ((int)e.Value)
-            {
-                case 1:
-                    await DialogService.OpenSideAsync<RunItemDetail>($"Dettaglio della Corsa",
-                        new Dictionary<string, object>() { { "Id", args.Data.Id } },
-                        options: new SideDialogOptions() { CloseDialogOnOverlayClick = true , Width="88%"}
-                        );
-                    break;
-                case 2:
-                    NavigationManager.NavigateTo(
-                        string.Format("/run-edit/{0}", args.Data.Id)
-                        );
-                    break;
-                case 3:
-                    break;
-
-                default:
-                    break;
-            };
-        });
+            default:
+                break;
+        };
     }
 }

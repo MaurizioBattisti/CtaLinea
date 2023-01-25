@@ -126,5 +126,6 @@
     <Build Include="Tables\Runs\Utilties\Runs_NeedsDayRecalc.sql" />
     <Build Include="StoredProc\Utility\uo_RecalcRunDays_Massive.sql" />
     <Build Include="Views\Costs\vw_Costs.sql" />
+    <Build Include="StoredProc\Utility\uo_RunsNeedRecalc.sql" />
   </ItemGroup>
 </Project>
