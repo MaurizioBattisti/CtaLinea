@@ -51,7 +51,7 @@
                         <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Note</RadzenText>
                         @if (this.EditMode == true && CurrentPeriodCar != null)
 					    {
-                            <RadzenTextArea @bind-Value="CurrentPeriodCar.Note" Class="w-100 h-100" />
+                            <RadzenTextArea @bind-Value="CurrentPeriodCar.Note" Class="w-100 h-100" Change=@(a=> this.EditableData?.SetDirty()) />
 					    }
 					    else
 					    {
@@ -63,7 +63,7 @@
 
                 </div>
             </RadzenCard>
-            <CarCostListView CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@RunPeriod PeriodCar=@CurrentPeriodCar />
+            <CarCostListView EditableData=@EditableData CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@RunPeriod PeriodCar=@CurrentPeriodCar />
             @if (this.EditMode == true)
             {
                 <duv>
@@ -82,6 +82,9 @@
 </RadzenSplitter>
 
 @code {
+    [Parameter]
+    public IEditableData? EditableData { get; set; }
+
     [CascadingParameter]
     CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
 
@@ -410,6 +413,7 @@
                     }
                 }
                 this.CurrentPeriodCar = periodCar;
+                this.EditableData?.SetDirty();
                 this.StateHasChanged();
             }
         }
@@ -451,6 +455,7 @@
                         this.RunPeriod.Cars = new List<RunPeriodCar>() { periodCar };
                     }
                     this.CurrentPeriodCar = periodCar;
+                    this.EditableData?.SetDirty();
                     this.StateHasChanged();
                 }
             }
@@ -487,6 +492,7 @@
                     this.RunPeriod.Cars.Remove(this.CurrentPeriodCar);
                 }
                 this.SelectCurrentPeriodCar();
+                this.EditableData?.SetDirty();
                 this.StateHasChanged();
             }
 

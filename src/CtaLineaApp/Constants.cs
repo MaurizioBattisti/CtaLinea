@@ -46,6 +46,11 @@ namespace CtaLineaApp
         // costi
         internal const string EndPoint_Costs = "api/costs";
         internal const string EndPoint_CostsByAssociate = EndPoint_Costs + "/byassociate";
+        // utility
+        internal const string EndPoint_Utilitys = "api/utility";
+        internal const string EndPoint_CarPlanning = EndPoint_Utilitys + "/carplanning";
+
+        // argomenti
         internal const string EndPoint_CostsByAssociate_ContractId = "contractId";
         internal const string EndPoint_CostsByAssociate_StartDate= "startDate";
         internal const string EndPoint_CostsByAssociate_EndDAte = "endDate";

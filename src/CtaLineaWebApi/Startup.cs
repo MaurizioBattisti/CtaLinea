@@ -184,6 +184,7 @@ namespace CtaLineaWebApi
                 .AddScoped<IContractsQueries, ContractsQueries>()
                 .AddScoped<ITtServicesQueries,TtServicesQueries>()
                 .AddScoped<ICostQueries, CostQueries> ()
+                .AddScoped<IUtilityQueries, UtilityQueries> ()
                 ;
             
 

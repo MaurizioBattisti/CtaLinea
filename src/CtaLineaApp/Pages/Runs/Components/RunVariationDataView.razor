@@ -7,10 +7,10 @@
 		@if(this.EditMode == true)
 		{
 			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Nr. Linea</RadzenText>
-			<RadzenNumeric TValue="int?" @bind-Value=@Variation.LineNumber Class="w-100" />
+			<RadzenNumeric TValue="int?" @bind-Value=@Variation.LineNumber Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 					
 			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Nr. Corsa</RadzenText>
-			<RadzenNumeric TValue="int?" @bind-Value=@Variation.RunNumber Class="w-100" />
+			<RadzenNumeric TValue="int?" @bind-Value=@Variation.RunNumber Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 		}
 		else
 		{
@@ -27,7 +27,7 @@
 			<TimeRangeSelector 
 				@bind-StartTime="Variation.StartTime"
 				@bind-EndTime="Variation.EndTime"
-				/>
+				Changed=@(a=> this.EditableData?.SetDirty()) />
 		}
 		else
 		{
@@ -42,13 +42,13 @@
 		@if (this.EditMode == true)
 		{
 			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Calendario</RadzenText>
-			<CalendarDropDown @ref="@Calendars" @bind-CalendarId=@SelectedCalednarId AllowClear=false />
+			<CalendarDropDown @ref="@Calendars" @bind-CalendarId=@SelectedCalednarId AllowClear=false Changed=@(a=> this.EditableData?.SetDirty()) />
 
 			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Frequenza</RadzenText>
-			<RadzenTextBox @bind-Value="Variation.RequestedFrequency" MaxLength="200" Class="w-100" />
+			<RadzenTextBox @bind-Value="Variation.RequestedFrequency" MaxLength="200" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 
 			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Km</RadzenText>
-			<KmInput @bind-Value="Variation.Km" />
+			<KmInput @bind-Value="Variation.Km" Changed=@(a=> this.EditableData?.SetDirty()) />
 		}
 		else
 		{
@@ -64,31 +64,31 @@
 	</div>
 	<div class="col-2">
 		<div>
-			<RadzenCheckBox Disabled=@(!EditMode) @bind-Value=@this.Variation.Monday Name="chkMonday" TValue="bool" />
+			<RadzenCheckBox Disabled=@(!EditMode) @bind-Value=@this.Variation.Monday Name="chkMonday" TValue="bool" Change=@(a=> this.EditableData?.SetDirty()) />
 			<RadzenLabel Text="Lunedì" Component="chkMonday" Style="margin-left: 8px; vertical-align: middle;" />
 		</div>
 		<div>
-			<RadzenCheckBox Disabled=@(!EditMode) @bind-Value=@this.Variation.Tuesday Name="chkTuesday" TValue="bool" />
+			<RadzenCheckBox Disabled=@(!EditMode) @bind-Value=@this.Variation.Tuesday Name="chkTuesday" TValue="bool" Change=@(a=> this.EditableData?.SetDirty()) />
 			<RadzenLabel Text="Martedì" Component="chkTuesday" Style="margin-left: 8px; vertical-align: middle;" />
 		</div>
 		<div>
-			<RadzenCheckBox Disabled=@(!EditMode) @bind-Value=@this.Variation.Wednesday Name="chkWednesday" TValue="bool" />
+			<RadzenCheckBox Disabled=@(!EditMode) @bind-Value=@this.Variation.Wednesday Name="chkWednesday" TValue="bool" Change=@(a=> this.EditableData?.SetDirty()) />
 			<RadzenLabel Text="Mercoledì" Component="chkWednesday" Style="margin-left: 8px; vertical-align: middle;" />
 		</div>
 		<div>
-			<RadzenCheckBox Disabled=@(!EditMode) @bind-Value=@this.Variation.Thursday Name="chkThursday" TValue="bool" />
+			<RadzenCheckBox Disabled=@(!EditMode) @bind-Value=@this.Variation.Thursday Name="chkThursday" TValue="bool" Change=@(a=> this.EditableData?.SetDirty()) />
 			<RadzenLabel Text="Giovedì" Component="chkThursday" Style="margin-left: 8px; vertical-align: middle;" />
 		</div>
 		<div>
-			<RadzenCheckBox Disabled=@(!EditMode) @bind-Value=@this.Variation.Friday Name="chkFriday" TValue="bool" />
+			<RadzenCheckBox Disabled=@(!EditMode) @bind-Value=@this.Variation.Friday Name="chkFriday" TValue="bool" Change=@(a=> this.EditableData?.SetDirty()) />
 			<RadzenLabel Text="Venerdì" Component="chkFriday" Style="margin-left: 8px; vertical-align: middle;" />
 		</div>
 		<div>
-			<RadzenCheckBox Disabled=@(!EditMode) @bind-Value=@this.Variation.Saturday Name="chkSaturday" TValue="bool" />
+			<RadzenCheckBox Disabled=@(!EditMode) @bind-Value=@this.Variation.Saturday Name="chkSaturday" TValue="bool" Change=@(a=> this.EditableData?.SetDirty()) />
 			<RadzenLabel Text="Sabato" Component="chkSaturday" Style="margin-left: 8px; vertical-align: middle;" />
 		</div>
 		<div>
-			<RadzenCheckBox Disabled=@(!EditMode) @bind-Value=@this.Variation.Sunday Name="chkSunday" TValue="bool" />
+			<RadzenCheckBox Disabled=@(!EditMode) @bind-Value=@this.Variation.Sunday Name="chkSunday" TValue="bool" Change=@(a=> this.EditableData?.SetDirty()) />
 			<RadzenLabel Text="Domenica" Component="chkSunday" Style="margin-left: 8px; vertical-align: middle;" />
 		</div>
 	</div>
@@ -96,10 +96,10 @@
 		@if(this.EditMode == true)
 		{
 			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Percorso</RadzenText>
-			<RadzenTextArea @bind-Value="Variation.Path" Class="w-100" />
+			<RadzenTextArea @bind-Value="Variation.Path" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 
 			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Annotazioni</RadzenText>
-			<RadzenTextArea @bind-Value="Variation.Note" Class="w-100"  />
+			<RadzenTextArea @bind-Value="Variation.Note" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 		}
 		else
 		{
@@ -113,6 +113,9 @@
 </div>
 
 @code {
+	[Parameter]
+	public IEditableData? EditableData { get; set; }
+
 	private CalendarDropDown? Calendars;
 	[Parameter]
 	public RunItem CurrentRun { get; set; } = new RunItem();
@@ -157,6 +160,7 @@
 			if (value != null )
 			{
 				this.Variation.CalendarId = value.Value;
+				this.EditableData?.SetDirty();
 				if (Calendars != null)
 				{
 					var cal = Calendars.SelectedCalendarData;

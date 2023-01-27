@@ -9,7 +9,7 @@
 			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Note</RadzenText>
 			@if (this.EditMode == true)
 			{
-				<RadzenTextArea @bind-Value=@Replacement.Note Class="w-100 h-100" />
+				<RadzenTextArea @bind-Value=@Replacement.Note Class="w-100 h-100" Change=@(a=> this.EditableData?.SetDirty()) />
 			}
 			else
 			{
@@ -19,12 +19,16 @@
 	</div>
 </RadzenCard>
 <RunCarListView 
+	EditableData=@EditableData 
 	CurrentRun=@CurrentRun
 	EditMode=@EditMode
 	RunPeriod=@SubPeriod 
 	Replacement=@Replacement/>
 
 @code {
+	[Parameter]
+	public IEditableData? EditableData { get; set; }
+
 	[Parameter]
 	public RunItem CurrentRun { get; set; } = new RunItem();
 	[Parameter]

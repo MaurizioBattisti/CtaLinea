@@ -48,6 +48,9 @@
 
 @code {
 	[Parameter]
+	public IEditableData? EditableData { get; set; }
+
+	[Parameter]
 	public RunItem CurrentRun { get; set; } = new RunItem();
 	[Parameter]
 	public RunVariation Variation { get; set; } = new RunVariation();
@@ -99,6 +102,7 @@
 			node);
 
 		this.StateHasChanged();
+		this.EditableData?.SetDirty();
 		await Task.CompletedTask;
 	}
 	private async Task EditNode_Click(RunNode node)
@@ -114,6 +118,7 @@
 			this.RunModelService.AddNodeToVariation(
 				this.Variation,
 				this.DialogNode);
+			this.EditableData?.SetDirty();
 		}
 		this.DialogNode = null;
 		this.StateHasChanged();
@@ -129,6 +134,7 @@
 			this.RunModelService.AddNodeToVariation(
 				this.Variation, 
 				this.DialogNode);
+			this.EditableData?.SetDirty();
 		}
 		this.DialogNode = null;
 		this.StateHasChanged();
@@ -155,6 +161,7 @@
 	private void Reorder_Click ()
 	{
 		RunModelService.ReorderNodes(this.Variation);
+		this.EditableData?.SetDirty();
 		this.StateHasChanged();
 	}
 

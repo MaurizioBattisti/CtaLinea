@@ -34,7 +34,7 @@ else
         <CheckREsultView CheckResult=@CheckResult
                  ShowSuccessMessage=true />
 
-        <BaseRunDataView CurrentRun=@CurrentRun EditMode=@EditMode />
+        <BaseRunDataView EditableData=@this CurrentRun=@CurrentRun EditMode=@EditMode />
 
         <RadzenCard>
             <RadzenButton Click=@Save_Click IsBusy=@IsSaving Text="Crea Corsa" BusyText="Creazione...." ButtonStyle="ButtonStyle.Primary" />
@@ -125,6 +125,7 @@ else
             run.Extra = true;
 
             this.CurrentRun = run;                
+            this.IsClean = true;
 
             this.StateHasChanged();
             await Task.CompletedTask;
@@ -144,6 +145,7 @@ else
         {
             await this._repo.AddNewOneAsync(this.CurrentRun);
             var id = this.CurrentRun.RunId;
+            this.IsClean = true;
 
             this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
 

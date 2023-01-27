@@ -23,7 +23,7 @@
 	<RadzenSplitterPane>
 		@if(CurrentReplacement != null)
 		{
-			<CarReplacementItemView CurrentRun=@CurrentRun EditMode=@EditMode SubPeriod=@RunPeriod Replacement=@CurrentReplacement />
+			<CarReplacementItemView EditableData=@EditableData CurrentRun=@CurrentRun EditMode=@EditMode SubPeriod=@RunPeriod Replacement=@CurrentReplacement />
 			@if(EditMode == true)
 			{
 				<div>
@@ -42,6 +42,9 @@
 </RadzenSplitter>
 
 @code {
+	[Parameter]
+	public IEditableData? EditableData { get; set; }
+
 	[Parameter]
 	public RunItem CurrentRun { get; set; } = new RunItem();
 	[Parameter]
@@ -102,6 +105,7 @@
 			{
 				this.RunPeriod.CarReplacements.Add(replacement);
 			}
+			this.EditableData?.SetDirty();
 			CurrentReplacement = replacement;
 		}
 	}
@@ -112,10 +116,24 @@
 
 		if (this.CurrentReplacement != null)
 		{
+			var current = this.CurrentReplacement;
+			var replacement = new CarReplacement()
+			{
+				CarReplacementId = current.CarReplacementId,
+				StartDate = current.StartDate,
+				EndDate = current.EndDate,
+				OriginalPEriodCarIds = current.OriginalPEriodCarIds?.ToList()
+			};
 
-
-
-
+			var title = "Modifica Sostituzione";
+			if (await this.AskEditReplacementAsync(title, "Cambia", replacement) == true)
+			{
+				// aggiorna i valori
+				current.StartDate = replacement.StartDate;
+				current.EndDate = replacement.EndDate;
+				current.OriginalPEriodCarIds = replacement.OriginalPEriodCarIds;
+				this.EditableData?.SetDirty();
+			}
 		}
 	}
 	private async Task DeleteReplacement_Click()
@@ -124,10 +142,34 @@
 
 		if (this.CurrentReplacement != null)
 		{
+			var current = this.CurrentReplacement;
+			// chiede conferma per la cancellazione del periodo selezionato
+			var result = await DialogService.Confirm(
+			string.Format("Desideri veramente eliminare la sostituzione dal {0:dd/MM/yyyy} al {1:dd/MM/yyyy} ? tutti i dati associati saranno persi", current.StartDate, current.EndDate),
+					"Elimina Sostituzione",
+					new ConfirmOptions
+					{
+						OkButtonText = "Si, Elimina la sostituzione !",
+						CancelButtonText = "No ! Annulla"
+					});
 
-
-
-
+			if (result == true)
+			{
+				if (current.ReplacedPEriodCarIds != null)
+				{
+					foreach (var id in current.ReplacedPEriodCarIds)
+					{
+						var pc = this.RunPeriod.Cars?.Where(c => c.RunCarId == id).FirstOrDefault();
+						if (pc != null)
+						{
+							this.RunPeriod.Cars?.Remove(pc);
+						}
+					}
+				}
+				// elimina i periodi dei mezzi  corrispondenti
+				this.RunPeriod.CarReplacements?.Remove(current);
+				this.StateHasChanged();
+			}
 		}
 	}
 

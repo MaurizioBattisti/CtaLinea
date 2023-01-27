@@ -29,7 +29,7 @@
 			else
 			{
 				<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Note</RadzenText>
-				<RadzenTextArea @bind-Value="CurrentPeriod.Note" Class="w-100 h-100" />
+				<RadzenTextArea @bind-Value="CurrentPeriod.Note" Class="w-100 h-100" Change=@(a=> this.EditableData?.SetDirty()) />
 			}
 		</div>
 	}
@@ -43,12 +43,12 @@
 		RenderMode="TabRenderMode.Client" >
 		<Tabs>
 			<RadzenTabsItem Text="Mezzi">
-				<RunCarListView CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@CurrentPeriod Replacement=null />
+				<RunCarListView EditableData=@EditableData CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@CurrentPeriod Replacement=null />
 			</RadzenTabsItem>
 			<RadzenTabsItem Text="Sostituzioni">
 				@if (CurrentPeriod != null )
 				{
-					<RunPeriodReplacementListView CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@CurrentPeriod />
+					<RunPeriodReplacementListView EditableData=@EditableData CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@CurrentPeriod />
 				}
 			</RadzenTabsItem>
 		</Tabs>
@@ -72,6 +72,9 @@
 </RadzenAlert>
 
 @code {
+	[Parameter]
+	public IEditableData? EditableData { get; set; }
+
 	[Parameter]
 	public RunItem CurrentRun { get; set; } = new RunItem();
 	[Parameter]
@@ -193,6 +196,7 @@
 			if (this.CurrentRun.SubPeriods == null) this.CurrentRun.SubPeriods = new List<RunPeriod>();
 			this.CurrentRun.SubPeriods.Add(period);
 			this.CurrentPeriod = period;
+			this.EditableData?.SetDirty();
 			this.StateHasChanged();
 		}
 	}
@@ -221,6 +225,7 @@
 				this.CurrentRun.SubPeriods.Remove(this.CurrentPeriod);
 				this.CurrentRun.SubPeriods.Add(period);
 				this.CurrentPeriod = period;
+				this.EditableData?.SetDirty();
 				this.StateHasChanged();
 			}
 		}
@@ -247,6 +252,7 @@
 				if (this.CurrentRun.SubPeriods != null) this.CurrentRun.SubPeriods.Remove(this.CurrentPeriod);
 
 				this.SelectCurrentPeriod();
+				this.EditableData?.SetDirty();
 				this.StateHasChanged();
 			}
 		}

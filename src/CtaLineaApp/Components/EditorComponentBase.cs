@@ -6,10 +6,11 @@ using Radzen;
 
 namespace CtaLineaApp.Components
 {
-    public class EditorComponentBase 
+    public class EditorComponentBase
         : ComponentBase
         , IRecordRoutingComponent
         , IDisposable
+        , IEditableData
     {
         [Inject]
         public DialogService DialogService { get; set; }
@@ -62,10 +63,10 @@ namespace CtaLineaApp.Components
         protected async void OnNavigationCancelled(object sender, EventArgs e)
         {
             this.ExitAttempt = true;
-            var result = await  DialogService.Confirm(
+            var result = await DialogService.Confirm(
                 "Ci sono dati non salvati nella pagina. Desideri comunque abbandonarla ?",
                 "Dati non Salvati",
-                new ConfirmOptions() { OkButtonText = "Si, abbandona !", CancelButtonText= "No, rimani qui !" }
+                new ConfirmOptions() { OkButtonText = "Si, abbandona !", CancelButtonText = "No, rimani qui !" }
                 );
             this.StateHasChanged();
 
@@ -80,6 +81,11 @@ namespace CtaLineaApp.Components
         public void Dispose()
         {
             this.RouterSessionService.NavigationCancelled -= OnNavigationCancelled;
+        }
+
+        public void SetDirty()
+        {
+            this.IsClean = false;
         }
     }
 }

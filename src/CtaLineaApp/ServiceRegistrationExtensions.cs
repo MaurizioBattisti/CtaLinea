@@ -10,6 +10,7 @@ using CtaLineaApp.Pages.Services;
 using CEC.Routing;
 using CtaLinea.Model.ModelServices;
 using CtaLineaApp.Application.Services.Costs;
+using CtaLineaApp.Application.Services.Utilities;
 
 namespace CtaLineaApp
 {
@@ -46,7 +47,8 @@ namespace CtaLineaApp
                 .AddScoped<IHttpService, HttpService>()
                 .AddScoped<ILocalStorageService, LocalStorageService>()
                 .AddScoped<IQueryUtilityService, QueryUtilityService>()
-                .AddScoped<ICostService, CostService> ()
+                .AddScoped<ICostService, CostServic> ()
+                .AddScoped<IUtilityService, UtilityService> ()
                 
                 // servizio per la gestion dei contratti
                 .AddScoped<IContractService, ContractService> ()

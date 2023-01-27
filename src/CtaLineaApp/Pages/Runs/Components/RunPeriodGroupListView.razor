@@ -31,7 +31,7 @@
 			<RadzenSplitterPane>
 				@if (CurrentPeriodGroup != null)
 				{
-					<RunPeriodView CurrentRun=@CurrentRun EditMode=@EditMode PeriodGroup=@CurrentPeriodGroup />
+					<RunPeriodView EditableData=@EditableData CurrentRun=@CurrentRun EditMode=@EditMode PeriodGroup=@CurrentPeriodGroup />
 					@if (this.EditMode == true)
 					{
 						<div>
@@ -52,6 +52,9 @@
 </RadzenPanel>
 
 @code {
+	[Parameter]
+	public IEditableData? EditableData { get; set; }
+
 	[Parameter]
 	public RunItem CurrentRun { get; set; } = new RunItem();
 	[Parameter]
@@ -153,6 +156,7 @@
 				periodGroup.SubPeriods.Add(period);
 				this.PeriodGroupList.Add(periodGroup);
 				this.CurrentPeriodGroup = periodGroup;
+				this.EditableData?.SetDirty();
 			}
 		}
 	}
@@ -205,6 +209,7 @@
 						this.PeriodGroupList.Remove(this.CurrentPeriodGroup);
 						this.PeriodGroupList.Add(periodGroup);
 						this.CurrentPeriodGroup = periodGroup;
+						this.EditableData?.SetDirty();
 					}
 				}
 			}
@@ -241,6 +246,7 @@
 					}
 					this.PeriodGroupList.Remove(this.CurrentPeriodGroup);
 					this.SelectCurrentGroup();
+					this.EditableData?.SetDirty();
 				}
 			}
 		}

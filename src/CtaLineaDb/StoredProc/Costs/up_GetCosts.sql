@@ -25,7 +25,7 @@ BEGIN
 				rc.AssociateId,
 				rc.CarId,
 				c.Day,
-				c.km,
+				c.Km,
 				c.KmCost,
 				c.DayPrice,
 				c.DayForfait,

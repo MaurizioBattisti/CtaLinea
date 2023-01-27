@@ -21,7 +21,7 @@
     </RadzenCard>
     @if(this.CurrentCarCost != null)
     {
-        <CarCostView CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@RunPeriod PeriodCar=@PeriodCar CarCost=@CurrentCarCost />
+        <CarCostView EditableData=@EditableData CurrentRun=@CurrentRun EditMode=@EditMode RunPeriod=@RunPeriod PeriodCar=@PeriodCar CarCost=@CurrentCarCost />
         @if (this.EditMode == true)
         {
             <div>
@@ -41,6 +41,9 @@
 }
 
 @code {
+    [Parameter]
+    public IEditableData? EditableData { get; set; }
+
     [Parameter]
     public RunItem CurrentRun { get; set; } = new RunItem();
     [Parameter]
@@ -145,6 +148,7 @@
                     if (cost != null)
                     {
                         this.CurrentCarCost = cost;
+                        this.EditableData?.SetDirty();
                         this.StateHasChanged();
                     }
                 }
@@ -170,6 +174,7 @@
                 if (await this.CheckDataAsync(title, fakeCost.StartDate, null) == true)
                 {
                     this.CurrentCarCost.StartDate = fakeCost.StartDate;
+                    this.EditableData?.SetDirty();
                     this.StateHasChanged();
                 }
             }
@@ -197,6 +202,7 @@
                     this.PeriodCar.CarCosts.Remove(this.CurrentCarCost);
                 }
                 this.SelectCarCost();
+                this.EditableData?.SetDirty();
                 this.StateHasChanged();
             }
         }

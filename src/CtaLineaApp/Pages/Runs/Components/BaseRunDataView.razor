@@ -31,7 +31,7 @@
 					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Riga dell'appalto</RadzenText>
 					@if (this.EditMode == true)
 					{
-						<RadzenNumeric @bind-Value="this.CurrentRun.ContractRowNumber" Class="w-100" />
+						<RadzenNumeric TValue="int?" @bind-Value="this.CurrentRun.ContractRowNumber" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 
 						<div class="row-flex-row">
 							<RadzenCheckBox @bind-Value=@this.CurrentRun.Extra Name="ExtraContract" TValue="bool" />
@@ -92,7 +92,7 @@
 					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Giorni richiesti</RadzenText>
 					@if (this.EditMode == true)
 					{
-						<RadzenNumeric TValue="int?" @bind-Value="CurrentRun.RequestedDays" Class="w-100" />
+						<RadzenNumeric TValue="int?" @bind-Value="CurrentRun.RequestedDays" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 					}
 					else
 					{
@@ -103,7 +103,7 @@
 					<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Note</RadzenText>
 					@if (this.EditMode == true)
 					{
-						<RadzenTextArea @bind-Value="CurrentRun.Note" Class="w-100 h-100" />
+						<RadzenTextArea @bind-Value="CurrentRun.Note" Class="w-100 h-100" Change=@(a=> this.EditableData?.SetDirty()) />
 					}
 					else
 					{
@@ -142,7 +142,7 @@
 			<RadzenSplitterPane>
 				@if (this.CurrentVariation != null)
 				{
-					<RunVariationView CurrentRun=@CurrentRun Variation=@CurrentVariation EditMode=@EditMode />
+					<RunVariationView EditableData=@EditableData CurrentRun=@CurrentRun Variation=@CurrentVariation EditMode=@EditMode />
 					@if (this.EditMode == true)
 					{
 						<RadzenButton Text="Modifica Inizio"
@@ -162,7 +162,7 @@
 	</ChildContent>
 </RadzenPanel>
 
-<RunPeriodGroupListView CurrentRun=@CurrentRun EditMode=@EditMode /> 
+<RunPeriodGroupListView EditableData=@EditableData CurrentRun=@CurrentRun EditMode=@EditMode />
 
 <RadzenPanel AllowCollapse="true" Collapsed=@SuspnesionsIsCollapsed() Style="auto;">
 	<HeaderTemplate>
@@ -196,7 +196,7 @@
 			<RadzenSplitterPane>
 				@if (Current_Suspension != null)
 				{
-					<RunSuspnesionView CurrentRun=@CurrentRun EditMode=@EditMode Suspension=@Current_Suspension />
+					<RunSuspnesionView EditableData=@EditableData CurrentRun=@CurrentRun EditMode=@EditMode Suspension=@Current_Suspension />
 					@if (this.EditMode == true)
 					{
 						<RadzenButton Text="Modifica Sospensione"
@@ -215,6 +215,8 @@
 </RadzenPanel>
 
 @code {
+	[Parameter]
+	public IEditableData? EditableData { get; set; }
 	[Parameter]
 	public RunItem CurrentRun { get; set; } = new RunItem();
 	[Parameter]
@@ -325,6 +327,7 @@
 			if (value != null)
 			{
 				this.CurrentRun.ContractId = value.Value;
+				this.EditableData?.SetDirty();
 				if (Contracts != null)
 				{
 					var contract = Contracts.SelectedContractData;
@@ -415,6 +418,7 @@
 					// crea la nuova variante
 					var newVar = this.RunModelService.CreateNewVariation(this.CurrentRun, date);
 					this.CurrentVariation = newVar;
+					this.EditableData?.SetDirty();
 					this.StateHasChanged();
 				}
 			}
@@ -466,6 +470,7 @@
 					if (this.CurrentVariation != null)
 					{
 						this.CurrentVariation.StartDate = date;
+						this.EditableData?.SetDirty();
 						this.StateHasChanged();
 					}
 				}
@@ -499,6 +504,7 @@
 					this.CurrentVariation
 				);
 				this.CurrentVariation = null;
+				this.EditableData?.SetDirty();
 				this.SelectCurrentVariation();
 			}
 		}
@@ -576,6 +582,7 @@
 			{
 				CurrentRun.Suspensions.Add(suspnesion);
 			}
+			this.EditableData?.SetDirty();
 			this.Current_Suspension = suspnesion;
 		}
 	}
@@ -604,6 +611,7 @@
 				{
 					this.CurrentRun.Suspensions.Add(suspnesion);
 				}
+				this.EditableData?.SetDirty();
 				this.Current_Suspension = suspnesion;
 			}
 		}
@@ -630,6 +638,7 @@
 				);
 				this.Current_Suspension = null;
 				this.SelectCurrentSuspension();
+				this.EditableData?.SetDirty();
 			}
 		}
 	}

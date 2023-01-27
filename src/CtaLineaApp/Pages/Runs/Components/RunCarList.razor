@@ -28,6 +28,9 @@
 </RadzenListBox>
 
 @code {
+    [Parameter]
+    public IEditableData? EditableData { get; set; }
+
     [CascadingParameter]
     CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
 

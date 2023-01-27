@@ -8,15 +8,18 @@
 	RenderMode="TabRenderMode.Client" >
 	<Tabs>
 		<RadzenTabsItem Text="Dati">
-			<RunVariationDataView CurrentRun=@CurrentRun Variation=@Variation EditMode=@EditMode />
+			<RunVariationDataView EditableData=@EditableData CurrentRun=@CurrentRun Variation=@Variation EditMode=@EditMode />
 		</RadzenTabsItem>
 		<RadzenTabsItem  Text="Nodi">
-			<RunVariationNpdesView CurrentRun=@CurrentRun Variation=@Variation EditMode=@EditMode />
+			<RunVariationNpdesView EditableData=@EditableData CurrentRun=@CurrentRun Variation=@Variation EditMode=@EditMode />
 		</RadzenTabsItem>
 	</Tabs>
 </RadzenTabs>
 
 @code {
+	[Parameter]
+	public IEditableData? EditableData { get; set; }
+
 	[Parameter]
 	public RunItem CurrentRun { get; set; } = new RunItem();
 	[Parameter]

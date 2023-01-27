@@ -11,7 +11,8 @@
                        @bind-Value="@CarCost.KmPrice"
                        Culture=@AppSettings.CurrentCulture
                        Format="0.00"
-                       Class="w-100" />
+                       Class="w-100" 
+                       Change=@(a=> this.EditableData?.SetDirty()) />
         </div>
         <div class="col-3">
             <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Costo al giorno</RadzenText>
@@ -19,7 +20,8 @@
                        @bind-Value="@CarCost.DayPrice"
                        Culture=@AppSettings.CurrentCulture
                        Format="0.00"
-                       Class="w-100" />
+                       Class="w-100" 
+                       Change=@(a=> this.EditableData?.SetDirty()) />
         </div>
         <div class="col-3">
             <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Forfait al giorno</RadzenText>
@@ -27,7 +29,8 @@
                        @bind-Value="@CarCost.DayForfait"
                        Culture=@AppSettings.CurrentCulture
                        Format="0.00"
-                       Class="w-100" />
+                       Class="w-100" 
+                       Change=@(a=> this.EditableData?.SetDirty()) />
         </div>
         <div class="col-3">
             <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">integrazione al giorno</RadzenText>
@@ -35,7 +38,8 @@
                        @bind-Value="@CarCost.DayIntegration"
                        Culture=@AppSettings.CurrentCulture
                        Format="0.00"
-                       Class="w-100" />
+                       Class="w-100" 
+                       Change=@(a=> this.EditableData?.SetDirty()) />
         </div>
     }
     else
@@ -60,6 +64,9 @@
 </div>
 
 @code {
+    [Parameter]
+    public IEditableData? EditableData { get; set; }
+
     [Parameter]
     public RunItem CurrentRun { get; set; } = new RunItem();
     [Parameter]

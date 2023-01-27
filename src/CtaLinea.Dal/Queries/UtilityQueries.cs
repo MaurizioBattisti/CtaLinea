@@ -1,0 +1,58 @@
+﻿using CtaLinea.Model.Costs;
+using CtaLinea.Model.Utilities;
+using Dapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ZzSoft.CtaLinea.Dal.Context;
+
+namespace ZzSoft.CtaLinea.Dal.Queries
+{
+    public class UtilityQueries 
+        : IUtilityQueries
+    {
+        private const string SQL_up_GetPlanning = "[dbo].[up_GetPlanning]";
+
+        private readonly CtaDbContext _context;
+        private readonly ILogger _logger;
+
+        public UtilityQueries(
+            CtaDbContext context,
+            ILogger<CostQueries> logger
+            )
+        {
+            _context = context;
+            _logger = logger;
+        }
+
+        public async Task<IEnumerable<CarPlanningItem>> GetCarPlanningAsync(
+            Guid? associateId = null,
+            Guid? carId = null,
+            DateTime? startDate = null,
+            DateTime? endDate = null
+            )
+        {
+            using IDbConnection conn = this._context.Database.GetDbConnection();
+            conn.Open();
+
+            using var reader = await conn.QueryMultipleAsync(
+                SQL_up_GetPlanning,
+                param: new
+                {
+                    AssociateId = associateId,
+                    CarId = carId,
+                    StartDate = startDate,
+                    EndDate = endDate
+                },
+                commandType: CommandType.StoredProcedure);
+
+            var items = reader.Read<CarPlanningItem>();
+            return await Task.FromResult(items);
+        }
+    }
+}

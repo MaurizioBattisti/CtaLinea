@@ -16,6 +16,8 @@ using System.Threading.Tasks;
 using ZzSoft.Api.Utility.Base;
 using ZzSoft.CtaLinea.Dal.Queries;
 using CtaLinea.QueryModel;
+using CtaLinea.Model.Costs;
+using CtaLinea.Model.Utilities;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -28,13 +30,39 @@ namespace CtaLineaWebApi.Controllers
         private readonly ILogger _logger;
         private readonly IMediator _mediator;
 
+        private readonly IUtilityQueries _queries;
+
         public UtilityController(
             IMediator mediator,
+            IUtilityQueries queries,
             ILogger<UtilityController> logger)
         {
             this._mediator = mediator;
+            this._queries = queries;
             this._logger = logger;
         }
+
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpGet]
+        [Route("carplanning")]
+        public async Task<ActionResult<IEnumerable<CarPlanningItem>>> GetCostsByAssociateAsync(
+            [FromQuery] Guid? associateId = null,
+            [FromQuery] Guid? carId = null,
+            [FromQuery] DateTime? startDate = null,
+            [FromQuery] DateTime? endDate = null
+            )
+        {
+            var result = await this._queries.GetCarPlanningAsync(
+                associateId, carId,
+                startDate, endDate
+                )
+                .ConfigureAwait(false);
+
+            return this.Ok(result);
+        }
+
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

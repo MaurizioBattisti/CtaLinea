@@ -6,12 +6,12 @@ using static System.Net.WebRequestMethods;
 
 namespace CtaLineaApp.Application.Services.Costs
 {
-    public class CostService 
+    public class CostServic
         : ICostService
     {
         private readonly IHttpService _http;
 
-        public CostService(
+        public CostServic(
             IHttpService http
             )
         {

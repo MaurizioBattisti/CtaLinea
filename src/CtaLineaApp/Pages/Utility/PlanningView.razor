@@ -1,0 +1,189 @@
+﻿@page "/planning"
+@using CtaLinea.Model.Utilities
+@using CtaLineaApp.Pages.Runs;
+@inject IUtilityService _utilityService
+@inject DialogService DialogService
+@attribute [Authorize]
+
+<PageTitle>@Constants.App_Title - Planning</PageTitle>
+
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Planning Attività" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<RadzenLayout Style="width: 100%" >
+    <RadzenHeader>
+        <RadzenStack Orientation="Orientation.Vertical"
+                    AlignItems="AlignItems.Stretch">
+            <RadzenRow>
+                <RadzenColumn>
+                    <AssociateAndCarDropDown @bind-AssociateId=@AssociateId @bind-CarId=@CarId Inline=true AllowClear=true />
+                </RadzenColumn>
+                <RadzenColumn Size="1">
+                    <RadzenButton Text="Carica..."
+                                  IsBusy=@isLoading
+                                  BusyText="Ricerca..."
+                                  Click=@ReloadDataAsync />
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenStack>
+    </RadzenHeader>
+    <RadzenBody>
+        <RadzenScheduler @ref=@scheduler
+                            SlotRender=@OnSlotRender
+                            TItem="CarPlanningItem"
+                            Data=@Planning
+                            LoadData=@LoadDataAsync
+                            StartProperty="StartTime"
+                            EndProperty="EndTime"
+                            TextProperty="Text"
+                            SelectedIndex="1"
+                            AppointmentSelect=@OnAppointmentSelect
+                            AppointmentRender=@OnAppointmentRender
+                            Style="height:100%; width:100%">
+
+            <RadzenDayView />
+            <RadzenWeekView />
+            <RadzenMonthView />
+
+        </RadzenScheduler>
+    </RadzenBody>
+</RadzenLayout>
+
+@code {
+    [CascadingParameter]
+    public CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+    RadzenScheduler<CarPlanningItem>? scheduler;
+
+    // colori degli appuntamenti
+    private string[] Colors = new string[]
+    {
+        "background: Chartreuse; color: black",
+        "background: Chocolate; color: white",
+        "background: DarkBlue; color: white",
+        "background: Crimson; color: white",
+        "background: DarkGreen; color: white",
+        "background: Brown; color: white",
+        "background: BlueViolet; color: white",
+        "background: DarkCyan; color: white",
+        "background: Crimson; color: white",
+        "background: DarkMagenta; color: white",
+        "background: DarkRedt; color: white",
+        "background: DarkOrange; color: black",
+        "background: DeepPink; color: white",
+        "background: DodgerBlue; color: black",
+        "background: Gold; color: black",
+        "background: Indigo ; color: white",
+        "background: IndianRed ; color: white",
+        "background: DarkGray; color: black",
+        "background: white; color: black",
+        "background: black; color: white"
+    };
+    private IList<Guid>? CarIds;
+    private bool isLoading = false;
+    private IEnumerable<CarPlanningItem> Planning = new List<CarPlanningItem> () ;
+
+    // argomenti
+    private Guid? AssociateId { get; set; } = null;
+    private Guid? CarId { get; set; } = null;
+
+    /*
+    protected override async Task OnInitializedAsync()
+    {
+
+
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+        }
+    }
+    */
+
+    private async Task ReloadDataAsync()
+    {
+        await Task.CompletedTask;
+        if (this.scheduler != null)
+        {
+            await this.scheduler.Reload();
+        }
+    }
+
+    private async Task LoadDataAsync(
+        SchedulerLoadDataEventArgs args)
+    {
+        if (this.AssociateId == null)
+        {
+            this.Planning = new List<CarPlanningItem>();
+            this.StateHasChanged();
+            return;
+        }
+        try
+        {
+            this.isLoading = true;
+            var data = await this._utilityService.GetCarPlanningAsync(
+                this.AssociateId,
+                this.CarId,
+                args.Start, args.End
+                );
+            this.Planning = data;
+
+            // slava la lista dei mezzi per assegnargli un colore
+            this.CarIds= (from d in data.OrderBy(x => x.CarDescr)
+                           group d by d.CarId into c
+                           select c.Key).ToList();
+        }
+        finally
+        {
+            this.isLoading = false;
+            this.StateHasChanged();
+        }
+    }
+
+    private void OnSlotRender(SchedulerSlotRenderEventArgs args)
+    {
+        // Highlight today in month view
+        if (args.View.Text == "Month" && args.Start.Date == DateTime.Today)
+        {
+            args.Attributes["style"] = "background: rgba(255,220,40,.2);";
+        }
+
+        // Highlight working hours (9-18)
+        if ((args.View.Text == "Week" 
+                || args.View.Text == "Day") 
+            && args.Start.DayOfWeek != DayOfWeek.Sunday
+            && args.Start.Hour > 8
+            && args.Start.Hour < 19)            
+        {
+            args.Attributes["style"] = "background: rgba(255,220,40,.2);";
+        }
+    }
+
+    private async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<CarPlanningItem> args)
+    {
+        await DialogService.OpenSideAsync<RunItemDetail>($"Dettaglio della Corsa",
+            new Dictionary<string, object>() { { "Id", args.Data.RunId } },
+            options: new SideDialogOptions() { CloseDialogOnOverlayClick = true, Width = "88%" }
+            );
+    }
+
+    private void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<CarPlanningItem> args)
+    {
+        // Never call StateHasChanged in AppointmentRender - would lead to infinite loop
+        var index = CarIds?.IndexOf(args.Data.CarId);
+        if (index != null)
+        {
+            args.Attributes["style"] = this.Colors[index.Value % this.Colors.Length];
+        }
+    }
+ }
