@@ -128,5 +128,6 @@
     <Build Include="Views\Costs\vw_Costs.sql" />
     <Build Include="StoredProc\Utility\uo_RunsNeedRecalc.sql" />
     <Build Include="StoredProc\Utility\up_GetPlanning.sql" />
+    <Build Include="Views\vw_Calendars.sql" />
   </ItemGroup>
 </Project>

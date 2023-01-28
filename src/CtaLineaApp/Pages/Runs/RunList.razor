@@ -5,6 +5,8 @@
 @inject IQueryUtilityService QueryService
 @inject DialogService DialogService
 @inject NavigationManager NavigationManager
+@inject NotificationService notificationService
+@inject IRunRepository RunRepo
 @attribute [Authorize]
 
 <PageTitle>@Constants.App_Title - Corse</PageTitle>
@@ -404,6 +406,39 @@
         }
     }
 
+    private async Task DeleteRunAsync (
+        Guid runId)
+    {
+        // chiede conferma e poi procede con la cancellazione
+        var title = "Eliminazione Corsa";
+        if (await this.DialogService.Confirm(
+            "Desideri veramente eliminare la corsa selezionata ? Tutti i dati ad essa associati verranno eliminati.",
+            title,
+            new ConfirmOptions
+            {
+                OkButtonText = "Si, Elimina !",
+                CancelButtonText = "Annulla"
+            }) == true )
+        {
+            try
+            {
+                await RunRepo.DeleteRunAsync(runId);
+                if (this.grdData != null)
+                {
+                    await this.grdData.Reload();
+                }
+            }
+            catch (Exception exc)
+            {
+                notificationService.Notify(
+                    NotificationSeverity.Error,
+                    "Eliminazione Falita",
+                    exc.Message
+                );
+            }
+        }
+    }
+
     private void RowActionCellContextMenu(DataGridCellMouseEventArgs<RunItemQueryModel> args)
     {
         SelectedRuns = new List<RunItemQueryModel>() { args.Data };
@@ -414,8 +449,8 @@
                 <RadzenMenuItem Text="Modifica..." Value=@RunMenuItems.Edit />
                 <hr class="separator">
                 <RadzenMenuItem Text="Elimina..." Value=@RunMenuItems.Delete />
-            </RadzenMenu>
-        );
+        </RadzenMenu>
+    );
     }
 
     private async Task OnMenuItemClick (
@@ -440,6 +475,7 @@
                     );
                 break;
             case RunMenuItems.Delete:
+                await this.DeleteRunAsync(args.Data.Id);
                 break;
 
             default:

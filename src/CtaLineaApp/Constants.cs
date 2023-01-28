@@ -40,7 +40,7 @@ namespace CtaLineaApp
         // endpoints
         internal const string Endpoint_Runs = "/api/runs";
         internal const string Endpoint_RunList = Endpoint_Runs;
-        internal const string Endpoint_OneRun_Frm= Endpoint_Runs  +"/{0}";
+        internal const string Endpoint_OneRun_Frm= Endpoint_Runs  + "/{0}";
         internal const string Endpoint_RunVariationList_Fmt = Endpoint_OneRun_Frm  + "/variations";
 
         // costi

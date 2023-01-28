@@ -65,5 +65,13 @@ namespace CtaLineaApp.Application.Services.Run
                 throw new BadRequestException<RunCheckResult>("Bad Request", checkResult);
             }
         }
-    }
+
+        public async Task DeleteRunAsync(
+            Guid runId)
+        {
+			string url = string.Format(Constants.Endpoint_OneRun_Frm, runId);
+			// eseuge la cancellazione della corsa
+			await _http.Delete<RunCheckResult>(url);
+		}
+	}
 }

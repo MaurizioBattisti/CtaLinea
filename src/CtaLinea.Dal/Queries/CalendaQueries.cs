@@ -11,7 +11,7 @@ namespace ZzSoft.CtaLinea.Dal.Queries
     public class CalendaQueries 
         : ICalendaQueries
     {
-        private const string CalendarsSql_Table = "dbo.Calendars c";
+        private const string CalendarsSql_Table = "dbo.vw_Calendars c";
 
         private CtaDbContext _context;
 

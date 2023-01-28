@@ -8,12 +8,18 @@ namespace CtaLinea.Model.QueryModel
         [SqlField("CalendarId")]
         public int Id { get; set; }
 
-        public int? BaseCalendarId { get; set; }
-        [SqlField(FullText = true, SortPosition = 0)]
+		[SqlField(FullText = true, SortPosition = 0)]
         public string CalendarName { get; set; } = String.Empty;
 
-        public string CalendarType { get; set; } = String.Empty;
-        public bool Sundays { get; set; }
+		public int? BaseCalendarId { get; set; }
+		[SqlField(FullText = true, SortPosition = 0)] 
+        public string? BaseCalendarName { get; set; }
+
+		public string CalendarType { get; set; } = String.Empty;
+		[SqlField(FullText = true, SortPosition = 0)]
+        public string CalendarTypeDescr { get; set; } = String.Empty;
+
+		public bool Sundays { get; set; }
         public bool PreHolyday { get; set; }
         public bool PostHolyday { get; set; }
     }

@@ -52,5 +52,11 @@ namespace CtaLineaWebApi.Controllers
             return await this.ModelOKAsync(result)
                 .ConfigureAwait(false);
         }
+
+        #region periodi dei calendari
+        #endregion
+
+        #region giorni dei calendari
+        #endregion
     }
 }

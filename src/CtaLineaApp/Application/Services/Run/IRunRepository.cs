@@ -9,5 +9,7 @@ namespace CtaLineaApp.Application.Services.Run
 
         Task SaveRunAsync(Guid runId, RunItem model);
         Task AddNewOneAsync(RunItem model);
-    }
+        Task DeleteRunAsync(
+            Guid runId);
+	}
 }
