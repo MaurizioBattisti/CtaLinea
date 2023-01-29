@@ -15,7 +15,7 @@ namespace CtaLinea.Model.Runs
         public TimeSpan? EndTime { get; set; }
 
         public int? CalendarId { get; set; }
-        public Calendar? CalendarData { get; set; }
+        public CalendarItem? CalendarData { get; set; }
 
 		public bool Monday { get; set; } = true;
 		public bool Tuesday { get; set; } = true;

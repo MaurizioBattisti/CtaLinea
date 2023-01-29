@@ -185,8 +185,8 @@ namespace CtaLineaWebApi
                 .AddScoped<ITtServicesQueries,TtServicesQueries>()
                 .AddScoped<ICostQueries, CostQueries> ()
                 .AddScoped<IUtilityQueries, UtilityQueries> ()
+                .AddScoped<ICalendarRepository, CalendarRepository>()
                 ;
-            
 
             // repository per le importazioni da TT
             services.AddScoped<IUserRepository,UserRepository>()

@@ -1,0 +1,272 @@
+﻿@page "/calendars"
+@using CtaLinea.Model.QueryModel;
+@inject IAutoLoadDataList<CalendarQueryItem> AutoLoad;
+@inject ContextMenuService ContextMenuService
+@inject IQueryUtilityService QueryService
+@inject DialogService DialogService
+@inject NavigationManager NavigationManager
+@inject NotificationService notificationService
+@inject ICalendarService CalendarService
+@attribute [Authorize]
+
+<PageTitle>@Constants.App_Title - Calendari</PageTitle>
+
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Calendari" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+        <RadzenStack Orientation="Orientation.Horizontal"
+                     Gap="5px" Wrap="FlexWrap.NoWrap"
+                     JustifyContent="JustifyContent.End"
+                     AlignItems="AlignItems.Center">
+            <RadzenButton Text="Ricarica" Click=@ReloadData />
+            <RadzenTextBox @bind-Value="AutoLoad.FullTextSearch" Placeholder="Cerca..." Change=@(args => FullText_OnChange(args)) Class="w-100" />
+        </RadzenStack>
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<RadzenDataGrid @ref="@grdData"
+                FilterMode="FilterMode.Simple"
+                Count="@AutoLoad.RowCount"
+                IsLoading=@AutoLoad.isLoading
+                LoadData="@AutoLoad.LoadData"
+                Data="@this.AutoLoad.Data" TItem="CalendarQueryItem"
+                AllowSorting="true"
+                AllowFiltering="true"
+                AllowColumnResize="true"
+                LogicalFilterOperator="LogicalFilterOperator.And"
+                SelectionMode="DataGridSelectionMode.Single"
+                @bind-Value=@SelectedCalendars
+                CellContextMenu="@RowActionCellContextMenu"
+                ExpandMode="DataGridExpandMode.Single"
+                RowRender=@RowRender
+                RowExpand=@RowExpand
+                Style="height:100%"
+                AllowPaging="true"
+                PagerHorizontalAlign="HorizontalAlign.Left"
+                ShowPagingSummary="true"
+                Density=@Settings.Density
+                PageSize=@(Settings?.PageSize ?? 5)>
+    <EmptyTemplate>
+        <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun Calendario trovato !</p>
+    </EmptyTemplate>
+    <Template Context="calendar">
+        <RadzenCard>
+            <RadzenRow>
+                <RadzenColumn>
+                    <h4>Periodi</h4>
+                    <RadzenDataGrid IsLoading=@DetailIsLoading
+                                    Data="@this.Periods"
+                                    TItem="CalendarPeriod"
+                                    AllowSorting="true"
+                                    AllowColumnResize="true"
+                                    Density=@Settings.Density
+                                    Style="whidth: 100%;height: 400px">
+                        <Columns>
+                            <RadzenDataGridColumn TItem="CalendarPeriod" Property="StartDate" Title="Inizio var." FormatString="{0:dd/MM/yyyy}" Width="120px" />
+                            <RadzenDataGridColumn TItem="CalendarPeriod" Property="EndDate" Title="Fine var." FormatString="{0:dd/MM/yyyy}" Width="120px" />
+                            <RadzenDataGridColumn TItem="CalendarPeriod" Property="Note" Title="Note" Width="200px" />
+                        </Columns>
+                    </RadzenDataGrid>
+                </RadzenColumn>
+                <RadzenColumn Size="4">
+                    <h4>Gironi</h4>
+                    <RadzenDataGrid IsLoading=@DetailIsLoading
+                                    Data="@this.Holidays"
+                                    TItem="CalendarHoliday"
+                                    AllowSorting="true"
+                                    AllowColumnResize="true"
+                                    Density=@Settings.Density
+                                    Style="whidth: 100%;height: 400px">
+                        <Columns>
+                            <RadzenDataGridColumn TItem="CalendarHoliday" Property="Holiday" Title="Data." FormatString="{0:dd/MM/yyyy}" Width="120px" />
+                            <RadzenDataGridColumn TItem="CalendarHoliday" Property="HolidayDescription" Title="Descrizione" Width="200px" />
+                        </Columns>
+                    </RadzenDataGrid>
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenCard>
+    </Template>
+    <Columns>
+        <RadzenDataGridColumn TItem="CalendarQueryItem" Property="Id" Title="Id Calendario" Visible=false />
+        <RadzenDataGridColumn TItem="CalendarQueryItem" Property="CalendarName" Title="nome" Width="200px" />
+        <RadzenDataGridColumn TItem="CalendarQueryItem" Property="CalendarTypeDescr" Title="Tipo calendario" Width="200px" />
+        <RadzenDataGridColumn TItem="CalendarQueryItem" Property="BaseCalendarName" Title="Basato su" Width="200px" />
+
+        <RadzenDataGridColumn TItem="CalendarQueryItem" Property="Sundays" Title="Domeniche" Width="150px">
+            <Template Context="data">
+                @if (data.Sundays)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="CalendarQueryItem" Property="PreHolyday" Title="Pre-festivi" Width="150px">
+            <Template Context="data">
+                @if (data.PreHolyday)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="CalendarQueryItem" Property="PostHolyday" Title="Post-festivi" Width="150px">
+            <Template Context="data">
+                @if (data.PostHolyday)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    private enum CalendarMenuItems
+    {
+        Edit,
+        Delete
+    };
+
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+    RadzenDataGrid<CalendarQueryItem>? grdData;
+
+    IList<CalendarQueryItem> SelectedCalendars = new List<CalendarQueryItem>();
+
+    #region  details
+    private bool DetailIsLoading = false;
+    IEnumerable<CalendarPeriod>? Periods;
+    IEnumerable<CalendarHoliday>? Holidays;
+    #endregion
+
+    protected override async Task OnInitializedAsync()
+    {
+        AutoLoad.Initilize(
+            Constants.Endpoint_Calendars
+        );
+
+        await base.OnInitializedAsync();
+    }
+
+    void FullText_OnChange(string value)
+    {
+        this.grdData?.Reload();
+    }
+    void ReloadData()
+    {
+        this.grdData?.Reload();
+    }
+
+    private void RowRender(RowRenderEventArgs<CalendarQueryItem> args)
+    {
+        args.Expandable = true;
+    }
+    private async Task RowExpand(CalendarQueryItem calendar)
+    {
+        await Task.CompletedTask;
+        this.Periods = null;
+        this.Holidays = null;
+        if (calendar.Id == calendar.Id)
+        {
+            var t = InvokeAsync(
+            async () =>
+            {
+                try
+                {
+                    var periods = await this.CalendarService.GetPeriodListASync(calendar.Id);
+                    var holidays = await this.CalendarService.GetHolidayListAsync(calendar.Id);
+
+                    this.Periods = periods;
+                    this.Holidays = holidays;
+                }
+                finally
+                {
+                    DetailIsLoading = false;
+                    this.StateHasChanged();
+                }
+            });
+        }
+    }
+
+    private async Task DeleteCalendarASync(
+    int calenarId)
+    {
+        // chiede conferma e poi procede con la cancellazione
+        var title = "Eliminazione Calendario";
+        if (await this.DialogService.Confirm(
+        "Desideri veramente eliminare il calendario ? Se ci sono corese associate al calendario la cancellazione non avrà effetto e verrà indicato un errore.",
+        title,
+        new ConfirmOptions
+                {
+                    OkButtonText = "Si, Elimina !",
+                    CancelButtonText = "Annulla"
+                }) == true)
+        {
+            /*
+            try
+            {
+                await RunRepo.DeleteRunAsync(runId);
+                if (this.grdData != null)
+                {
+                    await this.grdData.Reload();
+                }
+            }
+            catch (Exception exc)
+            {
+                notificationService.Notify(
+                    NotificationSeverity.Error,
+                    "Eliminazione Falita",
+                    exc.Message
+                );
+            }
+            */
+        }
+    }
+
+    private void RowActionCellContextMenu(DataGridCellMouseEventArgs<CalendarQueryItem> args)
+    {
+        SelectedCalendars = new List<CalendarQueryItem>() { args.Data };
+
+        ContextMenuService.Open(args, ds =>
+            @<RadzenMenu Click=@((e)=>OnMenuItemClick(args, e))>
+                <RadzenMenuItem Text="Modifica..." Value=@CalendarMenuItems.Edit />
+                <hr class="separator">
+                <RadzenMenuItem Text="Elimina..." Value=@CalendarMenuItems.Delete />
+            </RadzenMenu>
+            );
+    }
+
+    private async Task OnMenuItemClick(
+        DataGridCellMouseEventArgs<CalendarQueryItem> args,
+        MenuItemEventArgs e
+        )
+    {
+        await Task.CompletedTask;
+        ContextMenuService.Close();
+
+        /*
+        switch ((CalendarMenuItems)e.Value)
+        {
+            case CalendarMenuItems.Detail:
+                await DialogService.OpenSideAsync<RunItemDetail>($"Dettaglio della Corsa",
+                    new Dictionary<string, object>() { { "Id", args.Data.Id } },
+                    options: new SideDialogOptions() { CloseDialogOnOverlayClick = true, Width = "88%" }
+                    );
+                break;
+            case CalendarMenuItems.Edit:
+                NavigationManager.NavigateTo(
+                    string.Format("/run-edit/{0}", args.Data.Id)
+                    );
+                break;
+            case CalendarMenuItems.Delete:
+                await this.DeleteCalendarASync(args.Data.Id);
+                break;
+
+            default:
+                break;
+        };
+        */
+    }
+}

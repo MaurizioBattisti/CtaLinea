@@ -1,0 +1,55 @@
+﻿@page "/about"
+@using System.Reflection;
+
+<PageTitle>@Constants.App_Title - Informazioni</PageTitle>
+
+<h1>Informaizoni su CTA Linea</h1>
+
+<RadzenDataGrid 
+    Data="@Info"
+    TItem="KeyValuePair<string, string?>"
+    AllowPaging="false" 
+    AllowSorting="false">
+    <Columns>
+        <RadzenDataGridColumn TItem="KeyValuePair<string,string?>" Property="Key" Title="Info" />
+        <RadzenDataGridColumn TItem="KeyValuePair<string,string?>" Property="Value" Title="Valore" />
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    // lista con le informaizoni
+    List<KeyValuePair<string, string?>> Info = new List<KeyValuePair<string, string?>>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.Info.AddRange(
+            this.GetInfo()
+            );
+
+
+        await base.OnInitializedAsync();
+    }
+
+    private IEnumerable<KeyValuePair<string, string?>> GetInfo ()
+    {
+        // nome autore
+        yield return new KeyValuePair<string, string?>("Autore", "Maurizio Battisti");
+
+
+
+        // versione assembly
+        var assembly = Assembly.GetExecutingAssembly();
+        yield return new KeyValuePair<string, string?>("Assembly",
+            null
+            );
+        yield return new KeyValuePair<string, string?>("Versione",
+            assembly.GetName()?.Version?.ToString()
+            );
+        yield return new KeyValuePair<string, string?>("FullName",
+            assembly.FullName
+            );
+        yield return new KeyValuePair<string, string?>("Image RunTime Versione", 
+            assembly.ImageRuntimeVersion
+            );
+    }
+}

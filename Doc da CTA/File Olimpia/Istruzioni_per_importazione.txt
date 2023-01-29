@@ -7,17 +7,22 @@ aggiungere una colonna iniziale chiamata "Nr_Riga"
 con una formula 1 + 1  in modo da avere i nueri dir iga
 salvare il file CSV in modo che sia finalizzato
 
-Database -> Tasks -> impor from file
+-- eseguire questo script per creare lo schema
+USE CtaLineaDb
+GO
 
-- mettere tutti i campi nullable
+CREATE SCHEMA import
+GO
+
+Databases -> CtaLineaDb -> Tasks -> impor from file
+Tabella: import.Oly
+
+- mettere tutti i campi nullable ALLOW NULL = TRUE
 - tutti i campi di testo devonoe ssere nvarchar(MAX)
-- tutti i campi intteri -> varchar(MAX)
+- tutti i campi intteri -> nvarchar(MAX
   a parte 
   - Km_corsa_servizio -> float
-  - Linea -> int
   - "Nr_Riga" -> int
-
-// extra per le line extra capitoalto
 
 -- Eseguire questo script per aggiungere il riferimetno alla colonna runId
 USE CtaLineaDb
@@ -191,7 +196,7 @@ INSERT INTO [dbo].[RunVariations]
 	SELECT 
 			i.OlyId,
 			NULL AS startDate,
-			CAST([Linea] AS int) AS Linea,
+			TRY_CAST([Linea] AS int) AS Linea,
 			CAST( (CASE WHEN [n_corsa] LIKE '%/%' THEN SUBSTRING([n_corsa], 1, CHARINDEX('/', [n_corsa])-1 ) ELSE [n_corsa] END) AS int) AS Corsa_1,
 			ISNULL([percorso], '-- NESSUN PERCORSO --'),
 			[ora_part],
@@ -327,3 +332,8 @@ INSERT INTO dbo.RunCarCosts
 
 
 ROLLBACK;
+
+-- Alla fiene
+EXEC [dbo].[uo_RunsNeedRecalc];
+EXEC [dbo].[uo_RecalcRunDays_Massive];
+

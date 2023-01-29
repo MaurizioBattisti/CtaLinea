@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CtaLineaDb.publish.xml" />
+    <None Include="Server_CTASCuola.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Base\Contracts.sql" />

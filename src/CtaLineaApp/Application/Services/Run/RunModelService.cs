@@ -13,7 +13,7 @@ namespace CtaLineaApp.Application.Services.Run
     {
         public RunItem CreateNewRun(
             Contract contract,
-            Calendar calendar)
+            CalendarItem calendar)
         {
             var run = new RunItem()
             {

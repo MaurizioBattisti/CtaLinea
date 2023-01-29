@@ -61,8 +61,6 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             conn.Open();
             var tran = conn.BeginTransaction();
 
-            await Task.CompletedTask;
-
             try
             {
                 // elimina tutta una corsa
@@ -89,8 +87,6 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             using IDbConnection conn = this._context.Database.GetDbConnection();
             conn.Open();
             var tran = conn.BeginTransaction();
-
-            await Task.CompletedTask;
 
             // se l'id della corsa è vuoto n ne crea uno nuovo
             if (runItem.RunId == Guid.Empty) runItem.RunId = Guid.NewGuid();
@@ -520,7 +516,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             {
                 item.ContractData = reader.Read<Contract>().SingleOrDefault();
 
-                var allCalendars = reader.Read<Calendar>().ToList();
+                var allCalendars = reader.Read<CalendarItem>().ToList();
                 var allAssociates = reader.Read<Associate>().ToList();
                 var allCars = reader.Read<Car>().ToList();
 

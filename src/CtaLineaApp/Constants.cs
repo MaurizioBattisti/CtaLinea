@@ -11,7 +11,6 @@ namespace CtaLineaApp
         public const string App_Title =  "CTA Linee";
 
 
-
         internal const string LoalStorageKey_User = "user";
 
 
@@ -60,6 +59,10 @@ namespace CtaLineaApp
 
 
         internal const string Endpoint_Calendars = "/api/calendars";
+        internal const string Endpoint_Calendar_One_Fmr = Endpoint_Calendars + "/{0}";
+        internal const string Endpoint_Calendar_SingleOne_Fmr = Endpoint_Calendar_One_Fmr + "/single";
+        internal const string Endpoint_Calendar_Periods_Fmr = Endpoint_Calendar_One_Fmr + "/periods";
+        internal const string Endpoint_Calendar_Holidays_Fmr = Endpoint_Calendar_One_Fmr + "/holidays";
         internal const string Endpoint_Contracts = "/api/contracts";        
         internal const string Endpoint_Associates = "/api/associates";
         internal const string Endpoint_Cars = "/api/cars";

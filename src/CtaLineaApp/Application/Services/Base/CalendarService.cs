@@ -1,37 +1,36 @@
 ﻿using CtaLinea.Model.Base;
+using CtaLinea.Model.Calendar;
+using CtaLineaApp.Application.Services.Helper;
+using System.Globalization;
+using System.Xml.Linq;
+using static System.Net.WebRequestMethods;
 
 namespace CtaLineaApp.Application.Services.Base
 {
     public class CalendarService 
         : ICalendarService
     {
-        private readonly IList<Calendar> _list;
+        private readonly IHttpService _http;
 
-        public CalendarService ()
+        public CalendarService (
+            IHttpService htto)
         {
-            _list = new List<Calendar>()
-            {
-                new Calendar() {CalendarId = 1, CalendarName = "Annuale" },
-                new Calendar() {CalendarId = 2, CalendarName = "Annuale feriale" },
-                new Calendar() {CalendarId = 3, CalendarName = "Annuale festivo" },
-                new Calendar() {CalendarId = 4, CalendarName = "Invernale" },
-                new Calendar() {CalendarId = 5, CalendarName = "Estivo" },
-                new Calendar() {CalendarId = 6, CalendarName = "Invernale festivo" },
-                new Calendar() {CalendarId = 7, CalendarName = "Invernale feriale" },
-                new Calendar() {CalendarId = 8, CalendarName = "Scolastico" },
-                new Calendar() {CalendarId = 9, CalendarName = "Non scolastico" },
-                new Calendar() {CalendarId = 10, CalendarName = "pre-festivo" },
-                new Calendar() {CalendarId = 11, CalendarName = "post-festivo" },
-                new Calendar() {CalendarId = 12, CalendarName = "Estivo feriale" },
-                new Calendar() {CalendarId = 13, CalendarName = "Estivo Festivo" }
-            };
+            _http = htto;
         }
 
-        public async Task<IList<Calendar>> GetCalendarListAsync()
+        public async Task<IEnumerable<CalendarPeriod>?> GetPeriodListASync(
+            int claendarId)
         {
-            await Task.CompletedTask;
-
-            return _list;
+            var url = string.Format(Constants.Endpoint_Calendar_Periods_Fmr, claendarId);
+            var data = await _http.Get<IEnumerable<CalendarPeriod>?>(url);
+            return data;
+        }
+        public async Task<IEnumerable<CalendarHoliday>?> GetHolidayListAsync(
+            int claendarId)
+        {
+            var url = string.Format(Constants.Endpoint_Calendar_Holidays_Fmr, claendarId);
+            var data = await _http.Get<IEnumerable<CalendarHoliday>?>(url);
+            return data;
         }
     }
 }

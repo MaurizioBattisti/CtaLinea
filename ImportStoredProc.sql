@@ -1,9 +1,7 @@
 USE CtaLineaDb
 GO
 
-
-DECLARE @StartSChoolUYear		AS INT = 20192020;
-DECLARE @dt_StartCAlendarDates  AS DATE = '20190901';
+-- DECLARE @StartSChoolUYear		AS INT = 20192020;
 
 
 BEGIN TRAN;
@@ -38,57 +36,6 @@ WHEN MATCHED THEN
 		CollectionPointType = s.CollectionPointType
 WHEN NOT MATCHED  BY SOURCE  THEN
 	DELETE;
-
-/* Calendari *******************************************************/
--- import calendari
-MERGE CtaLineaDb.dbo.Calendars AS t
-USING Viaggi_2.dbo.Calendar AS s
-	ON t.CalendarId = s.CalendarID
-WHEN NOT MATCHED  THEN
-	INSERT (CalendarId, Description, CalendarType)
-	VALUES (s.CalendarID, s.Description, s.CalendarType)
-WHEN MATCHED THEN
-	UPDATE sET Description = s.Description,
-			CalendarType = s.CalendarType
-WHEN NOT MATCHED  BY SOURCE  THEN
-	DELETE;
-
--- giorni dei calendari
-WITH CTE_Data AS
-(
-	SELECT *
-		FROM Viaggi_2.dbo.CalendarHoliday AS h
-		WHERE h.HolidayDate >= @dt_StartCAlendarDates
-)
-MERGE CtaLineaDb.dbo.CalendarDays AS t
-USING CTE_Data AS s
-	ON t.CalendarId = s.CalendarID
-	AND t.Date = s.HolidayDate
-WHEN NOT MATCHED  THEN
-	INSERT (CalendarId, Date)
-	VALUES (s.CalendarID, s.HolidayDate)
-WHEN NOT MATCHED  BY SOURCE  THEN
-	DELETE;
-
--- range di validità dei calendari
-WITH CTE_Data AS (
-	SELECT *
-		FROM Viaggi_2.dbo.CalendaSchoolYearRanges d
-		WHERE D.SchoolYear >= @StartSChoolUYear
-)
-MERGE CtaLineaDb.dbo.CalendaSchoolYearRanges AS t
-USING CTE_Data AS s
-	ON t.CalendarId = s.CalendarID
-	AND t.SchoolYear = s.SChoolYear
-WHEN NOT MATCHED  THEN
-	INSERT (CalendarId, SchoolYear, StartDate, EndDate)
-	VALUES (s.CalendarID, s.SchoolYear, s.StartDate, s.EndDate)
-WHEN MATCHED THEN
-	UPDATE sET StartDate = s.StartDate,
-			EndDate = s.EndDate
-WHEN NOT MATCHED  BY SOURCE  THEN
-	DELETE;
-
 
 /* Ditte mezzi autisti *******************************************************/
 --Ditte
@@ -197,43 +144,5 @@ INSERT INTO @Tbl_Cat
 	SELECT c.SheetCategoryID
 		FROM Viaggi_2.dbo.SheetCategory AS c
 		WHERE c.SheetCategoryID <> 'S';
-
-WITH CTE_Data AS (
-	SELECT c.*
-		FROM Viaggi_2.dbo.SheetCategory AS c
-		INNER JOIN @Tbl_Cat AS c1
-			ON c.SheetCategoryID = c1.SheetCategoryID
-)
-MERGE CtaLineaDb.dbo.SheetCategories AS t
-USING  CTE_Data AS s
-	ON t.CategoryId = s.SheetCategoryID
-WHEN NOT MATCHED  THEN
-	INSERT (CategoryId, Description)
-	VALUES (s.SheetCategoryID, Description)
-WHEN MATCHED THEN
-	UPDATE SET Description= s.Description
-WHEN NOT MATCHED  BY SOURCE  THEN
-	DELETE;
-
--- sottocatgegorie
-WITH CTE_Data AS (
-	SELECT c.*
-		FROM Viaggi_2.dbo.SheetSubCategory AS c
-		INNER JOIN @Tbl_Cat AS c1
-			ON c.SheetCategoryID = c1.SheetCategoryID
-)
-MERGE CtaLineaDb.dbo.SheetSubCategories AS t
-USING  CTE_Data AS s
-	ON t.SubCategoryId = s.SubCategoryID
-WHEN NOT MATCHED  THEN
-	INSERT (SubCategoryId, CategoryId, Description)
-	VALUES (s.SubCategoryID, s.SheetCategoryID, Description)
-WHEN MATCHED THEN
-	UPDATE SET CategoryId = s.SheetCategoryID,
-			Description= s.Description
-WHEN NOT MATCHED  BY SOURCE  THEN
-	DELETE;
-
-
 
 COMMIT;
