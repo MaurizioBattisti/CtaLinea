@@ -3,9 +3,9 @@ using MediatR;
 
 namespace CtaLineaWebApi.Application.Commands.Calendars
 {
-    public class DeleteCalendarRequest
+    public class DeleteCalendarPeriodRequest
         : IRequest<OperationResult<bool>>
     {
-        public int CalendarId { get; set; }
+        public int CalendarPeriodId { get; set; }
     }
 }

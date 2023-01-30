@@ -234,8 +234,8 @@
                 <RadzenMenuItem Text="Modifica..." Value=@CalendarMenuItems.Edit />
                 <hr class="separator">
                 <RadzenMenuItem Text="Elimina..." Value=@CalendarMenuItems.Delete />
-            </RadzenMenu>
-            );
+        </RadzenMenu>
+    );
     }
 
     private async Task OnMenuItemClick(
@@ -246,19 +246,14 @@
         await Task.CompletedTask;
         ContextMenuService.Close();
 
-        /*
         switch ((CalendarMenuItems)e.Value)
         {
-            case CalendarMenuItems.Detail:
-                await DialogService.OpenSideAsync<RunItemDetail>($"Dettaglio della Corsa",
-                    new Dictionary<string, object>() { { "Id", args.Data.Id } },
-                    options: new SideDialogOptions() { CloseDialogOnOverlayClick = true, Width = "88%" }
-                    );
-                break;
             case CalendarMenuItems.Edit:
+                /*
                 NavigationManager.NavigateTo(
                     string.Format("/run-edit/{0}", args.Data.Id)
                     );
+                */
                 break;
             case CalendarMenuItems.Delete:
                 await this.DeleteCalendarASync(args.Data.Id);
@@ -267,6 +262,5 @@
             default:
                 break;
         };
-        */
     }
 }

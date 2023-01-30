@@ -83,7 +83,7 @@ namespace CtaLineaWebApi.Controllers
         // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [HttpPost]
-        public async Task<ActionResult<Calendar>> InsertAsync(
+        public async Task<IActionResult> InsertAsync(
             [FromBody] Calendar model)
         {
             var request = new SaveCalendarRequest()
@@ -94,8 +94,18 @@ namespace CtaLineaWebApi.Controllers
             var result = await this._mediator.Send(request)
                 .ConfigureAwait(false);
 
+            if (result.Success == false)
+            {
+                return Conflict(
+                    new ValidationProblemDetails(new Dictionary<string, string[]>())
+                    {
+                        Title = "Inserimetno calendario Fallito",
+                        Detail = result.Message
+                    });
+            }
+
             return this.Created(
-                string.Format("/{0}", result),
+                string.Format("/{0}", result.Data),
                 null);
         }
         [SwaggerOperation("Aggiorna i dati di un calendario")]
@@ -105,7 +115,7 @@ namespace CtaLineaWebApi.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [HttpPut]
         [Route("{id:int}")]
-        public async Task<ActionResult<Calendar>> UpdateAsync(
+        public async Task<IActionResult> UpdateAsync(
             [FromRoute] int id,
             [FromBody] Calendar model)
         {
@@ -116,33 +126,50 @@ namespace CtaLineaWebApi.Controllers
                 Insert = false,
                 Data = model
             };
-            await this._mediator.Send(request)
+            var result =await this._mediator.Send(request)
                 .ConfigureAwait(false);
+
+            if (result.Success == false)
+            {
+                return Conflict(
+                    new ValidationProblemDetails(new Dictionary<string, string[]>())
+                    {
+                        Title = "Salvataggio calendario Fallito",
+                        Detail = result.Message
+                    });
+            }
 
             return Ok();
         }
 
         [SwaggerOperation("Elimina un calendario")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [HttpDelete]
         [Route("{id:int}")]
-        public async Task<ActionResult<Calendar>> UpdateAsync(
+        public async Task<IActionResult> DeleteASync(
             [FromRoute] int id)
         {
             var request = new DeleteCalendarRequest()
             {
                 CalendarId = id
             };
-            await this._mediator.Send(request)
+            var result = await this._mediator.Send(request)
                 .ConfigureAwait(false);
+            if (result.Success == false)
+            {
+                return Conflict(
+                    new ValidationProblemDetails(new Dictionary<string, string[]>())
+                    {
+                        Title = "Eliminaizone calendario fallita",
+                        Detail = result.Message
+                    });
+            }
 
-            return Ok();
+            return NoContent();
         }
-
-
 
         #region periodi dei calendari
         [Consumes(MediaTypeNames.Application.Json)]
@@ -171,6 +198,99 @@ namespace CtaLineaWebApi.Controllers
 
             return this.Ok(result);
         }
+
+        [SwaggerOperation("Crea un periodo di calendaraio")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [HttpPost]
+        [Route("periods")]
+        public async Task<IActionResult> InsertPeriodASync(
+            [FromBody] CalendarPeriod model)
+        {
+            var request = new SaveCalendarPeriodRequest()
+            {
+                Insert = true,
+                Data = model
+            };
+            var result = await this._mediator.Send(request)
+                .ConfigureAwait(false);
+            if (result.Success == false)
+            {
+                return Conflict(
+                    new ValidationProblemDetails(new Dictionary<string, string[]>())
+                    {
+                        Title = "inserimento periodo calendario Fallito",
+                        Detail = result.Message
+                    });
+            }
+
+            return this.Created(
+                string.Format("/periods/{0}", result.Data),
+                null);
+        }
+        [SwaggerOperation("Aggiorna i dati di un periodo di calendario")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [HttpPut]
+        [Route("periods/{id:int}")]
+        public async Task<IActionResult> UpdatePeriodAsync(
+            [FromRoute] int id,
+            [FromBody] CalendarPeriod model)
+        {
+            model.CalendarId = id;
+
+            var request = new SaveCalendarPeriodRequest()
+            {
+                Insert = false,
+                Data = model
+            };
+            var result = await this._mediator.Send(request)
+                .ConfigureAwait(false);
+
+            if (result.Success == false)
+            {
+                return Conflict(
+                    new ValidationProblemDetails(new Dictionary<string, string[]>())
+                    {
+                        Title = "salvataggio periodo calendario Fallito",
+                        Detail = result.Message
+                    });
+            }
+
+            return Ok();
+        }
+        [SwaggerOperation("Elimina un periodo di calendario calendario")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [HttpDelete]
+        [Route("periods/{id:int}")]
+        public async Task<IActionResult> DeletePeriodASync(
+            [FromRoute] int id)
+        {
+            var request = new DeleteCalendarPeriodRequest()
+            {
+                CalendarPeriodId = id
+            };
+            var result = await this._mediator.Send(request)
+                .ConfigureAwait(false);
+
+            if (result.Success == false)
+            {
+                return Conflict(
+                    new ValidationProblemDetails(new Dictionary<string, string[]>())
+                    {
+                        Title = "eliminaizone periodo calendario Fallita",
+                        Detail = result.Message
+                    });
+            }
+
+            return NoContent();
+        }
         #endregion
 
         #region giorni dei calendari
@@ -186,6 +306,106 @@ namespace CtaLineaWebApi.Controllers
                 .ConfigureAwait(false);
 
             return this.Ok(result);
+        }
+
+        [SwaggerOperation("Crea un giorno del calendaraio")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [HttpPost]
+        [Route("{id:int}/holidays")]
+        public async Task<IActionResult> InsertHolidaydASync(
+            [FromRoute] int id,
+            [FromBody] CalendarHoliday model)
+        {
+            model.CalendarId = id;
+
+            var request = new SaveCalendarHolidayRequest()
+            {
+                Insert = true,
+                Data = model
+            };
+            var result = await this._mediator.Send(request)
+                .ConfigureAwait(false);
+
+            if (result.Success == false)
+            {
+                return Conflict(
+                    new ValidationProblemDetails(new Dictionary<string, string[]>())
+                    {
+                        Title = "inserimento giorno calendario Fallito",
+                        Detail = result.Message
+                    });
+            }
+
+            return this.Created(
+                string.Format("/{0}/holidays/{1:yyy-MM-dd}", id, model.Holiday),
+                null);
+        }
+        [SwaggerOperation("Aggiorna i dati di un giorno  del calendario")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [HttpPut]
+        [Route("{id:int}/holidays/{date}")]
+        public async Task<IActionResult> UpdateHolidaydASync(
+            [FromRoute] int id,
+            [FromRoute] DateTime date,
+            [FromBody] CalendarHoliday model)
+        {
+            model.CalendarId = id;
+            model.Holiday = date;
+
+            var request = new SaveCalendarHolidayRequest()
+            {
+                Insert = false,
+                Data = model
+            };
+            var result = await this._mediator.Send(request)
+                .ConfigureAwait(false);
+            if (result.Success == false)
+            {
+                return Conflict(
+                    new ValidationProblemDetails(new Dictionary<string, string[]>())
+                    {
+                        Title = "Salvataggio giorno calendario Fallito",
+                        Detail = result.Message
+                    });
+            }
+
+            return Ok();
+        }
+        [SwaggerOperation("Elimina un giorno del calendario calendario")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [HttpDelete]
+        [Route("{id:int}/holidays/{date}")]
+        public async Task<IActionResult> DeleteHolidaydASync(
+            [FromRoute] int id,
+            [FromRoute] DateTime  date)
+        {
+            var request = new DeleteCalendarHolidayRequest()
+            {
+                CalendarId = id,
+                Date = date
+            };
+            var result = await this._mediator.Send(request)
+                .ConfigureAwait(false);
+
+            if (result.Success == false)
+            {
+                return Conflict(
+                    new ValidationProblemDetails(new Dictionary<string, string[]>())
+                    {
+                        Title = "Eliminaizone giorno calendario Fallita",
+                        Detail = result.Message
+                    });
+            }
+
+            return NoContent();
         }
         #endregion
     }

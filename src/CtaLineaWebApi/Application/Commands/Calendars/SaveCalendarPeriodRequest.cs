@@ -4,10 +4,10 @@ using MediatR;
 
 namespace CtaLineaWebApi.Application.Commands.Calendars
 {
-    public class SaveCalendarRequest
+    public class SaveCalendarPeriodRequest
         : IRequest<OperationResult<int>>
     {
         public bool Insert { get; set; } = false;
-        public Calendar Data { get; set; }
+        public CalendarPeriod Data { get; set; }
     }
 }
