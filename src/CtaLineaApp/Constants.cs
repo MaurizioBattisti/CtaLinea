@@ -60,7 +60,7 @@ namespace CtaLineaApp
 
         internal const string Endpoint_Calendars = "/api/calendars";
         internal const string Endpoint_Calendar_One_Fmr = Endpoint_Calendars + "/{0}";
-        internal const string Endpoint_Calendar_SingleOne_Fmr = Endpoint_Calendar_One_Fmr + "/single";
+        internal const string Endpoint_Calendar_SingleOne_Fmr = Endpoint_Calendar_One_Fmr + "/simple";
         internal const string Endpoint_Calendar_Periods_Fmr = Endpoint_Calendar_One_Fmr + "/periods";
         internal const string Endpoint_Calendar_Holidays_Fmr = Endpoint_Calendar_One_Fmr + "/holidays";
         internal const string Endpoint_Contracts = "/api/contracts";        

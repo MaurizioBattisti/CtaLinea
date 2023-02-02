@@ -249,11 +249,9 @@
         switch ((CalendarMenuItems)e.Value)
         {
             case CalendarMenuItems.Edit:
-                /*
                 NavigationManager.NavigateTo(
-                    string.Format("/run-edit/{0}", args.Data.Id)
+                    string.Format("/calendar-edit/{0}", args.Data.Id)
                     );
-                */
                 break;
             case CalendarMenuItems.Delete:
                 await this.DeleteCalendarASync(args.Data.Id);

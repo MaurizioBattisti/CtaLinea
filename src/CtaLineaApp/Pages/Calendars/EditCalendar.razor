@@ -1,0 +1,47 @@
+﻿@page "/calendar-edit/{Id:int}"
+@inject ICalendarService CalendarService
+@attribute [Authorize]
+
+<h3>EditCalendar</h3>
+
+<CalendarDataView CurrentCalendar=@Calendar @bind-EditMode=@EditMode />
+<CalendarDetailsView CalendarId=@Id EditMode=@(!EditMode) />
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private bool IsBusy = true;
+    private bool EditMode = false;
+    Calendar Calendar = new Calendar();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                this.IsBusy = true;
+
+                var cal = await CalendarService.GetOneAsync(this.Id);
+                if (cal != null)
+                {
+                    this.Calendar = cal;
+                    /*
+                    this.IsClean = true;
+                    this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
+                    */
+                }
+                else
+                {
+                    // TODO: segnala un problema
+                }
+            }
+            finally
+            {
+                this.IsBusy = false;
+                this.StateHasChanged();
+            }
+        }
+    }
+}

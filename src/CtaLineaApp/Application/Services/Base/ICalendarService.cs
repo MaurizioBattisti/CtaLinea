@@ -5,9 +5,11 @@ namespace CtaLineaApp.Application.Services.Base
 {
     public interface ICalendarService
     {
+        Task<Calendar?> GetOneAsync(int calendarId);
+
         Task<IEnumerable<CalendarPeriod>?> GetPeriodListASync(
-            int claendarId);
+            int calendarId);
         Task<IEnumerable<CalendarHoliday>?> GetHolidayListAsync(
-            int claendarId);
+            int calendarId);
     }
 }
