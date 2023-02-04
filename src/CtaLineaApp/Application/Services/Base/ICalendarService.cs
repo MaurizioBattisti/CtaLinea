@@ -7,6 +7,10 @@ namespace CtaLineaApp.Application.Services.Base
     {
         Task<Calendar?> GetOneAsync(int calendarId);
 
+        Task UpdateAsync(Calendar calendar);
+        Task<int> InsertAsync(Calendar calendar);
+
+
         Task<IEnumerable<CalendarPeriod>?> GetPeriodListASync(
             int calendarId);
         Task<IEnumerable<CalendarHoliday>?> GetHolidayListAsync(

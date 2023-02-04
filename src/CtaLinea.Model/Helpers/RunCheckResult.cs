@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace CtaLinea.Model.Helpers
 {
     public class RunCheckResult
+        : CheckResult
     {
         // costanti con i valori delle categorie
         public const string Category_Run = "RUN";
@@ -17,13 +18,5 @@ namespace CtaLinea.Model.Helpers
         public const string Category_CarCost = "COST";
         public const string Category_CarReplacement = "REPLACEMENT";
         public const string Category_Suspension = "SUSPENSION";
-
-        public CheckStatus Status { get; set; }
-        public string? Title { get; set; }
-        public string? Description { get; set; }
-
-        public IEnumerable<CheckResultItem>? Errors { get; set; }
-        public IEnumerable<CheckResultItem>? Warnings { get; set; }
-        public IEnumerable<CheckResultItem>? Informations { get; set; }
     }
 }

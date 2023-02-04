@@ -79,7 +79,7 @@ namespace CtaLineaWebApi.Controllers
             return this.Ok(result);
         }
         [SwaggerOperation("Crea un nuovo calendario")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int) )]
         // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [HttpPost]
@@ -106,7 +106,7 @@ namespace CtaLineaWebApi.Controllers
 
             return this.Created(
                 string.Format("/{0}", result.Data),
-                null);
+                result.Data);
         }
         [SwaggerOperation("Aggiorna i dati di un calendario")]
         [ProducesResponseType(StatusCodes.Status200OK)]

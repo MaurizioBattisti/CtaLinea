@@ -2,7 +2,14 @@
 @inject ICalendarService CalendarService
 @attribute [Authorize]
 
-<h3>EditCalendar</h3>
+<PageTitle>@Constants.App_Title - Modifica Calendario </PageTitle>
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Modifica Calendario" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+    </TopLine>
+</LayoutSetter>
 
 <CalendarDataView CurrentCalendar=@Calendar @bind-EditMode=@EditMode />
 <CalendarDetailsView CalendarId=@Id EditMode=@(!EditMode) />

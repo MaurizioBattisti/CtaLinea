@@ -74,7 +74,7 @@
                 {
                     list = (from e in checkResultItemList
                             where e.Category == this.Category
-                            && e.Id == this.RefId
+                            && (Guid?) e.Id ==  this.RefId
                             select e);
                 }
             }

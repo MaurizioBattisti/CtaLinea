@@ -21,7 +21,8 @@
              Gap="5px" Wrap="FlexWrap.NoWrap"
              JustifyContent="JustifyContent.End" 
              AlignItems="AlignItems.Center" >
-            <RadzenButton Text="Ricarica" Click=@ReloadData />
+            <RadzenButton Text="AZzera Filtri" Click=@ClearFilters_Click />
+             <RadzenButton Text="Ricarica" Click=@ReloadData />
             <RadzenTextBox @bind-Value="AutoLoad.FullTextSearch" Placeholder="Cerca..." Change=@(args => FullText_OnChange(args)) Class="w-100" />
          </RadzenStack>
         
@@ -184,7 +185,7 @@
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="CalendarsDescr" Title="Calendari usati" Width="200px" />
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="PathsDescr" Title="PErcorso (Nodi)" Width="200px" />
         
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="VariationStartDate" Title="Inizio var." FormatString="{0:dd/MM/yyyy}" Width="180px" FilterValue=@Filter_StartDate>
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="VariationStartDate" Title="Inizio var." FormatString="{0:dd/MM/yyyy}" Width="180px" FilterValue=@Filter_VariationStartDate>
             <FilterTemplate>
                 <DateSelector @bind-Value="Filter_VariationStartDate" AllowClear=true Changed=@VariationStartDate_Changed />
             </FilterTemplate>
@@ -481,5 +482,24 @@
             default:
                 break;
         };
+    }
+
+    private void ClearFilters_Click ()
+    {
+        AutoLoad.FullTextSearch = string.Empty;
+        
+        this.Filter_StartDate = null;
+        this.Filter_EndDate = null;
+
+        this.Filter_StartTime = null;
+        this.Filter_EndTime = null;
+        
+        this.Filter_StartTime_2 = null;
+        this.Filter_EndTime_2 = null;
+        
+        this.Filter_VariationStartDate = null;
+
+        this.StateHasChanged();
+        this.grdData?.Reload();
     }
 }

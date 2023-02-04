@@ -57,7 +57,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                     this.GetCalendarKey(model.CalendarId),
                     this.GetCalendarData(model)
                     );
-                return await this.InternalGetOneAsync(conn, tran, model.CalendarId);
+                var data = await this.InternalGetOneAsync(conn, tran, model.CalendarId);
+                tran.Commit();
+                tran = null;
+                return data;
             }
             finally
             {
@@ -84,7 +87,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                         )
                     );
                 var id = await conn.ExecuteScalarAsync<int>(Sql_SelectIdentity, transaction: tran);
-                return await this.InternalGetOneAsync(conn, tran, id);
+                var data = await this.InternalGetOneAsync(conn, tran, id);
+                tran.Commit();
+                tran = null;
+                return data;
             }
             finally
             {
@@ -196,7 +202,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                     this.GetPeriodKey(model.CalendarPeriodId),
                     this.GetPeriodData(model)
                     );
-                return await this.InternalGetOnePeriodAsync(conn, tran, model.CalendarPeriodId);
+                var data =  await this.InternalGetOnePeriodAsync(conn, tran, model.CalendarPeriodId);
+                tran.Commit();
+                tran = null;
+                return data;
             }
             finally
             {
@@ -223,7 +232,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                         )
                     );
                 var id = await conn.ExecuteScalarAsync<int>(Sql_SelectIdentity, transaction: tran);
-                return await this.InternalGetOnePeriodAsync(conn, tran, id);
+                var data = await this.InternalGetOnePeriodAsync(conn, tran, id);
+                tran.Commit();
+                tran = null;
+                return data;
             }
             finally
             {
@@ -327,7 +339,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                     this.GetHolidayKey(model.CalendarId, model.Holiday),
                     this.GetHolidayData(model)
                     );
-                return await this.InternalGetOneHolidayAsync(conn, tran, model.CalendarId, model.Holiday);
+                var data = await this.InternalGetOneHolidayAsync(conn, tran, model.CalendarId, model.Holiday);
+                tran.Commit();
+                tran = null;
+                return data;
             }
             finally
             {
@@ -355,7 +370,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                         this.GetHolidayData(model)
                         )
                     );
-                return await this.InternalGetOneHolidayAsync(conn, tran, model.CalendarId, model.Holiday);
+                var data = await this.InternalGetOneHolidayAsync(conn, tran, model.CalendarId, model.Holiday);
+                tran.Commit();
+                tran = null;
+                return data;
             }
             finally
             {

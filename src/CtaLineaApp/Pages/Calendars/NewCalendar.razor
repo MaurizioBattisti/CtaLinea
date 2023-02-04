@@ -1,0 +1,29 @@
+﻿@page "/calendar-new"
+@attribute [Authorize]
+
+<PageTitle>@Constants.App_Title - Nuovo Calendario </PageTitle>
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Nuovo Calendario" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+    </TopLine>
+</LayoutSetter>
+
+<CalendarDataView CurrentCalendar=@Calendar @bind-EditMode=@EditMode />
+
+@code {
+    private bool EditMode = true;
+    Calendar Calendar = new Calendar()
+    {
+        CalendarId = 0,
+        RunCalendarType = RunCalendarType.Exclusion
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+        }
+    }
+}

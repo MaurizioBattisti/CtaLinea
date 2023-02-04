@@ -1,4 +1,11 @@
-﻿
+﻿@inject ICalendarService CalendarService
+@inject NotificationService notificationService
+@inject NavigationManager NavigationManager
+
+@if (!EditMode)
+{
+    <RadzenButton Text="Modifica dati" Click=@EditData_Click />
+}
 <RadzenTemplateForm 
     TItem=Calendar 
     Data="@CurrentCalendar" 
@@ -82,9 +89,6 @@
     </div>
 </RadzenTemplateForm>
 
-<RadzenButton Text="Schiza !" Click=@Clicca_Click />
-
-
 @code {
     [Parameter]
     public Calendar CurrentCalendar { get; set; } = new Calendar();
@@ -92,6 +96,11 @@
     public bool EditMode { get; set; } = false;
     [Parameter]
     public EventCallback<bool> EditModeChanged { get; set; }
+
+    private bool IsBusy = false;
+
+    private CheckResult CheckResult = new CheckResult() { Status = CheckStatus.Success };
+    private Calendar OldCalendar = new Calendar();
 
     List<KeyValuePair<RunCalendarType, string>> CalendarTYpes = new List<KeyValuePair<RunCalendarType, string>>()
     {
@@ -103,20 +112,69 @@
 
     private async Task SaveCalendar_Click (Calendar calendar)
     {
-
-
-
         await Task.CompletedTask;
+
+        // controla i dati ...
+
+
+
+        // ... se è tutto OK li salva
+        // se il clanedar id è minore o uguae a  zero tenta un insert 
+        try
+        {
+            this.IsBusy = true;
+            if (this.CurrentCalendar.CalendarId <= 0)
+            {
+                var id = await this.CalendarService.InsertAsync(this.CurrentCalendar);
+                
+                // naviga alla pagina di edit dle calendario
+                NavigationManager.NavigateTo(
+                    string.Format("/calendar-edit/{0}", id)
+                    );
+            }
+            else
+            {
+                //... altrimenti tenta un update
+                await this.CalendarService.UpdateAsync(this.CurrentCalendar);
+                this.SetEditMode(false);
+            }
+        }
+        catch (BadRequestException<CheckResult> ex)
+        {
+            this.CheckResult = ex.Payload;
+
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Dati non corretti",
+                "verificare i dati prima di procedere con il salvataggio"
+            );
+        }
+        catch (Exception ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Creazione corsa Fallita !",
+                ex.Message
+            );
+        }
+        finally
+        {
+            this.IsBusy = false;
+        }
     }
 
     private void Cancel_Click ()
     {
-
+        // ripristina i dati precedenti
+        this.CurrentCalendar.CopyFrom(this.OldCalendar);
+        this.SetEditMode(false);
     }
 
-    private void Clicca_Click ()
+    private void EditData_Click()
     {
-        this.SetEditMode(!this.EditMode);
+        this.OldCalendar.CopyFrom(this.CurrentCalendar);
+
+        this.SetEditMode(true);
     }
 
     private void SetEditMode (bool editMode)

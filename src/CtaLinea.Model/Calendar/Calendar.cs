@@ -71,6 +71,19 @@ namespace CtaLinea.Model.Calendar
         public bool Sundays { get; set; }
         public bool PreHolyday { get; set; }
         public bool PostHolyday { get; set; }
+
+        public void CopyFrom (Calendar source)
+        {
+            this.CalendarId = source.CalendarId;
+
+            this.BaseCalendarId = source.BaseCalendarId;
+            this.CalendarName = source.CalendarName;
+            this.CalendarType = source.CalendarType;
+
+            this.Sundays = source.Sundays;
+            this.PreHolyday = source.PreHolyday;
+            this.PostHolyday = source.PostHolyday;
+        }
     }
 
     public enum RunCalendarType
