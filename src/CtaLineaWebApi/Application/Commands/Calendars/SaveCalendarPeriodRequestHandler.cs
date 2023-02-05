@@ -13,7 +13,7 @@ using ZzSoft.CtaLinea.Dal.Repositories;
 namespace CtaLineaWebApi.Application.Commands.Calendars
 {
     public class SaveCalendarPeriodRequestHandler
-        : IRequestHandler<SaveCalendarPeriodRequest, OperationResult<int>>
+        : IRequestHandler<SaveCalendarPeriodRequest, OperationResult<CalendarPeriod>>
     {
         private readonly ILogger _logger;
         private readonly ICalendarRepository _repo;
@@ -26,12 +26,12 @@ namespace CtaLineaWebApi.Application.Commands.Calendars
             _logger = logger;
         }
 
-        public async Task<OperationResult<int>> Handle(
+        public async Task<OperationResult<CalendarPeriod>> Handle(
             SaveCalendarPeriodRequest request, 
             CancellationToken cancellationToken)
         {
             CalendarPeriod? period = null;
-            var result = new OperationResult<int> () {  Success = true };
+            var result = new OperationResult<CalendarPeriod> () {  Success = true };
 
             try
             {
@@ -43,7 +43,7 @@ namespace CtaLineaWebApi.Application.Commands.Calendars
                 {
                     period = await this._repo.UpdatePeriodASync(request.Data);
                 }
-                result.Data = period.CalendarPeriodId;
+                result.Data = period;
             }
             catch (Exception ex)
             {

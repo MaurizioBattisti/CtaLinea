@@ -1,4 +1,5 @@
 ﻿@page "/planning"
+@inject IApplicationSettings AppSettings;
 @using CtaLinea.Model.Utilities
 @using CtaLineaApp.Pages.Runs;
 @inject IUtilityService _utilityService
@@ -43,6 +44,7 @@
                             EndProperty="EndTime"
                             TextProperty="Text"
                             SelectedIndex="1"
+                            Culture=@AppSettings.CurrentCulture
                             AppointmentSelect=@OnAppointmentSelect
                             AppointmentRender=@OnAppointmentRender
                             Style="height:100%; width:100%">

@@ -8,6 +8,7 @@
 	Min=@Min
 	Max=@Max
 	AllowClear=@AllowClear
+	Name=@Name
 	Disabled=@Disabled
 	Class="w-100" >
 	<FooterTemplate>
@@ -37,6 +38,9 @@
 	public bool Disabled { get; set; } = false;
 	[Parameter]
 	public bool ShowSetTodayButton { get; set; } = false;
+
+	[Parameter]
+	public string? Name { get; set; }
 
 	private bool SettodayButtonVisible ()
 	{

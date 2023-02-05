@@ -1,0 +1,45 @@
+﻿
+<RadzenStack 
+        Orientation="Orientation.Horizontal"
+        Gap="5px" Wrap="FlexWrap.NoWrap"
+        JustifyContent="JustifyContent.End"
+        AlignItems="AlignItems.Center">
+    <RadzenButton Text="AZzera Filtri" Click=@ClearFilters_Click />
+    <RadzenButton Text="Ricarica" Click=@ReloadData_Click />
+    <RadzenTextBox @bind-Value=@FullTextSearch Placeholder="Cerca..." Change=@FullText_OnChange Class="w-100" />
+</RadzenStack>
+
+@code {
+    [Parameter]
+    public string? FullTextSearch { get; set; }
+    [Parameter]
+    public EventCallback<string?> FullTextSearchChanged { get; set; }
+
+    [Parameter]
+    public EventCallback OnReload { get; set; }
+    [Parameter]
+    public EventCallback OnClearFilters { get; set; }
+
+    public void FullText_OnChange (string? text)
+    {
+        FullTextSearchChanged.InvokeAsync(text);
+        this.ReloadData_Click();
+    }
+
+    private void ClearFilters_Click ()
+    {
+        this.FullTextSearch = null;
+        FullTextSearchChanged.InvokeAsync(this.FullTextSearch);
+        this.OnClearFilters.InvokeAsync();
+    }
+
+    private void ReloadData_Click ()
+    {
+        this.OnReload.InvokeAsync();
+    }
+
+    public void Refresh ()
+    {
+        this.StateHasChanged();
+    }
+}

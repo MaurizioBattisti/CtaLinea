@@ -30,6 +30,7 @@ MERGE dbo.Contracts AS t
 SET IDENTITY_INSERT dbo.Contracts OFF;
 
 -- calendars
+/*
 SET IDENTITY_INSERT dbo.Calendars ON;
 MERGE dbo.Calendars AS t
 	USING (SELECT * FROM  (VALUES
@@ -62,6 +63,7 @@ MERGE dbo.Calendars AS t
 			PostHolyday = s.PostHolyday
 	;
 SET IDENTITY_INSERT dbo.Calendars OFF;
+*/
 
 SET IDENTITY_INSERT [dbo].[CalendarPeriods] ON;
 MERGE [dbo].[CalendarPeriods] AS t
@@ -122,12 +124,9 @@ MERGE dbo.CalendarHolidays AS t
 		VALUES (CalendarId, Holiday, HolidayDescription)
 	WHEN MATCHED THEN
 		UPDATE SET HolidayDescription = s.HolidayDescription
-	WHEN NOT MATCHED BY SOURCE THEN
-		DELETE
+	-- WHEN NOT MATCHED BY SOURCE THEN
+		-- DELETE
 	;
-
-
-
 
 -- users 
 MERGE dbo.Meta_Users AS t
@@ -139,8 +138,8 @@ MERGE dbo.Meta_Users AS t
 	ON  t.UserName = s.UserName
 	WHEN NOT MATCHED  THEN
 		INSERT VALUES (s.UserName, s.PasswordHash, s.Description, s.Email, s.Expiration, s.MustChangePassword, s.AssociateId)
-	WHEN NOT MATCHED  BY SOURCE  THEN
-		DELETE
+	-- WHEN NOT MATCHED  BY SOURCE  THEN
+		-- DELETE
 	;
 -- users roles
 MERGE dbo.Meta_Roles AS t
@@ -155,6 +154,6 @@ MERGE dbo.Meta_Roles AS t
 		AND t.RoleId = s.RoleId
 	WHEN NOT MATCHED  THEN
 		INSERT VALUES (s.UserName, s.RoleId)
-	WHEN NOT MATCHED  BY SOURCE  THEN
-		DELETE
+	-- WHEN NOT MATCHED  BY SOURCE  THEN
+		-- DELETE
 	;	;

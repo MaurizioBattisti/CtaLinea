@@ -15,17 +15,12 @@
     <PageTitle>
         <RadzenLabel Text="Corse" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
     </PageTitle>
-    <TopLine>
-         <RadzenStack 
-             Orientation="Orientation.Horizontal" 
-             Gap="5px" Wrap="FlexWrap.NoWrap"
-             JustifyContent="JustifyContent.End" 
-             AlignItems="AlignItems.Center" >
-            <RadzenButton Text="AZzera Filtri" Click=@ClearFilters_Click />
-             <RadzenButton Text="Ricarica" Click=@ReloadData />
-            <RadzenTextBox @bind-Value="AutoLoad.FullTextSearch" Placeholder="Cerca..." Change=@(args => FullText_OnChange(args)) Class="w-100" />
-         </RadzenStack>
-        
+    <TopLine >
+        <RunListTopLineView 
+            @bind-FullTextSearch="AutoLoad.FullTextSearch"
+            OnReload=@ReloadData
+            OnClearFilters=@ClearFilters_Click
+            />
     </TopLine>
 </LayoutSetter>
 <CtaLineaSttingsNotifier Changed=@StateHasChanged />
@@ -156,8 +151,8 @@
     </Template>
     <Columns>
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Id" Title="Id Servizio" Visible=false />
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="ContractRowNumber" Title="Riga Appalto" Width="100px" />
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Extra" Title="Extra" Width="100px">
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="ContractRowNumber" Title="Riga Appalto" Width="100px" FilterValue=@Filter_ContractRowNumber />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Extra" Title="Extra" Width="100px"FilterValue=@Filter_Extra>
             <Template Context="data">
                 @if (data.Extra)
                 {
@@ -177,21 +172,21 @@
             </FilterTemplate>
         </RadzenDataGridColumn>
 
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedDays" Title="GG Richiesti" Width="100px" />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedDays" Title="GG Richiesti" Width="100px" FilterValue=@Filter_RequestedDays />
 
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="AssociatesDescr" Title="Ditte" Width="200px" />
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="PrimaryCarsDescr" Title="Mezzi Titolari" Width="200px" />
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="SpareCarsDescr" Title="Mezzi di riserva" Width="200px" />
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="CalendarsDescr" Title="Calendari usati" Width="200px" />
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="PathsDescr" Title="PErcorso (Nodi)" Width="200px" />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="AssociatesDescr" Title="Ditte" Width="200px" FilterValue=@Filter_AssociatesDescr />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="PrimaryCarsDescr" Title="Mezzi Titolari" Width="200px" FilterValue=@Filter_PrimaryCarsDescr />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="SpareCarsDescr" Title="Mezzi di riserva" Width="200px" FilterValue=@Filter_SpareCarsDescr />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="CalendarsDescr" Title="Calendari usati" Width="200px" FilterValue=@Filter_CalendarsDescr />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="PathsDescr" Title="Percorso (Nodi)" Width="200px" FilterValue=@Filter_PathsDescr />
         
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="VariationStartDate" Title="Inizio var." FormatString="{0:dd/MM/yyyy}" Width="180px" FilterValue=@Filter_VariationStartDate>
             <FilterTemplate>
                 <DateSelector @bind-Value="Filter_VariationStartDate" AllowClear=true Changed=@VariationStartDate_Changed />
             </FilterTemplate>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="LineNumber" Title="Nr. Linea" Width="100px" />
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunNumber" Title="Nr. Corsa" Width="100px" />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="LineNumber" Title="Nr. Linea" Width="100px" FilterValue=@Filter_LineNumber />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunNumber" Title="Nr. Corsa" Width="100px" FilterValue=@Filter_RunNumber />
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="StartTime" Title="Ora inizio" Width="120px" FilterOperator="FilterOperator.Equals" FilterValue=@Filter_StartTime_2>
             <FilterTemplate>
                 <TimeSelector @bind-Value="Filter_StartTime" AllowClear=true Changed=@StartTime_Changed />
@@ -209,7 +204,7 @@
             </Template>
         </RadzenDataGridColumn>
 
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Monday" Title="Lunedì" Width="100px" >
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Monday" Title="Lunedì" Width="100px" FilterValue=@Filter_Monday>
             <Template Context="data">
                 @if (data.Monday)
                 {
@@ -217,7 +212,7 @@
                 }
             </Template>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Tuesday" Title="Martedì" Width="100px" >
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Tuesday" Title="Martedì" Width="100px" FilterValue=@Filter_Tuesday>
             <Template Context="data">
                 @if (data.Tuesday)
                 {
@@ -225,7 +220,7 @@
                 }
             </Template>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Wednesday" Title="Mercoledì" Width="100px" >
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Wednesday" Title="Mercoledì" Width="100px" FilterValue=@Filter_Wednesday>
             <Template Context="data">
                 @if (data.Wednesday)
                 {
@@ -233,7 +228,7 @@
                 }
             </Template>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Thursday" Title="Giovedì" Width="100px" >
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Thursday" Title="Giovedì" Width="100px" FilterValue=@Filter_Thursday>
             <Template Context="data">
                 @if (data.Thursday)
                 {
@@ -241,7 +236,7 @@
                 }
             </Template>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Friday" Title="Venerdì" Width="100px" >
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Friday" Title="Venerdì" Width="100px" FilterValue=@Filter_Friday>
             <Template Context="data">
                 @if (data.Friday)
                 {
@@ -249,7 +244,7 @@
                 }
             </Template>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Saturday" Title="Sabato" Width="100px" >
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Saturday" Title="Sabato" Width="100px" FilterValue=@Filter_Saturday>
             <Template Context="data">
                 @if (data.Saturday)
                 {
@@ -257,7 +252,7 @@
                 }
             </Template>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Sunday" Title="Domenica" Width="100px" >
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Sunday" Title="Domenica" Width="100px" FilterValue=@Filter_Sunday >
             <Template Context="data">
                 @if (data.Sunday)
                 {
@@ -266,14 +261,14 @@
             </Template>
         </RadzenDataGridColumn>
         
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Path" Title="Percorso" Width="200px" />
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedFrequency" Title="Frequenza richiesta" Width="200px" />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Path" Title="Percorso" Width="200px" FilterValue=@Filter_Path />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedFrequency" Title="Frequenza richiesta" Width="200px" FilterValue=@Filter_RequestedFrequency />
 
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Km" Title="Km" Width="100px" />
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedCapacity" Title="Capienza richiesta" Width="150px" />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Km" Title="Km" Width="100px" FilterValue=@Filter_Km />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedCapacity" Title="Capienza richiesta" Width="150px" FilterValue=@Filter_RequestedCapacity />
 
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunNote" Title="Note Generali" Width="200px" />
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="VariationNote" Title="Note prima Variante" Width="200px" />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunNote" Title="Note Generali" Width="200px" FilterValue=@Filter_Note />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="VariationNote" Title="Note prima Variante" Width="200px" FilterValue=@Filter_VariationNote />
     </Columns>
 </RadzenDataGrid>
 
@@ -296,6 +291,34 @@
     private IEnumerable<RunVariationQueryModel>? Details;
     #endregion
     #region filtri
+    private int? Filter_ContractRowNumber;
+    private bool? Filter_Extra;
+    private int? Filter_RequestedDays;
+    private string? Filter_AssociatesDescr;
+    private string? Filter_PrimaryCarsDescr;
+    private string? Filter_SpareCarsDescr;
+    private string? Filter_CalendarsDescr;
+    private string? Filter_PathsDescr;
+    private int? Filter_LineNumber;
+    private int? Filter_RunNumber;
+
+    private bool? Filter_Monday;
+    private bool? Filter_Tuesday;
+    private bool? Filter_Wednesday;
+    private bool? Filter_Thursday;
+    private bool? Filter_Friday;
+    private bool? Filter_Saturday;
+    private bool? Filter_Sunday;
+
+    private string? Filter_Path;
+    private string? Filter_RequestedFrequency;
+
+    private float? Filter_Km;
+    private int? Filter_RequestedCapacity;
+
+    private string? Filter_Note;
+    private string? Filter_VariationNote;
+
     // ORe di inizioe fine
     private DateTime? Filter_StartTime_2;
     private TimeSpan? Filter_StartTime;
@@ -352,7 +375,7 @@
 
     void FullText_OnChange(string value)
     {
-        this.grdData?.Reload();
+        // this.grdData?.Reload();
     }
     void ReloadData ()
     {
@@ -486,8 +509,35 @@
 
     private void ClearFilters_Click ()
     {
-        AutoLoad.FullTextSearch = string.Empty;
-        
+
+        this.Filter_ContractRowNumber = null;
+        this.Filter_Extra = null;
+        this.Filter_RequestedDays = null;
+        this.Filter_AssociatesDescr = null;
+        this.Filter_PrimaryCarsDescr = null;
+        this.Filter_SpareCarsDescr = null;
+        this.Filter_CalendarsDescr = null;
+        this.Filter_PathsDescr = null;
+        this.Filter_LineNumber = null;
+        this.Filter_RunNumber = null;
+
+        this.Filter_Monday = null;
+        this.Filter_Tuesday = null;
+        this.Filter_Wednesday = null;
+        this.Filter_Thursday = null;
+        this.Filter_Friday = null;
+        this.Filter_Saturday = null;
+        this.Filter_Sunday = null;
+
+        this.Filter_Path = null;
+        this.Filter_RequestedFrequency = null;
+
+        this.Filter_Km = null;
+        this.Filter_RequestedCapacity = null;
+
+        this.Filter_Note = null;
+        this.Filter_VariationNote = null;
+
         this.Filter_StartDate = null;
         this.Filter_EndDate = null;
 
@@ -499,7 +549,7 @@
         
         this.Filter_VariationStartDate = null;
 
-        this.StateHasChanged();
+        // this.StateHasChanged();
         this.grdData?.Reload();
     }
 }

@@ -204,10 +204,9 @@
                     CancelButtonText = "Annulla"
                 }) == true)
         {
-            /*
             try
             {
-                await RunRepo.DeleteRunAsync(runId);
+                await CalendarService.DeleteAsync(calenarId);
                 if (this.grdData != null)
                 {
                     await this.grdData.Reload();
@@ -221,7 +220,6 @@
                     exc.Message
                 );
             }
-            */
         }
     }
 

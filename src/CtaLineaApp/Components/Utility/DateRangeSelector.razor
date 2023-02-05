@@ -4,6 +4,7 @@
         <DateSelector 
             @bind-Value="StartDate"
             Changed=@OnStartDateChanged
+            Name=@StartName
             Min=@Min Max=@StartMax()
             Disabled=@Disabled
             ShowSetTodayButton=true
@@ -15,6 +16,7 @@
         <DateSelector 
             @bind-Value="EndDate"
             Changed=@OnEndDateChanged
+            Name=@EndName
             Min=@EndMin() Max=@Max
             Disabled=@Disabled
             ShowSetTodayButton=true
@@ -48,6 +50,11 @@
 
     [Parameter]
     public bool AllowClear { get; set; } = true;
+
+    [Parameter]
+    public string? StartName { get; set; }
+    [Parameter]
+    public string? EndName { get; set; }
 
     private DateTime? StartMax ()
     {

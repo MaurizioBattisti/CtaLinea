@@ -1,5 +1,6 @@
 ﻿@page "/calendar-edit/{Id:int}"
 @inject ICalendarService CalendarService
+@inherits EditorComponentBase
 @attribute [Authorize]
 
 <PageTitle>@Constants.App_Title - Modifica Calendario </PageTitle>
@@ -11,8 +12,8 @@
     </TopLine>
 </LayoutSetter>
 
-<CalendarDataView CurrentCalendar=@Calendar @bind-EditMode=@EditMode />
-<CalendarDetailsView CalendarId=@Id EditMode=@(!EditMode) />
+<CalendarDataView Disabled=@DetailEditMode CurrentCalendar=@Calendar @bind-EditMode=@EditMode Changed=@SetIsClean />
+<CalendarDetailsView @bind-DetailEditMode=@DetailEditMode CalendarId=@Id EditMode=@(!EditMode) Changed=@SetIsClean />
 
 @code {
     [Parameter]
@@ -21,6 +22,13 @@
     private bool IsBusy = true;
     private bool EditMode = false;
     Calendar Calendar = new Calendar();
+    private bool DetailEditMode = false;
+
+    private void SetIsClean ()
+    {
+        this.IsClean = (this.EditMode == false
+                        && this.DetailEditMode == false);
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

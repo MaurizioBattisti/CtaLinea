@@ -1,89 +1,535 @@
-﻿@inject ICalendarService CalendarService
+﻿@inject IApplicationSettings AppSettings;
+@inject ICalendarService CalendarService
+@inject ContextMenuService ContextMenuService
+@inject DialogService DialogService
+@inject NotificationService notificationService
 
 <CtaLineaSttingsNotifier Changed=@StateHasChanged />
 <RadzenCard>
     <RadzenRow>
         <RadzenColumn>
             <h4>Periodi</h4>
-            <RadzenDataGrid IsLoading=@IsBusy
-                            Data="@this.Periods"
-                            TItem="CalendarPeriod"
-                            AllowSorting="true"
-                            AllowColumnResize="true"
-                            Density=@Settings.Density
-                            Style="width: 100%;height: 400px">
-                <Columns>
-                    <RadzenDataGridColumn TItem="CalendarPeriod" Property="StartDate" Title="Inizio var." FormatString="{0:dd/MM/yyyy}" Width="120px" />
-                    <RadzenDataGridColumn TItem="CalendarPeriod" Property="EndDate" Title="Fine var." FormatString="{0:dd/MM/yyyy}" Width="120px" />
-                    <RadzenDataGridColumn TItem="CalendarPeriod" Property="Note" Title="Note" Width="200px" />
-                </Columns>
-            </RadzenDataGrid>
+            @if (this.CanOperateOn() == true)
+            {
+                <RadzenDataGrid @ref=@grdPeriods
+                                IsLoading=@IsBusy
+                                Data="@this.Periods"
+                                TItem="CalendarPeriod"
+                                AllowSorting="true"
+                                AllowColumnResize="true"
+                                Density=@Settings.Density
+                                CellContextMenu="@Period_RowActionCellContextMenu"
+                                SelectionMode="DataGridSelectionMode.Single"
+                                @bind-Value=@SelectedPEriods
+                                Style="width: 100%;height: 400px">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="CalendarPeriod" Property="StartDate" Title="Inizio var." FormatString="{0:dd/MM/yyyy}" Width="120px" />
+                        <RadzenDataGridColumn TItem="CalendarPeriod" Property="EndDate" Title="Fine var." FormatString="{0:dd/MM/yyyy}" Width="120px" />
+                        <RadzenDataGridColumn TItem="CalendarPeriod" Property="Note" Title="Note" Width="200px" />
+                    </Columns>
+                </RadzenDataGrid>
+                <RadzenButton Text="Aggiunti Periodo"
+                        Click=@AddPeriod_Click
+                        ButtonStyle="ButtonStyle.Primary" />
+            }
+            @if(this.IsEditingPeriod == true)
+            {
+                <RadzenTemplateForm TItem=CalendarPeriod
+                                Data="@CurrentPeriod"
+                                Submit=@SavePeriod_Click>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <DateRangeSelector @bind-StartDate="CurrentPeriod.StartDate"
+                                @bind-EndDate="CurrentPeriod.EndDate"
+                                StartName="StartDate"
+                                EndName="EndDate"
+                                AllowClear=true
+                                Inline=true/>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 align-items-center d-flex">
+                                <RadzenLabel Text="Note Periodo" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenTextArea 
+                                    @bind-Value=@CurrentPeriod.Note
+                                    style="height: 100; width: 100%;" Name="Note" />
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
+                                <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Salva" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="cancel" style="display: inline-block; margin-left: 10px;" Text="Annulla" Click="@PeriodCancelEdit_Click" />
+                            </div>
+                        </div>
+                    </div>
+                </RadzenTemplateForm>
+            }
         </RadzenColumn>
         <RadzenColumn Size="4">
             <h4>Gironi</h4>
-            <RadzenDataGrid IsLoading=@IsBusy
+            @if (this.CanOperateOn() == true)
+            {
+                <RadzenDataGrid @ref=@grdHolidays
+                            IsLoading=@IsBusy
                             Data="@this.Holidays"
                             TItem="CalendarHoliday"
                             AllowSorting="true"
                             AllowColumnResize="true"
                             Density=@Settings.Density
+                            CellContextMenu="@Holidays_RowActionCellContextMenu"
+                            SelectionMode="DataGridSelectionMode.Single"
+                            @bind-Value=@SelectedHolidays
                             Style="whidth: 100%;height: 400px">
-                <Columns>
-                    <RadzenDataGridColumn TItem="CalendarHoliday" Property="Holiday" Title="Data." FormatString="{0:dd/MM/yyyy}" Width="120px" />
-                    <RadzenDataGridColumn TItem="CalendarHoliday" Property="HolidayDescription" Title="Descrizione" Width="200px" />
-                </Columns>
-            </RadzenDataGrid>
-            @if (this.EditMode == true)
-            {
+                    <Columns>
+                        <RadzenDataGridColumn TItem="CalendarHoliday" Property="Holiday" Title="Data." FormatString="{0:dd/MM/yyyy}" Width="120px" />
+                        <RadzenDataGridColumn TItem="CalendarHoliday" Property="HolidayDescription" Title="Descrizione" Width="200px" />
+                    </Columns>
+                </RadzenDataGrid>
+
                 <RadzenButton Text="Aggiunti Giorno" 
                     Click=@AddHoliday_Click
                     ButtonStyle="ButtonStyle.Primary" />
+            }
+            @if (this.IsEditingHoliday == true)
+            {
+                <RadzenTemplateForm TItem=CalendarHoliday
+                                Data="@CurrentHoliday"
+                                Submit=@SaveHoliday_Click>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <RadzenFieldset >
+                                <div class="row">
+                                    <div class="col-md-4 align-items-center d-flex">
+                                        <RadzenLabel Text="Data" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <RadzenDatePicker TValue="DateTime"
+                                            Disabled=@(!IsAddingHoliday)
+                                            DateFormat="dd/MM/yyyy"
+                                            Culture=@AppSettings.CurrentCulture
+                                            AllowClear=false
+                                            style="width: 100%;" Name="Holiday" 
+                                            @bind-Value="CurrentHoliday.Holiday" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 align-items-center d-flex">
+                                        <RadzenLabel Text="Nome Giorno" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <RadzenTextBox @bind-Value=@CurrentHoliday.HolidayDescription
+                                                   style="width: 100%;" MaxLength=50 Name="HolidayDescription" />
+                                    </div>
+                                </div>
+                            </RadzenFieldset>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
+                                <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Salva" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="cancel" style="display: inline-block; margin-left: 10px;" Text="Annulla" Click="@HolidayCancelEdit_Click" />
+                            </div>
+                        </div>
+                    </div>
+                </RadzenTemplateForm>
             }
         </RadzenColumn>
     </RadzenRow>
 </RadzenCard>
 
 @code {
+    private enum MenuAction
+    {
+        Edit,
+        Delete
+    }
+
     [CascadingParameter]
     CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+    [Parameter]
+    public bool DetailEditMode { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> DetailEditModeChanged { get; set; }
+
+    [Parameter]
+    public EventCallback Changed { get; set; }
 
     [Parameter]
     public int CalendarId { get; set; }
     [Parameter]
     public bool EditMode { get; set; } = false;
 
+    IList<CalendarPeriod> SelectedPEriods = new List<CalendarPeriod> ();
+    IList<CalendarHoliday> SelectedHolidays = new List<CalendarHoliday> ();
+
+    RadzenDataGrid<CalendarPeriod>? grdPeriods;
+    RadzenDataGrid<CalendarHoliday>? grdHolidays;
+
     private bool IsBusy { get; set; } = false;
     private IEnumerable<CalendarPeriod>? Periods { get; set; }
     private IEnumerable<CalendarHoliday>? Holidays  { get; set; }
+
+    private bool IsEditingPeriod = false;
+    private bool IsEditingHoliday = false;
+
+    private CheckResult? CheckResult;
+
+    private bool CanOperateOn ()
+    {
+        return (this.EditMode == true
+            && this.IsEditingPeriod == false
+            && this.IsEditingHoliday == false
+            );
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            await this.ReloadDataAsync();
+        }
+    }
+
+    private async Task ReloadDataAsync ()
+    {
+        try
+        {
+            this.IsBusy = true;
+
+            var per = await CalendarService.GetPeriodListASync(this.CalendarId);
+            var holy = await CalendarService.GetHolidayListAsync(this.CalendarId);
+
+            this.Periods = per;
+            this.Holidays = holy;
+        }
+        finally
+        {
+            this.IsBusy = false;
+            this.StateHasChanged();
+        }
+    }
+
+    private void Period_RowActionCellContextMenu(DataGridCellMouseEventArgs<CalendarPeriod> args)
+    {
+        if (this.CanOperateOn() == false) return;
+
+        SelectedPEriods = new List<CalendarPeriod>() { args.Data };
+
+        ContextMenuService.Open(args, ds =>
+        @<RadzenMenu Click=@((e)=>OnPeriodMenuItemClick(args, e))>
+                <RadzenMenuItem Text="Modifica..." Value=@MenuAction.Edit />
+            <RadzenMenuItem Text="Elimina..." Value=@MenuAction.Delete />
+            </RadzenMenu>
+        );
+    }
+    private async Task OnPeriodMenuItemClick(
+        DataGridCellMouseEventArgs<CalendarPeriod> args,
+        MenuItemEventArgs e
+        )
+    {
+        await Task.CompletedTask;
+        ContextMenuService.Close();
+
+        switch ((MenuAction)e.Value)
+        {
+            case MenuAction.Edit:
+                this.StartEditPeriod(args.Data);
+                break;
+            case MenuAction.Delete:
+                await this.DeletePeriodAsync(args.Data.CalendarPeriodId);
+                break;
+            default:
+                break;
+        };
+    }
+
+    private void Holidays_RowActionCellContextMenu(DataGridCellMouseEventArgs<CalendarHoliday> args)
+    {
+        if (this.CanOperateOn() == false) return;
+
+        SelectedHolidays = new List<CalendarHoliday>() { args.Data };
+
+        ContextMenuService.Open(args, ds =>
+            @<RadzenMenu Click=@((e)=>OnHolidayMenuItemClick(args, e))>
+                <RadzenMenuItem Text="Modifica..." Value=@MenuAction.Edit />
+                <RadzenMenuItem Text="Elimina..." Value=@MenuAction.Delete />
+        </RadzenMenu>
+    );
+    }
+    private async Task OnHolidayMenuItemClick(
+        DataGridCellMouseEventArgs<CalendarHoliday> args,
+        MenuItemEventArgs e
+        )
+    {
+        await Task.CompletedTask;
+        ContextMenuService.Close();
+
+        switch ((MenuAction)e.Value)
+        {
+            case MenuAction.Edit:
+                this.StartEditHoliday (args.Data);
+                break;
+            case MenuAction.Delete:
+                await this.DeleteHolidayAsync(args.Data.CalendarId, args.Data.Holiday);
+                break;
+            default:
+                break;
+        };
+    }
+
+    private void AddHoliday_Click ()
+    {
+        this.StartEditHoliday(null);
+    }
+    private void AddPeriod_Click ()
+    {
+        this.StartEditPeriod(null);
+    }
+
+    #region edit  dei periodi
+    private CalendarPeriod CurrentPeriod = new CalendarPeriod();
+    private async Task DeletePeriodAsync(
+        int periodId)
+    {
+        // chiede conferma e poi procede con la cancellazione
+        var title = "Eliminazione Periodo";
+        if (await this.DialogService.Confirm(
+            "Desideri veramente eliminare il periodo di calendario selezionata ?",
+            title,
+            new ConfirmOptions
+                {
+                    OkButtonText = "Si, Elimina !",
+                    CancelButtonText = "Annulla"
+                }) == true)
+        {
             try
             {
-                this.IsBusy = true;
-
-                var per = await CalendarService.GetPeriodListASync(this.CalendarId);
-                var holy = await CalendarService.GetHolidayListAsync(this.CalendarId);
-
-                this.Periods = per;
-                this.Holidays = holy;
+                await CalendarService.DeletePeriodAsync(periodId);
+                await this.ReloadDataAsync();
             }
-            finally
+            catch (Exception exc)
             {
-                this.IsBusy = false;
-                this.StateHasChanged();
+                notificationService.Notify(
+                    NotificationSeverity.Error,
+                    "Eliminazione Falita",
+                    exc.Message
+                );
             }
         }
     }
 
-    private async Task AddHoliday_Click ()
+    private void StartEditPeriod (CalendarPeriod? period)
     {
-
-
-
-
-        await Task.CompletedTask;
+        this.CurrentPeriod = new CalendarPeriod();
+        if (period != null)
+        {
+            CurrentPeriod.CopyFrom(period);
+        }
+        else
+        {
+            CurrentPeriod.CalendarId = this.CalendarId;
+        }
+        this.IsEditingPeriod = true;
+        this.DetailEditMode = true;
+        this.DetailEditModeChanged.InvokeAsync(this.DetailEditMode);
+        this.Changed.InvokeAsync();
     }
+
+    private async Task SavePeriod_Click ()
+    {
+        await Task.CompletedTask;
+        this.IsBusy = true;
+        try
+        {
+            // esegue il check locale dei dati
+
+
+            // salva id ati del periodo
+            if (this.CurrentPeriod.CalendarPeriodId <= 0)
+            {
+                var newPeriod = await this.CalendarService.InsertPeriodASync(this.CurrentPeriod);
+                this.CurrentPeriod.CalendarPeriodId = newPeriod.CalendarPeriodId;
+            }
+            else
+            {
+                await this.CalendarService.UpdatePeriodAsync(this.CurrentPeriod);
+            }
+
+            this.IsEditingPeriod = false;
+            this.DetailEditMode = false;
+            await this.DetailEditModeChanged.InvokeAsync(this.DetailEditMode);
+
+            var period = (from p in this.Periods
+                          where p.CalendarPeriodId == this.CurrentPeriod.CalendarPeriodId
+                          select p)
+                        .FirstOrDefault();
+
+            if (period == null)
+            {
+                // ricareica i dati
+                await this.ReloadDataAsync();
+            }
+            else
+            {
+                period.CopyFrom(this.CurrentPeriod);
+            }
+            this.CheckResult = null;
+            await this.Changed.InvokeAsync();
+        }
+        catch (BadRequestException<CheckResult> ex)
+        {
+            this.CheckResult = ex.Payload;
+
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Dati non corretti",
+                "verificare i dati prima di procedere con il salvataggio"
+            );
+        }
+        catch (Exception ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Creazione corsa Fallita !",
+                ex.Message
+            );
+        }
+        finally
+        {
+            this.IsBusy = false;
+        }
+    }
+    private void PeriodCancelEdit_Click ()
+    {
+        this.IsEditingPeriod = false;
+        this.DetailEditMode = false;
+        this.DetailEditModeChanged.InvokeAsync(this.DetailEditMode);
+        this.Changed.InvokeAsync();
+    }
+    #endregion
+
+    #region edit  dei giorni
+    private CalendarHoliday CurrentHoliday = new CalendarHoliday();
+    private bool IsAddingHoliday = false;
+    private async Task DeleteHolidayAsync(
+        int calendarId, DateTime date)
+    {
+        // chiede conferma e poi procede con la cancellazione
+        var title = "Eliminazione Giorno";
+        if (await this.DialogService.Confirm(
+            "Desideri veramente eliminare il giorno di calendario selezionata ?",
+            title,
+            new ConfirmOptions
+                {
+                    OkButtonText = "Si, Elimina !",
+                    CancelButtonText = "Annulla"
+                }) == true)
+        {
+            try
+            {
+                await CalendarService.DeleteHolidayAsync(calendarId, date);
+                await this.ReloadDataAsync();
+            }
+            catch (Exception exc)
+            {
+                notificationService.Notify(
+                    NotificationSeverity.Error,
+                    "Eliminazione Falita",
+                    exc.Message
+                );
+            }
+        }
+    }
+
+    private void StartEditHoliday(CalendarHoliday? holiday)
+    {
+        this.CurrentHoliday = new CalendarHoliday();
+        if (holiday != null)
+        {
+            IsAddingHoliday = false;
+            CurrentHoliday.CopyFrom(holiday);
+        }
+        else
+        {
+            this.IsAddingHoliday = true;
+            CurrentHoliday.CalendarId = this.CalendarId;
+        }
+        this.IsEditingHoliday = true;
+        this.DetailEditMode = true;
+        this.DetailEditModeChanged.InvokeAsync(this.DetailEditMode);
+        this.Changed.InvokeAsync();
+    }
+
+    private async Task SaveHoliday_Click()
+    {
+        await Task.CompletedTask;
+        this.IsBusy = true;
+        try
+        {
+            // esegue il check locale dei dati
+
+
+            // salva id ati del periodo
+            if (this.IsAddingHoliday == true)
+            {
+                await this.CalendarService.InsertHolidayASync(this.CurrentHoliday);
+            }
+            else
+            {
+                await this.CalendarService.UpdateHolidayAsync(this.CurrentHoliday);
+            }
+
+            this.IsEditingHoliday = false;
+            this.DetailEditMode = false;
+            await this.DetailEditModeChanged.InvokeAsync(this.DetailEditMode);
+
+            var holiday = (from h in this.Holidays
+                           where h.CalendarId == this.CurrentHoliday.CalendarId
+                               && h.Holiday == this.CurrentHoliday.Holiday
+                           select h)
+                        .FirstOrDefault();
+            if (holiday == null)
+            {
+                // ricareica i dati
+                await this.ReloadDataAsync();
+            }
+            else
+            {
+                holiday.CopyFrom(this.CurrentHoliday);
+            }
+            this.CheckResult = null;
+            await this.Changed.InvokeAsync();
+        }
+        catch (BadRequestException<CheckResult> ex)
+        {
+            this.CheckResult = ex.Payload;
+
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Dati non corretti",
+                "verificare i dati prima di procedere con il salvataggio"
+            );
+        }
+        catch (Exception ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Creazione corsa Fallita !",
+                ex.Message
+            );
+        }
+        finally
+        {
+            this.IsBusy = false;
+        }
+    }
+    private void HolidayCancelEdit_Click()
+    {
+        this.IsEditingHoliday = false;
+        this.DetailEditMode = false;
+        this.DetailEditModeChanged.InvokeAsync(this.DetailEditMode);
+        this.Changed.InvokeAsync();
+    }
+    #endregion
 }

@@ -6,7 +6,7 @@
     [StartDate] DATE NULL, 
     [EndDate] DATE NULL, 
     
-    [Note] NCHAR(10) NULL, 
+    [Note] VARCHAR(MAX) NULL, 
 
     CONSTRAINT [FK_Periods_Calendar] 
         FOREIGN KEY ([CalendarId]) 

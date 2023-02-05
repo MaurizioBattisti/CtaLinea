@@ -200,7 +200,7 @@ namespace CtaLineaWebApi.Controllers
         }
 
         [SwaggerOperation("Crea un periodo di calendaraio")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status201Created, Type=typeof(CalendarPeriod))]
         // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [HttpPost]
@@ -226,8 +226,8 @@ namespace CtaLineaWebApi.Controllers
             }
 
             return this.Created(
-                string.Format("/periods/{0}", result.Data),
-                null);
+                string.Format("/periods/{0}", result.Data.CalendarPeriodId),
+                result.Data);
         }
         [SwaggerOperation("Aggiorna i dati di un periodo di calendario")]
         [ProducesResponseType(StatusCodes.Status200OK)]

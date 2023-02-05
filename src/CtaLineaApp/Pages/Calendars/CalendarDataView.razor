@@ -4,7 +4,7 @@
 
 @if (!EditMode)
 {
-    <RadzenButton Text="Modifica dati" Click=@EditData_Click />
+    <RadzenButton Disabled=@Disabled Text="Modifica dati" Click=@EditData_Click />
 }
 <RadzenTemplateForm 
     TItem=Calendar 
@@ -96,6 +96,11 @@
     public bool EditMode { get; set; } = false;
     [Parameter]
     public EventCallback<bool> EditModeChanged { get; set; }
+    [Parameter]
+    public EventCallback Changed { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; } = false;
 
     private bool IsBusy = false;
 
@@ -138,6 +143,7 @@
                 await this.CalendarService.UpdateAsync(this.CurrentCalendar);
                 this.SetEditMode(false);
             }
+            await this.Changed.InvokeAsync();
         }
         catch (BadRequestException<CheckResult> ex)
         {
@@ -168,6 +174,7 @@
         // ripristina i dati precedenti
         this.CurrentCalendar.CopyFrom(this.OldCalendar);
         this.SetEditMode(false);
+        this.Changed.InvokeAsync();
     }
 
     private void EditData_Click()
@@ -175,6 +182,7 @@
         this.OldCalendar.CopyFrom(this.CurrentCalendar);
 
         this.SetEditMode(true);
+        this.Changed.InvokeAsync();
     }
 
     private void SetEditMode (bool editMode)
