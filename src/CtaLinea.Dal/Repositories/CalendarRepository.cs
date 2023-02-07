@@ -16,6 +16,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         private const string Sql_Calendars_Table = "[dbo].[Calendars]";
         private const string Sql_CalendarPeriods_Table = "[dbo].[CalendarPeriods]";
         private const string Sql_CalendarHolidays_Table = "[dbo].[CalendarHolidays]";
+        private const string Sql_SimpleCalendarDays = "[dbo].[tvf_CalendarDays](@CalendarId, @StartDate, @EndDate)";
 
         private const string SQL_Select_Star = "SELECT * FROM ";
         private const string Sql_SelectIdentity = "SELECT @@IDENTITY";
@@ -442,6 +443,27 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 CalendarId = calendarId,
                 Holiday = date
             };
+        }
+        #endregion
+
+        #region utilit sui calendari
+        public async Task<IEnumerable<SingleCalendarDay>> GetDaysAsync(
+            int calendarId,
+            DateTime startDate,
+            DateTime endDate)
+        {
+            using IDbConnection conn = this._context.Database.GetDbConnection();
+            conn.Open();
+
+            var model = await conn.QueryAsync<SingleCalendarDay>(
+                SQL_Select_Star + Sql_SimpleCalendarDays,
+                new
+                {
+                    CalendarId = calendarId,
+                    StartDate = startDate,
+                    EndDate = endDate
+                });
+            return await Task.FromResult(model);
         }
         #endregion
     }

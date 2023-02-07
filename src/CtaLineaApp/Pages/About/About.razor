@@ -1,11 +1,13 @@
 ﻿@page "/about"
 @using System.Reflection;
+@inject IHttpService _http;
 
 <PageTitle>@Constants.App_Title - Informazioni</PageTitle>
 
 <h1>Informaizoni su CTA Linea</h1>
 
 <RadzenDataGrid 
+    @ref=@grdInfo
     Data="@Info"
     TItem="KeyValuePair<string, string?>"
     AllowPaging="false" 
@@ -17,6 +19,7 @@
 </RadzenDataGrid>
 
 @code {
+    RadzenDataGrid<KeyValuePair<string, string?>>? grdInfo;
     // lista con le informaizoni
     List<KeyValuePair<string, string?>> Info = new List<KeyValuePair<string, string?>>();
 
@@ -26,8 +29,38 @@
             this.GetInfo()
             );
 
-
         await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender == true)
+        {
+            try
+            {
+                var info = await this._http.Get<IEnumerable<KeyValuePair<string, string?>>>(
+                    Constants.Endpoint_Info_Versions);
+
+                if (info != null)
+                {
+                    this.Info.AddRange(
+                        info
+                        );
+                }
+            }
+            catch (Exception ex)
+            {
+                this.Info.Add(
+                    new KeyValuePair<string, string?>("Error", ex.Message)
+                );
+            }
+            finally
+            {
+                grdInfo?.Reload();
+            }
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     private IEnumerable<KeyValuePair<string, string?>> GetInfo ()
@@ -51,5 +84,7 @@
         yield return new KeyValuePair<string, string?>("Image RunTime Versione", 
             assembly.ImageRuntimeVersion
             );
+
+
     }
 }

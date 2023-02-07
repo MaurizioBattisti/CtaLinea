@@ -85,6 +85,19 @@ namespace CtaLineaApp.Application.Services.Base
             var url = string.Format(Constants.Endpoint_Calendar_Holidays_Single_Fmr, calendarId, date);
             await this._http.Delete(url);
         }
+
+        public async Task<IEnumerable<SingleCalendarDay>?> GetDaysAsync (
+            int calendarId,
+            DateTime startDate,
+            DateTime endDate)
+        {
+            var url = string.Format(Constants.Endpoint_Calendar_Days,
+                calendarId,
+                startDate,
+                endDate);
+            var data = await _http.Get<IEnumerable<SingleCalendarDay>?>(url);
+            return data;
+        }
     }
 }
 

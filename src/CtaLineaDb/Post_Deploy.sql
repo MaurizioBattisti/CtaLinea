@@ -30,7 +30,6 @@ MERGE dbo.Contracts AS t
 SET IDENTITY_INSERT dbo.Contracts OFF;
 
 -- calendars
-/*
 SET IDENTITY_INSERT dbo.Calendars ON;
 MERGE dbo.Calendars AS t
 	USING (SELECT * FROM  (VALUES
@@ -63,7 +62,6 @@ MERGE dbo.Calendars AS t
 			PostHolyday = s.PostHolyday
 	;
 SET IDENTITY_INSERT dbo.Calendars OFF;
-*/
 
 SET IDENTITY_INSERT [dbo].[CalendarPeriods] ON;
 MERGE [dbo].[CalendarPeriods] AS t

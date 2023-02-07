@@ -1,5 +1,6 @@
 ﻿@page "/calendars"
 @using CtaLinea.Model.QueryModel;
+@using CtaLineaApp.Pages.Utility;
 @inject IAutoLoadDataList<CalendarQueryItem> AutoLoad;
 @inject ContextMenuService ContextMenuService
 @inject IQueryUtilityService QueryService
@@ -7,6 +8,7 @@
 @inject NavigationManager NavigationManager
 @inject NotificationService notificationService
 @inject ICalendarService CalendarService
+@inject DialogService DialogService
 @attribute [Authorize]
 
 <PageTitle>@Constants.App_Title - Calendari</PageTitle>
@@ -87,6 +89,9 @@
                     </RadzenDataGrid>
                 </RadzenColumn>
             </RadzenRow>
+            <RadzenRow>
+                <CalendarDaysView CalendarId=@CalendarId />
+            </RadzenRow>
         </RadzenCard>
     </Template>
     <Columns>
@@ -136,6 +141,7 @@
     IList<CalendarQueryItem> SelectedCalendars = new List<CalendarQueryItem>();
 
     #region  details
+    private int CalendarId = 0;
     private bool DetailIsLoading = false;
     IEnumerable<CalendarPeriod>? Periods;
     IEnumerable<CalendarHoliday>? Holidays;
@@ -180,6 +186,7 @@
 
                     this.Periods = periods;
                     this.Holidays = holidays;
+                    this.CalendarId = calendar.Id;
                 }
                 finally
                 {

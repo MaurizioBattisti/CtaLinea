@@ -66,6 +66,7 @@ namespace CtaLineaApp
         internal const string Endpoint_Calendar_Holidays_Single_Fmr = Endpoint_Calendar_Holidays_Fmr + "/{1:yyyy-MM-dd}";
         internal const string Endpoint_CalendarPeriods = Endpoint_Calendars + "/periods";
         internal const string Endpoint_CalendarPeriods_Single_Fmt = Endpoint_CalendarPeriods + "/{0}";
+        internal const string Endpoint_Calendar_Days = Endpoint_Calendar_One_Fmr + "/days?startDate={1:yyyy-MM-dd}&endDate={2:yyyy-MM-dd}"; 
 
         internal const string Endpoint_Contracts = "/api/contracts";        
         internal const string Endpoint_Associates = "/api/associates";
@@ -80,6 +81,9 @@ namespace CtaLineaApp
         internal const string Endpoint_TtServies = "/api/ttservices";
 
         internal const string Endpoint_TT_Import = "/api/utility/ttservices";
+
+        internal const string Endpoint_Info = "/api/info";
+        internal const string Endpoint_Info_Versions = Endpoint_Info +"/versions";
 
         // internal const int Default_PageSize = 20;
     }

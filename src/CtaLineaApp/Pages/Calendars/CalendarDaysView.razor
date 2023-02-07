@@ -1,0 +1,84 @@
+﻿@using CtaLinea.Model.Calendar;
+@inject IApplicationSettings AppSettings;
+@inject ICalendarService _calendarService;
+@attribute [Authorize]
+
+<h3>Anteprima Calendario</h3>
+<RadzenScheduler @ref=@scheduler
+                 SlotRender=@OnSlotRender
+                 TItem="MyAppointment"
+                 Data=@Planning
+                 LoadData=@LoadDataAsync
+                 StartProperty="StartTime"
+                 EndProperty="EndTime"
+                 TextProperty="Text"
+                 SelectedIndex="0"
+                 Culture=@AppSettings.CurrentCulture
+                 Style="height:100%; width:100%">
+
+    <RadzenMonthView />
+
+</RadzenScheduler>
+
+@code {
+    public class MyAppointment
+    {
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+        public string Text { get; set; } = string.Empty;
+    }
+
+    [Parameter]
+    public int CalendarId { get; set; }
+
+    [CascadingParameter]
+    public CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+    RadzenScheduler<MyAppointment>? scheduler;
+    private List<MyAppointment> Planning = new List<MyAppointment> ();
+    private bool isLoading = false;
+
+    private IEnumerable<DateTime> Days = new List<DateTime>();
+
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        this.scheduler?.Reload();
+        await base.SetParametersAsync(parameters);
+    }
+
+    public void Reload()
+    {
+        this.scheduler?.Reload();
+    }
+
+    private async Task LoadDataAsync(
+        SchedulerLoadDataEventArgs args)
+    {
+        try
+        {
+            this.isLoading = true;
+            var days = await this._calendarService.GetDaysAsync(
+                this.CalendarId,
+                args.Start, args.End
+                );
+
+            this.Days = (from d in days
+                         select d.Day.Date);
+        }
+        finally
+        {
+            this.isLoading = false;
+            this.StateHasChanged();
+        }
+    }
+
+    private void OnSlotRender(SchedulerSlotRenderEventArgs args)
+    {
+        // Highlight working hours (9-18)
+
+        if (this.Days.Contains(args.Start.Date))
+        {
+            args.Attributes["style"] = "background: rgba(192,255,129, .2);";
+        }
+    }
+}

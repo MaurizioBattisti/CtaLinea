@@ -157,6 +157,7 @@
 
     [Parameter]
     public int CalendarId { get; set; }
+    private bool _EditMode = false;
     [Parameter]
     public bool EditMode { get; set; } = false;
 
@@ -307,6 +308,7 @@
             {
                 await CalendarService.DeletePeriodAsync(periodId);
                 await this.ReloadDataAsync();
+                await this.Changed.InvokeAsync();
             }
             catch (Exception exc)
             {
@@ -430,6 +432,7 @@
             {
                 await CalendarService.DeleteHolidayAsync(calendarId, date);
                 await this.ReloadDataAsync();
+                await this.Changed.InvokeAsync();
             }
             catch (Exception exc)
             {

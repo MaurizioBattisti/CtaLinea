@@ -23,5 +23,10 @@ namespace CtaLineaApp.Application.Services.Base
         Task InsertHolidayASync(CalendarHoliday holiday);
         Task UpdateHolidayAsync(CalendarHoliday holiday);
         Task DeleteHolidayAsync(int calendarId, DateTime date);
+
+        Task<IEnumerable<SingleCalendarDay>?> GetDaysAsync(
+            int calendarId,
+            DateTime startDate,
+            DateTime endDate);
     }
 }

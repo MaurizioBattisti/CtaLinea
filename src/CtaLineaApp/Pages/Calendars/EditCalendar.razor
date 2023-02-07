@@ -14,6 +14,9 @@
 
 <CalendarDataView Disabled=@DetailEditMode CurrentCalendar=@Calendar @bind-EditMode=@EditMode Changed=@SetIsClean />
 <CalendarDetailsView @bind-DetailEditMode=@DetailEditMode CalendarId=@Id EditMode=@(!EditMode) Changed=@SetIsClean />
+<RadzenRow>
+    <CalendarDaysView  @ref=@Preview CalendarId=@Id />
+</RadzenRow>
 
 @code {
     [Parameter]
@@ -24,10 +27,17 @@
     Calendar Calendar = new Calendar();
     private bool DetailEditMode = false;
 
+    private CalendarDaysView? Preview;
     private void SetIsClean ()
     {
         this.IsClean = (this.EditMode == false
                         && this.DetailEditMode == false);
+
+        if (this.EditMode == false
+            && this.DetailEditMode == false)
+        {
+            Preview?.Reload();
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -42,10 +52,6 @@
                 if (cal != null)
                 {
                     this.Calendar = cal;
-                    /*
-                    this.IsClean = true;
-                    this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
-                    */
                 }
                 else
                 {

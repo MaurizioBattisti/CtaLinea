@@ -20,5 +20,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         Task<Calendar> UpdateAsync(Calendar model);
         Task<CalendarHoliday> UpdateHolidayAsync(CalendarHoliday model);
         Task<CalendarPeriod> UpdatePeriodASync(CalendarPeriod model);
+
+        Task<IEnumerable<SingleCalendarDay>> GetDaysAsync(
+            int calendarId,
+            DateTime startDate,
+            DateTime endDate);
     }
 }

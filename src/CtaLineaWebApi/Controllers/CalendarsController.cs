@@ -408,5 +408,22 @@ namespace CtaLineaWebApi.Controllers
             return NoContent();
         }
         #endregion
+
+        #region utility dei calendari
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("{id:int}/days")]
+        public async Task<ActionResult<IEnumerable<SingleCalendarDay>>> GetDaysAsync(
+            [FromRoute] int id,
+            [FromQuery] DateTime startDate,
+            [FromQuery] DateTime endDate)
+        {
+            var result = await this._repo.GetDaysAsync(id, startDate, endDate)
+                .ConfigureAwait(false);
+
+            return this.Ok(result);
+        }
+        #endregion
     }
 }
