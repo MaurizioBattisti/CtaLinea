@@ -54,7 +54,8 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                     CarId = carId,
                     RunId = runId
                 },
-                commandType: CommandType.StoredProcedure);
+                commandType: CommandType.StoredProcedure,
+                commandTimeout: 600);
 
             var items = reader.Read<CostsByAssociate>();
             return await Task.FromResult(items);

@@ -18,7 +18,14 @@ AS
 BEGIN
 	DECLARE @Start	Date = DATEADD(d, -10, @StartDate);
 	DECLARE @End	Date = DATEADD(d, 10, @EndDate);
-	DECLARE @SundayValue INT = DATEPART(WEEKDAY, '20221218');
+	
+	DECLARE @Monday int = DATEPART(dw, '20221226');
+	DECLARE @Tuesday int = DATEPART(dw, '20221227');
+	DECLARE @Wednesday int = DATEPART(dw, '20221228');
+	DECLARE @Thursday  int = DATEPART(dw, '20221229');
+	DECLARE @Friday int = DATEPART(dw, '20221230');
+	DECLARE @Saturday int = DATEPART(dw, '20221224');
+	DECLARE @Sunday int= DATEPART(dw, '20221225');
 
 
 	DECLARE @CalendarTree AS TABLE 
@@ -29,13 +36,16 @@ BEGIN
 		[CalendarName] VARCHAR(200) NOT NULL, 
     
 		[CalendarType] CHAR(3) NOT NULL DEFAULT 'EXC', 
+		
 		[Sundays] BIT NOT NULL DEFAULT 0, 
+
 		[PreHolyday] BIT NOT NULL DEFAULT 0, 
 		[PostHolyday] BIT NOT NULL DEFAULT 0, 
 		[TreeLevel]  int NOT NULL DEFAULT 0
 	);
 	INSERT INTO @CalendarTree
-		SELECT * fROM [dbo].[tvf_CalendarTree](@CalendarId);
+		SELECT * 
+			FROM [dbo].[tvf_CalendarTree](@CalendarId);
 
 	DECLARE @Days AS TABLE 
 	(
@@ -51,7 +61,14 @@ BEGIN
 	-- variabili locali per ciclare sui calendari e applicare le variaizoni
 	DECLARE @Int_CalendarId		INT;
 	DECLARE @Int_CalendarType	CHAR(3);
-	DECLARE @Int_Sunday			BIT
+	
+	DECLARE @Int_Mondays		BIT
+	DECLARE @Int_Tuesdays		BIT
+	DECLARE @Int_Wednesdays		BIT
+	DECLARE @Int_Thursdays		BIT
+	DECLARE @Int_Fridays		BIT
+	DECLARE @Int_Saturdays		BIT
+	DECLARE @Int_Sundays		BIT
 	DECLARE @Int_Pre			BIT
 	DECLARE @Int_Post			Bit;
 	DECLARE @Int_Lvele			int;
@@ -66,10 +83,18 @@ BEGIN
 	bEGIN
 		SELECT @Int_CalendarId = c.CalendarId,
 				@Int_CalendarType = c.CalendarType,
-				@Int_Sunday = c.Sundays,
+				@Int_Mondays = cc.Mondays,
+				@Int_Tuesdays = cc.Tuesdays,
+				@Int_Wednesdays = cc.Wednesdays,
+				@Int_Thursdays = cc.Thursdays,
+				@Int_Fridays = cc.Fridays,
+				@Int_Saturdays = cc.Saturdays,
+				@Int_Sundays = cc.Sundays,
 				@Int_Pre = c.PreHolyday,
 				@Int_Post = c.PostHolyday
 			FROM @CalendarTree c
+			INNER JOIN dbo.Calendars cc
+				ON C.CalendarId = cc.CalendarId
 			WHERE c.TreeLevel = @Int_Lvele;
 
 		-- esclude i gironi fuori dai periodi dei calendari
@@ -128,12 +153,47 @@ BEGIN
 					ON h.CalendarId = c.CalendarId
 					WHERE c.TreeLevel >= @Int_Lvele;
 			-- se necessario esclude anche le domeniche
-			IF @Int_Sunday  = 1 
+			IF @Int_Mondays  = 1 
 			BEGIN 
 				UPDATE @Days 
 					SET ExcludedByCalendar = 1
-				WHERE  DATEPART(WEEKDAY, Day) = @SundayValue ;
-					
+				WHERE  DATEPART(WEEKDAY, Day) = @Monday ;
+			END
+			IF @Int_Tuesdays  = 1 
+			BEGIN 
+				UPDATE @Days 
+					SET ExcludedByCalendar = 1
+				WHERE  DATEPART(WEEKDAY, Day) = @Tuesday ;
+			END
+			IF @Int_Wednesdays  = 1 
+			BEGIN 
+				UPDATE @Days 
+					SET ExcludedByCalendar = 1
+				WHERE  DATEPART(WEEKDAY, Day) =@Wednesday;
+			END
+			IF @Int_Thursdays  = 1 
+			BEGIN 
+				UPDATE @Days 
+					SET ExcludedByCalendar = 1
+				WHERE  DATEPART(WEEKDAY, Day) =@Thursday;
+			END
+			IF @Int_Fridays  = 1 
+			BEGIN 
+				UPDATE @Days 
+					SET ExcludedByCalendar = 1
+				WHERE  DATEPART(WEEKDAY, Day) =@Friday;
+			END
+			IF @Int_Saturdays  = 1 
+			BEGIN 
+				UPDATE @Days 
+					SET ExcludedByCalendar = 1
+				WHERE  DATEPART(WEEKDAY, Day) =@Saturday;
+			END
+			IF @Int_Sundays  = 1 
+			BEGIN 
+				UPDATE @Days 
+					SET ExcludedByCalendar = 1
+				WHERE  DATEPART(WEEKDAY, Day) = @Sunday ;
 			END
 		END
 		IF @Int_CalendarType = 'IPL' 
@@ -152,7 +212,13 @@ BEGIN
 						-- se il giorno è presente  nella lista lo include
 						WHEN h.Holiday IS NOT NULL  THEN  0
 						-- se è richiesot di includere le domeniche  e il giorno è una domenica lo include
-						WHEN @Int_Sunday = 1 AND DATEPART(WEEKDAY, d.Day) = @SundayValue  THEN 0
+						WHEN @Int_Mondays = 1 AND DATEPART(WEEKDAY, d.Day) = @Monday  THEN 0
+						WHEN @Int_Tuesdays = 1 AND DATEPART(WEEKDAY, d.Day) = @Tuesday  THEN 0
+						WHEN @Int_Wednesdays = 1 AND DATEPART(WEEKDAY, d.Day) = @Wednesday  THEN 0
+						WHEN @Int_Thursdays = 1 AND DATEPART(WEEKDAY, d.Day) = @Thursday  THEN 0
+						WHEN @Int_Fridays = 1 AND DATEPART(WEEKDAY, d.Day) = @Friday  THEN 0
+						WHEN @Int_Saturdays = 1 AND DATEPART(WEEKDAY, d.Day) = @Saturday  THEN 0
+						WHEN @Int_Sundays = 1 AND DATEPART(WEEKDAY, d.Day) = @Sunday  THEN 0
 						ELSE 1
 					END)
 				FROM @Days d

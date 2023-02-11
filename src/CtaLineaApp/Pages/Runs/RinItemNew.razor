@@ -47,9 +47,6 @@ else
                 <div class="col-md-6">
                     <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Riferimento appalto</RadzenText>
                     <ContractDropDown @ref=@Contracts @bind-ContractId="ContractId" AllowClear=false Changed=@(() => this.StateHasChanged()) />
-
-                    <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Calendario</RadzenText>
-                    <CalendarDropDown @ref=@Calendars @bind-CalendarId=@CalendarId AllowClear=false Changed=@(() => this.StateHasChanged()) />
                 </div>
             </div>
         </RadzenCard>
@@ -62,7 +59,6 @@ else
 }
 @code {
     ContractDropDown? Contracts;
-    CalendarDropDown? Calendars;
 
     bool EditMode = true;
     RunItem? CurrentRun = null;
@@ -71,7 +67,6 @@ else
 
     // dati da chiedere prima di tutto
     private int? ContractId { get; set; }
-    private int? CalendarId { get; set; }
 
     private RunCheckResult? CheckResult { get; set; }
 
@@ -87,17 +82,14 @@ else
 
     private bool CanPRocede ()
     {
-        return (this.ContractId != null
-            && this.CalendarId != null);
+        return (this.ContractId != null);
     }
 
     private async Task Start_Click ()
     {
         var contr = this.Contracts?.SelectedContractData;
-        var cal = this.Calendars?.SelectedCalendarData;
 
-        if (contr != null
-            && cal != null)
+        if (contr != null)
         {
             var contract = new Contract()
             {
@@ -109,17 +101,9 @@ else
                 EndDate = contr.EndDate
             };
 
-            var calendar = new CalendarItem()
-            {
-                CalendarId = cal.Id,
-                BaseCalendarId = cal.BaseCalendarId,
-                CalendarName = cal.CalendarName
-            };
-
             // crea un nuovo run e lo piazza nel current run
             var run = this.RunModelService.CreateNewRun(
-                contract,
-                calendar);
+                contract);
 
             // imposta al corsa come "Extra capitolato"
             run.Extra = true;

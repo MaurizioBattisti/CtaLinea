@@ -136,5 +136,8 @@
     <Build Include="Triggers\Calendars\trg_Calendar_au.sql" />
     <Build Include="Triggers\Calendars\trg_CalendarPeriods_aiud.sql" />
     <Build Include="Triggers\Calendars\trg_CalendarHolidays_aid.sql" />
+    <Build Include="Functions\Calendars\tvf_CalendarTreeTopDown.sql" />
+    <Build Include="Tables\Runs\RunAdditionalDays.sql" />
+    <Build Include="Tables\Runs\RunVariationCalendars.sql" />
   </ItemGroup>
 </Project>

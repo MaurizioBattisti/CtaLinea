@@ -16,6 +16,16 @@ BEGIN
 	SELECT v.* FROM dbo.RunVariations v WHERE v.RunId = @RunId;
 	-- periodi della corsa (RunPEriods)
 	SELECT p.* FROM dbo.RunPeriods p WHERE p.RunId = @RunId;
+	-- giorni addizionali
+	SELECT r.* FROM dbo.RunAdditionalDays r WHERE r.RunId = @RunId;
+
+	-- calendari delle varianti
+	SELECT vc.RunVariationId,
+			vc.CalendarId
+		FROM dbo.RunVariationCalendars vc
+		INNER JOIN dbo.RunVariations v
+			ON vc.RunVariationId =v.RunVariationId 
+		WHERE v.RunId = @RunId;
 
 	-- nodi delle variatnti
 	SELECT n.*,
@@ -68,11 +78,15 @@ BEGIN
 		WHERE r.RunId = @RunId;
 
 	-- calendari
+	/* Non servono più i calenadri
 	SELECT DISTINCT c.* 
 		FROM dbo.Calendars c
+		INNER JOIN dbo.RunVariationCalendars vc
+			ON vc.CalendarId = c.CalendarId
 		INNER JOIN dbo.RunVariations v
-			ON v.CalendarId = c.CalendarId
+			ON v.RunVariationId = vc.RunVariationId
 		WHERE v.RunId = @RunId;
+	*/
 
 	-- ditte
 	SELECT DISTINCT a.*

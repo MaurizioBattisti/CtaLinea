@@ -82,13 +82,34 @@ CREATE TABLE import.Associate_Translate
 	Oly_Descr	varchar(200) NULL
 );
 
+USE CtaLineaDb
+GO
+
+UPDATE import.Oly
+	SET Ditta = 'FRUNER VIAGGI IN EUROPA SAS DI TATIANA E SIMONE FRUNER'
+	WHERE Ditta = 'FRUNER VIAGGI IN EUROPA DI FRUNER TATIANA E SIMONE FRUNER SAS';
+UPDATE import.Oly
+	SET Ditta = 'TN SERVICE LORENZI SRL A CAPITALE RIDOTTO'
+	WHERE Ditta LIKE 'TN SERVICE%';
+UPDATE import.Oly 
+	SET Ditta = 'DALLA TORRE MARCO'
+	WHERE Ditta LIKE 'BIANCANEVE VIAGGI%';
+UPDATE import.Oly 
+	SET Ditta = 'EUROTOUR - SERVICE (IN SIGLA E.T.S.) DI AZZOLINI LUCA & C. S.N.C.'
+	WHERE Ditta LIKE 'EUROTOUR SERVICE%';
+
 INSERT INTO import.Associate_Translate
-	(A_Descr, Oly_Descr)
-	SELECT a.Description,
+	(A_Descr, Oly_Descr) 
+	SELECT DISTINCT  a.Description,
 			i.DITTA
-		FROM Dbo.Associates a
-		LEFT JOIN  import.Oly i
-			ON a.Description LIKE '%' + i.DITTA + '%'
+		FROM   Dbo.Associates a
+		LEFT JOIN import.Oly i
+			ON 
+				REPLACE (REPLACE (REPLACE (a.Description, '.', '') , ' SAS', ''), ' ', '')
+			LIKE '%' + 
+				REPLACE (REPLACE (REPLACE(i.DITTA, '.', '') , ' SAS', ''), ' ', '')
+			+ '%'
+		
 
 GO
 
@@ -188,7 +209,6 @@ INSERT INTO [dbo].[RunVariations]
 		   , [Path]
            ,[StartTime]
            ,[EndTime]
-           ,[CalendarId]
            ,[RequestedFrequency]
 		   , RequestedCapacity
            ,[Km]
@@ -201,7 +221,6 @@ INSERT INTO [dbo].[RunVariations]
 			ISNULL([percorso], '-- NESSUN PERCORSO --'),
 			[ora_part],
 			[ora_arr],
-			1,
 			[frequenza],
 			ISNULL(TRY_CAST([Posti_autobus] AS int) , 0) AS posti,
 			[Km_corsa_servizio],
@@ -217,6 +236,52 @@ INSERT INTO [dbo].[RunVariations]
 			ELSE NULL
 			END AS note
 		FROM import.Oly i;
+
+-- Calendari dele varianti
+INSERT INTO dbo.RunVariationCalendars
+	(RunVariationId, CalendarId)
+	SELECT v.RunVariationId,
+			CASE
+   				 WHEN i.inverno = 'X'
+   					 AND i.fer = 'X'
+   					 AND i.estate = 'X'
+   					 THEN  2
+   				 WHEN i.inverno = 'X'
+   					 AND i.fest = 'X'
+   					 AND i.estate = 'X'
+   					 THEN  3
+   				 WHEN i.inverno = 'X'
+   					 AND i.fer = 'X'
+   					 AND i.fest = 'X'
+   					 THEN  4
+   				 WHEN i.inverno = 'X'
+   					 AND i.fest = 'X'
+   					 THEN  6
+   				 WHEN i.estate = 'X'
+   					 AND i.fer = 'X'
+   					 THEN  8
+   				 WHEN i.estate = 'X'
+   					 AND i.fest = 'X'
+   					 THEN  9
+
+   				 WHEN i.inverno = 'X'
+   					 AND i.fer = 'X'  THEN  5
+   				 WHEN i.scol = 'X'
+   					 AND i.prefest = 'x'
+   					 THEN  12
+   				 WHEN i.scol = 'X'
+   					 AND i.postfest = 'x'
+   					 THEN  13
+   				 WHEN i.scol = 'X'
+   					 THEN  10
+   				 ELSE 1
+			END AS CalendarId
+		FROM import.Oly i
+		INNER JOIN dbo.RunVariations v
+			ON i.OlyId = v.RunId
+			AND v.StartDate IS NULL;
+
+
 
 -- nodi
 WITH CTE_Nodes AS
@@ -331,7 +396,7 @@ INSERT INTO dbo.RunCarCosts
 				AND rc.CarId = ct.CarId;
 
 
-ROLLBACK;
+COMMIT;
 
 -- Alla fiene
 EXEC [dbo].[uo_RunsNeedRecalc];

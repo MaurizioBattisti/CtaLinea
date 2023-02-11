@@ -5,6 +5,9 @@ namespace CtaLinea.Model.Runs
     public class RunItem
     {
         public Guid RunId { get; set; }
+        // identificativo univoco per CTA 
+        // solo in lettura è calcolato dal sErver
+        public int? CtaRunId { get; set; }
         public int ContractId { get; set; } = 0;
         public Contract? ContractData { get; set; }
 
@@ -25,6 +28,8 @@ namespace CtaLinea.Model.Runs
         public IList<RunPeriod>? SubPeriods { get; set; }
 
         public IList<RunSuspension>? Suspensions { get; set; }
+
+        public IList<RunAdditionalDay> AdditionalDays { get; set; }
     }
 }
 

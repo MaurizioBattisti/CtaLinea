@@ -17,6 +17,7 @@ namespace CtaLinea.Model.Calendar
         public int? BaseCalendarId { get; set; }
 
         public string CalendarName { get; set; } = string.Empty;
+        public int Ordinal { get; set; }
         public string CalendarType { get; set; } = CalendarType_Exclusion;
 
         public RunCalendarType RunCalendarType
@@ -68,7 +69,14 @@ namespace CtaLinea.Model.Calendar
             }
         }
 
+        public bool Mondays { get; set; }
+        public bool Tuesdays { get; set; }
+        public bool Wednesdays { get; set; }
+        public bool Thursdays { get; set; }
+        public bool Fridays { get; set; }
+        public bool Saturdays { get; set; }
         public bool Sundays { get; set; }
+
         public bool PreHolyday { get; set; }
         public bool PostHolyday { get; set; }
 

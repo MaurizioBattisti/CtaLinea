@@ -9,9 +9,17 @@
     [RequestedDays] INT NULL, 
     [Note] VARCHAR(MAX) NULL, 
 
+    -- Identificativo univoco autoincrementante non più modificabile di una corsa
+    [CtaRunId] INT NOT NULL IDENTITY, 
+
     CONSTRAINT [FK_Funs_Contract] 
         FOREIGN KEY (ContractId) 
         REFERENCES [dbo].[Contracts](ContractId)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 )
+
+GO
+
+CREATE INDEX [IDX_Run_Unique] 
+    ON [dbo].[Runs] ([CtaRunId])

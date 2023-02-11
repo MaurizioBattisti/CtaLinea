@@ -148,8 +148,17 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             {
                 BaseCalendarId = model.BaseCalendarId,
                 CalendarName = model.CalendarName,
+                Ordinal = model.Ordinal,
                 CalendarType = model.CalendarType,
+
+                Mondays = model.Mondays,
+                Tuesdays = model.Tuesdays,
+                Wednesdays = model.Wednesdays,
+                Thursdays = model.Thursdays,
+                Fridays = model.Fridays,
+                Saturdays = model.Saturdays,
                 Sundays = model.Sundays,
+
                 PreHolyday = model.PreHolyday,
                 PostHolyday = model.PostHolyday
             };

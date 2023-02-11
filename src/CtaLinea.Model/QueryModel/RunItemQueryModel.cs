@@ -14,8 +14,9 @@ namespace CtaLinea.Model.QueryModel
 	{
 		[SqlField("RunId")]
 		public Guid Id { get; set; }
+        public int CtaRunId { get; set; }
 
-		public int? ContractId { get; set; }
+        public int? ContractId { get; set; }
 
 		public bool Extra { get; set; }
 		[SqlField(SortPosition = 0)]
@@ -43,9 +44,6 @@ namespace CtaLinea.Model.QueryModel
 
 		public Guid RunVariationId { get; set; }
         public DateTime? VariationStartDate { get; set; }
-        public int? CalendarId { get; set; }
-		[SqlField(FullText = true)]
-		public string? CalendarName { get; set; }
 		public int? LineNumber { get; set; }
 		public int? RunNumber { get; set; }
 		public TimeSpan? StartTime { get; set; }

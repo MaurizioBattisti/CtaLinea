@@ -13,9 +13,10 @@
 </LayoutSetter>
 <CtaLineaSttingsNotifier Changed=@StateHasChanged />
 
-<RadzenLayout class="rz-shadow-3" Style="height: 100%; grid-template-areas: 'rz-header' 'rz-body'">
+<RadzenLayout Style="width: 100%">
     <RadzenHeader>
-        <RadzenCard>
+        <RadzenStack Orientation="Orientation.Vertical"
+                     AlignItems="AlignItems.Stretch">
             <div class="d-flex flex-row p-1">
                 <div class="col-md-11">
                     <div class="d-flex flex-row p-1">
@@ -41,7 +42,7 @@
                         />
                 </div>
             </div>
-        </RadzenCard>
+        </RadzenStack>
     </RadzenHeader>
     <RadzenBody>
         <RadzenDataGrid @ref="@grdData"
@@ -52,10 +53,10 @@
                         AllowSorting="true"
                         AllowColumnResize="true"
                         LogicalFilterOperator="LogicalFilterOperator.And"
-                        Style="height:100%"
                         FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                         Density=@Settings.Density
-                        ExpandMode="DataGridExpandMode.Multiple">
+                        ExpandMode="DataGridExpandMode.Multiple"
+                        Style="height:100%; width:100%">
             <EmptyTemplate>
                 <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun dato da visaulizzare !</p>
             </EmptyTemplate>

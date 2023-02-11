@@ -97,9 +97,58 @@
     <Columns>
         <RadzenDataGridColumn TItem="CalendarQueryItem" Property="Id" Title="Id Calendario" Visible=false />
         <RadzenDataGridColumn TItem="CalendarQueryItem" Property="CalendarName" Title="nome" Width="200px" />
+        <RadzenDataGridColumn TItem="CalendarQueryItem" Property="Ordinal" Title="Ordine" Width="100px" />
         <RadzenDataGridColumn TItem="CalendarQueryItem" Property="CalendarTypeDescr" Title="Tipo calendario" Width="200px" />
         <RadzenDataGridColumn TItem="CalendarQueryItem" Property="BaseCalendarName" Title="Basato su" Width="200px" />
 
+        <RadzenDataGridColumn TItem="CalendarQueryItem" Property="Mondays" Title="Lunedì" Width="150px">
+            <Template Context="data">
+                @if (data.Sundays)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="CalendarQueryItem" Property="Tuesdays" Title="Martedì" Width="150px">
+            <Template Context="data">
+                @if (data.Sundays)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="CalendarQueryItem" Property="Wednesdays" Title="Mercoledì" Width="150px">
+            <Template Context="data">
+                @if (data.Sundays)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="CalendarQueryItem" Property="Thursdays" Title="Givedì" Width="150px">
+            <Template Context="data">
+                @if (data.Sundays)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="CalendarQueryItem" Property="Fridays" Title="Venerdì" Width="150px">
+            <Template Context="data">
+                @if (data.Sundays)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="CalendarQueryItem" Property="Saturdays" Title="Sabati" Width="150px">
+            <Template Context="data">
+                @if (data.Sundays)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
         <RadzenDataGridColumn TItem="CalendarQueryItem" Property="Sundays" Title="Domeniche" Width="150px">
             <Template Context="data">
                 @if (data.Sundays)
@@ -108,6 +157,7 @@
                 }
             </Template>
         </RadzenDataGridColumn>
+
         <RadzenDataGridColumn TItem="CalendarQueryItem" Property="PreHolyday" Title="Pre-festivi" Width="150px">
             <Template Context="data">
                 @if (data.PreHolyday)

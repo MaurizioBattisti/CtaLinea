@@ -9,6 +9,7 @@ SELECT c.CalendarId,
 		c.CalendarName,
 		c.BaseCalendarId,
 		b.CalendarName AS BaseCalendarName,
+		c.Ordinal,
 		c.CalendarType,
 		CASE c.CalendarType
 			WHEN 'NOP' THEN 'Completo' 
@@ -17,6 +18,12 @@ SELECT c.CalendarId,
 			WHEN 'IPL' THEN 'Inversione livello precedente' 
 			ELSE 'Indeifinito'
 		END AS CalendarTypeDescr,
+		c.Mondays,
+		c.Tuesdays,
+		c.Wednesdays,
+		c.Thursdays,
+		c.Fridays,
+		c.Saturdays,
 		c.Sundays,
 		c.PreHolyday,
 		c.PostHolyday

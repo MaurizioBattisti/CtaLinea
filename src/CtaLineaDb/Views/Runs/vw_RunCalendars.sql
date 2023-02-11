@@ -8,8 +8,10 @@ AS
 WITH CTE_Calendars AS
 (
 	SELECT DISTINCT  rv.RunId,
-			rv.CalendarId
-		FROM  dbo.RunVariations rv
+			vc.CalendarId
+		FROM  dbo.RunVariationCalendars vc
+		INNER JOIN dbo.RunVariations rv
+			ON rv.RunVariationId = vc.RunVariationId
 )
 SELECT rc.RunId ,
 		STRING_AGG(c.CalendarName, ', ') AS CalendarsDescr

@@ -14,7 +14,6 @@ CREATE TABLE [dbo].[RunVariations]
     [Path] VARCHAR(MAX) NOT NULL, 
     [StartTime] TIME NULL, 
     [EndTime] TIME NULL,
-    [CalendarId] INT NULL, 
 
     [Monday] BIT NOT NULL DEFAULT 1, 
     [Tuesday] BIT NOT NULL DEFAULT 1, 
@@ -33,10 +32,5 @@ CREATE TABLE [dbo].[RunVariations]
         FOREIGN KEY ([RunId]) 
         REFERENCES [dbo].[Runs]([RunId])
         ON DELETE CASCADE
-        ON UPDATE CASCADE, 
-    CONSTRAINT [FK_Runs_Calenadr] 
-        FOREIGN KEY ([CalendarId]) 
-        REFERENCES [dbo].[Calendars]([CalendarId])
-        ON DELETE NO ACTION
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
 )

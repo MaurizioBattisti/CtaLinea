@@ -41,8 +41,11 @@
 	<div class="col-2">
 		@if (this.EditMode == true)
 		{
-			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Calendario</RadzenText>
-			<CalendarDropDown @ref="@Calendars" @bind-CalendarId=@SelectedCalednarId AllowClear=false Changed=@(a=> this.EditableData?.SetDirty()) />
+			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Calendari</RadzenText>
+			<CalendarMultiSelect 
+				AllowClear=true
+				@bind-CalendarIds=@CalendarIds
+				Changed=@(a=> this.EditableData?.SetDirty()) />
 
 			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Frequenza</RadzenText>
 			<RadzenTextBox @bind-Value="Variation.RequestedFrequency" MaxLength="200" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
@@ -52,8 +55,10 @@
 		}
 		else
 		{
-			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Calendario</RadzenText>
-			<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.CalendarData?.CalendarName</strong></RadzenText>
+			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Calendari</RadzenText>
+			<CalendarMultiSelect 
+				CalendarIds="Variation.Calendars"
+				Disabled=true />
 
 			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Frequenza</RadzenText>
 			<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.RequestedFrequency</strong></RadzenText>
@@ -124,6 +129,7 @@
 	[Parameter]
 	public bool EditMode { get; set; } = false;
 
+
 	protected override async Task OnInitializedAsync()
 	{
 
@@ -152,6 +158,19 @@
 		return string.Format("{0:HH:mm}", dt);
 	}
 
+	private IEnumerable<int>? CalendarIds
+	{
+		get { return this.Variation?.Calendars; }
+		set
+		{
+			if (this.Variation != null)
+			{
+				this.Variation.Calendars = value?.ToList();
+			}
+		}
+	}
+
+	/*
 	private int? SelectedCalednarId
 	{
 		get { return this.Variation.CalendarId; }
@@ -185,4 +204,5 @@
 			}
 		}
 	}
+	*/
 }

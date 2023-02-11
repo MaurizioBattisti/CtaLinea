@@ -138,6 +138,7 @@
                         </Template>
                     </RadzenDataGridColumn>
 
+                    <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="CalendarDescr" Title="Calendari" Width="200px" />
                     <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Path" Title="Percorso" Width="200px" />
                     <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="RequestedFrequency" Title="Frequenza richiesta" Width="200px" />
 
@@ -151,6 +152,7 @@
     </Template>
     <Columns>
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Id" Title="Id Servizio" Visible=false />
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="CtaRunId" Title="Id CTA" Width="100px" FilterValue=@Filter_CtaRunId />
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="ContractRowNumber" Title="Riga Appalto" Width="100px" FilterValue=@Filter_ContractRowNumber />
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Extra" Title="Extra" Width="100px"FilterValue=@Filter_Extra>
             <Template Context="data">
@@ -291,6 +293,7 @@
     private IEnumerable<RunVariationQueryModel>? Details;
     #endregion
     #region filtri
+    private int? Filter_CtaRunId;
     private int? Filter_ContractRowNumber;
     private bool? Filter_Extra;
     private int? Filter_RequestedDays;
@@ -509,7 +512,7 @@
 
     private void ClearFilters_Click ()
     {
-
+        this.Filter_CtaRunId = null;
         this.Filter_ContractRowNumber = null;
         this.Filter_Extra = null;
         this.Filter_RequestedDays = null;

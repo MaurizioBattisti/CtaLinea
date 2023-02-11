@@ -17,9 +17,8 @@ namespace CtaLinea.Model.QueryModel
         public Guid RunId { get; set; }
 
 		public DateTime? VariationStartDate { get; set; }
-		public int? CalendarId { get; set; }
 		[SqlField(FullText = true)]
-		public string? CalendarName { get; set; }
+		public string? CalendarsDescr { get; set; }
 		public int? LineNumber { get; set; }
 		public int? RunNumber { get; set; }
 		public TimeSpan? StartTime { get; set; }

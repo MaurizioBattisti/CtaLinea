@@ -25,6 +25,7 @@ WITH CTE_Variants_Base AS
 	GROUP BY v.RunId
 )
 SELECT  r.RunId,
+		r.CtaRunId,
 		r.ContractId, r.Extra,
 		r.ContractRowNumber,
 		r.StartDate, r.EndDate,
@@ -39,8 +40,6 @@ SELECT  r.RunId,
 		rPath.PathsDescr,
 		
 		v.RunVariationId,
-		v.CalendarId,
-		c.CalendarName,
 		v.LineNumber, v.RunNumber,
 		v.StartDate AS VariationStartDate,
 		v.StartTime, v.EndTime,
@@ -56,8 +55,6 @@ SELECT  r.RunId,
 	FROM dbo.Runs r
 	INNER JOIN CTE_Variants v
 		ON R.RunId = v.RunId
-	INNER JOIN dbo.Calendars c
-		ON V.CalendarId =  c.CalendarId
 	INNER JOIN dbo.Contracts ctr
 		ON R.ContractId = ctr.ContractId
 	LEFT JOIN CTE_VarCount vc

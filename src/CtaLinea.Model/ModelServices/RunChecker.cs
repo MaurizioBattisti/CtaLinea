@@ -313,17 +313,20 @@ namespace CtaLinea.Model.ModelServices
                         Id = variation.RunVariationId
                     });
             }
-            if (variation.CalendarId == null)
+
+            if (variation.Calendars == null
+                || variation.Calendars.Count() < 1)
             {
                 errors.Add(
                     new CheckResultItem()
                     {
                         Category = RunCheckResult.Category_RunVariation,
                         Title = "Calendario mancante",
-                        Description = "Deve essere indicato il calendario",
+                        Description = "Deve essere indicato almeno un calenadrio",
                         Id = variation.RunVariationId
                     });
             }
+            
             // controlla che sia stato indicato almeno un giorno della settimana
             if (variation.Monday ==false
                 && variation.Tuesday == false

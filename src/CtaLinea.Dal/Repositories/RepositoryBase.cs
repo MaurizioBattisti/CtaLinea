@@ -16,15 +16,16 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             string tableName,
             IDbConnection conn,
             IDbTransaction tran,
-            T data
+            T data,
+            string[] exclude = null
             )
             where T : class
         {
             var sql = string.Format(
                 "INSERT INTO {0} ({1}) VALUES ({2})",
                 tableName,
-                this.GetFieldListString(data),
-                this.GetArgsListString(data));
+                this.GetFieldListString(data, exclude),
+                this.GetArgsListString(data), exclude);
             await conn.ExecuteAsync(
                 sql,
                 data,
@@ -36,7 +37,8 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             IDbConnection conn,
             IDbTransaction tran,
             TKey key,
-            TData data
+            TData data,
+            string[] exclude = null
             )
             where TData : class
             where TKey : class
@@ -45,7 +47,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 "UPDATE {0} SET {1} WHERE {2}",
                 tableName,
                 this.GetFieldEqualArgString(data, ","),
-                this.GetFieldEqualArgString(key, "AND"));
+                this.GetFieldEqualArgString(key, "AND", exclude));
 
             // fonde i dati con le chiavi
             var newData = this.JoinObjects(data, key);
@@ -77,7 +79,8 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         protected IEnumerable<string> GetPropertiesList(
             object value,
             string preFix,
-            string postFix)
+            string postFix,
+            string[] exclude =null)
         {
             var dict = value as IDictionary<string, object>;
             if (dict == null)
@@ -86,6 +89,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 var proprs = type.GetProperties();
                 foreach (var p in proprs)
                 {
+                    if (exclude != null && exclude.Contains(p.Name)) continue;
                     yield return preFix + p.Name + postFix;
                 }
             }
@@ -93,33 +97,36 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             {
                 foreach (var k in dict.Keys)
                 {
+                    if (exclude != null && exclude.Contains(k)) continue;
                     yield return preFix + k + postFix;
                 }
             }
         }
         protected string GetFieldListString(
-            object value)
+            object value,
+            string[] exclude = null)
         {
             return string.Join(
                 ",",
-                this.GetPropertiesList(value, "[", "]")
+                this.GetPropertiesList(value, "[", "]", exclude)
                 ); ;
         }
         protected string GetArgsListString(
-            object value)
+            object value,
+            string[] exclude = null)
         {
             return string.Join(
                 ",",
-                this.GetPropertiesList(value, "@", string.Empty)
+                this.GetPropertiesList(value, "@", string.Empty, exclude)
                 ); ;
         }
         protected string GetFieldEqualArgString(
             object value,
-            string separator)
+            string separator,
+            string[] exclude = null)
         {
-            var items = (from p in this.GetPropertiesList(value, string.Empty, string.Empty)
-                            select " [" + p + "] = @" + p + " "
-                            );
+            var items = (from p in this.GetPropertiesList(value, string.Empty, string.Empty, exclude)
+                            select " [" + p + "] = @" + p + " ");
 
             return string.Join(
                 separator,
@@ -152,7 +159,6 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             Func<T, TKey> selectKey,
             Func<TKey, Task> action
             )
-            where T : class
         {
             if (oldList == null) return;
             if (newList == null) newList = new List<T>();
@@ -168,7 +174,6 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             Func<T, TKey> selectKey,
             Func<T, Task> action
             )
-            where T : class
         {
             if (newList == null) return;
             if (oldList == null) oldList = new List<T>();

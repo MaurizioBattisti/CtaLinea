@@ -1,4 +1,5 @@
-﻿/* *****************************************************************************
+﻿
+/* *****************************************************************************
 	Maurizio Battisti
 	28/12/2022
 	Calcola il numero di giorni attesi per una determinata corsa
@@ -36,14 +37,13 @@ BEGIN
 	DECLARE @EndDAte AS DAte;
 	DECLARE @RunEndDAte AS DAte;
 
-	DECLARE @Tbl_Calendars AS TABLE
+	DECLARE @Tbl_Variants AS TABLE 
 	(
-		id				INT NOT NULL PRIMARY KEY,
+		RunVariantId	uniqueidentifier PRIMARY KEY,
 		StartDate		date NOT NULL,
 		EndDate			date NOT NULL,
-		CalendarId		int NOT NULL,
-		RunVariantId	uniqueidentifier NOT NULL
-	); 
+		LastOne			bit DEFAULT 0
+	);
 	
 	SELECT @StartDate = CASE WHEN  COALESCE(r.StartDate, c.StartDate) < c.StartDate THEN C.StartDAte ELSE COALESCE(r.StartDate, c.StartDate) END,
 			@RunEndDAte = CASE WHEN  COALESCE(r.EndDate, c.EndDate) > c.EndDate THEN C.EndDate ELSE COALESCE(r.EndDate, c.EndDate) END,
@@ -59,66 +59,103 @@ BEGIN
 			ON R.ContractId = c.ContractId
 		WHERE r.RunId = @RunId;
 
-	WITH CTE_RunCalendars AS
+	-- crea la tabella con  le varianti con inizio e  fine del loro periodo
+	WITH CTE_RunVariants  AS
 	(
 		SELECT ROW_NUMBER() OVER (ORDER BY COALESCE(v.StartDate, @StartDate) ) AS Num,
 				COALESCE(v.StartDate, @StartDate) AS StartDate,
-				v.CalendarId,
 				v.RunVariationId
 			FROM dbo.RunVariations v
 			WHERE v.RunId = @RunId
 	)
-	INSERT INTO @Tbl_Calendars
-		(id, StartDate, EndDate, CalendarId, RunVariantId)
-
-		SELECT c.num, 
-				c.StartDate,
+	INSERT INTO @Tbl_Variants
+		(StartDate, EndDate, RunVariantId)
+		SELECT c.StartDate,
 				COALESCE (DATEADD(d, -1,  ce.StartDate), @EndDAte) AS EndDAte,
-				c.CalendarId,
 				c.RunVariationId
-			FROM CTE_RunCalendars c
-			LEFT JOIN  CTE_RunCalendars ce
+			FROM CTE_RunVariants c
+			LEFT JOIN  CTE_RunVariants ce
 				ON ce.Num = (c.num + 1)
 		;
-
-	-- calcola i giorni come da clanedario e variante della corsa
-	DECLARE @Id					int = 1;
-	DECLARE @Cal_id				int;
-	DECLARE @Cal_Start			date;
-	DECLARE @Cal_End			date;
-	DECLARE @Cal_VariantID		uniqueidentifier;
+	WITH CTE_LastVar AS 
+	(
+		SELECT v.RunVariantId,
+				ROW_NUMBER () OVER (ORDER BY v.EndDate dESC) AS num
+			FROM @Tbl_Variants  v
+	)
+	UPDATE @Tbl_Variants 
+		SET LastOne = 1
+		FROM @Tbl_Variants v
+		INNER JOIN CTE_LastVar v2
+			ON v.RunVariantId = v2.RunVariantId
+			AND v2.num = 1;
 	
-	DECLARE @MaxID int;
-	SELECT @MaxID = MAX(Id) FROM @Tbl_Calendars;
+	-- calcola i gironi di tutti i calendari
+	-- prendendo da tutti quelli nella lista di ogni calendario della variante
+	DECLARE @Tbl_Var_Days AS TABLE
+	(
+		RunVariantId	uniqueidentifier NOT NULL,
+		Day				date NOT NULL,
+		WeekDay			int NOT NULL,
+		OutOfPeriod		bit NOT NULL DEFAULT 0,
 
-	WHILE @Id <= @MaxID
-	BEGIN
-		SELECT 
-				@Cal_id = c.CalendarId,
-				@Cal_Start = c.StartDate,
-				@Cal_End = c.EndDate,
-				@Cal_VariantID = c.RunVariantId
-			FROM @Tbl_Calendars c
-			WHERE c.id = @Id;
-		SET @Id = @Id + 1;
+		PRIMARY KEY (RunVariantId, Day)
+	);
+
+	-- dichiara il cursore per eseguire il calcolo dei calendari
+	DECLARE Var_Curr CURSOR LOCAL FORWARD_ONLY 
+		FOR	
+			SELECT v.RunVariantId,
+					vc.CalendarId,
+					v.StartDate,
+					v.EndDate,
+					v.LastOne
+				FROM @Tbl_Variants v
+				INNER JOIN dbo.RunVariationCalendars vc
+					ON V.RunVariantId = vc.RunVariationId
+		;
+
+	DECLARE @v_RunVariationId	uniqueidentifier;
+	DECLARE @v_CalendarId		int;
+	DECLARE @v_StartDate		date;
+	DECLARE @v_EndDate			date;
+	DECLARE @v_LastOne			bit;
+	OPEN Var_Curr;
+	FETCH NEXT FROM Var_Curr INTO 
+			@v_RunVariationId, @v_CalendarId, 
+			@v_StartDate, @v_EndDate,
+			@v_LastOne;
+
+	WHILE @@FETCH_STATUS = 0  
+	BEGIN  
+		DECLARE @Limit_EndDate	date = @v_EndDate;
+		IF @v_LastOne = 1 
+		BEGIN
+			SET @Limit_EndDate = @EndDAte;
+		END;
 
 		-- inserisce le date nella tabella dei gironi della corsa
 		WITH CTE_Days AS (
-			SELECT @RunId As RunId, 
+			SELECT @v_RunVariationId AS RunVariantId,
 					d.Day AS Day, 
-					DATEPART(dw, day)  AS WeekDay
-				FROM dbo.tvf_CalendarDays(@Cal_id, @Cal_Start, @Cal_End) d
+					DATEPART(dw, day) AS WeekDay
+				FROM dbo.tvf_CalendarDays(@v_CalendarId, 
+						@v_StartDate, 
+						@Limit_EndDate) d
 		)
-		INSERT INTO @Tbl_Days
-				(RunId, Day, WeekDay, RunVariationId, OutOfPeriod)
-			SELECT d.RunId, 
+		INSERT INTO @Tbl_Var_Days
+				(RunVariantId, Day, WeekDay, OutOfPeriod)
+			SELECT d.RunVariantId, 
 					d.Day,
 					d.WeekDay,
-					v.RunVariationId,
-					CASE WHEN d.day > @RunEndDAte AND d.day <= @EndDAte THEN 1 ELSE 0 END
+					CASE WHEN d.day > @v_EndDate AND @v_LastOne = 1 AND d.day <= @EndDAte THEN 1 ELSE 0 END
 				FROM CTE_Days d
+				LEFT JOIN @Tbl_Var_Days dd
+					ON dd.RunVariantId = @v_RunVariationId
+					AND dd.Day = d.Day
 				CROSS JOIN Dbo.RunVariations v
-				WHERE V.RunVariationId = @Cal_VariantID
+				WHERE dd.RunVariantId IS NULL
+					AND V.RunVariationId = @v_RunVariationId
 					AND (
 						(d.WeekDay = @Monday AND  v.Monday = 1)
 						OR (d.WeekDay = @Tuesday AND  v.Tuesday = 1)
@@ -129,7 +166,41 @@ BEGIN
 						OR (d.WeekDay = @Sunday AND  v.Sunday = 1)
 						)
 				;
+
+		-- aggiunge anche i giorni aggiuntivi relativi a questoa variante
+		INSERT INTO @Tbl_Var_Days
+				(RunVariantId, Day, WeekDay, OutOfPeriod)
+			SELECT @v_RunVariationId, 
+					d.Day,
+					DATEPART(dw, d.Day) AS WeekDay,
+					CASE WHEN d.day > @v_EndDate AND @v_LastOne = 1 AND d.day <= @EndDAte THEN 1 ELSE 0 END
+				FROM dbo.RunAdditionalDays d
+				LEFT JOIN @Tbl_Var_Days dd
+					ON dd.RunVariantId = @v_RunVariationId
+					AND dd.Day = d.Day
+				WHERE d.RunId = @RunId
+					AND d.Day BETWEEN @v_StartDate AND @Limit_EndDate
+					AND dd.OutOfPeriod IS NULL;
+
+		FETCH NEXT FROM Var_Curr INTO 
+				@v_RunVariationId, @v_CalendarId, 
+				@v_StartDate, @v_EndDate,
+				@v_LastOne;
 	END;
+
+	CLOSE Var_Curr;  
+	DEALLOCATE Var_Curr;  
+
+	INSERT INTO @Tbl_Days
+			(RunId, Day,
+			RunVariationId, WeekDay,
+			OutOfPeriod)
+		SELECT @RunId,
+				vd.Day,
+				vd.RunVariantId,
+				vd.WeekDay,
+				vd.OutOfPeriod
+			FROM @Tbl_Var_Days vd;
 
 	-- gestisce i periodi
 	WITH CTE_PeriodDay_base AS

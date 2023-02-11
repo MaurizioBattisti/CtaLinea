@@ -12,8 +12,7 @@ namespace CtaLineaApp.Application.Services.Run
         : IRunModelService
     {
         public RunItem CreateNewRun(
-            Contract contract,
-            CalendarItem calendar)
+            Contract contract)
         {
             var run = new RunItem()
             {
@@ -29,12 +28,7 @@ namespace CtaLineaApp.Application.Services.Run
 
             // aggiune la variante di default
             var variation = this.CreateNewVariation(run);
-            variation.CalendarData = calendar;
-            variation.CalendarId = calendar.CalendarId;
-
-            // crea il periodo di default
-            // this.CreateNewPeriod(run);
-
+            
             return run;
         }
         public RunVariation CreateNewVariation(
@@ -52,6 +46,7 @@ namespace CtaLineaApp.Application.Services.Run
                     RunVariationId = Guid.NewGuid(),
                     StartDate = startDate,
 
+                    Calendars = new List<int> (),
                     Nodes = new List<RunNode>()
                 };
             }
@@ -328,12 +323,10 @@ namespace CtaLineaApp.Application.Services.Run
 		#region funzioni private di clonazione
 		private RunVariation CloneVariation (RunVariation source)
         {
-			var variation = new RunVariation()
-			{
-				RunVariationId = source.RunVariationId,
-				StartDate = source.StartDate,
-                CalendarId= source.CalendarId,
-                CalendarData= source.CalendarData,
+            var variation = new RunVariation()
+            {
+                RunVariationId = source.RunVariationId,
+                StartDate = source.StartDate,
 
                 Monday = source.Monday,
                 Tuesday = source.Tuesday,
@@ -343,16 +336,19 @@ namespace CtaLineaApp.Application.Services.Run
                 Saturday = source.Saturday,
                 Sunday = source.Sunday,
 
-                StartTime=source.StartTime,
-                EndTime =source.EndTime,
+                StartTime = source.StartTime,
+                EndTime = source.EndTime,
                 LineNumber = source.LineNumber,
-                RunNumber= source.RunNumber,
-                Km= source.Km,
+                RunNumber = source.RunNumber,
+                Km = source.Km,
                 RequestedFrequency = source.RequestedFrequency,
                 Path = source.Path,
-                RequestedCapacity= source.RequestedCapacity,    
-                Note= source.Note,
+                RequestedCapacity = source.RequestedCapacity,
+                Note = source.Note,
 
+                Calendars = (source.Calendars == null ?
+                        new List<int>()
+                        : new List<int>(source.Calendars)),
                 Nodes = new List<RunNode>()
 			};
 

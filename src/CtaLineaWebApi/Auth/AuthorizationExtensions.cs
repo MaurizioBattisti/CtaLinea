@@ -9,7 +9,6 @@ namespace CtaLineaWebApi.Auth
 {
     internal static class AuthorizationExtensions
     {
-        // TODO: tutto da inventare
         public static IServiceCollection AddAuthorizationPolicies(
             this IServiceCollection services)
         {

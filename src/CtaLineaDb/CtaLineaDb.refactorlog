@@ -679,4 +679,46 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="RunId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="e20ad804-6951-4d43-97cc-69b4075176c3" ChangeDateTime="02/09/2023 17:03:58">
+    <Property Name="ElementName" Value="[dbo].[Tags].[Color]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Tags]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="BackGround" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6571f2f0-a1fa-47bf-bf5c-a9382c62452f" ChangeDateTime="02/09/2023 17:04:10">
+    <Property Name="ElementName" Value="[dbo].[Tags].[BackGround]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Tags]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="BkColour" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="31219714-8b50-4877-a70f-043e37c8e889" ChangeDateTime="02/09/2023 17:05:14">
+    <Property Name="ElementName" Value="[dbo].[Tags].[Priority]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Tags]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Ordinal" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b9fc5a0c-137b-4260-a6c1-fb07f13da0ad" ChangeDateTime="02/09/2023 17:43:38">
+    <Property Name="ElementName" Value="[dbo].[RunAdditionalDays].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[RunAdditionalDays]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="RunId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ee2c273f-ad5d-401b-91be-a7956bb1ad6f" ChangeDateTime="02/09/2023 17:52:28">
+    <Property Name="ElementName" Value="[dbo].[RunVariationCalendars].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[RunVariationCalendars]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="RunVariationId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a8eb863f-7989-41bc-9193-458fa3225c78" ChangeDateTime="02/09/2023 18:39:52">
+    <Property Name="ElementName" Value="[dbo].[RunAdditionalDays].[Date]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[RunAdditionalDays]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Day" />
+  </Operation>
 </Operations>

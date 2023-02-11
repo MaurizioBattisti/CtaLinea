@@ -11,9 +11,18 @@ CREATE TABLE [dbo].[Calendars]
     [BaseCalendarId] INT NULL , 
 
     [CalendarName] VARCHAR(200) NOT NULL, 
+    [Ordinal]   INT NOT NULL DEFAULT 1000,
     
     [CalendarType] CHAR(3) NOT NULL DEFAULT 'EXC', 
+
+    [Mondays] BIT NOT NULL DEFAULT 0, 
+    [Tuesdays] BIT NOT NULL DEFAULT 0, 
+    [Wednesdays] BIT NOT NULL DEFAULT 0, 
+    [Thursdays] BIT NOT NULL DEFAULT 0, 
+    [Fridays] BIT NOT NULL DEFAULT 0, 
+    [Saturdays] BIT NOT NULL DEFAULT 0, 
     [Sundays] BIT NOT NULL DEFAULT 0, 
+
     [PreHolyday] BIT NOT NULL DEFAULT 0, 
     [PostHolyday] BIT NOT NULL DEFAULT 0, 
 

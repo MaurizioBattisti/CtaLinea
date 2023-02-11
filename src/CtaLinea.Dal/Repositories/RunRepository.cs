@@ -22,8 +22,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         
         private const string SQL_Table_Runs = "[dbo].[Runs]";
         private const string SQL_Table_RunVariations = "[dbo].[RunVariations]";
+        private const string SQL_Table_RunCalendars = "[dbo].[RunVariationCalendars]";
         private const string SQL_Table_RunNodes = "[dbo].[RunNodes]";
         private const string SQL_Table_RunPeriods = "[dbo].[RunPeriods]";
+        private const string SQL_Table_RunAdditionalDays = "[dbo].[RunAdditionalDays]";
         private const string SQL_Table_RunCars = "[dbo].[RunCars]";
         private const string SQL_Table_RunCarCosts = "[dbo].[RunCarCosts]";
         private const string SQL_Table_CarReplacements = "[dbo].[RunCarReplacements]";
@@ -136,6 +138,16 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                     }
                     #endregion
 
+                    #region inserisce i giorni addizionali
+                    if (runItem.AdditionalDays != null)
+                    {
+                        foreach (var addDay in runItem.AdditionalDays)
+                        {
+                            await this.InsertDayAsync(runItem.RunId, addDay, conn, tran);
+                        }
+                    }
+                    #endregion
+
                     #endregion
                 }
                 else
@@ -168,6 +180,21 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                         async (variant, oldVariant) =>
                         {
                             await this.UpdateVariationAsync(runItem.RunId, variant, conn, tran);
+
+                            // inserisce i nuovi calendari
+                            await this.FindNewAsync(
+                                oldVariant.Calendars,
+                                variant.Calendars,
+                                (v) => v,
+                                async (cal) => await this.InsertCalendarAsync(variant.RunVariationId, cal, conn, tran)
+                                );
+                            // elimina i calendari non più usati
+                            await this.FindDeletedAsync(
+                                oldVariant.Calendars,
+                                variant.Calendars,
+                                (v) => v,
+                                async (k) => await this.DeleteCalendarAsync(variant.RunVariationId, k, conn, tran)
+                                );
 
                             // inserisce i nuovi nodi
                             await this.FindNewAsync(
@@ -343,9 +370,38 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                         async (k) => await this.DeleteSuspensionAsync(runItem.RunId, k, conn, tran)
                         );
                     #endregion
+
+                    #region gestisce i giorni addizionali
+                    // inserisce i nuovi giorni addizionali
+                    await this.FindNewAsync(
+                        oldRun.AdditionalDays,
+                        runItem.AdditionalDays,
+                        (v) => v.Day,
+                        async (addDay) => await this.InsertDayAsync(runItem.RunId, addDay, conn, tran)
+                        );
+
+                    // aggionra i giorni addizionali
+                    await this.FindUpdatedAsync(
+                        oldRun.AdditionalDays,
+                        runItem.AdditionalDays,
+                        (v) => v.Day,
+                        (n, o) => o.Day == n.Day,
+                        async (addDay, oldAddDay) =>
+                        {
+                            await this.UpdateDayAsync(runItem.RunId, addDay, conn, tran);
+                        });
+
+                    // identifica le giorante addizionali da eliminare
+                    await this.FindDeletedAsync(
+                        oldRun.AdditionalDays,
+                        runItem.AdditionalDays,
+                        (v) => v.Day,
+                        async (k) => await this.DeleteDayAsync(runItem.RunId, k, conn, tran)
+                        );
+                    #endregion
                 }
 
-                // esegue il ricalcolo
+                // indica che il ricalcolo dei gironi è necessario
                 await this.AddToRecalcNeededAsync(
                     conn, tran,
                     runItem.RunId);
@@ -407,6 +463,29 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             item.Variations = reader.Read<RunVariation>().ToList();
             // Periodi
             item.SubPeriods = reader.Read<RunPeriod>().ToList ();
+
+            // Giorni addizionali
+            item.AdditionalDays = reader.Read<RunAdditionalDay>().ToList();
+
+            // calendari varianti
+            #region variaton calendars
+            var varCals = (from c in reader.Read<BlRunVarCalendars>()
+                         group c by (Guid)c.RunVariationId into varCalendars
+                         orderby varCalendars.Key
+                         select varCalendars);
+            foreach (var varCal in varCals)
+            {
+                var variatn = (from v in item.Variations
+                               where v.RunVariationId == varCal.Key
+                               select v).SingleOrDefault();
+                if (variatn != null)
+                {
+                    variatn.Calendars = (from c in varCal
+                                         select c.CalendarId)
+                                         .ToList();
+                }
+            }
+            #endregion
 
             #region nodi
             // nodi delle variatnti
@@ -516,15 +595,27 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             {
                 item.ContractData = reader.Read<Contract>().SingleOrDefault();
 
-                var allCalendars = reader.Read<CalendarItem>().ToList();
+                // i calendari non vengono neanche caricati
+                // var allCalendars = reader.Read<CalendarItem>().ToList();
+
                 var allAssociates = reader.Read<Associate>().ToList();
                 var allCars = reader.Read<Car>().ToList();
 
                 // assegna i calendari a lle varianti
+                // Non serve più perchè non engono neanche caricati
+                /*
                 foreach (var v in item.Variations)
                 {
-                    v.CalendarData = allCalendars.Where(c => c.CalendarId == v.CalendarId).SingleOrDefault();
+                    if (v.Calendars != null)
+                    {
+                        var calIds = (from c in v.Calendars
+                                      select c.CalendarId);
+
+                        // assegnare il valore a tutti i calendari figli
+                        v.Calendars = allCalendars.Where(c => calIds.Contains(c.CalendarId)).ToList();
+                    }
                 }
+                */
 
                 // assegna le diette e i mezzi ai  perido cars
                 if (item.SubPeriods != null)
@@ -585,7 +676,6 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 
                 variation.StartTime,
                 variation.EndTime,
-                variation.CalendarId,
 
                 variation.LineNumber,
                 variation.RunNumber,
@@ -635,6 +725,16 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                     this.GetVariationData(variation)
                     )
                 );
+
+            // inserisce i calendari
+            if (variation.Calendars != null)
+            {
+                foreach (var cal in variation.Calendars)
+                {
+                    await this.InsertCalendarAsync(variation.RunVariationId, cal, conn, tran);
+                }
+            }
+
 
             // inserisce i nodi della variante
             #region inserisce tutti i nodi
@@ -741,6 +841,47 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 SQL_Table_RunNodes,
             conn, tran,
                 this.GetNodeKey(runVariationId, runNodeId)
+                );
+        }
+        #endregion
+
+        #region calendari varinte
+        private object GetCalendarKey(
+            Guid runVariationId,
+            int calendarID)
+        {
+            return new
+            {
+                RunVariationId = runVariationId,
+                CalendarId = calendarID
+            };
+        }
+
+        private async Task InsertCalendarAsync(
+            Guid runVariationId,
+            int calendarId,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.InsertTableAsync(
+                SQL_Table_RunCalendars,
+                conn, tran,
+                this.GetCalendarKey(runVariationId, calendarId)
+                );
+        }
+
+        private async Task DeleteCalendarAsync(
+            Guid runVariationId,
+            int calendarId,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.DeleteTableAsync(
+                SQL_Table_RunCalendars,
+                conn, tran,
+                this.GetCalendarKey(runVariationId, calendarId)
                 );
         }
         #endregion
@@ -1178,6 +1319,71 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 SQL_Table_RunSuspensions,
                 conn, tran,
                 this.GetSuspensionKey(runId, runSuspensionId)
+                );
+        }
+        #endregion
+
+        #region Gironi addizionali
+        private object GetDayData(
+            RunAdditionalDay addDay)
+        {
+            return new
+            {
+                addDay.Note
+            };
+        }
+        private object GetDayKey(
+            Guid runId,
+            DateTime day)
+        {
+            return new
+            {
+                RunId = runId,
+                Day = day
+            };
+        }
+
+        private async Task InsertDayAsync(
+            Guid runId,
+            RunAdditionalDay addDay,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.InsertTableAsync(
+                SQL_Table_RunAdditionalDays,
+                conn, tran,
+                this.JoinObjects(
+                    this.GetDayKey(runId, addDay.Day),
+                    this.GetDayData(addDay)
+                    )
+                );
+        }
+        private async Task UpdateDayAsync(
+            Guid runId,
+            RunAdditionalDay addDay,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.UpdateTableAsync(
+                SQL_Table_RunAdditionalDays,
+                conn, tran,
+                this.GetDayKey(runId, addDay.Day),
+                this.GetDayData(addDay)
+                );
+        }
+        private async Task DeleteDayAsync(
+            Guid runId,
+            DateTime day,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.DeleteTableAsync(
+                SQL_Table_RunAdditionalDays,
+                conn, tran,
+                this.GetDayKey(runId, day)
                 );
         }
         #endregion

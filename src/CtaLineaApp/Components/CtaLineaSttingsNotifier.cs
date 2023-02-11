@@ -13,7 +13,7 @@ namespace CtaLineaApp
         [CascadingParameter]
         public CtaLineaSettings? Settings { get; set; } = null;
 
-        public async Task IngrandaAsync ()
+        public async Task IncresePageSizeAsync ()
         {
             if (Settings != null)
             {

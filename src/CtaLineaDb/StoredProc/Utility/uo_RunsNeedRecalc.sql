@@ -43,7 +43,10 @@ BEGIN
 			) UNION (
 				SELECT v.RunId 
 					FROM dbo.RunVariations v
-					WHERE v.CalendarId = @CalendarId
+					INNER JOIN dbo.RunVariationCalendars vc
+						ON  v.RunVariationId = vc.RunVariationId
+					INNER JOIN [dbo].[tvf_CalendarTreeTopDown](@CalendarId) c
+						ON vc.CalendarId = c.CalendarId
 			) UNION (
 				SELECT r.RunId
 					FROM dbo.Runs  r

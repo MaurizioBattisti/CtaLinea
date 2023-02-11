@@ -49,7 +49,8 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                     StartDate = startDate,
                     EndDate = endDate
                 },
-                commandType: CommandType.StoredProcedure);
+                commandType: CommandType.StoredProcedure,
+                commandTimeout: 600);
 
             var items = reader.Read<CarPlanningItem>();
             return await Task.FromResult(items);

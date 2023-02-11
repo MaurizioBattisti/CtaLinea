@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @using CtaLineaApp.Application.Model;
+@using CtaLineaApp.Components.ToolBars
 
 <CascadingValue Value=@this>
 <CascadingValue Value=@this.LineaSettings >
@@ -48,8 +49,8 @@
 </CascadingValue>
 
 @code {
-    private RenderFragment? TopLine = null;
-    private RenderFragment? PageTitle = null;
+    protected RenderFragment? TopLine = null;
+    protected RenderFragment? PageTitle = null;
 
     bool sidebarExpanded = true;
     bool bodyExpanded = false;
@@ -58,8 +59,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-
-        // TODO: assegna la pagesize letta dal file json
         await Task.CompletedTask;
     }
 

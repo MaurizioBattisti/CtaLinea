@@ -1,0 +1,43 @@
+﻿<RadzenRow
+	AlignItems="AlignItems.Normal"
+	JustifyContent="JustifyContent.End"
+	>
+	<RadzenStack Orientation="Orientation.Horizontal" Gap="4px" >
+		<RadzenButton 
+			ButtonStyle="ButtonStyle.Light"
+			IsBusy=@IsBusy
+			Icon="filter_alt_off"
+			Click=@ClearFilters_Click />
+
+		<RadzenTextBox @bind-Value="FullText" Placeholder="Cerca..." Change=@FullTextField_OnChanged Style="width: 200px" Class="w-100" />
+
+		<RadzenButton 
+			ButtonStyle="ButtonStyle.Success"
+			IsBusy=@IsBusy
+			Icon="refresh"
+			Click=@Reload_Click />
+	</RadzenStack>
+</RadzenRow>
+
+@code {
+	[Parameter]
+	public string? FullText { get; set; }
+	[Parameter]
+	public EventCallback<string?> FullTextChanged { get; set; }
+	[Parameter]
+	public bool IsBusy { get; set; } = false;
+
+	private void FullTextField_OnChanged(string value)
+	{
+		this.FullTextChanged.InvokeAsync(this.FullText);
+	}
+
+	private void Reload_Click ()
+	{
+
+	}
+	private void ClearFilters_Click ()
+	{
+		
+	}
+}
