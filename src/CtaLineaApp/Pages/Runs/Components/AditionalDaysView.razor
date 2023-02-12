@@ -1,0 +1,215 @@
+﻿@using CtaLineaApp.Components.Base
+@using CtaLineaApp.Pages.Runs.Dialogs
+@inject IRunModelService RunModelService
+@inject DialogService DialogService
+@inject NotificationService notificationService
+@inject IApplicationSettings AppSettings;
+
+<RadzenPanel AllowCollapse="true" Collapsed=true Style="auto;">
+	<HeaderTemplate>
+		<h4 class="m-0 d-flex align-items-center">
+			<RadzenIcon Icon="today" Class="me-1" />Giorni Addizionali
+			@if (DaysCount() > 0)
+			{
+				<RadzenBadge BadgeStyle="BadgeStyle.Primary" Shade="Shade.Lighter" IsPill=true Text=@DaysCount().ToString() Class="ml-2" />
+			}
+		</h4>
+	</HeaderTemplate>
+	<ChildContent>
+		<RadzenRow>
+			@if (this.EditMode == true)
+			{
+				<RadzenButton Text="Nuogo Giorno"
+						  ButtonStyle="ButtonStyle.Primary"
+						  Icon="block"
+						  Click=@AddDay_Click />
+			}
+
+			<RadzenDataGrid 
+				@ref="grdData"
+				AllowAlternatingRows="false" 
+				AllowFiltering="true" 
+				AllowSorting="true" 
+				EditMode="DataGridEditMode.Single"
+				Data="@CurrentRun.AdditionalDays" 
+				TItem="RunAdditionalDay" 
+				RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow" 
+				Sort="@Reset" 
+				Page="@Reset" 
+				Filter="@Reset">
+				<Columns>
+					<RadzenDataGridColumn TItem="RunAdditionalDay" Property="Day" Title="Giorno" Width="150px">
+						<Template Context="item">
+							@String.Format("{0:dd/MM/yyyy}", item.Day)
+						</Template>
+						<EditTemplate Context="item">
+							<RadzenDatePicker @bind-Value="item.Day"
+								DateFormat="dd/MM/yyyy"
+								AllowClear=false
+								Culture=@AppSettings.CurrentCulture 
+								Class="w-100" />
+						</EditTemplate>
+					</RadzenDataGridColumn>
+					<RadzenDataGridColumn TItem="RunAdditionalDay" Property="Note" Title="Note" Width="380px">
+						<EditTemplate Context="item">
+							<RadzenTextBox @bind-Value="item.Note" Class="w-100" />
+						</EditTemplate>
+					</RadzenDataGridColumn>
+
+					@if (EditMode == true)
+					{
+						<RadzenDataGridColumn TItem="RunAdditionalDay" Context="item" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
+							<Template Context="item">
+								<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@(args => EditRow_Click(item))" @onclick:stopPropagation="true">
+								</RadzenButton>
+								<RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteRow_Click(item))" @onclick:stopPropagation="true">
+								</RadzenButton>
+							</Template>
+							<EditTemplate Context="item">
+								<RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@((args) => SaveRow_Click(item))">
+								</RadzenButton>
+								<RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@((args) => CancelEdit_Click(item))">
+								</RadzenButton>
+								<RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteRow_Click(item))">
+								</RadzenButton>
+							</EditTemplate>
+						</RadzenDataGridColumn>
+					}
+				</Columns>
+			</RadzenDataGrid>
+		</RadzenRow>
+	</ChildContent>
+</RadzenPanel>
+
+@code {
+	[Parameter]
+	public IEditableData? EditableData { get; set; }
+	[Parameter]
+	public RunItem CurrentRun { get; set; } = new RunItem();
+	[Parameter]
+	public bool EditMode { get; set; } = false;
+
+	RunAdditionalDay? DayToInsert;
+	RunAdditionalDay? DayToUpdate;
+	private RadzenDataGrid<RunAdditionalDay>? grdData;
+	void Reset()
+	{
+		DayToInsert = null;
+		DayToUpdate = null;
+	}
+
+	async Task EditRow_Click(RunAdditionalDay item)
+	{
+		await Task.CompletedTask;
+		DayToUpdate = item;
+		if (grdData != null)
+		{
+			await grdData.EditRow(item);
+		}
+	}
+
+	void OnUpdateRow(RunAdditionalDay item)
+	{
+		if (item == DayToInsert)
+		{
+			DayToInsert = null;
+		}
+
+		DayToUpdate = null;
+		this.EditableData?.SetDirty();
+	}
+
+	async Task SaveRow_Click(RunAdditionalDay item)
+	{
+		await Task.CompletedTask;
+
+		// controlla che non sia stati inseriti doppioni
+		var list = CurrentRun.AdditionalDays ?? new List<RunAdditionalDay> ();
+		var duplicate = (from d in list
+							where d != item
+								&& d.Day == item.Day
+							select d).FirstOrDefault();
+		if (duplicate != null)
+		{
+			this.notificationService.Notify(
+				NotificationSeverity.Warning,
+				"Data non validata",
+				"Non si può inserire due volte la stessa data nella lista dei giorni aggiuntivi"
+			);
+			return;
+		}
+		if (grdData != null)
+		{
+			await grdData.UpdateRow(item);
+		}
+	}
+
+	void CancelEdit_Click(RunAdditionalDay item)
+	{
+		if (item == DayToInsert)
+		{
+			DayToInsert = null;
+		}
+
+		DayToUpdate = null;
+
+		grdData?.CancelEditRow(item);
+	}
+
+	async Task DeleteRow_Click(RunAdditionalDay item)
+	{
+		await Task.CompletedTask;
+		this.EditableData?.SetDirty();
+
+		if (item == DayToInsert)
+		{
+			DayToInsert = null;
+		}
+
+		if (item == DayToUpdate)
+		{
+			DayToUpdate = null;
+		}
+		CurrentRun.AdditionalDays?.Remove(item);
+	}
+
+	void OnCreateRow(RunAdditionalDay item)
+	{
+		this.EditableData?.SetDirty();
+
+		if (this.CurrentRun.AdditionalDays == null)
+		{
+			CurrentRun.AdditionalDays = new List<RunAdditionalDay>() { item };
+		}
+		else
+		{
+			CurrentRun.AdditionalDays.Add(item);
+		}
+
+		DayToInsert = null;
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		await base.OnParametersSetAsync();
+	}
+
+	private int DaysCount ()
+	{
+		return (this.CurrentRun?.AdditionalDays?.Count() ?? 0);
+	}
+
+	private async Task AddDay_Click ()
+	{
+		await Task.CompletedTask;
+		DayToInsert = new RunAdditionalDay()
+		{
+			Day = DateTime.Today.Date
+		};
+		if (grdData != null)
+		{
+			await grdData.InsertRow(DayToInsert);
+		}
+	}
+}

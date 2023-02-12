@@ -136,6 +136,30 @@ namespace CtaLinea.Model.ModelServices
                     });
             }
 
+            if (run.AdditionalDays != null)
+            {
+                // controlla che non ci siano duplicati nei gironi addizionali
+                var dupl = (from d in run.AdditionalDays
+                            group d by d.Day into dd
+                            select new 
+                            {
+                                Day = dd.Key ,
+                                Count = dd.Count()
+                            }).Where(dd => dd.Count > 1)
+                            .FirstOrDefault();
+                if (dupl != null)
+                {
+					warnings.Add(
+						new CheckResultItem()
+						{
+							Category = RunCheckResult.Category_Run,
+							Title = "Aiorni aggiuntivi duplicati",
+							Description = "Non è possibile avere dei doppioni tra le date dei gironi aggiuntivi della corsa.",
+							Id = run.RunId
+						});
+				}
+			}
+
             // controlla le varianti
             await this.CheckAllVariantsAsync(run, errors, warnings, informations);
 
