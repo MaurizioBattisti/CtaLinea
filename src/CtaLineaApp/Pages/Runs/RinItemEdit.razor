@@ -39,6 +39,9 @@ else
     <RadzenCard>
         <RadzenButton Click=@Save_Click IsBusy=@IsSaving Text="Salva Corsa" BusyText="Salvataggio...." ButtonStyle="ButtonStyle.Primary" />
     </RadzenCard>
+    <RadzenCard>
+        <RunPlanningView @ref=@Planning RunId=@Id />
+    </RadzenCard>
 }
 @code {
     [Parameter]
@@ -50,6 +53,7 @@ else
     private bool IsSaving = false;
 
     private RunCheckResult? CheckResult { get; set; }
+    private RunPlanningView? Planning;
 
     protected override async Task OnInitializedAsync()
     {
@@ -98,6 +102,10 @@ else
                 this.Id, this.CurrentRun);
             this.IsClean = true;
 
+            if (this.Planning != null)
+            {
+                await this.Planning.ReloadDataAsync();
+            }
             this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
         }
         catch (BadRequestException<RunCheckResult> ex)

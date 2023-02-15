@@ -139,5 +139,6 @@
     <Build Include="Functions\Calendars\tvf_CalendarTreeTopDown.sql" />
     <Build Include="Tables\Runs\RunAdditionalDays.sql" />
     <Build Include="Tables\Runs\RunVariationCalendars.sql" />
+    <Build Include="StoredProc\Run\up_GetRunPlanning.sql" />
   </ItemGroup>
 </Project>

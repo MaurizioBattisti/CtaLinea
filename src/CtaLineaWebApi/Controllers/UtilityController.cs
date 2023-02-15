@@ -47,7 +47,7 @@ namespace CtaLineaWebApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
         [Route("carplanning")]
-        public async Task<ActionResult<IEnumerable<CarPlanningItem>>> GetCostsByAssociateAsync(
+        public async Task<ActionResult<IEnumerable<CarPlanningItem>>> GetCarPlanningAsync(
             [FromQuery] Guid? associateId = null,
             [FromQuery] Guid? carId = null,
             [FromQuery] DateTime? startDate = null,
@@ -62,9 +62,27 @@ namespace CtaLineaWebApi.Controllers
 
             return this.Ok(result);
         }
+		[Consumes(MediaTypeNames.Application.Json)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[HttpGet]
+		[Route("runplanning")]
+		public async Task<ActionResult<IEnumerable<RunPlanningItem>>> GetRunPlanningAsync(
+			[FromQuery] Guid runId,
+			[FromQuery] DateTime? startDate = null,
+			[FromQuery] DateTime? endDate = null
+			)
+		{
+			var result = await this._queries.GetRunPlanningAsync(
+				runId,
+				startDate, endDate
+				)
+				.ConfigureAwait(false);
 
+			return this.Ok(result);
+		}
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("ttservices")]
         [HttpPost, DisableRequestSizeLimit]

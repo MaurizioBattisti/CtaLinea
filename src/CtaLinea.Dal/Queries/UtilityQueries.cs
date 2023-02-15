@@ -17,8 +17,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
         : IUtilityQueries
     {
         private const string SQL_up_GetPlanning = "[dbo].[up_GetPlanning]";
+        private const string SQL_up_GetRunPlanning = "[dbo].[up_GetRunPlanning]";
 
-        private readonly CtaDbContext _context;
+		private readonly CtaDbContext _context;
         private readonly ILogger _logger;
 
         public UtilityQueries(
@@ -55,5 +56,30 @@ namespace ZzSoft.CtaLinea.Dal.Queries
             var items = reader.Read<CarPlanningItem>();
             return await Task.FromResult(items);
         }
-    }
+
+		public async Task<IEnumerable<RunPlanningItem>> GetRunPlanningAsync(
+			Guid runId,
+			DateTime? startDate = null,
+			DateTime? endDate = null
+			)
+		{
+			using IDbConnection conn = this._context.Database.GetDbConnection();
+			conn.Open();
+
+			using var reader = await conn.QueryMultipleAsync(
+				SQL_up_GetRunPlanning,
+				param: new
+				{
+					RunId = runId,
+					StartDate = startDate,
+					EndDate = endDate
+				},
+				commandType: CommandType.StoredProcedure,
+				commandTimeout: 600);
+
+			var items = reader.Read<RunPlanningItem>();
+			return await Task.FromResult(items);
+		}
+
+	}
 }

@@ -48,9 +48,9 @@ namespace CtaLineaApp
         // utility
         internal const string EndPoint_Utilitys = "api/utility";
         internal const string EndPoint_CarPlanning = EndPoint_Utilitys + "/carplanning";
-
-        // argomenti
-        internal const string EndPoint_CostsByAssociate_ContractId = "contractId";
+		internal const string EndPoint_RunPlanning = EndPoint_Utilitys + "/runplanning";
+		// argomenti
+		internal const string EndPoint_CostsByAssociate_ContractId = "contractId";
         internal const string EndPoint_CostsByAssociate_StartDate= "startDate";
         internal const string EndPoint_CostsByAssociate_EndDAte = "endDate";
         internal const string EndPoint_CostsByAssociate_AssociateId = "associateId";

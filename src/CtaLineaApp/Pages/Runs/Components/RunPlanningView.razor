@@ -1,0 +1,119 @@
+﻿@inject IApplicationSettings AppSettings;
+@using CtaLinea.Model.Utilities
+@using CtaLineaApp.Application.Services.Utilities;
+@using CtaLineaApp.Pages.Runs;
+@inject IUtilityService _utilityService
+@inject DialogService DialogService
+
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<RadzenScheduler @ref=@scheduler
+                 SlotRender=@OnSlotRender
+                 TItem="RunPlanningItem"
+                 Data=@Planning
+                 LoadData=@LoadDataAsync
+                 StartProperty="StartTime"
+                 EndProperty="EndTime"
+                 TextProperty="Text"
+                 SelectedIndex="1"
+                 Culture=@AppSettings.CurrentCulture
+                 AppointmentSelect=@OnAppointmentSelect
+                 AppointmentRender=@OnAppointmentRender
+                 Style="height: 768px; width:100%">
+
+    <RadzenDayView />
+    <RadzenWeekView />
+    <RadzenMonthView />
+
+</RadzenScheduler>
+
+@code {
+    [CascadingParameter]
+    public CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+    [Parameter]
+    public Guid RunId { get; set; }
+
+    RadzenScheduler<RunPlanningItem>? scheduler;
+
+    private bool isLoading = false;
+    private IEnumerable<RunPlanningItem> Planning = new List<RunPlanningItem>();
+
+    public async Task ReloadDataAsync()
+    {
+        await Task.CompletedTask;
+        if (this.scheduler != null)
+        {
+            await this.scheduler.Reload();
+        }
+    }
+
+    private async Task LoadDataAsync(
+        SchedulerLoadDataEventArgs args)
+    {
+        try
+        {
+            this.isLoading = true;
+            var data = await this._utilityService.GetRunPlanningAsync(
+                this.RunId,
+                args.Start, args.End
+                );
+            this.Planning = data;
+
+            // slava la lista dei mezzi per assegnargli un colore
+            /*
+            this.CarIds = (from d in data.OrderBy(x => x.CarDescr)
+                           group d by d.CarId into c
+                           select c.Key).ToList();
+        */
+        }
+        finally
+        {
+            this.isLoading = false;
+            this.StateHasChanged();
+        }
+    }
+
+    private void OnSlotRender(SchedulerSlotRenderEventArgs args)
+    {
+        // Highlight today in month view
+        if (args.View.Text == "Month" && args.Start.Date == DateTime.Today)
+        {
+            args.Attributes["style"] = "background: rgba(255,220,40,.2);";
+        }
+
+        // Highlight working hours (9-18)
+        if ((args.View.Text == "Week"
+                || args.View.Text == "Day")
+            && args.Start.DayOfWeek != DayOfWeek.Sunday
+            && args.Start.Hour > 8
+            && args.Start.Hour < 19)
+        {
+            args.Attributes["style"] = "background: rgba(255,220,40,.2);";
+        }
+    }
+
+    private async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<RunPlanningItem> args)
+    {
+        await Task.CompletedTask;
+        /*
+        await DialogService.OpenSideAsync<RunItemDetail>($"Dettaglio della Corsa",
+            new Dictionary<string, object>() { { "Id", args.Data.RunId } },
+            options: new SideDialogOptions() { CloseDialogOnOverlayClick = true, Width = "88%" }
+            );
+        */
+    }
+
+    private void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<RunPlanningItem> args)
+    {
+        // Never call StateHasChanged in AppointmentRender - would lead to infinite loop
+        /*
+        var index = CarIds?.IndexOf(args.Data.CarId);
+        if (index != null)
+        {
+            args.Attributes["style"] = this.Colors[index.Value % this.Colors.Length];
+        }
+        */
+    }
+
+}
