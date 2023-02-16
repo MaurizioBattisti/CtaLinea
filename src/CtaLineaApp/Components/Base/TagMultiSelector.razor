@@ -1,0 +1,119 @@
+﻿@using CtaLinea.Model.Base;
+@using CtaLineaApp.Application.Services.Base;
+@inject ITagsService TagsService
+
+<RadzenRow>
+    <RadzenDropDownDataGrid 
+        @ref=@grid
+        TValue="IEnumerable<int>"
+        Chips="true" 
+        AllowRowSelectOnRowClick=true 
+        AllowFiltering="true" 
+        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
+        AllowClear="true" 
+        @bind-Value=@TagIds
+        Multiple="true" 
+        Placeholder="Seleziona..." 
+        Data=@Data 
+        TextProperty="TagName" 
+        ValueProperty="TagId"
+        CellRender=@CellRender
+        Change=@OnChange
+        class="w-100">
+        <Columns>
+            <RadzenDropDownDataGridColumn Width="60px" Sortable="false">
+                <HeaderTemplate>
+                        <RadzenCheckBox Disabled="@(!grid.AllowSelectAll)" 
+                        TriState="false" TValue="bool" 
+                        Value="@(Data.Any(c => this.TagIds != null && this.TagIds.Contains(c.TagId)))"
+                        Change=@CheckChange />
+                </HeaderTemplate>
+                <Template Context="data">
+                        <RadzenCheckBox TriState="false" 
+                            Value="@(this.TagIds != null && this.TagIds.Contains(((TagForRun) data).TagId))"
+                            TValue="bool" />
+                </Template>
+            </RadzenDropDownDataGridColumn>
+
+            <RadzenDropDownDataGridColumn Property="TagName" Title="Etichetta" Width="300px" >
+                <Template Context="item">
+                        <span style="color: @item.Color">@item.TagName</span>
+                </Template>
+                </RadzenDropDownDataGridColumn>
+        </Columns>
+    </RadzenDropDownDataGrid>
+</RadzenRow>
+
+@code {
+    private RadzenDropDownDataGrid<IEnumerable<int>>? grid;
+
+    [Parameter]
+    public IEnumerable<int>? TagIds { get; set; }
+    [Parameter]
+    public EventCallback<IEnumerable<int>?> TagIdsChanged { get; set; }
+
+    [Parameter]
+    public bool AllowClear { get; set; } = false;
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<object> Changed { get; set; }
+
+    private IList<TagForRun> Data = new List<TagForRun>();
+    bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+
+        await Task.CompletedTask;
+    }
+
+    private async Task LoadData ()
+    {
+        this.isLoading = true;
+        try
+        {
+            var data = await this.TagsService.GetAllAsync();
+            if (data != null)
+            {
+                this.Data = data.ToList();
+            }
+        }
+        finally
+        {
+            this.isLoading = false;
+        }
+    }
+
+    private async Task OnChange (object value)
+    {
+        await TagIdsChanged.InvokeAsync(this.TagIds);
+        await Changed.InvokeAsync(this);
+    }
+
+    public void CheckChange (bool args)
+    {
+        this.TagIds = args ? grid.View.Cast<TagForRun>().Select(c => c.TagId) : this.TagIds = new List<int>();
+        TagIdsChanged.InvokeAsync(this.TagIds);
+        Changed.InvokeAsync(this);
+    }
+
+    private void CellRender(DataGridCellRenderEventArgs<object> args)
+    {
+        if (args.Column.Property == "TagName")
+        {
+            var item = args.Data as TagForRun;
+            if (item != null)
+            {
+                args.Attributes.Add("style",
+                    "background-color: " + item.BgColor);
+            }
+        }
+    }
+
+}

@@ -192,6 +192,7 @@ namespace CtaLineaWebApi
             services.AddScoped<IUserRepository,UserRepository>()
                 .AddScoped<IRunRepository, RunRepository>()
                 .AddScoped<ITtServiceRepository,TtServiceRepository>()
+                .AddScoped<ITagRepository, TagRepository>()
                 ;
 
             // servizi per il contorllo dei dati

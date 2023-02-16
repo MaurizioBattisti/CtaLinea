@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 using ZzSoft.CtaLinea.Dal.Context;
 using ZzSoft.CtaLinea.Dal.Model.Runs;
 
@@ -32,7 +33,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         private const string SQL_Table_CarReplacementDetails = "[dbo].[RunCarReplacementDetails]";
         private const string SQL_Table_RunSuspensions = "[dbo].[RunSuspensions]";
 
-        private readonly CtaDbContext _context;
+        private const string SQL_Table_RunTags = "[dbo].[RunTags]";
+
+		private readonly CtaDbContext _context;
         private readonly ILogger _logger;
 
         public RunRepository(
@@ -418,7 +421,76 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             }
         }
 
-        private async Task AddToRecalcNeededAsync (
+        public async Task<IEnumerable<int>?> GetRunTagsAsync (
+			Guid runId)
+        {
+			using IDbConnection conn = this._context.Database.GetDbConnection();
+			conn.Open();
+
+			return await conn.QueryAsync<int>(
+				"SELECT TagId FROM " + SQL_Table_RunTags
+                + " WHERE RunId = @RunId",
+                new { RunId  = runId});
+		}
+		public async Task SaveRunTagsAsync(
+			Guid runId,
+            IEnumerable<int> tags)
+		{
+			using IDbConnection conn = this._context.Database.GetDbConnection();
+			conn.Open();
+            var tran = conn.BeginTransaction();
+
+            if (tags == null) tags = new List<int>();
+
+			try
+            {
+                // recupera le vecchie tag
+                var oldTags = await conn.QueryAsync<int>(
+				    "SELECT TagId FROM " + SQL_Table_RunTags
+				    + " WHERE RunId = @RunId",
+				    new { RunId = runId },
+                    tran);
+				if (oldTags == null) oldTags = new List<int>();
+
+				await this.FindNewAsync(
+                    oldTags,
+                    tags,
+                    (v) => v,
+                    async (id) =>
+                        await this.InsertTableAsync(
+                            SQL_Table_RunTags,
+                            conn, tran,
+                            new { RunId = runId, TagId = id }
+                            )
+                    );
+
+
+                // elimina i nodi da cancellare
+                await this.FindDeletedAsync(
+                    oldTags,
+                    tags,
+                    (v) => v,
+                    async (id) =>
+                        await this.DeleteTableAsync(
+                            SQL_Table_RunTags,
+                            conn, tran,
+                            new { RunId = runId, TagId = id }
+                            )
+                    );
+                
+                tran.Commit();
+                tran = null;
+            }
+            finally
+            {
+                if (tran != null)
+                {
+                    tran.Rollback();
+                }
+            }
+		}
+
+		private async Task AddToRecalcNeededAsync (
             IDbConnection conn,
             IDbTransaction tran,
             Guid? runId = null,

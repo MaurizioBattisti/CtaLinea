@@ -1,0 +1,18 @@
+﻿@inject DialogService DialogService
+
+<h3>Filtri avanzati </h3>
+
+<p>quelli che sono avanzati dalla volta precedente</p>
+<p>praticametne  Vanzaori</p>
+
+<RadzenButton
+	Text="Filtra !"
+	Click=@Filter_Click
+	/>
+
+@code {
+	private void Filter_Click ()
+	{
+		this.DialogService.CloseSide(true);
+	}
+}

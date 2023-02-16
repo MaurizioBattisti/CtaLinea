@@ -17,6 +17,8 @@ using NPOI.OpenXmlFormats.Wordprocessing;
 using System.Linq.Expressions;
 using CtaLineaWebApi.Application.Services;
 using CtaLinea.Model.Helpers;
+using ZzSoft.CtaLinea.Dal.Repositories;
+using CtaLineaWebApi.Application.Commands.Tags;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -29,14 +31,17 @@ namespace CtaLineaWebApi.Controllers
     {
         private readonly IRunQueries _queries;
         private readonly ISender _mediator;
-        private readonly ICompleteRunCheckerService _Checker;
+        private readonly IRunRepository _repo;
+		private readonly ICompleteRunCheckerService _Checker;
 
         public RunsController(
             ISender mediator,
+            IRunRepository repo,
             ICompleteRunCheckerService checker,
             IRunQueries queries)
         {
             _mediator = mediator;
+            _repo = repo;
             _Checker = checker;
 			_queries = queries;
 		}
@@ -216,6 +221,48 @@ namespace CtaLineaWebApi.Controllers
             return await this.ModelOKAsync(result)
                 .ConfigureAwait(false);
         }
-        #endregion
-    }
+		#endregion
+
+		#region tags
+		[SwaggerOperation("restituisce l'elenco degli id di etichetta associati alla corsa")]
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<int>))]
+		[HttpGet]
+		[Route("{id}/tags")]
+		public async Task<IActionResult> GetRunTagsAsync(
+			Guid id)
+		{
+            var list = await _repo.GetRunTagsAsync(id);
+            return this.Ok(list);
+		}
+		[SwaggerOperation("aggiorna l'elenco delle etichetta associati alla corsa")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status409Conflict)]
+		[HttpPost]
+		[Route("{id}/tags")]
+		public async Task<IActionResult> UpdateTagsAsync(
+			Guid id,
+            [FromBody] IEnumerable<int> tags)
+		{
+			var request = new SaveRunTagsRequest()
+			{
+                RunId = id,
+				TagIds = tags
+			};
+			var result = await this._mediator.Send(request)
+				.ConfigureAwait(false);
+
+			if (result.Success == false)
+			{
+				return Conflict(
+					new ValidationProblemDetails(new Dictionary<string, string[]>())
+					{
+						Title = "Salvataggio etichette Fallito",
+						Detail = result.Message
+					});
+			}
+
+			return Ok();
+		}
+		#endregion
+	}
 }

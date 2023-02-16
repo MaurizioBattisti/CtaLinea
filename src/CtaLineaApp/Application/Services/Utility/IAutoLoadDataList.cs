@@ -9,6 +9,9 @@ namespace CtaLineaApp.Application.Services.Utility
         bool isLoading { get; }
         int RowCount { get; }
 
+        void StartLoading();
+        void EndLoading();
+
         void Initilize(string endpoint);
         Task LoadData(LoadDataArgs args);
     }

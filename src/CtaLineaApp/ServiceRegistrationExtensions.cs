@@ -49,6 +49,7 @@ namespace CtaLineaApp
                 .AddScoped<IQueryUtilityService, QueryUtilityService>()
                 .AddScoped<ICostService, CostServic> ()
                 .AddScoped<IUtilityService, UtilityService> ()
+                .AddScoped<ITagsService, TagsService> ()
                 
                 // servizio per la gestion dei contratti
                 .AddScoped<IContractService, ContractService> ()

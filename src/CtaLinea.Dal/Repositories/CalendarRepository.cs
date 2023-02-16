@@ -18,9 +18,6 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         private const string Sql_CalendarHolidays_Table = "[dbo].[CalendarHolidays]";
         private const string Sql_SimpleCalendarDays = "[dbo].[tvf_CalendarDays](@CalendarId, @StartDate, @EndDate)";
 
-        private const string SQL_Select_Star = "SELECT * FROM ";
-        private const string Sql_SelectIdentity = "SELECT @@IDENTITY";
-
         private readonly CtaDbContext _context;
         private readonly ILogger _logger;
 
@@ -87,7 +84,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                         this.GetCalendarData(model)
                         )
                     );
-                var id = await conn.ExecuteScalarAsync<int>(Sql_SelectIdentity, transaction: tran);
+                var id = await this.GetIdentityAsync(conn, tran);
                 var data = await this.InternalGetOneAsync(conn, tran, id);
                 tran.Commit();
                 tran = null;
@@ -241,7 +238,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                         this.GetPeriodData(model)
                         )
                     );
-                var id = await conn.ExecuteScalarAsync<int>(Sql_SelectIdentity, transaction: tran);
+                var id = await this.GetIdentityAsync(conn, tran);
                 var data = await this.InternalGetOnePeriodAsync(conn, tran, id);
                 tran.Commit();
                 tran = null;

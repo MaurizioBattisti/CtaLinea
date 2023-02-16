@@ -40,10 +40,12 @@ namespace CtaLineaApp
         internal const string Endpoint_Runs = "/api/runs";
         internal const string Endpoint_RunList = Endpoint_Runs;
         internal const string Endpoint_OneRun_Frm= Endpoint_Runs  + "/{0}";
-        internal const string Endpoint_RunVariationList_Fmt = Endpoint_OneRun_Frm  + "/variations";
+		internal const string Endpoint_Run_Detail_Fmt = Endpoint_OneRun_Frm + "/detail";
+		internal const string Endpoint_RunVariationList_Fmt = Endpoint_OneRun_Frm  + "/variations";
+		internal const string Endpoint_Run_Tags_Fmt = Endpoint_OneRun_Frm + "/tags";
 
-        // costi
-        internal const string EndPoint_Costs = "api/costs";
+		// costi
+		internal const string EndPoint_Costs = "api/costs";
         internal const string EndPoint_CostsByAssociate = EndPoint_Costs + "/byassociate";
         // utility
         internal const string EndPoint_Utilitys = "api/utility";
@@ -66,7 +68,10 @@ namespace CtaLineaApp
         internal const string Endpoint_Calendar_Holidays_Single_Fmr = Endpoint_Calendar_Holidays_Fmr + "/{1:yyyy-MM-dd}";
         internal const string Endpoint_CalendarPeriods = Endpoint_Calendars + "/periods";
         internal const string Endpoint_CalendarPeriods_Single_Fmt = Endpoint_CalendarPeriods + "/{0}";
-        internal const string Endpoint_Calendar_Days = Endpoint_Calendar_One_Fmr + "/days?startDate={1:yyyy-MM-dd}&endDate={2:yyyy-MM-dd}"; 
+        internal const string Endpoint_Calendar_Days = Endpoint_Calendar_One_Fmr + "/days?startDate={1:yyyy-MM-dd}&endDate={2:yyyy-MM-dd}";
+
+        internal const string Endpoint_Tags = "/api/tags";
+        internal const string Endpoint_Tags_Single_Fmt = Endpoint_Tags + "/{0}";
 
         internal const string Endpoint_Contracts = "/api/contracts";        
         internal const string Endpoint_Associates = "/api/associates";

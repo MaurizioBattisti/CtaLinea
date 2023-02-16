@@ -51,7 +51,12 @@ SELECT  r.RunId,
 		ctr.ContractDescription,
 		ctr.StartDate AS ContractStart,
 		ctr.EndDate AS ctrEndDAte,
-		COALESCE(vc.VariationCount, 0) as VariationCount
+		COALESCE(vc.VariationCount, 0) as VariationCount,
+		
+		-- tag con priorità più alta
+		tag.TagName,
+		tag.BgColor,
+		tag.Color
 	FROM dbo.Runs r
 	INNER JOIN CTE_Variants v
 		ON R.RunId = v.RunId
@@ -69,4 +74,6 @@ SELECT  r.RunId,
 		ON r.RunId = rCal.RunId
 	LEFT JOIN dbo.vw_RunPaths rPath
 		ON r.RunId = rPath.RunId
+	LEFT JOIN dbo.vw_RunFirstTags tag
+		ON r.RunId = tag.RunId
 	;

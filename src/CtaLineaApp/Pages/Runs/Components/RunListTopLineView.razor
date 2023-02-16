@@ -4,6 +4,9 @@
         Gap="5px" Wrap="FlexWrap.NoWrap"
         JustifyContent="JustifyContent.End"
         AlignItems="AlignItems.Center">
+    
+    <RadzenButton Text="Filtri" Click=@ShowFilter_Click />
+
     <RadzenButton Text="AZzera Filtri" Click=@ClearFilters_Click />
     <RadzenButton Text="Ricarica" Click=@ReloadData_Click />
     <RadzenTextBox @bind-Value=@FullTextSearch Placeholder="Cerca..." Change=@FullText_OnChange Class="w-100" />
@@ -19,6 +22,8 @@
     public EventCallback OnReload { get; set; }
     [Parameter]
     public EventCallback OnClearFilters { get; set; }
+    [Parameter]
+    public EventCallback OnShowFilter { get; set; }
 
     public void FullText_OnChange (string? text)
     {
@@ -36,6 +41,10 @@
     private void ReloadData_Click ()
     {
         this.OnReload.InvokeAsync();
+    }
+    private void ShowFilter_Click ()
+    {
+        this.OnShowFilter.InvokeAsync();
     }
 
     public void Refresh ()

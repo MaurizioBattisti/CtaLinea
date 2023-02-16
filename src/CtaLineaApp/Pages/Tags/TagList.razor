@@ -1,0 +1,328 @@
+﻿@page "/tags"
+@inject ContextMenuService ContextMenuService
+@inject DialogService DialogService
+@inject NavigationManager NavigationManager
+@inject NotificationService notificationService
+@inject ITagsService TagsService
+
+@inherits EditorComponentBase
+@attribute [Authorize]
+
+<PageTitle>@Constants.App_Title - Etichette</PageTitle>
+
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Etichette" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+        <RadzenStack Orientation="Orientation.Horizontal"
+                     Gap="5px" Wrap="FlexWrap.NoWrap"
+                     JustifyContent="JustifyContent.End"
+                     AlignItems="AlignItems.Center">
+            <RadzenButton Text="Ricarica" Click=@ReloadData />
+        </RadzenStack>
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<RadzenRow>
+	<RadzenButton Text="Nuoga etichetta"
+				  ButtonStyle="ButtonStyle.Primary"
+				  Icon="local_offer"
+				  Click=@AddTag_Click />
+
+	<RadzenDataGrid @ref="grdData"
+					AllowAlternatingRows="true"
+					AllowFiltering="true"
+					AllowSorting="true"
+					EditMode="DataGridEditMode.Single"
+					Data="@Data"
+					TItem="TagForRun"
+					CellRender="@CellRender"
+					RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow"
+					Sort="@Reset"
+					Page="@Reset"
+					Filter="@Reset">
+		<Columns>
+			<RadzenDataGridColumn TItem="TagForRun" Property="TagId" Title="ID" Width="80px" >
+				<Template Context="item">
+					<span style="color: @item.Color">@item.TagId</span>
+				</Template>
+			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="TagForRun" Property="TagName" Title="Nome etichetta" Width="380px">
+				<EditTemplate Context="item">
+					<RadzenTextBox @bind-Value="item.TagName" Class="w-100" />
+				</EditTemplate>
+			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="TagForRun" Property="Ordinal" Title="Ordine" Width="150px">
+				<EditTemplate Context="item">
+					<RadzenNumeric TValue="int" @bind-Value="item.Ordinal" Class="w-100" />
+				</EditTemplate>
+			</RadzenDataGridColumn>
+
+			<RadzenDataGridColumn TItem="TagForRun" Property="BgColor" Title="Colore Sfondo" Width="150px">
+				<Template Context="item">
+					<span style="color: @item.Color">@item.BgColor</span>
+				</Template>
+				<EditTemplate Context="item">
+					<RadzenColorPicker @bind-Value=@item.BgColor ShowHSV=true ShowRGBA=true ShowColors=true ShowButton=true />
+				</EditTemplate>
+			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="TagForRun" Property="Color" Title="Colore" Width="150px">
+				<Template Context="item">
+					<span style="color: @item.Color">@item.Color</span>
+				</Template>
+				<EditTemplate Context="item">
+					<RadzenColorPicker @bind-Value=@item.Color ShowHSV=true ShowRGBA=true ShowColors=true ShowButton=true />
+				</EditTemplate>
+			</RadzenDataGridColumn>
+
+			<RadzenDataGridColumn TItem="TagForRun" Context="item" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
+				<Template Context="item">
+					<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@(args => EditRow_Click(item))" @onclick:stopPropagation="true">
+					</RadzenButton>
+					<RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteRow_Click(item))" @onclick:stopPropagation="true">
+					</RadzenButton>
+				</Template>
+				<EditTemplate Context="item">
+					<RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@((args) => SaveRow_Click(item))">
+					</RadzenButton>
+					<RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@((args) => CancelEdit_Click(item))">
+					</RadzenButton>
+					<RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteRow_Click(item))">
+					</RadzenButton>
+				</EditTemplate>
+			</RadzenDataGridColumn>
+		</Columns>
+	</RadzenDataGrid>
+</RadzenRow>
+
+@code {
+	[CascadingParameter]
+	CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+	RadzenDataGrid<TagForRun>? grdData;
+	private bool IsBusy = false;
+	IList<TagForRun> Data = new List<TagForRun>();
+
+	TagForRun? TagToInsert;
+	TagForRun? TagToUpdate;
+
+	void Reset()
+	{
+		TagToInsert = null;
+		TagToUpdate = null;
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await this.ReloadData();
+		await base.OnInitializedAsync();
+	}
+
+	private async Task ReloadData ()
+	{
+		await Task.CompletedTask;
+
+		if (this.TagToInsert != null
+			|| this.TagToUpdate != null)
+		{
+			return;
+		}
+
+		try
+		{
+			this.IsBusy = true;
+			var data = await this.TagsService.GetAllAsync();
+			if (data != null)
+			{
+				this.Data = data.ToList();
+			}
+		}
+		catch (Exception ex)
+		{
+			// TODO: segnala un problema di caricamento
+
+		}
+		finally
+		{
+			this.IsClean = true;
+			this.IsBusy = false;
+			this.Reset();
+			this.StateHasChanged();
+		}
+	}
+
+	private async Task AddTag_Click()
+	{
+		this.Reset();
+		await Task.CompletedTask;
+		TagToInsert = new TagForRun()
+		{
+			TagName = "nuova etichetta"
+		};
+		if (grdData != null)
+		{
+			await grdData.InsertRow(TagToInsert);
+		}
+		this.SetDirty();
+	}
+
+	async Task EditRow_Click(TagForRun item)
+	{
+		await Task.CompletedTask;
+		TagToUpdate = item;
+		if (grdData != null)
+		{
+			await grdData.EditRow(item);
+		}
+		this.SetDirty();
+	}
+
+	void OnUpdateRow(TagForRun item)
+	{
+		if (item == TagToInsert)
+		{
+			TagToInsert = null;
+		}
+
+		TagToUpdate = null;
+	}
+	void OnCreateRow(TagForRun item)
+	{
+		Data.Add(item);
+		TagToInsert = null;
+	}
+	async Task SaveRow_Click(TagForRun item)
+	{
+		await Task.CompletedTask;
+
+		// esegue un contorllo dei dati prima di aggiornare
+		var msg = this.GetCheckMessage(item);
+		if (string.IsNullOrWhiteSpace(msg) == false)
+		{
+			this.notificationService.Notify(
+				NotificationSeverity.Warning,
+				"Dati non validi",
+				msg
+			);
+
+			return;
+		}
+
+		// aggiorna il dB
+		try
+		{
+			this.IsBusy = true;
+
+			// controlla se è un insert
+			if (item.TagId < 1)
+			{
+				item.TagId = await this.TagsService.InsertAsync(item);
+			}
+			else
+			{
+				await this.TagsService.UpdateAsync(item);
+			}
+
+			if (grdData != null)
+			{
+				await grdData.UpdateRow(item);
+			}
+			this.IsClean = true;
+		}
+		catch (BadRequestException<CheckResult> ex)
+		{
+			// this.CheckResult = ex.Payload;
+
+			this.notificationService.Notify(
+				NotificationSeverity.Error,
+				"Dati non corretti",
+				"verificare i dati prima di procedere con il salvataggio"
+			);
+		}
+		catch (Exception ex)
+		{
+			this.notificationService.Notify(
+				NotificationSeverity.Error,
+				"Creazione etichetta Fallita !",
+				ex.Message
+			);
+		}
+		finally
+		{
+			this.IsBusy = false;
+		}
+	}
+
+	void CancelEdit_Click(TagForRun item)
+	{
+		if (item == TagToInsert)
+		{
+			TagToInsert = null;
+		}
+
+		TagToUpdate = null;
+
+		this.IsClean = true;
+		grdData?.CancelEditRow(item);
+	}
+	async Task DeleteRow_Click(TagForRun item)
+	{
+		await Task.CompletedTask;
+
+		// elimina il record dal dB
+		try
+		{
+			this.IsBusy = true;
+
+			await this.TagsService.DeleteAsync(item.TagId);
+
+			if (item == TagToInsert)
+			{
+				TagToInsert = null;
+			}
+
+			if (item == TagToUpdate)
+			{
+				TagToUpdate = null;
+			}
+			this.Data.Remove(item);
+			this.IsClean = true;
+		}
+		catch (Exception ex)
+		{
+			this.notificationService.Notify(
+				NotificationSeverity.Error,
+				"Eliminazione etichetta Fallita !",
+				ex.Message
+			);
+		}
+		finally
+		{
+			this.IsBusy = false;
+		}
+	}
+
+	private string GetCheckMessage (TagForRun item)
+	{
+		string msg = string.Empty;
+		if (string.IsNullOrWhiteSpace(item.TagName) == true)
+		{
+			msg += "Deve esser indiato il nome dell'etichetta";
+		}
+
+		return msg;
+	}
+
+	private void CellRender(DataGridCellRenderEventArgs<TagForRun> args)
+	{
+		if (args.Column.Property == "TagId"
+			|| args.Column.Property == "BgColor"
+			|| args.Column.Property == "Color")
+		{
+			args.Attributes.Add("style", 
+				"background-color: " + args.Data.BgColor);
+		}
+	}
+}

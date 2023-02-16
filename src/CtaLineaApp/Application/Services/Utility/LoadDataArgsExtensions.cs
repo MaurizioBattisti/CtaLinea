@@ -102,7 +102,7 @@ namespace CtaLineaApp.Application.Services.Utility
         public static int GetQueryPage(
             this LoadDataArgs args)
         {
-            return (args.Skip ?? 0) / (args.Top ?? 1);
+            return ((args.Skip ?? 0) / (args.Top ?? 1)) + 1;
         }
         public static int GetQueryPageSize(
             this LoadDataArgs args)

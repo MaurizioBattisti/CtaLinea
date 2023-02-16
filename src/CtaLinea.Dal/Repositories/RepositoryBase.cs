@@ -11,6 +11,20 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 {
     public class RepositoryBase
     {
+        private const string Sql_SelectIdentity = "SELECT @@IDENTITY";
+
+        protected string SQL_Select_Star => "SELECT * FROM ";
+
+        protected async Task<int> GetIdentityAsync (
+            IDbConnection conn,
+            IDbTransaction tran = null)
+        {
+            var id = await conn.ExecuteScalarAsync<int>(
+                Sql_SelectIdentity, 
+                transaction: tran);
+            return id;
+        }
+
         #region funzioni generiche di lavoro
         protected async Task InsertTableAsync<T>(
             string tableName,

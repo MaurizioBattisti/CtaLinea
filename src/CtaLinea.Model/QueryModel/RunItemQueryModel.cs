@@ -74,5 +74,61 @@ namespace CtaLinea.Model.QueryModel
 
 		public int VariationCount { get; set; }
 
+		public string? TagName { get; set; }
+		public string? BgColor { get; set; }
+		public string? Color { get; set; }
+
+		public void CopyFrom (RunItemQueryModel source)
+		{
+            Id = source.Id;
+            CtaRunId = source.CtaRunId;
+            ContractId = source.ContractId;
+
+            Extra = source.Extra;
+            ContractRowNumber = source.ContractRowNumber;
+			StartDate = source.StartDate;
+			EndDate = source.EndDate;
+
+			RequestedDays = source.RequestedDays;
+			RunNote = source.RunNote;
+
+			AssociatesDescr = source.AssociatesDescr;
+			PrimaryCarsDescr = source.PrimaryCarsDescr;
+			SpareCarsDescr = source.SpareCarsDescr;
+			CalendarsDescr = source.CalendarsDescr;
+			PathsDescr = source.PathsDescr;
+
+			RunVariationId = source.RunVariationId;
+			VariationStartDate = source.VariationStartDate;
+			LineNumber = source.LineNumber;
+			RunNumber = source.RunNumber;
+			StartTime = source.StartTime;
+			EndTime = source.EndTime;
+
+			Monday = source.Monday;
+			Tuesday = source.Tuesday;
+			Wednesday = source.Wednesday;
+			Thursday = source.Thursday;
+			Friday = source.Friday;
+			Saturday = source.Saturday;
+			Sunday = source.Sunday;
+
+			Path = source.Path;
+			RequestedFrequency = source.RequestedFrequency;
+
+			Km = source.Km;
+			RequestedCapacity = source.RequestedCapacity;
+			VariationNote = source.VariationNote;
+
+			ContractDescription = source.ContractDescription;
+			ContractStart = source.ContractStart;
+			ctrEndDAte = source.ctrEndDAte;
+
+			VariationCount = source.VariationCount;
+	
+			TagName = source.TagName;
+			BgColor = source.BgColor;
+			Color = source.Color;
+        }
     }
 }

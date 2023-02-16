@@ -20,6 +20,7 @@
             @bind-FullTextSearch="AutoLoad.FullTextSearch"
             OnReload=@ReloadData
             OnClearFilters=@ClearFilters_Click
+            OnShowFilter=@OnShowFilter
             />
     </TopLine>
 </LayoutSetter>
@@ -49,6 +50,7 @@
                 ShowPagingSummary="true"
                 Density=@Settings.Density
                 PageSize=@(Settings?.PageSize ?? 5)
+                CellRender=@CellRender
                 >
     <EmptyTemplate>
         <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessuna corsa trovato !</p>
@@ -152,9 +154,31 @@
     </Template>
     <Columns>
         <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Id" Title="Id Servizio" Visible=false />
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="CtaRunId" Title="Id CTA" Width="100px" FilterValue=@Filter_CtaRunId />
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="ContractRowNumber" Title="Riga Appalto" Width="100px" FilterValue=@Filter_ContractRowNumber />
-        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Extra" Title="Extra" Width="100px"FilterValue=@Filter_Extra>
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="CtaRunId" Title="Id CTA" Width="100px" FilterValue=@Filter_CtaRunId Frozen=true >
+            <Template Context="item">
+                @if(item.Color != null)
+                {
+                    <span style="color: @item.Color">@item.CtaRunId</span>
+                }
+                else
+                {
+                    <span>@item.CtaRunId</span>
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="ContractRowNumber" Title="Riga Appalto" Width="100px" FilterValue=@Filter_ContractRowNumber Frozen=true >
+            <Template Context="item">
+                @if (item.Color != null)
+                {
+                    <span style="color: @item.Color">@item.ContractRowNumber</span>
+                }
+                else
+                {
+                    <span>@item.ContractRowNumber</span>
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Extra" Title="Extra" Width="100px" FilterValue=@Filter_Extra Frozen=true>
             <Template Context="data">
                 @if (data.Extra)
                 {
@@ -279,7 +303,9 @@
     {
         Detail,
         Edit,
-        Delete
+        Delete,
+
+        Tags
     };
 
     [CascadingParameter]
@@ -474,6 +500,7 @@
             @<RadzenMenu Click=@((e)=>OnMenuItemClick(args, e)) >
                 <RadzenMenuItem Text="Mostra i dettagli" Value=@RunMenuItems.Detail />
                 <RadzenMenuItem Text="Modifica..." Value=@RunMenuItems.Edit />
+                <RadzenMenuItem Text="Etichette..." Value=@RunMenuItems.Tags />
                 <hr class="separator">
                 <RadzenMenuItem Text="Elimina..." Value=@RunMenuItems.Delete />
         </RadzenMenu>
@@ -504,10 +531,61 @@
             case RunMenuItems.Delete:
                 await this.DeleteRunAsync(args.Data.Id);
                 break;
+            case RunMenuItems.Tags:
+                await this.ShowTagsEditor(args.Data.Id);
+                break;
 
             default:
                 break;
         };
+    }
+
+    private async Task ShowTagsEditor (
+        Guid runId)
+    {
+        var done =await DialogService.OpenAsync<RunTagsDialog>($"Etichette associate corsa",
+            new Dictionary<string, object>() { { "Id", runId } },
+            options: new DialogOptions() { 
+                CloseDialogOnOverlayClick = false, 
+                Width = "800px" 
+            });
+
+        if (done == true)
+        {
+            try
+            {
+                this.AutoLoad.StartLoading();
+                // ricarica la riga della griglia e  la rimette nel posto giusto
+                var newItem = await this.RunRepo.GetOneDetailAsync (runId);
+                var oldItem = this.AutoLoad.Data?.Where(x => x.Id == newItem.Id).SingleOrDefault();
+                if (newItem != null
+                    && oldItem != null)
+                {
+                    oldItem.CopyFrom(newItem);
+                    this.grdData?.UpdateRow(oldItem);
+                }
+            }
+            finally
+            {
+                this.AutoLoad.EndLoading();
+            }
+
+        }
+    }
+
+    private async Task OnShowFilter ()
+    {
+        var res = await DialogService.OpenSideAsync<RunAdvancedFiltersDialog>($"Filtri avanzati",
+            options: new SideDialogOptions() { 
+                    Position = DialogPosition.Top,
+                    ShowMask = true,
+                    CloseDialogOnOverlayClick = true 
+                }
+            );
+        if (res == true)
+        {
+            var s = string.Empty;
+        }
     }
 
     private void ClearFilters_Click ()
@@ -554,5 +632,17 @@
 
         // this.StateHasChanged();
         this.grdData?.Reload();
+    }
+    private void CellRender(DataGridCellRenderEventArgs<RunItemQueryModel> args)
+    {
+        if (args.Column.Property == "CtaRunId"
+            || args.Column.Property == "ContractRowNumber")
+        {
+            if (args.Data.TagName != null)
+            {
+                args.Attributes.Add("style",
+                    "background-color: " + args.Data.BgColor);
+            }
+        }
     }
 }

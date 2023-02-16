@@ -1,0 +1,81 @@
+﻿@inject ITagsService TagsService
+@inject IRunRepository RunRepository
+@inject DialogService DialogService
+
+<RadzenRow>
+	<div class="col-12">
+		<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Etichette</RadzenText>
+		<TagMultiSelector
+			AllowClear=true
+			@bind-TagIds=@RunTags
+			/>
+	</div>
+</RadzenRow>
+<RadzenRow>
+	<RadzenStack Orientation="Orientation.Horizontal">
+		<RadzenButton 
+			IsBusy=@IsBusy
+			Text="Salva "
+			ButtonStyle="ButtonStyle.Primary"
+			Click=@Save_Click />
+		<RadzenButton 
+			Text="Annulla "
+			ButtonStyle="ButtonStyle.Secondary"
+			Click=@Cancel_Click />
+	</RadzenStack>
+</RadzenRow>
+
+@code {
+	[Parameter]
+	public Guid Id { get; set; } = Guid.Empty;
+
+	private bool IsBusy = false;
+	private IEnumerable<int>? RunTags = null;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await this.LoadData();
+		await  base.OnInitializedAsync();
+	}
+
+	private async Task LoadData ()
+	{
+		this.IsBusy = true;
+		try
+		{
+			this.RunTags = await this.RunRepository.GetRunTagsAsync(this.Id);
+		}
+		finally
+		{
+			this.IsBusy = false;
+		}
+	}
+
+	private void Cancel_Click ()
+	{
+		this.DialogService.Close(false);
+	}
+	private async Task Save_Click ()
+	{
+		// salva le etichette
+		try
+		{
+			this.IsBusy = true;
+
+			await this.RunRepository.SaveRunTagsAsync(
+				this.Id,
+				this.RunTags ?? new List<int> ());
+
+			await Task.CompletedTask;
+			this.DialogService.Close(true);
+		}
+		catch (Exception ex)
+		{
+			await this.DialogService.Alert(ex.Message, "errore salvando le etichette");
+		}
+		finally
+		{
+			this.IsBusy = false;
+		}
+	}
+}
