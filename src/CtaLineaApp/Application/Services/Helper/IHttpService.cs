@@ -6,7 +6,7 @@
         Task<T?> Get<T>(string uri);
         Task<T?> Get<T, TBadRequestREsult>(string uri);
 
-        Task Post(string uri, object value);
+        Task<HttpResponseMessage> Post(string uri, object value);
         Task Post<TBadRequestREsult>(string uri, object value);
         Task<T?> Post<T, TBadRequestREsult>(string uri, object value);
 

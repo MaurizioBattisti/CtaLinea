@@ -11,6 +11,10 @@ namespace CtaLineaApp.Application.Services.Utility
         Task<QueryResult<TResul>?> GetListAsync<TResul>(
             QueryDefinition queryDef
             );
+        Task<QueryResult<TResul>?> GetListByPostAsync<TResul>(
+            QueryDefinition queryDef,
+            object? payload
+            );
         Task<TResul?> GetOneAsync<TResul>(
             QueryDefinition queryDef
             )

@@ -1,0 +1,68 @@
+﻿@inject IApplicationSettings AppSettings;
+
+<RadzenDropDown 
+    Disabled=@Disabled
+    Data=@Data
+    TValue="IEnumerable<int>"
+    @bind-Value=@WeekDays
+    Multiple="true"
+    Chips="true"
+    MaxSelectedLabels="20"
+    AllowClear=@AllowClear
+    Change=@OnChange
+
+    ValueProperty="Key"
+    TextProperty="Value"
+
+    AllowFiltering=true
+    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+    FilterOperator="StringFilterOperator.Contains"
+    class="w-100" >
+</RadzenDropDown>
+
+@code {
+    [Parameter]
+    public IEnumerable<int>? WeekDays { get; set; }
+    [Parameter]
+    public EventCallback<IEnumerable<int>?> WeekDaysChanged { get; set; }
+
+    [Parameter]
+    public bool AllowClear { get; set; } = false;
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<object> Changed { get; set; }
+
+    IEnumerable<KeyValuePair<int, string>>? Data = null;
+    int RowCount = 0;
+    bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.Data = this.GetWeeDays().ToList();
+        this.RowCount = this.Data.Count();
+        await base.OnInitializedAsync();
+    }
+
+    private IEnumerable<KeyValuePair<int, string>> GetWeeDays ()
+    {
+        var dt = new DateTime(2023, 1, 2); // il 2 gennaio 2023 era un lunedì
+        int wd = 1;
+
+        while (wd <= 7)
+        {
+            yield return new KeyValuePair<int, string>(
+                wd, string.Format(this.AppSettings.CurrentCulture, "{0:dddd}", dt)
+            );
+            ++wd;
+            dt = dt.AddDays(1);
+        }
+    }
+
+    private async Task OnChange (object value)
+    {
+        await WeekDaysChanged.InvokeAsync(this.WeekDays);
+        await Changed.InvokeAsync(this);
+    }
+}

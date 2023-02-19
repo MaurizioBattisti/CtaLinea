@@ -15,7 +15,7 @@ CREATE PROCEDURE [dbo].[up_GetCosts]
 AS
 BEGIN
 	-- si assicura che tutti i dati da ricalcolare siano ricalcolati
-	EXEC [dbo].[uo_RecalcRunDays_Massive] 0;
+	EXEC [dbo].[uo_RecalcRunDays_Massive] 0, @RunId;
 
 	WITH CTE_BaseCosts AS
 	(
@@ -26,7 +26,12 @@ BEGIN
 				rc.CarId,
 				c.Day,
 				c.Km,
-				c.KmCost,
+				c.KmContract,
+				c.KmExtra,
+				
+				c.KmContract * c.KmPrice AS KmCostContract,
+				c.KmExtra * c.KmPriceExtra AS KmCostExtra,
+
 				c.DayPrice,
 				c.DayForfait,
 				c.DayIntegration
@@ -54,8 +59,12 @@ BEGIN
 		SELECT  c.ContractId,
 				c.AssociateId,
 				c.CarId,
-				SUM(c.Km) AS Tot_Km,
-				SUM(c.KmCost) AS Tot_KmCost,
+
+				SUM(c.KmContract) AS Tot_KmContract,
+				SUM(c.KmExtra) AS Tot_KmExtra,
+				SUM(c.KmCostContract) AS Tot_KmCostContract,
+				SUM(c.KmCostExtra) AS Tot_KmCostExtra,
+
 				SUM(c.DayPrice) AS Tot_DayPrice,
 				SUM(c.DayForfait) AS Tot_DayForfait,
 				SUM(c.DayIntegration) AS Tot_DayIntegration
@@ -68,7 +77,8 @@ BEGIN
 			a.Description AS AssociateDescr,
 			car.Description AS CarDescr,
 			c.*,
-			COALESCE(c.Tot_KmCost, 0) +
+			COALESCE(c.Tot_KmCostContract, 0) +
+			COALESCE(c.Tot_KmCostExtra, 0) +
 			COALESCE(c.Tot_DayPrice, 0) +
 			COALESCE(c.Tot_DayForfait, 0) +
 			COALESCE(c.Tot_DayIntegration, 0) AS Tot

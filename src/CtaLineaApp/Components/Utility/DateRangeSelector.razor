@@ -1,31 +1,30 @@
-﻿<div class="@GetGeneralClass()">
-    <div class="@GetColumnClass()" >
+﻿
+<RadzenRow>
+    <RadzenColumn Size="@ColSize">
         <RadzenText TextStyle="TextStyle.Overline" Text="Data Inizio" />
-        <DateSelector 
-            @bind-Value="StartDate"
-            Changed=@OnStartDateChanged
-            Name=@StartName
-            Min=@Min Max=@StartMax()
-            Disabled=@Disabled
-            ShowSetTodayButton=true
-            AllowClear=@AllowClear
-            />
-    </div>
-    <div class="@GetColumnClass()" >
+        <DateSelector @bind-Value="StartDate"
+                      Changed=@OnStartDateChanged
+                      Name=@StartName
+                      Min=@Min Max=@StartMax()
+                      Disabled=@Disabled
+                      ShowSetTodayButton=true
+                      AllowClear=@AllowClear />
+    </RadzenColumn>
+    <RadzenColumn Size="@ColSize">
         <RadzenText TextStyle="TextStyle.Overline" Text="Data Fine" />
-        <DateSelector 
-            @bind-Value="EndDate"
-            Changed=@OnEndDateChanged
-            Name=@EndName
-            Min=@EndMin() Max=@Max
-            Disabled=@Disabled
-            ShowSetTodayButton=true
-            AllowClear=@AllowClear
-            />
-    </div>
-</div>
+        <DateSelector @bind-Value="EndDate"
+                      Changed=@OnEndDateChanged
+                      Name=@EndName
+                      Min=@EndMin() Max=@Max
+                      Disabled=@Disabled
+                      ShowSetTodayButton=true
+                      AllowClear=@AllowClear />
+    </RadzenColumn>
+</RadzenRow>
 
 @code {
+    private int ColSize => this.Inline ? 6:12;
+
     [Parameter]
     public DateTime? StartDate { get; set; }
     [Parameter]

@@ -1142,6 +1142,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 carCost.StartDate,
 
                 carCost.KmPrice,
+                carCost.KmPriceExtra,
                 carCost.DayPrice,
                 carCost.DayForfait,
                 carCost.DayIntegration

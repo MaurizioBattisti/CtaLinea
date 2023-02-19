@@ -2,24 +2,20 @@
 @using CtaLinea.Model.QueryModel
 @inject IQueryUtilityService queryService
 
-<div class="@GetGeneralClass()">
-    <div class="@GetDivPartClass(ColumnType.ASsociate)" >
+<RadzenRow>
+    <RadzenColumn Size="@ASsociateColSize">
         <RadzenText TextStyle="TextStyle.Overline" Text="Ditta" />
-        <AssociateDropDown @ref="@Associates"   Disabled=@Disabled @bind-AssociateId="AssociateId" AllowClear=@AllowClear Changed=@AssociateChanged />
-    </div>
-    <div class="@GetDivPartClass(ColumnType.Car)" >
+        <AssociateDropDown @ref="@Associates" Disabled=@Disabled @bind-AssociateId="AssociateId" AllowClear=@AllowClear Changed=@AssociateChanged />
+    </RadzenColumn>
+    <RadzenColumn Size="@CarColSize">
         <RadzenText TextStyle="TextStyle.Overline" Text="Mezzo" />
         <ChildCarDropDown @ref="@Cars" Disabled=@CarDisabled() AssociateId=@AssociateId @bind-CarId="CarId" AllowClear=@AllowClear Changed=@CarChanged />
-    </div>
-</div>
+    </RadzenColumn>
+</RadzenRow>
 
 @code {
-    public enum ColumnType
-    {
-        Unknown,
-        ASsociate,
-        Car
-    }
+    private int ASsociateColSize => this.Inline ? 10 : 12;
+    private int CarColSize => this.Inline ? 2 : 6;
 
     private AssociateDropDown? Associates;
     private ChildCarDropDown? Cars;
@@ -69,24 +65,6 @@
 
 
         await Task.CompletedTask;
-    }
-    private string GetGeneralClass()
-    {
-        if (this.Inline == false) return string.Empty; 
-            return "d-flex flex-row";
-    }
-    private string GetDivPartClass(ColumnType ct)
-    {
-        if (this.Inline == false) return string.Empty;
-        switch (ct)
-        {
-            case ColumnType.ASsociate:
-                return "col-md-8";
-            case ColumnType.Car:
-                return "col-md-4";
-            default:
-                return string.Empty;
-        };
     }
 
     private async Task AssociateChanged (object value)

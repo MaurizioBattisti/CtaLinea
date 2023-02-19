@@ -46,7 +46,9 @@ namespace CtaLineaApp.Application.Services.Run
             await this._runChecker.CleanGraphAsync(model);
             var checkResult = await this._runChecker.CheckRunAsync(model);
             if (checkResult.Status != CheckStatus.Failed
-                && checkResult.Status != CheckStatus.Warning)
+                // se ci sono warning è comunque possibile salvare
+                // && checkResult.Status != CheckStatus.Warning
+                )
             {
                 // èer il badrequest viee sollevata una eccezione
                 string url = string.Format(Constants.Endpoint_OneRun_Frm, runId);

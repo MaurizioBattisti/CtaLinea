@@ -54,10 +54,12 @@ namespace CtaLineaApp.Application.Services.Helper
             return await SendRequest<T, TBadRequestREsult>(request);
         }
 
-        public async Task Post(string uri, object value)
+        public async Task<HttpResponseMessage> Post(string uri, object value)
         {
             var request = createRequest(HttpMethod.Post, uri, value);
-            await sendRequest<string> (request);
+            var response = await this.SendBaserequestAsync(request);
+            await HandleErrors<string>(response);
+            return response;
         }
         public async Task Post<TBadRequestREsult>(string uri, object value)
         {

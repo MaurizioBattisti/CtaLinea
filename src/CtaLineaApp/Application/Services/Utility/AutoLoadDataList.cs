@@ -10,6 +10,8 @@ namespace CtaLineaApp.Application.Services.Utility
         private bool _hasBeenInitialized = false;
         private readonly IQueryUtilityService _queryService;
         private readonly QueryDefinition _QueryDef;
+        private bool _usePost = false;
+        private object? _postPayload;
 
         public AutoLoadDataList(
             IQueryUtilityService queryService)
@@ -19,11 +21,15 @@ namespace CtaLineaApp.Application.Services.Utility
         }
 
         public void Initilize(
-            string endpoint
+            string endpoint,
+            bool usePost = false,
+            object? postPayload = null
             )
         {
             _QueryDef.EndPoint = endpoint;
             _hasBeenInitialized = true;
+            _usePost = usePost;
+            _postPayload = postPayload;
         }
 
         public string FullTextSearch { get; set; } = string.Empty;
@@ -55,8 +61,17 @@ namespace CtaLineaApp.Application.Services.Utility
             _QueryDef.PageSize = args.GetQueryPageSize();
             try
             {
-                var result = await _queryService.GetListAsync<TItem>(
-                        _QueryDef);
+                QueryResult<TItem>? result;
+                if (this._usePost == false)
+                {
+                    result = await _queryService.GetListAsync<TItem>(
+                            _QueryDef);
+                }
+                else
+                {
+                    result = await _queryService.GetListByPostAsync<TItem>(
+                            _QueryDef, _postPayload);
+                }
 
                 if (result != null)
                 {

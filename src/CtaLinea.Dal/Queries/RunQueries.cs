@@ -1,4 +1,5 @@
-﻿using CtaLinea.Model.QueryModel;
+﻿using CtaLinea.Model.Filters;
+using CtaLinea.Model.QueryModel;
 using CtaLinea.QueryModel;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -7,8 +8,10 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using ZzSoft.CtaLinea.Dal.Context;
 using ZzSoft.QueryHelper;
+using Dapper;
 
 namespace ZzSoft.CtaLinea.Dal.Queries
 {
@@ -16,8 +19,11 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 		: IRunQueries
 	{
 		private const string RunItemListSql_Table = "[dbo].[vw_Runs] r";
+        private const string RunItemListSql_AdvandedFilters = @"
+ INNER JOIN dbo.tvf_Runs_AdvancedFilter(@AssociateId, @CarId, @MinSittings
+, @MaxSittings, @LineNumber, @RunNumber, @Node, @StartDate, @EndDate, @StartTime, @EndTime, @Frequency, @CalendarIds
+, @WeekDays, @InContract, @ActiveRun, @DateRef, @TabIds) a ON a.RunId = r.RunId";
         private const string RunVariationList_Table = "[dbo].[vw_RunVariations] v";
-        
 
         private CtaDbContext _context;
 
@@ -28,13 +34,63 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 		}
 
 		public async Task<QueryItemList<RunItemQueryModel>> GetRunListAsycn(
-			IFilteringContext filterContext)
+            IFilteringContext filterContext,
+            RunAdvancedFilters advancedFilter = null
+            )
 		{
-			var queryDef = new QueryDefinition<RunItemQueryModel>(
-				RunItemListSql_Table,
-				filterContext);
+			object args = null;
+			string table = RunItemListSql_Table;
 
-			IDbConnection conn = this._context.Database.GetDbConnection();
+			using IDbConnection conn = this._context.Database.GetDbConnection();
+
+			if (advancedFilter != null
+                && advancedFilter.HasImpact())
+            {
+                // controlla se  prima di fare la ricerca deve anche eseguire un ricalcolo dei calendari
+                if (advancedFilter.StartDate != null
+                    || advancedFilter.EndDate != null
+                    || advancedFilter.WeekDays != null)
+                {
+					// esegue un ricalcolo dei giorni
+					await conn.ExecuteAsync(
+					    sql: "[dbo].[uo_RecalcRunDays_Massive]",
+						 param: null,
+						 transaction: null,
+						 commandType: CommandType.StoredProcedure,
+                         commandTimeout: 600
+						 );
+				}
+
+                table += RunItemListSql_AdvandedFilters;
+				args = new
+				{
+                    AssociateId = advancedFilter.AssociateId,
+                    CarId = advancedFilter.CarId,
+                    MinSittings = advancedFilter.MinSittings,
+                    MaxSittings = advancedFilter.MaxSittings,
+                    LineNumber = advancedFilter.LineNumber,
+                    RunNumber = advancedFilter.RunNumber,
+                    Node = advancedFilter.Node,
+                    StartDate = advancedFilter.StartDate,
+                    EndDate = advancedFilter.EndDate,
+                    StartTime = advancedFilter.StartTime,
+                    EndTime = advancedFilter.EndTime,
+                    Frequency = advancedFilter.Frequency,
+                    CalendarIds = advancedFilter.CalendarIds != null ? string.Join(",", advancedFilter.CalendarIds) : (string) null,
+                    WeekDays = advancedFilter.WeekDays != null ? string.Join(",", advancedFilter.WeekDays) : (string)null,
+                    InContract = advancedFilter.InContract,
+                    ActiveRun = advancedFilter.ActiveRun,
+                    DateRef = advancedFilter.DateRef,
+                    TabIds = advancedFilter.TabIds != null ? string.Join(",", advancedFilter.TabIds) : (string)null
+                };
+            }
+
+			var queryDef = new QueryDefinition<RunItemQueryModel>(
+				table,
+				filterContext,
+				"1 = 1",
+				args);
+
 			return await conn.QueryListAsync(
 				queryDef)
 				.ConfigureAwait(false);

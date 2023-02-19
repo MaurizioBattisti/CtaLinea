@@ -242,6 +242,7 @@ namespace CtaLineaApp.Application.Services.Run
                 StartDate = startdate,
 
                 KmPrice = oldCost.KmPrice,
+                KmPriceExtra= oldCost.KmPriceExtra,
                 DayPrice = oldCost.DayPrice,
                 DayForfait = oldCost.DayForfait,
                 DayIntegration = oldCost.DayIntegration

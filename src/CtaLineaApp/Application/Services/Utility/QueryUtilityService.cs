@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -52,11 +53,30 @@ namespace CtaLineaApp.Application.Services.Utility
                 return null;
             }
         }
-
-        public async Task<QueryResult<TResul>?> GetListAsync<TResul> (
+        public async Task<QueryResult<TResul>?> GetListAsync<TResul>(
             QueryDefinition queryDef
             )
         {
+            return await this.SetRequestListAsync<TResul>(queryDef);
+        }
+        public async Task<QueryResult<TResul>?> GetListByPostAsync<TResul>(
+            QueryDefinition queryDef,
+            object? payload
+            )
+        {
+            return await this.SetRequestListAsync<TResul>(
+                queryDef,
+                async(u) => await this._httpService.Post(u, payload)
+                );
+        }
+
+        private async Task<QueryResult<TResul>?> SetRequestListAsync<TResul> (
+            QueryDefinition queryDef,
+            Func<string, Task<HttpResponseMessage?>>? sendAsync = null
+            )
+        {
+            if (sendAsync == null) sendAsync = async (u) => await this._httpService.Get(u);
+
             int totalRows = -1;
 
             try
@@ -74,11 +94,11 @@ namespace CtaLineaApp.Application.Services.Utility
                 {
                     queryString = "?" + queryString;
                 }
+                
                 // esegue la chiamata vera e propria all'endpoint
-                var response = await this._httpService.Get(
-                    queryDef.EndPoint + queryString);
+                var response = await sendAsync (queryDef.EndPoint + queryString);
 
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                if (response?.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     try
                     {

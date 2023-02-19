@@ -1,4 +1,5 @@
 ﻿@page "/runs"
+@using CtaLinea.Model.Filters;
 @using CtaLinea.Model.QueryModel;
 @inject IAutoLoadDataList<RunItemQueryModel> AutoLoad;
 @inject ContextMenuService ContextMenuService
@@ -319,6 +320,8 @@
     private IEnumerable<RunVariationQueryModel>? Details;
     #endregion
     #region filtri
+    private RunAdvancedFilters AdvancedFilter4s = new RunAdvancedFilters();
+
     private int? Filter_CtaRunId;
     private int? Filter_ContractRowNumber;
     private bool? Filter_Extra;
@@ -395,8 +398,11 @@
 
     protected override async Task OnInitializedAsync()
     {
+        // Endpoint_RunList_Adv
         AutoLoad.Initilize(
-            Constants.Endpoint_RunList
+            // Constants.Endpoint_RunList,
+            Constants.Endpoint_RunList_Adv,
+            true, this.AdvancedFilter4s
             );
 
         await base.OnInitializedAsync();
@@ -575,21 +581,28 @@
 
     private async Task OnShowFilter ()
     {
+        var parameters = new Dictionary<string, object>();
+        parameters.Add ("Filters", this.AdvancedFilter4s);
+
         var res = await DialogService.OpenSideAsync<RunAdvancedFiltersDialog>($"Filtri avanzati",
+            parameters,    
             options: new SideDialogOptions() { 
                     Position = DialogPosition.Top,
                     ShowMask = true,
-                    CloseDialogOnOverlayClick = true 
+                    CloseDialogOnOverlayClick = true ,
+                    Height="32em"
                 }
             );
         if (res == true)
         {
-            var s = string.Empty;
+            this.ReloadData();
         }
     }
 
     private void ClearFilters_Click ()
     {
+        this.AdvancedFilter4s.ClearAll();
+
         this.Filter_CtaRunId = null;
         this.Filter_ContractRowNumber = null;
         this.Filter_Extra = null;

@@ -1,4 +1,5 @@
-﻿using CtaLinea.Model.QueryModel;
+﻿using CtaLinea.Model.Filters;
+using CtaLinea.Model.QueryModel;
 using CtaLinea.QueryModel;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,8 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 	public interface IRunQueries
 	{
 		Task<QueryItemList<RunItemQueryModel>> GetRunListAsycn(
-			IFilteringContext filterContext);
+			IFilteringContext filterContext,
+            RunAdvancedFilters advancedFilter = null);
 		Task<RunItemQueryModel> GetOneRunAsync(
 			Guid id);
 

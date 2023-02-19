@@ -16,8 +16,13 @@ namespace CtaLinea.Model.Costs
         public Guid AssociateId { get; set; }
         public Guid CarId { get; set; }
 
-        public float Tot_Km { get; set; }
-        public decimal Tot_KmCost { get; set; }
+        public float Tot_KmContract { get; set; }
+        public float Tot_KmExtra { get; set; }
+        public float Tot_Km => Tot_KmContract + Tot_KmExtra;
+        public decimal Tot_KmCostContract { get; set; }
+        public decimal Tot_KmCostExtra { get; set; }
+        public decimal Tot_KmCost => Tot_KmCostContract + Tot_KmCostExtra;
+
         public decimal Tot_DayPrice { get; set; }
         public decimal Tot_DayForfait { get; set; }
         public decimal Tot_DayIntegration { get; set; }

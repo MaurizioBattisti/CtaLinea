@@ -69,9 +69,14 @@
                     <Columns>
                         <RadzenDataGridColumn TItem="CostsByAssociate" Property="CarDescr" Title="Mezzo" Width="470px" />
 
+                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_KmContract" Title="Tot. Km Cap." Width="100px" />
+                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_KmExtra" Title="Tot. Km Extra" Width="100px" />
                         <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_Km" Title="Tot. Km" Width="100px" />
 
+                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_KmContract" Title="Tot. Costo Km Cap." Width="150px" />
+                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_KmExtra" Title="Tot. Costo Km Extra" Width="150px" />
                         <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_KmCost" Title="Tot. Costo Km" Width="150px" />
+
                         <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_DayPrice" Title="Tot. Costo Giorno" Width="150px" />
                         <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_DayForfait" Title="Tot. Forfait" Width="150px" />
                         <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_DayIntegration" Title="Tot. Integrazione" Width="150px" />
@@ -84,9 +89,14 @@
                 <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="AssociateDescr" Title="Ditta" Width="200px" />
                 <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="CarCount" Title="Mezzi" Width="70px" />
 
+                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_KmContract" Title="Tot. Km Cap." Width="100px" />
+                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_KmExtra" Title="Tot. Km Extra" Width="100px" />
                 <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_Km" Title="Tot. Km" Width="100px" />
 
+                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_KmContract" Title="Tot. Costo Km Cap." Width="150px" />
+                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_KmExtra" Title="Tot. Costo Km Extra" Width="150px" />
                 <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_KmCost" Title="Tot. Costo Km" Width="150px" />
+
                 <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_DayPrice" Title="Tot. Costo Giorno" Width="150px" />
                 <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_DayForfait" Title="Tot. Forfait" Width="150px" />
                 <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_DayIntegration" Title="Tot. Integrazione" Width="150px" />
@@ -152,9 +162,12 @@
                                  ContractId = d.Key.ContractId,
                                  AssociateId = d.Key.AssociateId,
                                  CarCount = d.Count(),
-                                 Tot_Km = d.Sum(c => c.Tot_Km),
+                                 Tot_KmContract = d.Sum(c => c.Tot_KmContract),
+                                 Tot_KmExtra = d.Sum(c => c.Tot_KmExtra),
+                                 Tot_KmCostContract = d.Sum(c => c.Tot_KmCostContract),
+                                 Tot_KmCostExtra = d.Sum(c => c.Tot_KmCostExtra),
+
                                  Tot_DayPrice = d.Sum(c => c.Tot_DayPrice),
-                                 Tot_KmCost = d.Sum(c => c.Tot_KmCost),
                                  Tot_DayForfait = d.Sum(c => c.Tot_DayForfait),
                                  Tot_DayIntegration = d.Sum(c => c.Tot_DayIntegration),
                                  Tot = d.Sum(c => c.Tot),

@@ -12,7 +12,11 @@ namespace CtaLineaApp.Application.Services.Utility
         void StartLoading();
         void EndLoading();
 
-        void Initilize(string endpoint);
+        void Initilize(
+            string endpoint,
+            bool usePost = false,
+            object? postPayload = null
+            );
         Task LoadData(LoadDataArgs args);
     }
 }

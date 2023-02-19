@@ -1,16 +1,142 @@
-﻿@inject DialogService DialogService
+﻿@using CtaLinea.Model.Filters;
+@inject DialogService DialogService
 
-<h3>Filtri avanzati </h3>
+<RadzenStack Orientation="Orientation.Vertical">
+	<RadzenRow>
+		<RadzenColumn Size="8">
+			<AssociateAndCarDropDown @bind-AssociateId="Filters.AssociateId"
+									 @bind-CarId="Filters.CarId"
+									 Inline=true
+									 AllowClear=true />
+		</RadzenColumn>
+		<RadzenColumn Size="1">
+			<RadzenText TextStyle="TextStyle.Overline" Text="Da posti" />
+			<RadzenNumeric TValue="int?"
+						   @bind-Value="Filters.MinSittings"
+						   Format="0"
+						   Class="w-100" />
+		</RadzenColumn>
+		<RadzenColumn Size="1">
+			<RadzenText TextStyle="TextStyle.Overline" Text="a posti" />
+			<RadzenNumeric TValue="int?"
+						   @bind-Value="Filters.MaxSittings"
+						   Format="0"
+						   Class="w-100" />
 
-<p>quelli che sono avanzati dalla volta precedente</p>
-<p>praticametne  Vanzaori</p>
+		</RadzenColumn>
+		<RadzenColumn Size="1">
+			<RadzenText TextStyle="TextStyle.Overline" Text="Nr. Linea" />
+			<RadzenNumeric TValue="int?"
+						   @bind-Value="Filters.LineNumber"
+						   Format="0"
+						   Class="w-100" />
+		</RadzenColumn>
+		<RadzenColumn Size="1">
+			<RadzenText TextStyle="TextStyle.Overline" Text="Mr. Corsa" />
+			<RadzenNumeric TValue="int?"
+						   @bind-Value="Filters.RunNumber"
+						   Format="0"
+						   Class="w-100" />
+		</RadzenColumn>
 
-<RadzenButton
-	Text="Filtra !"
-	Click=@Filter_Click
-	/>
+	</RadzenRow>
+	<RadzenRow>
+		<RadzenColumn Size="4">
+			<RadzenText TextStyle="TextStyle.Overline" Text="Fermata (codice o testo)" />
+			<RadzenTextBox @bind-Value="Filters.Node"
+				Class="w-100" />
+		</RadzenColumn>
+		<RadzenColumn Size="4">
+			<DateRangeSelector 
+				@bind-StartDate="Filters.StartDate"
+				@bind-EndDate="Filters.EndDate"
+				AllowClear=true
+				Inline=true/>
+		</RadzenColumn>
+		<RadzenColumn Size="4">
+			<TimeRangeSelector 
+				@bind-StartTime="Filters.StartTime"
+				@bind-EndTime="Filters.EndTime"
+				Inline=true/>
+		</RadzenColumn>
+	</RadzenRow>
+	<RadzenRow>
+		<RadzenColumn Size="4">
+			<RadzenText TextStyle="TextStyle.Overline" Text="Frequenza" />
+			<RadzenTextBox @bind-Value="Filters.Frequency"
+						   Class="w-100" />
+		</RadzenColumn>
+		<RadzenColumn Size="4">
+			<RadzenText TextStyle="TextStyle.Overline" Text="Calendari (uno qualsiasi)" />
+			<CalendarMultiSelect AllowClear=true
+				@bind-CalendarIds="Filters.CalendarIds" 
+				/>
+		</RadzenColumn>
+		<RadzenColumn Size="4">
+			<RadzenText TextStyle="TextStyle.Overline" Text="Giorni della settimana (uno qualsiasi)" />
+			<WeekDaysSelector AllowClear=true
+				@bind-WeekDays="Filters.WeekDays"
+				/>
+		</RadzenColumn>
+	</RadzenRow>
+	<RadzenRow>
+		<RadzenColumn Size="2">
+			<RadzenText TextStyle="TextStyle.Overline" Text="Tipo capitolato/Extra" />
+			<RadzenDropDown @bind-Value="Filters.InContract"
+							AllowClear="true"
+							TValue="int?"
+							Class="w-100"
+							Data=@InContractList
+							ValueProperty="Key"
+							TextProperty="Value" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenText TextStyle="TextStyle.Overline" Text="Stato Attiva" />
+			<RadzenDropDown @bind-Value="Filters.ActiveRun"
+							AllowClear="true"
+							TValue="int?"
+							Class="w-100"
+							Data=@ActiveStatusList
+							ValueProperty="Key"
+							TextProperty="Value" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenText TextStyle="TextStyle.Overline" Text="Data Riferimento" />
+			<DateSelector AllowClear=true
+						  @bind-Value="Filters.DateRef" />
+		</RadzenColumn>
+		<RadzenColumn Size="6">
+			<RadzenText TextStyle="TextStyle.Overline" Text="Etichette (una qualsiasi)" />
+			<TagMultiSelector AllowClear=true
+				@bind-TagIds="Filters.TabIds"/>
+		</RadzenColumn>
+	</RadzenRow>
+	<RadzenRow>
+		<RadzenButton Text="Filtra !"
+					  Click=@Filter_Click />
+	</RadzenRow>
+</RadzenStack>
 
 @code {
+	[Parameter]
+	public RunAdvancedFilters Filters { get; set; } = new RunAdvancedFilters();
+
+	private IEnumerable<KeyValuePair<int, string>> InContractList = new List<KeyValuePair<int, string>>() 
+	{
+		new KeyValuePair<int, string>(1, "Capitolato"),
+		new KeyValuePair<int, string>(2, "Extra Capitolato")
+		/*
+		,
+		new KeyValuePair<int, string>(3, "Parzialmente Extra captiolato")
+		*/
+	};
+	private IEnumerable<KeyValuePair<int, string>> ActiveStatusList = new List<KeyValuePair<int, string>>()
+	{
+		new KeyValuePair<int, string>(1, "Attiva"),
+		new KeyValuePair<int, string>(2, "Terminata"),
+		new KeyValuePair<int, string>(3, "Non ancora avviata")
+	};
+
 	private void Filter_Click ()
 	{
 		this.DialogService.CloseSide(true);

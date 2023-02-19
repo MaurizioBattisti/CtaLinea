@@ -134,15 +134,4 @@ WHEN MATCHED THEN
 			Active = s.Active
 WHEN NOT MATCHED  BY SOURCE  THEN
 	DELETE;
-
-/* Categorie *************************************************************************************/
--- categorie
-DECLARE @Tbl_Cat AS TABLE (
-	SheetCategoryID		varchar(10) PRIMARY KEY
-);
-INSERT INTO @Tbl_Cat
-	SELECT c.SheetCategoryID
-		FROM Viaggi_2.dbo.SheetCategory AS c
-		WHERE c.SheetCategoryID <> 'S';
-
 COMMIT;

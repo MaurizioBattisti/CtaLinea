@@ -11,6 +11,7 @@ CREATE TABLE [dbo].[RunCarCosts]
     [StartDAte] DATE NULL DEFAULT NULL, 
     [DayPrice] MONEY NOT NULL DEFAULT 0 , 
     [KmPrice] MONEY NOT NULL DEFAULT 0 , 
+    [KmPriceExtra] MONEY NOT NULL DEFAULT 0 , 
 
     [DayIntegration] MONEY NULL , 
     [DayForfait] MONEY NULL, 

@@ -141,5 +141,6 @@
     <Build Include="Tables\Runs\RunVariationCalendars.sql" />
     <Build Include="StoredProc\Run\up_GetRunPlanning.sql" />
     <Build Include="Views\Runs\vw_RunFirstTags.sql" />
+    <Build Include="Functions\Run\tvf_Runs_AdvancedFilter.sql" />
   </ItemGroup>
 </Project>

@@ -149,11 +149,11 @@ namespace CtaLinea.Model.ModelServices
                             .FirstOrDefault();
                 if (dupl != null)
                 {
-					warnings.Add(
+					errors.Add(
 						new CheckResultItem()
 						{
 							Category = RunCheckResult.Category_Run,
-							Title = "Aiorni aggiuntivi duplicati",
+							Title = "Giorni aggiuntivi duplicati",
 							Description = "Non è possibile avere dei doppioni tra le date dei gironi aggiuntivi della corsa.",
 							Id = run.RunId
 						});
@@ -701,7 +701,7 @@ namespace CtaLinea.Model.ModelServices
                         || carReplacement.StartDate > this.GetMaxDate(run, period))
                     )
                 {
-                    warnings.Add(
+                    errors.Add(
                         new CheckResultItem()
                         {
                             Category = RunCheckResult.Category_CarReplacement,
@@ -715,7 +715,7 @@ namespace CtaLinea.Model.ModelServices
                         || carReplacement.EndDate > this.GetMaxDate(run, period))
                     )
                 {
-                    warnings.Add(
+                    errors.Add(
                         new CheckResultItem()
                         {
                             Category = RunCheckResult.Category_CarReplacement,

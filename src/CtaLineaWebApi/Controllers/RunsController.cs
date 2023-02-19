@@ -19,6 +19,7 @@ using CtaLineaWebApi.Application.Services;
 using CtaLinea.Model.Helpers;
 using ZzSoft.CtaLinea.Dal.Repositories;
 using CtaLineaWebApi.Application.Commands.Tags;
+using CtaLinea.Model.Filters;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -53,6 +54,21 @@ namespace CtaLineaWebApi.Controllers
         {
             var result = await this._queries.GetRunListAsycn(
                 this.FilteringContext)
+                .ConfigureAwait(false);
+
+            return await this.ModelOKAsync(result)
+                .ConfigureAwait(false);
+        }
+        [SwaggerOperation("Elenco delle corse con filtri avanzati")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<RunItemQueryModel>))]
+        [HttpPost]
+        [Route("advanced")]
+        public async Task<IActionResult> GetAllAdvancedAsync(
+            [FromBody] RunAdvancedFilters advancedFilters)
+        {
+            var result = await this._queries.GetRunListAsycn(
+                this.FilteringContext,
+                advancedFilters)
                 .ConfigureAwait(false);
 
             return await this.ModelOKAsync(result)

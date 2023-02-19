@@ -1,24 +1,23 @@
-﻿<div class="@GetGeneralClass()">
-    <div class="@GetColumnClass()" >
+﻿<RadzenRow>
+    <RadzenColumn Size="@ColSize">
         <RadzenText TextStyle="TextStyle.Overline" Text="Ora Inizio" />
-        <TimeSelector 
-            @bind-Value="StartTime"
-            Changed=@OnStartTimeChanged
-            Disabled=@Disabled
-            AllowClear=true
-            />
-    </div>
-    <div class="@GetColumnClass()" >
+        <TimeSelector @bind-Value="StartTime"
+                      Changed=@OnStartTimeChanged
+                      Disabled=@Disabled
+                      AllowClear=true />
+    </RadzenColumn>
+    <RadzenColumn Size="@ColSize">
         <RadzenText TextStyle="TextStyle.Overline" Text="Ora Fine" />
-        <TimeSelector 
-            @bind-Value="EndTime"
-            Changed=@OnEndTimeChanged
-            Disabled=@Disabled
-            AllowClear=true
-            />
-    </div>
-</div>
+        <TimeSelector @bind-Value="EndTime"
+                      Changed=@OnEndTimeChanged
+                      Disabled=@Disabled
+                      AllowClear=true />
+    </RadzenColumn>
+</RadzenRow>
+
 @code {
+    private int ColSize => this.Inline ? 6 : 12;
+
     [Parameter]
     public TimeSpan? StartTime { get; set; }
     [Parameter]

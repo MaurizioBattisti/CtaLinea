@@ -8,6 +8,7 @@ namespace CtaLinea.Model.Runs
         public DateTime? StartDate { get; set; }
 
         public decimal KmPrice { get; set; }
+        public decimal KmPriceExtra { get; set; }
         public decimal DayPrice { get; set; }
 
         public decimal? DayIntegration { get; set; }

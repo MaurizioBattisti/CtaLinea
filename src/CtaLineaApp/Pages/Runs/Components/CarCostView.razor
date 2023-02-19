@@ -5,7 +5,7 @@
 <div class="d-flex flex-row p-1">
     @if(EditMode == true)
     {
-        <div class="col-3">
+        <div class="col-2">
             <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Costo al Km</RadzenText>
             <RadzenNumeric TValue="decimal"
                        @bind-Value="@CarCost.KmPrice"
@@ -14,7 +14,16 @@
                        Class="w-100" 
                        Change=@(a=> this.EditableData?.SetDirty()) />
         </div>
-        <div class="col-3">
+        <div class="col-2">
+            <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Costo al Km (Extra)</RadzenText>
+            <RadzenNumeric TValue="decimal"
+                       @bind-Value="@CarCost.KmPriceExtra"
+                       Culture=@AppSettings.CurrentCulture
+                       Format="0.00"
+                       Class="w-100"
+                       Change=@(a=> this.EditableData?.SetDirty()) />
+        </div>
+        <div class="col-2">
             <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Costo al giorno</RadzenText>
             <RadzenNumeric TValue="decimal"
                        @bind-Value="@CarCost.DayPrice"
@@ -44,11 +53,15 @@
     }
     else
     {
-        <div class="col-3">
+        <div class="col-2">
             <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Costo al Km</RadzenText>
             <RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDecimal(this.CarCost.KmPrice)</strong></RadzenText>
         </div>
-        <div class="col-3">
+        <div class="col-2">
+            <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Costo al Km (Extra)</RadzenText>
+            <RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDecimal(this.CarCost.KmPriceExtra)</strong></RadzenText>
+        </div>
+        <div class="col-2">
             <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Costo al giorno</RadzenText>
             <RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDecimal(this.CarCost.DayPrice)</strong></RadzenText>
         </div>

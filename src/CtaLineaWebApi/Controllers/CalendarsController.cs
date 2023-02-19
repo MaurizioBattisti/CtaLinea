@@ -240,7 +240,7 @@ namespace CtaLineaWebApi.Controllers
             [FromRoute] int id,
             [FromBody] CalendarPeriod model)
         {
-            model.CalendarId = id;
+            model.CalendarPeriodId = id;
 
             var request = new SaveCalendarPeriodRequest()
             {

@@ -29,7 +29,7 @@ USE CtaLineaDb
 GO
 CREATE TABLE import.Descriptions
 (
-	Nr_Riga		int IDENTITY (1,1) ,
+	Nr_Riga		int ,
 	[note appalto]	varchar(MAX) NULL,
 	percorso	varchar(MAX) NULL,
 	frequenza	varchar(MAX) NULL

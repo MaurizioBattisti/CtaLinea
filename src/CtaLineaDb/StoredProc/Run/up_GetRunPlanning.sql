@@ -13,7 +13,7 @@ BEGIN
 	SET @EndDate = COALESCE(@EndDate, GETDATE());
 
 	-- si assicura che tutti i dati da ricalcolare siano ricalcolati
-	EXEC [dbo].[uo_RecalcRunDays_Massive] 0;
+	EXEC [dbo].[uo_RecalcRunDays_Massive] 0, @RunId;
 
 	WITH CTE_Hours AS
 	(
