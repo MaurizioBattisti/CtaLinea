@@ -27,7 +27,6 @@ BEGIN
 	DECLARE @Saturday int = DATEPART(dw, '20221224');
 	DECLARE @Sunday int= DATEPART(dw, '20221225');
 
-
 	DECLARE @CalendarTree AS TABLE 
 	(
 		[CalendarId] INT NOT NULL PRIMARY KEY, 
@@ -206,11 +205,19 @@ BEGIN
 		IF @Int_CalendarType = 'INC' 
 		BEGIN
 			-- include solo quanto richiesto
+			WITH CTE_Holidays AS
+			(
+				SELECT h.*
+				FROM dbo.CalendarHolidays h
+				INNER JOIN @CalendarTree c
+					ON h.CalendarId = c.CalendarId
+					AND c.TreeLevel >= @Int_Lvele
+			)
 			UPDATE @Days 
 				SET ExcludedByCalendar = 
 					(CASE 
 						-- se il giorno è presente  nella lista lo include
-						WHEN h.Holiday IS NOT NULL  THEN  0
+						WHEN h.Holiday IS NOT NULL THEN  0
 						-- se è richiesot di includere le domeniche  e il giorno è una domenica lo include
 						WHEN @Int_Mondays = 1 AND DATEPART(WEEKDAY, d.Day) = @Monday  THEN 0
 						WHEN @Int_Tuesdays = 1 AND DATEPART(WEEKDAY, d.Day) = @Tuesday  THEN 0
@@ -222,9 +229,11 @@ BEGIN
 						ELSE 1
 					END)
 				FROM @Days d
-				LEFT JOIN dbo.CalendarHolidays h
+				LEFT JOIN CTE_Holidays h
+				-- LEFT JOIN dbo.CalendarHolidays h
 					ON d.Day = h.Holiday
-					AND @Int_CalendarId = h.CalendarId
+					;
+
 		END
 
 		SET @Int_Lvele = @Int_Lvele -1;
