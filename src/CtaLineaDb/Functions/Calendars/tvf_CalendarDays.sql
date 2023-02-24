@@ -26,6 +26,9 @@ BEGIN
 	DECLARE @Friday int = DATEPART(dw, '20221230');
 	DECLARE @Saturday int = DATEPART(dw, '20221224');
 	DECLARE @Sunday int= DATEPART(dw, '20221225');
+	
+	DECLARE @Tmp_CalendarId		int = NULL;
+	DECLARE @TmpDays AS TABLE (Day		DAte NOT NULL PRIMARY KEY);
 
 	DECLARE @CalendarTree AS TABLE 
 	(
@@ -75,8 +78,6 @@ BEGIN
 	SELECT @Int_Lvele =  c.TreeLevel
 		FROM @CalendarTree c
 		WHERE c.BaseCalendarId IS NULL;
-
-	-- SELECT * FROM @CalendarTree;
 
 	WHILE @Int_Lvele > 0
 	bEGIN
@@ -197,10 +198,20 @@ BEGIN
 		END
 		IF @Int_CalendarType = 'IPL' 
 		BEGIN
+			DELETE FROM @TmpDays;
+			SELECT @Tmp_CalendarId = t.CalendarId FROM @CalendarTree t WHERE  t.TreeLevel = @Int_Lvele + 2;
+
+			INSERT INTO @TmpDays (Day)
+				SELECT d.DAy FROM [dbo].[tvf_CalendarDays] (@Tmp_CalendarId, @StartDate, @EndDate) d;
+
 			-- nverte tutto il calendario già calcolato
 			UPDATE @Days 
-				SET ExcludedByCalendar = (CASE ExcludedByCalendar WHEN 0 THEN 1 ELSE 0 END)
-				;
+				SET ExcludedByCalendar =(CASE ExcludedByCalendar WHEN 0 THEN 1 ELSE 0 END),
+					ExcludedByPeriod = (CASE ExcludedByPeriod WHEN 0 THEN 1 ELSE 0 END)
+
+				FROM @Days d
+				INNER JOIN @TmpDays dd
+					ON d.Day = dd.Day;
 		END
 		IF @Int_CalendarType = 'INC' 
 		BEGIN

@@ -9,11 +9,13 @@ Post-Deployment Script Template
                SELECT * FROM [$(TableName)]					
 --------------------------------------------------------------------------------------
 */
+/*
 -- contract
 SET IDENTITY_INSERT dbo.Contracts ON;  
 MERGE dbo.Contracts AS t
 	USING (SELECT * FROM  (VALUES
-		(1, 'Appalto Linee TT 2022 / 2025', 'Appalto per i servizi di linea per gli anni dal 2022 al 2025', '2022-09-01', '2025-08-31')
+		(1, 'Appalto Linee TT 2022 / 2025', 'Appalto per i servizi di linea per gli anni dal 2022 al 2025', '2022-09-01', '2025-08-31'),,
+		(2, 'Appalto Urano 2022 / 2025', 'Appalto per i servizi urbani per gli anni dal 2022 al 2025', '2022-09-01', '2025-08-31'),
 		) AS src(ContractId, ContractName, ContractDescription, StartDate, EndDate)
 	) AS s
 	ON  t.ContractId = s.ContractId
@@ -40,8 +42,8 @@ MERGE dbo.Calendars AS t
 		(5, 4, 'Invernale Feriale', 'EXC', 1, 0, 0),
 		(6, 4, 'Invernale Festivo', 'INC', 1, 0, 0),
 		(7, 1, 'Estivo', 'NOP', 0, 0, 0),
-		(8, 2, 'Estivo Feriale', 'EXC', 1, 0, 0),
-		(9, 3, 'Estivo Festivo', 'INC', 1, 0, 0),
+		(8, 7, 'Estivo Feriale', 'EXC', 1, 0, 0),
+		(9, 7, 'Estivo Festivo', 'INC', 1, 0, 0),
 		(10, 5, 'Scolastico', 'EXC', 0, 0, 0),
 		(11, 10, 'Non Scolastico', 'IPL', 0, 0, 0),
 		(12, 10, 'Prefestivo', 'NOP', 0, 1, 0),
@@ -154,4 +156,6 @@ MERGE dbo.Meta_Roles AS t
 		INSERT VALUES (s.UserName, s.RoleId)
 	-- WHEN NOT MATCHED  BY SOURCE  THEN
 		-- DELETE
-	;	;
+	;	
+
+*/
