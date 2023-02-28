@@ -15,6 +15,7 @@ namespace ZzSoft.Api.Utility.Base
         private const string Query_Projection = "p";
         private const string Query_Page = "page";
         private const string Query_PageSize = "pagesize";
+        private const string Query_Skip = "skip";
         private const string Query_Count = "count";
 
         private const string ResponseHeader_TotalRows = "X-Total-Count";
@@ -88,6 +89,7 @@ namespace ZzSoft.Api.Utility.Base
         {
             int page = 0;
             int pagesize = Constants.DefaultPageSize;
+            int skip = 0;
             bool showCount = false;
             string fullText = null;
             string filter = null;
@@ -119,6 +121,10 @@ namespace ZzSoft.Api.Utility.Base
             {
                 pagesize = int.Parse(this.HttpContext.Request.Query[Query_PageSize]);
             }
+            if (this.HttpContext.Request.Query.Keys.Contains(Query_Skip) == true)
+            {
+                skip = int.Parse(this.HttpContext.Request.Query[Query_Skip]);
+            }
             if (this.HttpContext.Request.Query.Keys.Contains(Query_Count) == true)
             {
                 var tmp = this.HttpContext.Request.Query[Query_Count];
@@ -145,7 +151,8 @@ namespace ZzSoft.Api.Utility.Base
             return new FilteringContext(
                 fullText,
                 filter, orderBy, projection,
-                page, pagesize, showCount
+                page, pagesize, showCount,
+                skip
                 );
         }
 

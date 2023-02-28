@@ -1,0 +1,94 @@
+﻿@using System.Reflection;
+@inject IHttpService _http;
+
+<h3>Informaizoni su CTA Linea</h3>
+
+<TelerikGrid Class="grdInfo"
+             TItem="InfoData"
+             Data=@Info
+             Pageable="false"
+             Groupable="false"
+             Sortable="false"
+             FilterMode="GridFilterMode.None"
+             Resizable="true"
+             Reorderable="false"
+             EditMode="GridEditMode.None"
+             SelectionMode="GridSelectionMode.None"
+             Navigable="true">
+    <GridColumns>
+        <GridColumn Field="@nameof(InfoData.Information)" Title="Info" Width="200px" />
+        <GridColumn Field="@nameof(InfoData.Value)" Title="Valore" Width="200px" />
+    </GridColumns>
+</TelerikGrid>
+
+
+@code {
+    private class InfoData
+    {
+        public string Information { get; set; } = string.Empty;
+        public string Value { get; set; } = string.Empty;
+    }
+
+    TelerikGrid<InfoData>? grdInfo;
+
+    // lista con le informaizoni
+    IList<InfoData> Info = new List<InfoData>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.Info = await this.GetInfo();
+
+        await base.OnInitializedAsync();
+    }
+
+
+    private IEnumerable<InfoData> GetStaticInfo ()
+    {
+        // nome autore
+        yield return new InfoData() { Information = "Autore", Value = "Maurizio Battisti" };
+
+
+        // versione assembly
+        var assembly = Assembly.GetExecutingAssembly();
+        yield return new InfoData() { Information = "Assembly"};
+
+        yield return new InfoData() { Information = "Versione", Value = assembly.GetName()?.Version?.ToString() ?? string.Empty };
+        yield return new InfoData() { Information = "FullName", Value = assembly.FullName ?? string.Empty };
+        yield return new InfoData() { Information = "Image RunTime Versione", Value = assembly.ImageRuntimeVersion ?? string.Empty };
+    }
+
+    private async Task<IList<InfoData>> GetInfo ()
+    {
+        var result = new List<InfoData>();
+        var newInfo = new List<InfoData>();
+        try
+        {
+            var info2 = await this._http.Get<IEnumerable<KeyValuePair<string, string?>>>(
+                Constants.Endpoint_Info_Versions);
+
+            if (info2 != null)
+            {
+                newInfo = (from i in info2
+                           select new InfoData()
+                               {
+                                   Information = i.Key,
+                                   Value = i.Value
+                               }).ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            newInfo.Add(
+                new InfoData() { Information = "Error", Value = ex.Message }
+            );
+        }
+        finally
+        {
+            result.AddRange(  //= new List<InfoData>(
+                this.GetStaticInfo().Union(newInfo)
+                );
+            // this.grdInfo?.Rebind();
+        }
+        return result;
+    }
+}

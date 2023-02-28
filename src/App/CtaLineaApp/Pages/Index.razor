@@ -1,9 +1,43 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+<TelerikAnimationContainer @ref="@TAC">
+    <div style="padding: 1em; color: #fff; background: #282f89; text-align: center;">
 
-<h1>Hello, world!</h1>
+        <PageTitle>Index</PageTitle>
 
-Welcome to your new app.
+        <h1>Hello, world!</h1>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+        Welcome to your new app.
+
+        <SurveyPrompt Title="How is Blazor working for you?" />
+
+        <TelerikCard>
+            <TelerikButton OnClick="@SayHelloHandler" ThemeColor="primary">Say Hello</TelerikButton>
+
+            <br />
+
+            @helloString
+        </TelerikCard>
+    </div>
+</TelerikAnimationContainer>
+
+
+
+@code {
+    private TelerikAnimationContainer TAC { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await TAC.ShowAsync();
+        }
+    }
+    MarkupString helloString;
+
+    void SayHelloHandler()
+    {
+        string msg = string.Format("Hello from <strong>Telerik Blazor</strong> at {0}.<br /> Now you can use C# to write front-end!", DateTime.Now);
+        helloString = new MarkupString(msg);
+    }
+}

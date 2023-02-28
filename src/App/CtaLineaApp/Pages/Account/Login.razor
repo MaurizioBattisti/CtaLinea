@@ -1,0 +1,116 @@
+﻿@page "/account/login"
+@inject IAccountService AccountService
+@inject NavigationManager NavigationManager
+
+<PageTitle>@Constants.App_Title - Login</PageTitle>
+<TelerikNotification @ref="@NotificationReference" Class="MyTelerikNotification"></TelerikNotification>
+
+<TelerikAnimationContainer @ref="@Container">
+
+<TelerikGridLayout RowSpacing="6px" ColumnSpacing="10px" Class="grid-layout" >
+    <GridLayoutRows>
+        <GridLayoutRow Height="50px"></GridLayoutRow>
+        <GridLayoutRow Height="500px"></GridLayoutRow>
+        <GridLayoutRow Height="50px"></GridLayoutRow>
+    </GridLayoutRows>
+    <GridLayoutColumns>
+        <GridLayoutColumn Width="300px"></GridLayoutColumn>
+        <GridLayoutColumn Width="500px"></GridLayoutColumn>
+    </GridLayoutColumns>
+    <GridLayoutItems>
+        <GridLayoutItem  Row=2 Column=1 >
+            <TelerikCard>
+                <CardHeader>
+                    <CardTitle>Accedi a CTA Linea</CardTitle>
+                </CardHeader>
+                <CardBody>
+                    <TelerikForm 
+                        Model="@model"
+                        ButtonsLayout="FormButtonsLayout.Center"
+                        OnValidSubmit="@LoginAsync"
+                        OnInvalidSubmit="@HandleInvalidSubmit">
+                        <FormValidation>
+                            <DataAnnotationsValidator></DataAnnotationsValidator>
+                        </FormValidation>
+                        <FormItems>
+                            <CardTitle>Login</CardTitle>
+                            <CardSubTitle>esegui il ogin</CardSubTitle>
+                            <FormItem>
+                                <Template>
+                                    <label for="country">Nome utente</label>
+                                    <TelerikTextBox @bind-Value="model.Username" />
+                                </Template>
+                            </FormItem>
+                            <FormItem>
+                                <Template>
+                                    <label for="country">Passwrod</label>
+                                    <TelerikTextBox @bind-Value="model.Password" Password=true />
+                                </Template>
+                            </FormItem>
+                            <CardSeparator></CardSeparator>
+                        </FormItems>
+                        <FormButtons>
+                            <TelerikButton Visible=@(!loading) ButtonType ="@ButtonType.Submit" ThemeColor="primary">Accedi</TelerikButton>
+                            <TelerikLoader Visible=@loading Class="loader-indicator" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)"></TelerikLoader>
+                        </FormButtons>
+                    </TelerikForm>
+                </CardBody>
+            </TelerikCard>
+        </GridLayoutItem>
+        <GridLayoutItem Row=1 Column=2 RowSpan=3 >
+            <AppInformation />
+        </GridLayoutItem>
+    </GridLayoutItems>
+</TelerikGridLayout>
+
+</TelerikAnimationContainer>
+
+@code {
+    private TelerikNotification? NotificationReference;
+    private TelerikAnimationContainer? Container;
+
+    private LoginModel model = new LoginModel()
+    {
+        Username = "admin",
+        Password = "Pa$$w0rd"
+    };
+    private bool loading;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (Container != null)
+            {
+                await Container.ShowAsync();
+            }
+        }
+    }
+
+    private async Task LoginAsync()
+    {
+        loading = true;
+        try
+        {
+            await AccountService.Login(this.model);
+
+            var returnUrl = NavigationManager.QueryString("returnUrl") ?? "";
+            NavigationManager.NavigateTo(returnUrl);
+        }
+        catch (Exception ex)
+        {
+            loading = false;
+            NotificationReference?.Show(new NotificationModel()
+                {
+                    Text = "Login Fallito: " + ex.Message,
+                    ThemeColor = ThemeConstants.Notification.ThemeColor.Error
+                });
+
+            StateHasChanged();
+        }
+    }
+    
+    void HandleInvalidSubmit()
+    {
+    }
+}

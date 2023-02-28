@@ -1,16 +1,10 @@
-﻿using CtaLinea.Application.Model.Utility;
-using CtaLineaApp.Application.Services.Helper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+﻿using CtaLinea.Application.Model.Query;
+using CtaLineaApp.Application.Helpers;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace CtaLineaApp.Application.Services.Utility
+namespace CtaLineaApp.Application.Services.Query
 {
     public class QueryUtilityService 
         : IQueryUtilityService
@@ -135,7 +129,7 @@ namespace CtaLineaApp.Application.Services.Utility
             int page,
             int pageSize,
             bool returnCount,
-            int skip
+            int skip = 0
             )
         {
             var sb = new StringBuilder(1024);

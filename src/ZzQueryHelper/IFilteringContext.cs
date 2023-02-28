@@ -10,6 +10,7 @@
 
         int Page { get; }
         int PageSize { get; }
+        int Skip { get; }
 
         bool Count { get; }
     }

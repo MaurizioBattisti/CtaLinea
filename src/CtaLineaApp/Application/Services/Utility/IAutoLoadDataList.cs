@@ -15,7 +15,8 @@ namespace CtaLineaApp.Application.Services.Utility
         void Initilize(
             string endpoint,
             bool usePost = false,
-            object? postPayload = null
+            object? postPayload = null,
+            bool virtualized = false
             );
         Task LoadData(LoadDataArgs args);
     }

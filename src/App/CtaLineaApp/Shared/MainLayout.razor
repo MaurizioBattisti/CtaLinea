@@ -1,17 +1,70 @@
-﻿@inherits LayoutComponentBase
+﻿@layout TelerikLayout
+@inject NavigationManager NavigationManager;
+@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
+<div class="drawer-container">
+    <div class="custom-toolbar">
+        <TelerikButton OnClick="@ToggleDrawer" Icon="@FontIcon.Menu" FillMode="@(ThemeConstants.Button.FillMode.Flat)"></TelerikButton>
+        <span class="mail-box">Mail Box</span>
+        <button>prova</button>
     </div>
-
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
+    <TelerikDrawer 
+        @ref="@Drawer" 
+        Data=@Data
+        MiniMode="true" 
+        Mode="@DrawerMode.Push" 
+        SelectedItemChanged=@((DrawerItem? item) => SelectedItemChangedHandler(item))
+        >
+        <DrawerContent>
+            <p>pirca troia</p>
             @Body
-        </article>
-    </main>
+        </DrawerContent>
+    </TelerikDrawer>
 </div>
+
+@code {
+    Telerik.Blazor.Components.TelerikDrawer<DrawerItem?>? Drawer { get; set; }
+
+    private async Task SelectedItemChangedHandler(DrawerItem? item)
+    {
+        await Task.CompletedTask;
+        if (item?.Url != null)
+        {
+            this.NavigationManager.NavigateTo(item.Url);
+        }
+    }
+
+    public IEnumerable<DrawerItem> Data { get; set; } =
+        new List<DrawerItem>
+        {
+            new DrawerItem {Text = "Shopping Cart", Icon = FontIcon.Home},
+            new DrawerItem {Text = "Notifications", Icon = FontIcon.Calendar, Url = "counter"},
+            new DrawerItem {Text = "Corse", Icon = FontIcon.Gear, Url = "/runs"},
+            new DrawerItem {Separator= true},
+            new DrawerItem {Text = "Accedit", Icon = FontIcon.User, Url = "/account/login" },
+        };
+
+    /*
+     public DrawerItem? SelectedItem { get; set; }
+    protected override Task OnInitializedAsync()
+    {
+        SelectedItem = Data.First();
+
+        return base.OnInitializedAsync();
+    }
+    */
+
+    public async Task ToggleDrawer() => await Drawer.ToggleAsync();
+
+    public class DrawerItem
+    {
+        public string? Text { get; set; }
+
+        public FontIcon? Icon { get; set; }
+
+        public string Url { get; set; } = string.Empty;
+
+        public bool Separator { get; set; }
+    }
+}
+

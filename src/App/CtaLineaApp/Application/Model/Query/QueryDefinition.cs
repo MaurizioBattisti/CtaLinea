@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace CtaLinea.Application.Model.Utility
+﻿namespace CtaLinea.Application.Model.Query
 {
     public class QueryDefinition
     {
@@ -11,6 +6,7 @@ namespace CtaLinea.Application.Model.Utility
         {
             this.PageSize = -1;
             this.Page = 0;
+            this.Skip = 0;
             this.Count = true;
         }
 
@@ -35,7 +31,6 @@ namespace CtaLinea.Application.Model.Utility
         }
         public int PageSize { get; set; }
         public int Skip { get; set; }
-        
         private bool _Count;
         public bool Count 
         { 

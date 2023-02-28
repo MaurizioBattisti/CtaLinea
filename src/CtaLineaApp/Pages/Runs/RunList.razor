@@ -40,19 +40,24 @@
                 SelectionMode="DataGridSelectionMode.Single"
                 @bind-Value=@SelectedRuns
                 CellContextMenu="@RowActionCellContextMenu"
+
+                AllowVirtualization=true
+                VirtualizationOverscanCount=20
                 
                 ExpandMode="DataGridExpandMode.Single"
                 RowRender=@RowRender
                 RowExpand=@RowExpand
 
                 Style="height:100%" 
-                AllowPaging="true"
                 PagerHorizontalAlign="HorizontalAlign.Left"
                 ShowPagingSummary="true"
                 Density=@Settings.Density
-                PageSize=@(Settings?.PageSize ?? 5)
                 CellRender=@CellRender
                 >
+    <!--
+    AllowPaging="true"
+    PageSize=@(Settings?.PageSize ?? 5)
+    -->
     <EmptyTemplate>
         <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessuna corsa trovato !</p>
     </EmptyTemplate>
@@ -402,7 +407,8 @@
         AutoLoad.Initilize(
             // Constants.Endpoint_RunList,
             Constants.Endpoint_RunList_Adv,
-            true, this.AdvancedFilter4s
+            true, this.AdvancedFilter4s,
+            true
             );
 
         await base.OnInitializedAsync();

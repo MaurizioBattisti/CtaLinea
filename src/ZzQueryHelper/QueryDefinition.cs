@@ -104,7 +104,9 @@ namespace ZzSoft.QueryHelper
       
             sb.Append(this.GetPaginationWhereClouse(
                 this._filterContext.Page,
-                this._filterContext.PageSize));
+                this._filterContext.PageSize,
+                this._filterContext.Skip
+                ));
 
             return sb.ToString();
         }
@@ -260,10 +262,12 @@ namespace ZzSoft.QueryHelper
 
         private string GetPaginationWhereClouse(
             int page,
-            int pageSize
+            int pageSize,
+            int skip
             )
         {
             int startRow = ((page - 1) * pageSize);
+            startRow += skip;
 
             return string.Format(
                 SqlPaging_Fmt,
