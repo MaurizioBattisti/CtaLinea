@@ -2,25 +2,14 @@
 @inject IHttpService _http;
 
 <h3>Informaizoni su CTA Linea</h3>
-
-<TelerikGrid Class="grdInfo"
-             TItem="InfoData"
-             Data=@Info
-             Pageable="false"
-             Groupable="false"
-             Sortable="false"
-             FilterMode="GridFilterMode.None"
-             Resizable="true"
-             Reorderable="false"
-             EditMode="GridEditMode.None"
-             SelectionMode="GridSelectionMode.None"
-             Navigable="true">
+<TelerikGrid Width="100%"
+    TItem="InfoData"
+    Data=@Info>
     <GridColumns>
         <GridColumn Field="@nameof(InfoData.Information)" Title="Info" Width="200px" />
         <GridColumn Field="@nameof(InfoData.Value)" Title="Valore" Width="200px" />
     </GridColumns>
 </TelerikGrid>
-
 
 @code {
     private class InfoData

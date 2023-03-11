@@ -1,0 +1,258 @@
+﻿@inject IQueryUtilityService queryService
+
+<QueryLoader 
+    @ref=@DataQueryLoader
+    TItem="RunItemQueryModel"
+    Endpoint="@(Constants.Endpoint_RunList_Adv)"
+    PostPayload=@Filters 
+    />
+
+<RunAdvancedFiltersDialog
+    @ref=@AdvancedFilterDialog
+    Filters=@Filters
+    FilterConfirmed=@FilterConfirmed
+    />
+
+<TelerikGrid 
+    @ref=@DataGRid
+    TItem="RunItemQueryModel"
+    Sortable="true"
+    Height="800px" Width="100%"
+    RowHeight="50"
+    PageSize="30"
+    OnRead=@ReadItems
+    Resizable=true
+    FilterMode="GridFilterMode.FilterRow"
+    FilterRowDebounceDelay=1500
+    SortMode="SortMode.Multiple"
+    ScrollMode="@GridScrollMode.Virtual"
+    ColumnVirtualization="false">
+
+    <GridToolBarTemplate>
+        <GridCommandButton OnClick=@ShowAdvancedFilters Icon="@FontIcon.Filter">Avanzati</GridCommandButton>
+        <GridCommandButton OnClick=@ClearFilter Icon="@FontIcon.FilterClear">Azzera</GridCommandButton>
+        <GridSearchBox Placeholder="cerca..."
+                       Width="250px"
+                       DebounceDelay=300>
+        </GridSearchBox>
+        <GridCommandButton OnClick=@GridReload Icon="@FontIcon.ArrowRotateCcw">Ricarica</GridCommandButton>
+        <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel">Esporta in Excel</GridCommandButton>
+    </GridToolBarTemplate>
+    <GridExport>
+        <GridExcelExport FileName="elenco_corse" AllPages="true" OnBeforeExport="@OnBeforeExcelExport" />
+    </GridExport>
+    <GridColumns>
+        <GridColumn Field="@(nameof(RunItemQueryModel.Id))" Title="Id" Visible=false Width="120px" />
+        <GridColumn Field="@(nameof(RunItemQueryModel.CtaRunId))" Title="Id CTA" Locked=true Width="120px" ShowFilterCellButtons=false >
+            <Template>
+                @{
+                    var item = (RunItemQueryModel)context;
+                    <div style="@GetStyle(item)">
+                        <span style="@GetStyle(item)">@item.CtaRunId</span>
+                    </div>
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn Field="@(nameof(RunItemQueryModel.ContractRowNumber))" Title="nr riga" Locked=true Width="120px" ShowFilterCellButtons=false >
+            <Template>
+                @{
+                    var item = (RunItemQueryModel)context;
+                    <div style="@GetStyle(item)">
+                        <span style="@GetStyle(item)">@item.ContractRowNumber</span>
+                    </div>
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn Field="@(nameof(RunItemQueryModel.Extra))" Title="Extra" Locked=true Width="120px" ShowFilterCellButtons=false>
+            <Template>
+                @{
+                    var item = (RunItemQueryModel)context;
+                    <TelerikCheckBox @bind-Value="@item.Extra" Enabled="false" />
+                }
+            </Template>
+        </GridColumn>
+
+        <GridColumn Field="@(nameof(RunItemQueryModel.LineNumber))" Title="nr Linea" Locked=true Width="120px" ShowFilterCellButtons=false />
+        <GridColumn Field="@(nameof(RunItemQueryModel.RunNumber))" Title="nr Corsa" Locked=true Width="120px" ShowFilterCellButtons=false />
+
+        <GridColumn Field="@(nameof(RunItemQueryModel.StartDate))" Title="Inizio" DisplayFormat="{0:dd/MM/yyyy}" Width="120px" ShowFilterCellButtons=false FilterEditorType="GridFilterEditorType.DatePicker" />
+        <GridColumn Field="@(nameof(RunItemQueryModel.EndDate))" Title="Fine" DisplayFormat="{0:dd/MM/yyyy}" Width="120px" ShowFilterCellButtons=false />
+
+        <GridColumn Field="@(nameof(RunItemQueryModel.RequestedDays))" Title="gg Richiesti" Width="120px" ShowFilterCellButtons=false />
+
+        <GridColumn Field="@(nameof(RunItemQueryModel.AssociatesDescr))" Title="Ditte" Width="200px" ShowFilterCellButtons=false />
+        <GridColumn Field="@(nameof(RunItemQueryModel.PrimaryCarsDescr))" Title="Mezzi Titolari" Width="200px" ShowFilterCellButtons=false />
+        <GridColumn Field="@(nameof(RunItemQueryModel.SpareCarsDescr))" Title="SCorte" Width="200px" ShowFilterCellButtons=false />
+        <GridColumn Field="@(nameof(RunItemQueryModel.CalendarsDescr))" Title="Calendari" Width="200px" ShowFilterCellButtons=false />
+        <GridColumn Field="@(nameof(RunItemQueryModel.PathsDescr))" Title="Percorso (Nodi)" Width="200px" ShowFilterCellButtons=false />
+
+        <GridColumn Field="@(nameof(RunItemQueryModel.VariationStartDate))" Title="Inizio var" DisplayFormat="{0:dd/MM/yyyy}" Width="120px" />
+
+        <GridColumn Field="@(nameof(RunItemQueryModel.StartTime))" Title="Ora Inizio" Width="120px">
+            <Template>
+                @{
+                    var item = (RunItemQueryModel)context;
+                    <span>@FormatTime(item.StartTime)</span>
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn Field="@(nameof(RunItemQueryModel.EndTime))" Title="Ora Fine" Width="120px">
+            <Template>
+                @{
+                    var item = (RunItemQueryModel)context;
+                    <span>@FormatTime(item.EndTime)</span>
+                }
+            </Template>
+        </GridColumn>
+
+        <!-- Giorni della settimana -->
+        <GridColumn Field="@(nameof(RunItemQueryModel.Monday))" Title="Lunedì" Width="120px">
+            <Template>
+                @{
+                    var item = (RunItemQueryModel)context;
+                    <TelerikCheckBox @bind-Value="@item.Monday" Enabled="false" />
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn Field="@(nameof(RunItemQueryModel.Tuesday))" Title="Martedì" Width="120px">
+            <Template>
+                @{
+                    var item = (RunItemQueryModel)context;
+                    <TelerikCheckBox @bind-Value="@item.Tuesday" Enabled="false" />
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn Field="@(nameof(RunItemQueryModel.Wednesday))" Title="Mercoledì" Width="120px">
+            <Template>
+                @{
+                    var item = (RunItemQueryModel)context;
+                    <TelerikCheckBox @bind-Value="@item.Wednesday" Enabled="false" />
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn Field="@(nameof(RunItemQueryModel.Thursday))" Title="Giovedì" Width="120px">
+            <Template>
+                @{
+                    var item = (RunItemQueryModel)context;
+                    <TelerikCheckBox @bind-Value="@item.Thursday" Enabled="false" />
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn Field="@(nameof(RunItemQueryModel.Friday))" Title="Venerdì" Width="120px">
+            <Template>
+                @{
+                    var item = (RunItemQueryModel)context;
+                    <TelerikCheckBox @bind-Value="@item.Friday" Enabled="false" />
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn Field="@(nameof(RunItemQueryModel.Saturday))" Title="Sabato" Width="120px">
+            <Template>
+                @{
+                    var item = (RunItemQueryModel)context;
+                    <TelerikCheckBox @bind-Value="@item.Saturday" Enabled="false" />
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn Field="@(nameof(RunItemQueryModel.Sunday))" Title="Domenica" Width="120px">
+            <Template>
+                @{
+                    var item = (RunItemQueryModel)context;
+                    <TelerikCheckBox @bind-Value="@item.Sunday" Enabled="false" />
+                }
+            </Template>
+        </GridColumn>
+
+        <GridColumn Field="@(nameof(RunItemQueryModel.Path))" Title="Percorso" Width="200px" />
+        <GridColumn Field="@(nameof(RunItemQueryModel.RequestedFrequency))" Title="Frequenza richiesta" Width="200px" />
+
+        <GridColumn Field="@(nameof(RunItemQueryModel.Km))" Title="Km" Width="120px" />
+        <GridColumn Field="@(nameof(RunItemQueryModel.RequestedCapacity))" Title="Capienza richiesta" Width="120px" />
+
+        <GridColumn Field="@(nameof(RunItemQueryModel.RunNote))" Title="Note Generali" Width="200px" />
+        <GridColumn Field="@(nameof(RunItemQueryModel.VariationNote))" Title="Note Variante" Width="200px" />
+
+    </GridColumns>
+</TelerikGrid>
+
+@code {
+    RunAdvancedFiltersDialog? AdvancedFilterDialog;
+    QueryLoader<RunItemQueryModel>? DataQueryLoader;
+    TelerikGrid<RunItemQueryModel>? DataGRid;
+    private RunAdvancedFilters Filters = new RunAdvancedFilters();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    /*
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+    if (firstRender)
+    {
+    }
+    }
+    */
+    private async Task ShowAdvancedFilters ()
+    {
+        if (AdvancedFilterDialog != null)
+        {
+            await this.AdvancedFilterDialog.ShowAsunc();
+        }
+    }
+    private void FilterConfirmed (RunAdvancedFilters f)
+    {
+        this.GridReload();
+    }
+
+    private async Task ClearFilter ()
+    {
+        if (this.DataGRid != null)
+        {
+            await this.DataGRid.ClearFilterAsync();
+        }
+    }
+
+    private void GridReload ()
+    {
+        this.DataGRid?.Rebind();
+    }
+    private async Task ReadItems(GridReadEventArgs args)
+    {
+        if (DataQueryLoader != null)
+        {
+            await DataQueryLoader.ReadItems(args);
+        }
+    }
+    private async Task OnBeforeExcelExport(GridBeforeExcelExportEventArgs args)
+    {
+        if (DataQueryLoader != null)
+        {
+            await DataQueryLoader.OnBeforeExcelExport(args);
+        }
+    }
+
+    private string FormatTime(
+        TimeSpan? time)
+    {
+        if (time == null) return string.Empty;
+        var dt = new DateTime(1, 1, 1);
+        dt = dt.Add(time.Value);
+        return string.Format("{0:HH:mm}", dt);
+    }
+    private string GetStyle (RunItemQueryModel  item)
+    {
+        string style = string.Empty;
+        if (string.IsNullOrEmpty (item.Color) == false)
+        {
+            style += " color: " + item.Color + ";";
+        }
+        if (string.IsNullOrEmpty(item.BgColor) == false)
+        {
+            style += " background-color: " + item.BgColor + ";";
+        }
+
+        return style;
+    }
+}

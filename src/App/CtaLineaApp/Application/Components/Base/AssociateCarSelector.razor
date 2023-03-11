@@ -1,0 +1,81 @@
+﻿
+<QueryLoader @ref=@DataQueryLoader
+    TItem="CarQueryItem"
+    Endpoint="@(Constants.Endpoint_Cars)"
+    OperatingMode="QueryLoaderOperatingMode.PreloadAll"
+    @bind-Data=@Data
+    Filter="@(string.Format(FilterPattern, this.AssociateId ?? Guid.Empty ))" />
+
+<TelerikMultiColumnComboBox TItem="CarQueryItem"
+    Id=@Id
+    TValue="Guid?"
+    ValueField="@nameof(CarQueryItem.Id)"
+    TextField="@nameof(CarQueryItem.Description)"
+    Filterable="true"
+    FilterOperator="@StringFilterOperator.Contains"
+    Data="@Data"
+    @bind-Value="@Value"
+    ItemHeight="20"
+    ListHeight="250px"
+    OnChange=@OnChange
+    PageSize="10"
+    Enabled=@(this.AssociateId != null && this.AssociateId != Guid.Empty)
+    ScrollMode="@DropDownScrollMode.Virtual"
+
+    Placeholder="Seleziona un mezzo">
+    <MultiColumnComboBoxColumns>
+        <MultiColumnComboBoxColumn Field="@nameof(CarQueryItem.RegNumber)" Title="Targa" Width="200px" />
+        <MultiColumnComboBoxColumn Field="@nameof(CarQueryItem.NrSittings)" Title="Posti" Width="200px" />
+        <MultiColumnComboBoxColumn Field="@nameof(CarQueryItem.PrimaryCar)" Title="Titolare" Width="150px" />
+        <MultiColumnComboBoxColumn Field="@nameof(CarQueryItem.SpareCar)" Title="Scorta" Width="150px" />
+        <MultiColumnComboBoxColumn Field="@nameof(CarQueryItem.Active)" Title="Attivo" Width="150px" />
+        <MultiColumnComboBoxColumn Field="@nameof(CarQueryItem.AssociateActive)" Title="Attivo (ditta)" Width="150px" />
+    </MultiColumnComboBoxColumns>
+    <FooterTemplate>
+        <span class="combobox-footer k-display-flex k-align-items-center k-justify-content-center">
+            Totale: @Data.Count() Mezzi
+        </span>
+    </FooterTemplate>
+</TelerikMultiColumnComboBox>
+
+@code {
+    private string FilterPattern = "$eq(" + nameof(CarQueryItem.AssociateId) + ",'{0}')";
+    [Parameter]
+    public Guid? AssociateId { get; set; }
+
+    [Parameter]
+    public string? Id { get; set; }
+    [Parameter]
+    public Guid? Value { get; set; }
+    [Parameter]
+    public EventCallback<Guid?> ValueChanged { get; set; }
+    [Parameter]
+    public EventCallback Changed { get; set; }
+
+    QueryLoader<CarQueryItem>? DataQueryLoader;
+    private IList<CarQueryItem> Data;
+
+    public async Task LoadDataAsync(
+        Guid? associateId)
+    {
+        if (this.DataQueryLoader != null)
+        {
+            this.AssociateId = associateId;
+            this.StateHasChanged();
+
+            await this.DataQueryLoader.LoadDataAsync();
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await this.LoadDataAsync(null);
+        await base.OnParametersSetAsync();
+    }
+
+    private async Task OnChange ()
+    {
+        await ValueChanged.InvokeAsync(this.Value);
+        await Changed.InvokeAsync();
+    }
+}

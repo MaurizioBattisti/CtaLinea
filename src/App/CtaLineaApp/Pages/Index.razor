@@ -1,6 +1,9 @@
 ﻿@page "/"
 
-<TelerikAnimationContainer @ref="@TAC">
+<TelerikAnimationContainer 
+    @ref="@TAC"
+    >
+    <TelerikCard>
     <div style="padding: 1em; color: #fff; background: #282f89; text-align: center;">
 
         <PageTitle>Index</PageTitle>
@@ -10,21 +13,20 @@
         Welcome to your new app.
 
         <SurveyPrompt Title="How is Blazor working for you?" />
-
-        <TelerikCard>
-            <TelerikButton OnClick="@SayHelloHandler" ThemeColor="primary">Say Hello</TelerikButton>
-
-            <br />
-
-            @helloString
-        </TelerikCard>
     </div>
+    </TelerikCard>
+
+    <TelerikCard>
+        <TelerikButton OnClick="@SayHelloHandler" ThemeColor="primary">Say Hello</TelerikButton>
+
+        <br />
+
+        @helloString
+    </TelerikCard>
 </TelerikAnimationContainer>
 
-
-
 @code {
-    private TelerikAnimationContainer TAC { get; set; }
+    private TelerikAnimationContainer? TAC { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

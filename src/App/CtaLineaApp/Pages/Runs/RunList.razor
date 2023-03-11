@@ -1,188 +1,19 @@
 ﻿@page "/runs"
-@using CtaLinea.Application.Model.Query;
-@using CtaLinea.Model.QueryModel;
-@using CtaLineaApp.Application.Services.Query;
-
-@inject IQueryUtilityService queryService
 @attribute [Authorize]
 
-<TelerikGrid TItem="RunItemQueryModel"
-    Sortable="true"
-    Height="800px" Width="100%"
-    RowHeight="50"
-    PageSize="30"
-    OnRead=@ReadItems
-    ColumnVirtualization="true"
-    FilterMode="@GridFilterMode.FilterMenu"
-    ScrollMode="@GridScrollMode.Virtual">
-    <GridColumns>
-        <GridColumn Field="@(nameof(RunItemQueryModel.Id))" Title="Id" Visible=false Width="120px" />
-        <GridColumn Field="@(nameof(RunItemQueryModel.CtaRunId))" Title="Id CTA" Locked=true Width="120px" />
-        <GridColumn Field="@(nameof(RunItemQueryModel.ContractRowNumber))" Title="nr riga" Locked=true Width="120px" />
-        <GridColumn Field="@(nameof(RunItemQueryModel.Extra))" Title="Extra" Locked=true Width="120px">
-            <Template>
-                @{
-                    var item = (RunItemQueryModel)context;
-                    <TelerikCheckBox @bind-Value="@item.Extra" Enabled="false" />
-                }
-            </Template>
-        </GridColumn>
-        
-        <GridColumn Field="@(nameof(RunItemQueryModel.LineNumber))" Title="nr Linea" Locked=true Width="120px" />
-        <GridColumn Field="@(nameof(RunItemQueryModel.RunNumber))" Title="nr Corsa" Locked=true Width="120px" />
-
-        <GridColumn Field="@(nameof(RunItemQueryModel.StartDate))" Title="Inizio" DisplayFormat="{0:dd/MM/yyyy}" Width="120px" />
-        <GridColumn Field="@(nameof(RunItemQueryModel.EndDate))" Title="Fine" DisplayFormat="{0:dd/MM/yyyy}" Width="120px" />
-        
-        <GridColumn Field="@(nameof(RunItemQueryModel.RequestedDays))" Title="gg Richiesti" Width="120px" />
-
-        <GridColumn Field="@(nameof(RunItemQueryModel.AssociatesDescr))" Title="Ditte" Width="200px" />
-        <GridColumn Field="@(nameof(RunItemQueryModel.PrimaryCarsDescr))" Title="Mezzi Titolari" Width="200px" />
-        <GridColumn Field="@(nameof(RunItemQueryModel.SpareCarsDescr))" Title="SCorte" Width="200px" />
-        <GridColumn Field="@(nameof(RunItemQueryModel.CalendarsDescr))" Title="Calendari" Width="200px" />
-        <GridColumn Field="@(nameof(RunItemQueryModel.PathsDescr))" Title="Percorso (Nodi)" Width="200px" />
-
-        <GridColumn Field="@(nameof(RunItemQueryModel.VariationStartDate))" Title="Inizio var" DisplayFormat="{0:dd/MM/yyyy}" Width="120px" />
-
-        <GridColumn Field="@(nameof(RunItemQueryModel.StartTime))" Title="Ora Inizio" Width="120px">
-            <Template>
-                @{
-                    var item = (RunItemQueryModel)context;
-                    <span>@FormatTime(item.StartTime)</span>
-                }
-            </Template>
-        </GridColumn>
-        <GridColumn Field="@(nameof(RunItemQueryModel.EndTime))" Title="Ora Fine" Width="120px">
-            <Template>
-                @{
-                    var item = (RunItemQueryModel)context;
-                    <span>@FormatTime(item.EndTime)</span>
-                }
-            </Template>
-        </GridColumn>
-
-        <!-- Giorni della settimana -->
-        <GridColumn Field="@(nameof(RunItemQueryModel.Monday))" Title="Lunedì" Width="120px">
-            <Template>
-                @{
-                    var item = (RunItemQueryModel)context;
-                    <TelerikCheckBox @bind-Value="@item.Monday" Enabled="false" />
-                }
-            </Template>
-        </GridColumn>
-        <GridColumn Field="@(nameof(RunItemQueryModel.Tuesday))" Title="Martedì" Width="120px">
-            <Template>
-                @{
-                    var item = (RunItemQueryModel)context;
-                    <TelerikCheckBox @bind-Value="@item.Tuesday" Enabled="false" />
-                }
-            </Template>
-        </GridColumn>
-        <GridColumn Field="@(nameof(RunItemQueryModel.Wednesday))" Title="Mercoledì" Width="120px">
-            <Template>
-                @{
-                    var item = (RunItemQueryModel)context;
-                    <TelerikCheckBox @bind-Value="@item.Wednesday" Enabled="false" />
-                }
-            </Template>
-        </GridColumn>
-        <GridColumn Field="@(nameof(RunItemQueryModel.Thursday))" Title="Giovedì" Width="120px">
-            <Template>
-                @{
-                    var item = (RunItemQueryModel)context;
-                    <TelerikCheckBox @bind-Value="@item.Thursday" Enabled="false" />
-                }
-            </Template>
-        </GridColumn>
-        <GridColumn Field="@(nameof(RunItemQueryModel.Friday))" Title="Venerdì" Width="120px">
-            <Template>
-                @{
-                    var item = (RunItemQueryModel)context;
-                    <TelerikCheckBox @bind-Value="@item.Friday" Enabled="false" />
-                }
-            </Template>
-        </GridColumn>
-        <GridColumn Field="@(nameof(RunItemQueryModel.Saturday))" Title="Sabato" Width="120px">
-            <Template>
-                @{
-                    var item = (RunItemQueryModel)context;
-                    <TelerikCheckBox @bind-Value="@item.Saturday" Enabled="false" />
-                }
-            </Template>
-        </GridColumn>
-        <GridColumn Field="@(nameof(RunItemQueryModel.Sunday))" Title="Domenica" Width="120px">
-            <Template>
-                @{
-                    var item = (RunItemQueryModel)context;
-                    <TelerikCheckBox @bind-Value="@item.Sunday" Enabled="false" />
-                }
-            </Template>
-        </GridColumn>
-
-        <GridColumn Field="@(nameof(RunItemQueryModel.Path))" Title="Percorso" Width="200px" />
-        <GridColumn Field="@(nameof(RunItemQueryModel.RequestedFrequency))" Title="Frequenza richiesta" Width="200px" />
-
-        <GridColumn Field="@(nameof(RunItemQueryModel.Km))" Title="Km" Width="120px" />
-        <GridColumn Field="@(nameof(RunItemQueryModel.RequestedCapacity))" Title="Capienza richiesta" Width="120px" />
-
-        <GridColumn Field="@(nameof(RunItemQueryModel.RunNote))" Title="Note Generali" Width="200px" />
-        <GridColumn Field="@(nameof(RunItemQueryModel.VariationNote))" Title="Note Variante" Width="200px" />
-
-    </GridColumns>
-</TelerikGrid>
+<TelerikSplitter
+    Orientation="@SplitterOrientation.Horizontal">
+    <SplitterPanes>
+    <SplitterPane>
+        <RunListGridView />
+    </SplitterPane>
+    <SplitterPane Size="30%" Collapsible="true">
+        <h1>prova</h1>
+    </SplitterPane>
+    </SplitterPanes>
+</TelerikSplitter>
 
 @code {
-    private QueryDefinition _QueryDef = new QueryDefinition();
     private TelerikAnimationContainer? Container;
 
-    protected override void OnInitialized()
-    {
-        _QueryDef.EndPoint = Constants.Endpoint_RunList;
-
-        base.OnInitialized();
-    }
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            if (Container != null)
-            {
-                await Container.ShowAsync();
-            }
-        }
-    }
-
-    private string FormatTime(
-        TimeSpan? time)
-    {
-        if (time == null) return string.Empty;
-        var dt = new DateTime(1, 1, 1);
-        dt = dt.Add(time.Value);
-        return string.Format("{0:HH:mm}", dt);
-    }
-
-
-    private async Task ReadItems(GridReadEventArgs args)
-    {
-        /*
-        _QueryDef.Filter = args.GetQueryFilter<TItem>();
-        _QueryDef.Sort = args.GetQuerySort();
-        _QueryDef.FullText = FullTextSearch;
-        */
-
-        _QueryDef.Page = args.Request.Page;
-        _QueryDef.PageSize = args.Request.PageSize;
-        _QueryDef.Skip = args.Request.Skip;
-
-        QueryResult<RunItemQueryModel>? result;
-        result = await queryService.GetListAsync<RunItemQueryModel>(
-                _QueryDef);
-
-        if (result != null)
-        {
-            var data = result.Items;
-            args.Data = data;
-            args.Total = result.TotalRows;
-        }
-    }
 }

@@ -48,9 +48,12 @@ namespace ZzSoft.QueryHelper.Parser
                 && props.Length > 0)
             {
                 string attr = string.Empty;
-                foreach (var p in props)
+                var qry = (from p in props
+                           orderby p.Name.Length descending, p.Name
+                           select p);
+                foreach (var p in qry)
                 {
-                    if (string.IsNullOrEmpty (attr) == false)
+                    if (string.IsNullOrEmpty(attr) == false)
                     {
                         attr += "|";
                     }

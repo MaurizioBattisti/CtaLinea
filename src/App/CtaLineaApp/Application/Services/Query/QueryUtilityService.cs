@@ -48,23 +48,24 @@ namespace CtaLineaApp.Application.Services.Query
                 return null;
             }
         }
+
         public async Task<QueryResult<TResul>?> GetListAsync<TResul>(
-            QueryDefinition queryDef
-            )
-        {
-            return await this.SetRequestListAsync<TResul>(queryDef);
-        }
-        public async Task<QueryResult<TResul>?> GetListByPostAsync<TResul>(
             QueryDefinition queryDef,
-            object? payload
+            bool usePostMethod = false,
+            object? payload = null
             )
         {
+            Func<string, Task<HttpResponseMessage?>> sendAsync = async (u) => await this._httpService.Get(u);
+            if (usePostMethod == true
+                || payload != null)
+            {
+                sendAsync = async (u) => await this._httpService.Post(u, payload ?? new { });
+            }
             return await this.SetRequestListAsync<TResul>(
                 queryDef,
-                async(u) => await this._httpService.Post(u, payload)
+                sendAsync
                 );
         }
-
         private async Task<QueryResult<TResul>?> SetRequestListAsync<TResul> (
             QueryDefinition queryDef,
             Func<string, Task<HttpResponseMessage?>>? sendAsync = null
@@ -100,7 +101,11 @@ namespace CtaLineaApp.Application.Services.Query
                     {
                         var items = await response.Content.ReadFromJsonAsync<TResul[]>();
 
-                        totalRows = response.Headers.ParseInt(Constants.ResponseHeader_TotalRows);
+                        totalRows = -1;
+                        if (response.Headers.Contains(Constants.ResponseHeader_TotalRows) == true)
+                        {
+                            totalRows = response.Headers.ParseInt(Constants.ResponseHeader_TotalRows);
+                        }
 
                         // se tutto OK
                         return new QueryResult<TResul>(items, totalRows, queryDef.Page);

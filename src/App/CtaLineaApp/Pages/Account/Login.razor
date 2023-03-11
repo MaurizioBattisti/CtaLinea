@@ -5,9 +5,10 @@
 <PageTitle>@Constants.App_Title - Login</PageTitle>
 <TelerikNotification @ref="@NotificationReference" Class="MyTelerikNotification"></TelerikNotification>
 
-<TelerikAnimationContainer @ref="@Container">
 
-<TelerikGridLayout RowSpacing="6px" ColumnSpacing="10px" Class="grid-layout" >
+<TelerikGridLayout RowSpacing="6px" 
+    ColumnSpacing="10px" 
+    Class="grid-layout" >
     <GridLayoutRows>
         <GridLayoutRow Height="50px"></GridLayoutRow>
         <GridLayoutRow Height="500px"></GridLayoutRow>
@@ -19,6 +20,7 @@
     </GridLayoutColumns>
     <GridLayoutItems>
         <GridLayoutItem  Row=2 Column=1 >
+            <TelerikAnimationContainer @ref="@Container">
             <TelerikCard>
                 <CardHeader>
                     <CardTitle>Accedi a CTA Linea</CardTitle>
@@ -28,7 +30,7 @@
                         Model="@model"
                         ButtonsLayout="FormButtonsLayout.Center"
                         OnValidSubmit="@LoginAsync"
-                        OnInvalidSubmit="@HandleInvalidSubmit">
+                        >
                         <FormValidation>
                             <DataAnnotationsValidator></DataAnnotationsValidator>
                         </FormValidation>
@@ -56,6 +58,7 @@
                     </TelerikForm>
                 </CardBody>
             </TelerikCard>
+            </TelerikAnimationContainer>
         </GridLayoutItem>
         <GridLayoutItem Row=1 Column=2 RowSpan=3 >
             <AppInformation />
@@ -63,7 +66,7 @@
     </GridLayoutItems>
 </TelerikGridLayout>
 
-</TelerikAnimationContainer>
+
 
 @code {
     private TelerikNotification? NotificationReference;
@@ -108,9 +111,5 @@
 
             StateHasChanged();
         }
-    }
-    
-    void HandleInvalidSubmit()
-    {
     }
 }

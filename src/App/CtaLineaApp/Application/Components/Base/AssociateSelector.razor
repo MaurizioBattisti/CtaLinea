@@ -1,0 +1,57 @@
+﻿
+<QueryLoader @ref=@DataQueryLoader
+    TItem="AssociateQueryItem"
+    Endpoint="@(Constants.Endpoint_Associates)"
+    OperatingMode="QueryLoaderOperatingMode.PreloadAll"
+    @bind-Data=@Data 
+    />
+
+<TelerikMultiColumnComboBox 
+    TItem="AssociateQueryItem"
+    Id=@Id
+    TValue="Guid?"
+    ValueField="@nameof(AssociateQueryItem.Id)"
+    TextField="@nameof(AssociateQueryItem.Description)"
+    Filterable="true"
+    FilterOperator="@StringFilterOperator.Contains"
+    Data="@Data"
+    @bind-Value="@Value"
+    ItemHeight="20"
+    ListHeight="250px"
+    OnChange=@OnChange
+    PageSize="10"
+    ScrollMode="@DropDownScrollMode.Virtual"
+
+    Placeholder="Seleziona una Ditta">
+    <MultiColumnComboBoxColumns>
+        <MultiColumnComboBoxColumn Field="@nameof(AssociateQueryItem.Description)" Title="Ditta" Width="200px" />
+        <MultiColumnComboBoxColumn Field="@nameof(AssociateQueryItem.BsCustomerCode)" Title="BS Cli." Width="200px" />
+        <MultiColumnComboBoxColumn Field="@nameof(AssociateQueryItem.BsSupplierCode)" Title="BS Forn." Width="150px" />
+        <MultiColumnComboBoxColumn Field="@nameof(AssociateQueryItem.Active)" Title="Attiva" Width="150px" />
+    </MultiColumnComboBoxColumns>
+    <FooterTemplate>
+        <span class="combobox-footer k-display-flex k-align-items-center k-justify-content-center">
+        Totale: @Data.Count() Ditte</span>
+    </FooterTemplate>
+</TelerikMultiColumnComboBox>
+
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+    [Parameter]
+    public Guid? Value { get; set; }
+    [Parameter]
+    public EventCallback<Guid?> ValueChanged { get; set; }
+    [Parameter]
+    public EventCallback Changed { get; set; }
+
+    QueryLoader<AssociateQueryItem>? DataQueryLoader;
+
+    private IList<AssociateQueryItem> Data;
+
+    private async Task OnChange ()
+    {
+        await ValueChanged.InvokeAsync(this.Value);
+        await Changed.InvokeAsync();
+    }
+}

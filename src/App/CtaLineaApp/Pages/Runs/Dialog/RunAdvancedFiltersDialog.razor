@@ -1,0 +1,91 @@
+﻿@using CtaLineaApp.Application.Components.Base
+<TelerikDialog 
+    @bind-Visible="@Visible"
+    Width="600px" Height="300px"
+    ShowCloseButton=true
+    CloseOnOverlayClick=true
+    ButtonsLayout="DialogButtonsLayout.Center">
+    <DialogTitle>
+        <TelerikFontIcon Icon="@FontIcon.File"></TelerikFontIcon> <span style="margin-left: 8px">Filtri avanzati</span>
+    </DialogTitle>
+    <DialogContent>
+        <TelerikForm Model="@Filters"
+            ButtonsLayout="FormButtonsLayout.Center"
+            OnValidSubmit="@CloseAndFilter"
+            >
+            <FormValidation>
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+            </FormValidation>
+            <FormItems>
+                <FormItem Field="@nameof(Filters.AssociateId)">
+                    <Template>
+                        <label for="@nameof(Filters.AssociateId)">Ditta</label>
+                        <AssociateSelector 
+                            @bind-Value=@Filters.AssociateId
+                            Changed=@AssociateChanged
+                            Id="@nameof(Filters.AssociateId)" />
+                    </Template>
+                </FormItem>
+                <FormItem Field="@nameof(Filters.CarId)">
+                    <Template>
+                        <label for="@nameof(Filters.CarId)">Mezzo</label>
+                        <AssociateCarSelector 
+                            @ref=CarComboBox
+                            @bind-Value=@Filters.CarId
+                            AssociateId=@Filters.AssociateId
+                            Id="@nameof(Filters.CarId)" />
+                    </Template>
+                </FormItem>
+                <FormItem Field="@nameof(Filters.MinSittings)"></FormItem>
+                <FormItem Field="@nameof(Filters.MaxSittings)"></FormItem>
+            </FormItems>
+            <FormButtons>
+                <TelerikButton Visible=@(!IsBusy) ButtonType="@ButtonType.Submit" ThemeColor="primary">Filtra</TelerikButton>
+                <TelerikLoader Visible=@IsBusy Class="loader-indicator" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)"></TelerikLoader>
+            </FormButtons>
+        </TelerikForm>
+    </DialogContent>
+</TelerikDialog>
+
+@code {
+    [Parameter]
+    public RunAdvancedFilters Filters { get; set; } = new RunAdvancedFilters();
+
+    [Parameter]
+    public EventCallback<RunAdvancedFilters> FilterConfirmed { get; set; }
+    [Parameter]
+    public EventCallback Closed { get; set; }
+
+    private AssociateCarSelector? CarComboBox;
+    private async Task AssociateChanged ()
+    {
+        if (this.CarComboBox != null)
+        {
+            // await this.CarComboBox.LoadDataAsync(this.Filters.AssociateId);
+        }
+    }
+
+    private bool Visible = false;
+    private bool IsBusy = false;
+
+    public async Task ShowAsunc()
+    {
+        this.Visible = true;
+        await Task.CompletedTask;
+    }
+
+    private async Task CloseAndFilter()
+    {
+        this.IsBusy = true;
+        await this.FilterConfirmed.InvokeAsync(this.Filters);
+        this.Visible = false;
+
+        this.IsBusy = false;
+        await this.Closed.InvokeAsync();
+    }
+    private async Task CloseDialog()
+    {
+        this.IsBusy = false;
+        await this.Closed.InvokeAsync();
+    }
+}

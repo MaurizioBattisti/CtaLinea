@@ -6,7 +6,6 @@
     <div class="custom-toolbar">
         <TelerikButton OnClick="@ToggleDrawer" Icon="@FontIcon.Menu" FillMode="@(ThemeConstants.Button.FillMode.Flat)"></TelerikButton>
         <span class="mail-box">Mail Box</span>
-        <button>prova</button>
     </div>
     <TelerikDrawer 
         @ref="@Drawer" 
@@ -16,8 +15,9 @@
         SelectedItemChanged=@((DrawerItem? item) => SelectedItemChangedHandler(item))
         >
         <DrawerContent>
-            <p>pirca troia</p>
-            @Body
+            <div class="p-2 mau-bg-color">
+                @Body
+            </div>
         </DrawerContent>
     </TelerikDrawer>
 </div>
@@ -43,16 +43,6 @@
             new DrawerItem {Separator= true},
             new DrawerItem {Text = "Accedit", Icon = FontIcon.User, Url = "/account/login" },
         };
-
-    /*
-     public DrawerItem? SelectedItem { get; set; }
-    protected override Task OnInitializedAsync()
-    {
-        SelectedItem = Data.First();
-
-        return base.OnInitializedAsync();
-    }
-    */
 
     public async Task ToggleDrawer() => await Drawer.ToggleAsync();
 
