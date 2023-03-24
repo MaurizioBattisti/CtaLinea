@@ -11,7 +11,7 @@ namespace CtaLinea.Model.Runs
 
         public bool Monday { get; set; } = true;
         public bool Tuesday { get; set; } = true;
-        public bool Wednesday { get; set; } =true;
+        public bool Wednesday { get; set; } = true;
         public bool Thursday { get; set; } = true;
         public bool Friday { get; set; } = true;
         public bool Saturday { get; set; } = true;
@@ -24,7 +24,7 @@ namespace CtaLinea.Model.Runs
         public IList<CarReplacement>? CarReplacements { get; set; }
 
         public string Text => GetWeekDaysDescr();
-        public string GetDaysHash ()
+        public string GetDaysHash()
         {
             var sb = new StringBuilder(7);
             bool[] days = new bool[] {
@@ -36,15 +36,33 @@ namespace CtaLinea.Model.Runs
                 this.Saturday,
                 this.Sunday };
 
-            foreach (var day in days) 
-            { 
-                sb.Append (day ? "A": "B");
+            foreach (var day in days)
+            {
+                sb.Append(day ? "A" : "B");
             }
 
-            return sb.ToString ();
-		}
+            return sb.ToString();
+        }
+		public string MainPeriodText => GetMainPeriodText ();
+        private string GetMainPeriodText()
+		{
+            string start = "Dall'inizio";
+            string end = "alla Fine";
 
-        public RunPeriod CreateCopy()
+			if (this.StartDate != null)
+			{
+				start = string.Format("Dal {0:dd/MM/yyyy}", this.StartDate);
+			}
+			if (this.EndDate != null)
+			{
+				end = string.Format("al {0:dd/MM/yyyy}", this.EndDate);
+			}
+
+			return start + " " + end;
+	    }
+
+
+	public RunPeriod CreateCopy()
         {
             return new RunPeriod
             {

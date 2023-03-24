@@ -1,0 +1,79 @@
+﻿
+<RadzenRow AlignItems="AlignItems.Center">
+    <RadzenColumn Size="3">
+        <RadzenLabel Component="@StartName" Text="Data Inizio" />
+    </RadzenColumn>
+    <RadzenColumn Size="3">
+        <DateSelector @bind-Value="StartDate"
+                      Changed=@OnStartDateChanged
+                      Name=@StartName
+                      Min=@Min Max=@StartMax()
+                      Disabled=@Disabled
+                      ShowSetTodayButton=true
+                      AllowClear=@AllowClear />
+    </RadzenColumn>
+    <RadzenColumn Size="3">
+        <RadzenLabel Component="@EndName" Text="Data Fine" />
+    </RadzenColumn>
+    <RadzenColumn Size="3">
+        <DateSelector @bind-Value="EndDate"
+                      Changed=@OnEndDateChanged
+                      Name=@EndName
+                      Min=@EndMin() Max=@Max
+                      Disabled=@Disabled
+                      ShowSetTodayButton=true
+                      AllowClear=@AllowClear />
+    </RadzenColumn>
+</RadzenRow>
+
+@code {
+    [Parameter]
+    public DateTime? StartDate { get; set; }
+    [Parameter]
+    public EventCallback<DateTime?> StartDateChanged { get; set; }
+    [Parameter]
+    public DateTime? EndDate { get; set; }
+    [Parameter]
+    public EventCallback<DateTime?> EndDateChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<object> Changed { get; set; }
+
+    [Parameter]
+    public DateTime? Min { get; set; }
+    [Parameter]
+    public DateTime? Max { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+    [Parameter]
+    public bool AllowClear { get; set; } = true;
+
+    [Parameter]
+    public string? StartName { get; set; }
+    [Parameter]
+    public string? EndName { get; set; }
+
+    private DateTime? StartMax ()
+    {
+        if (this.Max != null && this.EndDate != null) return this.Max > this.EndDate ? this.EndDate : this.Max;
+        return this.Max != null ? this.Max : this.EndDate;
+    }
+    private DateTime? EndMin ()
+    {
+        if (this.Min != null && this.StartDate != null) return this.Min > this.StartDate ? this.StartDate : this.Min;
+        return this.Min != null ? this.Min : this.StartDate;
+    }
+
+    private void OnStartDateChanged (object value)
+    {
+        this.StartDateChanged.InvokeAsync(this.StartDate);
+        this.Changed.InvokeAsync(this);
+
+    }
+    private void OnEndDateChanged (object value)
+    {
+        this.EndDateChanged.InvokeAsync(this.EndDate);
+        this.Changed.InvokeAsync(this);
+    }
+}

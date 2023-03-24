@@ -3,7 +3,14 @@
 
 <RadzenButton Text="Hi"></RadzenButton>
 
-Welcome to your new app.
+<Animate Animation="Animations.SlideDown"
+		 IsManual=false
+		 Duration="TimeSpan.FromSeconds(0.5)"
+		 Delay="TimeSpan.FromSeconds(1)">
+	Welcome to your new app.
+</Animate>
+
+
 
 <SurveyPrompt Title="How is Blazor working for you?" />
 

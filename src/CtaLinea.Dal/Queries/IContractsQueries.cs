@@ -10,5 +10,8 @@ namespace ZzSoft.CtaLinea.Dal.Queries
             IFilteringContext filterContext);
         Task<ContractQueryItem> GetOneContractAsync(
             int id);
+
+        Task<QueryItemList<OperationPeriodQueryItem>> GePOperatingPeriodstListAsync(
+            IFilteringContext filterContext);
     }
 }

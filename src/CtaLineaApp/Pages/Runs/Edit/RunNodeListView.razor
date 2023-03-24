@@ -1,0 +1,166 @@
+﻿@using CtaLinea.Model.Runs
+@using CtaLineaApp.Pages.Runs.Dialogs
+@inject IRunModelService RunModelService
+@inject DialogService DialogService
+
+<div class="d-flex flex-row">
+	<RadzenDataGrid 
+		AllowFiltering="false" AllowPaging="false" AllowSorting="false"
+		Data="@this.GetNodes()"
+		TItem="RunNode">
+		<HeaderTemplate>
+			<RadzenButton Click=@AddNote_Click Text="Nuovo Nodo" />
+			<RadzenButton Click=@Reorder_Click Text="Riordina" ButtonStyle="ButtonStyle.Secondary" />
+		</HeaderTemplate>
+		<Columns>
+			<RadzenDataGridColumn Width="50px" TItem="RunNode" Title="#" TextAlign="TextAlign.Center" Property="ProgrNumber" />
+			<RadzenDataGridColumn TItem="RunNode" Title="Orafio" Width="70px">
+				<Template Context="data">
+					@this.FormatTime(data.Hour)
+				</Template>
+			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="RunNode" Property="CollectionPointId" Title="Codice Nodo" Width="120px" />
+			<RadzenDataGridColumn TItem="RunNode" Title="Descrizione Nodo">
+				<Template Context="data">
+					@data.CollectionPointData?.Description
+				</Template>
+			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="RunNode" Context="node" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
+				<Template Context="data">
+					<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
+								  Icon="edit"
+								  Size="ButtonSize.Medium"
+								  class="m-1" Click=@(() => EditNode_Click(data)) Text="" />
+					<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
+								  Icon="delete"
+								  Size="ButtonSize.Medium"
+								  class="m-1" Click=@(() => DeleteNode_Click(data)) Text="" />
+				</Template>
+			</RadzenDataGridColumn>
+		</Columns>
+	</RadzenDataGrid>
+</div>
+
+@code {
+
+	[Parameter]
+	public IEditableData? EditableData { get; set; }
+
+	[Parameter]
+	public RunItem CurrentRun { get; set; } = new RunItem();
+	[Parameter]
+	public RunVariation Variation { get; set; } = new RunVariation();
+
+
+	// nodo per il dialog
+	private RunNode? DialogNode = null;
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		await base.OnInitializedAsync();
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+
+		await base.OnParametersSetAsync();
+	}
+
+	private IList<RunNode> GetNodes()
+	{
+		var nodes = new List<RunNode>();
+		if (this.Variation.Nodes != null)
+		{
+
+			nodes = (from n in this.Variation.Nodes
+						orderby n.ProgrNumber, n.Hour
+						select n)
+			.ToList();
+		}
+		return nodes;
+	}
+
+	private string FormatTime(
+		TimeSpan? time)
+	{
+		if (time == null) return string.Empty;
+		var to = new TimeOnly(time.Value.Hours, time.Value.Minutes, time.Value.Seconds);
+		return string.Format("{0:HH:mm}", to);
+	}
+
+	private async Task DeleteNode_Click(RunNode node)
+	{
+		this.RunModelService.RemoveNode(
+			this.Variation,
+			node);
+
+		this.StateHasChanged();
+		this.EditableData?.SetDirty();
+		await Task.CompletedTask;
+	}
+	private async Task EditNode_Click(RunNode node)
+	{
+		this.DialogNode = node.GetClone();
+
+		if (await this.ShowNodeDialog("Modifica fermata (Nodo)") == true)
+		{
+			// elimina il vecchio nodo
+			this.RunModelService.RemoveNode(
+				this.Variation,
+				node);
+			this.RunModelService.AddNodeToVariation(
+				this.Variation,
+				this.DialogNode);
+			this.EditableData?.SetDirty();
+		}
+		this.DialogNode = null;
+		this.StateHasChanged();
+
+		await Task.CompletedTask;
+	}
+	private async Task AddNote_Click()
+	{
+		this.DialogNode = this.RunModelService.CreateNewNode(this.Variation, false);
+
+		if (await this.ShowNodeDialog("Nuova fermata (Nodo)") == true)
+		{
+			this.RunModelService.AddNodeToVariation(
+			this.Variation,
+			this.DialogNode);
+			this.EditableData?.SetDirty();
+		}
+		this.DialogNode = null;
+		this.StateHasChanged();
+	}
+
+	private async Task<bool> ShowNodeDialog(
+	string title)
+	{
+		var okText = "OK";
+		bool? result = await DialogService.OpenAsync(
+		title,
+		ds =>
+	@<div>
+		<RunNodeEditDialog Node=@DialogNode />
+		<RadzenButton Text="@okText" Click="()=>ds.Close(true)" ButtonStyle="ButtonStyle.Primary" />
+		<RadzenButton Text="Annulla" Click="()=>ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" />
+	</div>
+	, new DialogOptions() { Width = "1000px" }
+	);
+
+		return (result != null && result == true);
+	}
+
+	private void Reorder_Click()
+	{
+		RunModelService.ReorderNodes(this.Variation);
+		this.EditableData?.SetDirty();
+		this.StateHasChanged();
+	}
+
+	void OnTabChange(int index)
+	{
+
+	}
+}

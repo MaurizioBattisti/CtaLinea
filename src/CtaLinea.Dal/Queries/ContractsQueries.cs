@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using ZzSoft.CtaLinea.Dal.Context;
 using ZzSoft.QueryHelper;
 using CtaLinea.Model.QueryModel;
+using System.Collections;
 
 namespace ZzSoft.CtaLinea.Dal.Queries
 {
@@ -12,6 +13,7 @@ namespace ZzSoft.CtaLinea.Dal.Queries
         : IContractsQueries
     {
         private const string ContractsSql_Table = "dbo.Contracts c";
+        private const string OperationalPEriod_Table = "[dbo].[vw_OperationalPEriods]";
 
         private CtaDbContext _context;
 
@@ -45,6 +47,19 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 
             IDbConnection conn = this._context.Database.GetDbConnection();
             return await conn.QueryOneAsync(
+                queryDef)
+                .ConfigureAwait(false);
+        }
+
+        public async Task<QueryItemList<OperationPeriodQueryItem>> GePOperatingPeriodstListAsync (
+            IFilteringContext filterContext)
+        {
+            var queryDef = new QueryDefinition<OperationPeriodQueryItem>(
+                OperationalPEriod_Table,
+                filterContext);
+
+            IDbConnection conn = this._context.Database.GetDbConnection();
+            return await conn.QueryListAsync(
                 queryDef)
                 .ConfigureAwait(false);
         }

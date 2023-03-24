@@ -52,5 +52,19 @@ namespace CtaLineaWebApi.Controllers
             return await this.ModelOKAsync(result)
                 .ConfigureAwait(false);
         }
+
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("periods")]
+        public async Task<ActionResult<IEnumerable<OperationPeriodQueryItem>>> GetAllPeriodsAsync()
+        {
+            var result = await this._queries.GePOperatingPeriodstListAsync(
+                this.FilteringContext)
+                .ConfigureAwait(false);
+
+            return await this.ModelOKAsync(result)
+                .ConfigureAwait(false);
+        }
     }
 }

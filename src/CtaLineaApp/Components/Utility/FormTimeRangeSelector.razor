@@ -1,0 +1,58 @@
+﻿<RadzenRow AlignItems="AlignItems.Center">
+    <RadzenColumn Size="3">
+        <RadzenLabel Component="@StartName" Text="Ora Inizio" />
+    </RadzenColumn>
+    <RadzenColumn Size="3">
+        <TimeSelector @bind-Value="StartTime"
+                      Changed=@OnStartTimeChanged
+                      Name="@StartName"
+                      Disabled=@Disabled
+                      AllowClear=AllowClear />
+    </RadzenColumn>
+    <RadzenColumn Size="3">
+        <RadzenLabel Component="@EndName" Text="Ora Fine" />
+    </RadzenColumn>
+    <RadzenColumn Size="3">
+        <TimeSelector @bind-Value="EndTime"
+                      Changed=@OnEndTimeChanged
+                      Name="@EndName"
+                      Disabled=@Disabled
+                      AllowClear=@AllowClear />
+    </RadzenColumn>
+</RadzenRow>
+
+@code {
+    [Parameter]
+    public TimeSpan? StartTime { get; set; }
+    [Parameter]
+    public EventCallback<TimeSpan?> StartTimeChanged { get; set; }
+    [Parameter]
+    public TimeSpan? EndTime { get; set; }
+    [Parameter]
+    public EventCallback<TimeSpan?> EndTimeChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<object> Changed { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+    [Parameter]
+    public bool AllowClear { get; set; } = true;
+
+    [Parameter]
+    public string? StartName { get; set; }
+    [Parameter]
+    public string? EndName { get; set; }
+
+    private void OnStartTimeChanged (object value)
+    {
+        this.StartTimeChanged.InvokeAsync(this.StartTime);
+        this.Changed.InvokeAsync(this);
+
+    }
+    private void OnEndTimeChanged (object value)
+    {
+        this.EndTimeChanged.InvokeAsync(this.EndTime);
+        this.Changed.InvokeAsync(this);
+    }
+}

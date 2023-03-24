@@ -1,0 +1,100 @@
+﻿<RadzenFieldset Text="Giorni">
+	<RadzenRow AlignItems="AlignItems.Center">
+		<RadzenCheckBox @bind-Value=@this.Monday Name="Monday" TValue="bool" Change=@Tell_MondayChanged />
+		<RadzenLabel Text="Lunedì" Component="Monday" Style="vertical-align: middle;" />
+	</RadzenRow>
+	<RadzenRow AlignItems="AlignItems.Center">
+		<RadzenCheckBox @bind-Value=@this.Tuesday Name="Tuesday" TValue="bool" Change=@Tell_TuesdayChanged />
+		<RadzenLabel Text="Martedì" Component="Tuesday" Style="vertical-align: middle;" />
+	</RadzenRow>
+	<RadzenRow AlignItems="AlignItems.Center">
+		<RadzenCheckBox @bind-Value=@this.Wednesday Name="Wednesday" TValue="bool" Change=@Tell_WednesdayChanged />
+		<RadzenLabel Text="Mercoledì" Component="Wednesday" Style="vertical-align: middle;" />
+	</RadzenRow>
+	<RadzenRow AlignItems="AlignItems.Center">
+		<RadzenCheckBox @bind-Value=@this.Thursday Name="Thursday" TValue="bool" Change=@Tell_ThursdayChanged />
+		<RadzenLabel Text="Giovedì" Component="Thursday" Style="vertical-align: middle;" />
+	</RadzenRow>
+	<RadzenRow AlignItems="AlignItems.Center">
+		<RadzenCheckBox @bind-Value=@this.Friday Name="Friday" TValue="bool" Change=@Tell_FridayChanged />
+		<RadzenLabel Text="Venerdì" Component="Friday" Style="vertical-align: middle;" />
+	</RadzenRow>
+	<RadzenRow AlignItems="AlignItems.Center">
+		<RadzenCheckBox @bind-Value=@this.Saturday Name="Saturday" TValue="bool" Change=@Tell_SaturdayChanged />
+		<RadzenLabel Text="Sabato" Component="Saturday" Style="vertical-align: middle;" />
+	</RadzenRow>
+	<RadzenRow AlignItems="AlignItems.Center">
+		<RadzenCheckBox @bind-Value=@this.Sunday Name="Sunday" TValue="bool" Change=@Tell_SundayChanged />
+		<RadzenLabel Text="Domenica" Component="Sunday" Style="vertical-align: middle;" />
+	</RadzenRow>
+</RadzenFieldset>
+
+@code {
+	[Parameter]
+	public bool Monday { get; set; } = false;
+	[Parameter]
+	public EventCallback<bool> MondayChanged {get;set;}
+	[Parameter]
+	public bool Tuesday { get; set; } = false;
+	[Parameter]
+	public EventCallback<bool> TuesdayChanged { get; set; }
+	[Parameter]
+	public bool Wednesday { get; set; } = false;
+	[Parameter]
+	public EventCallback<bool> WednesdayChanged { get; set; }
+	[Parameter]
+	public bool Thursday { get; set; } = false;
+	[Parameter]
+	public EventCallback<bool> ThursdayChanged { get; set; }
+	[Parameter]
+	public bool Friday { get; set; } = false;
+	[Parameter]
+	public EventCallback<bool> FridayChanged { get; set; }
+	[Parameter]
+	public bool Saturday { get; set; } = false;
+	[Parameter]
+	public EventCallback<bool> SaturdayChanged { get; set; }
+	[Parameter]
+	public bool Sunday { get; set; } = false;
+	[Parameter]
+	public EventCallback<bool> SundayChanged { get; set; }
+
+	[Parameter]
+	public EventCallback Changed { get; set; }
+
+	private async Task Tell_MondayChanged (bool value)
+	{
+		await this.MondayChanged.InvokeAsync(this.Monday);
+		await this.Changed.InvokeAsync();
+	}
+	private async Task Tell_TuesdayChanged(bool value)
+	{
+		await this.TuesdayChanged.InvokeAsync(this.Tuesday);
+		await this.Changed.InvokeAsync();
+	}
+	private async Task Tell_WednesdayChanged(bool value)
+	{
+		await this.WednesdayChanged.InvokeAsync(this.Wednesday);
+		await this.Changed.InvokeAsync();
+	}
+	private async Task Tell_ThursdayChanged(bool value)
+	{
+		await this.ThursdayChanged.InvokeAsync(this.Thursday);
+		await this.Changed.InvokeAsync();
+	}
+	private async Task Tell_FridayChanged(bool value)
+	{
+		await this.FridayChanged.InvokeAsync(this.Friday);
+		await this.Changed.InvokeAsync();
+	}
+	private async Task Tell_SaturdayChanged(bool value)
+	{
+		await this.SaturdayChanged.InvokeAsync(this.Saturday);
+		await this.Changed.InvokeAsync();
+	}
+	private async Task Tell_SundayChanged(bool value)
+	{
+		await this.SundayChanged.InvokeAsync(this.Sunday);
+		await this.Changed.InvokeAsync();
+	}
+}

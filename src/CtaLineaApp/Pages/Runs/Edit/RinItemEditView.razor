@@ -1,0 +1,174 @@
+﻿@inject IRunRepository _repo
+@inject IQueryUtilityService queryService
+@inject IRunModelService RunModelService
+@inject IContractService ContractService
+@inject DialogService DialogService
+@inject NotificationService notificationService
+@inject RouterSessionService RouterSessionService
+@inject IRunChecker runChecker
+@inherits EditorComponentBase
+
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+@if (IsBusy == true)
+{
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+}
+else
+{
+    <div class="row">
+        
+    </div>
+    <RadzenTabs 
+        TabPosition="TabPosition.Top" 
+        RenderMode="TabRenderMode.Client">
+         <Tabs>
+            <RadzenTabsItem Text="Errori" Selected=true  >
+                <Animate Animation="Animations.ZoomIn"
+                     IsManual=false
+                     Easing="Easings.Ease"
+                     Duration="TimeSpan.FromSeconds(0.5)"
+                    >
+                    <CheckREsultView CheckResult=@CheckResult
+                                 ShowSuccessMessage=true />
+                </Animate>
+            </RadzenTabsItem>
+
+            <RadzenTabsItem Text="Dati generali" Selected=true >
+                <Template>
+                    <div><RadzenIcon Icon="@(this.CurrentRun.Extra ?"health_and_safety" : "shield")" IconStyle=@(this.CurrentRun.Extra ? IconStyle.Warning : IconStyle.Info) /> Dati generali</div>
+                </Template>
+                <ChildContent>
+                    <MainRunDataView 
+                        CurrentRun=@this.CurrentRun EditableData=@this />
+                </ChildContent>
+            </RadzenTabsItem>
+
+            <RadzenTabsItem Text="Varianti">
+                <RunVariationListView CurrentRun=@this.CurrentRun EditableData=@this />
+            </RadzenTabsItem>
+
+            <RadzenTabsItem Text="Mezzi" >
+                <RunCarPEriodListView CurrentRun=@this.CurrentRun EditableData=@this />
+            </RadzenTabsItem>
+            
+            <RadzenTabsItem Text="Sospensioni">
+            </RadzenTabsItem>
+
+            <RadzenTabsItem Text="Giorni Add." >
+                <AditionalDaysView EditableData=@this CurrentRun=@CurrentRun EditMode=true />
+            </RadzenTabsItem>
+
+            <RadzenTabsItem Text="Planning" >
+                <RadzenCard>
+                    <RunPlanningView @ref=@Planning RunId=@Id />
+                </RadzenCard>
+            </RadzenTabsItem>
+
+            <RadzenTabsItem Text="Corsa">
+                <BaseRunDataView EditableData=@this CurrentRun=@CurrentRun EditMode=@true />
+            </RadzenTabsItem>
+        </Tabs>
+    </RadzenTabs>
+
+    <RadzenCard>
+        <RadzenButton Click=@Save_Click IsBusy=@IsSaving Text="Salva Corsa" BusyText="Salvataggio...." ButtonStyle="ButtonStyle.Primary" />
+    </RadzenCard>
+
+}
+@code {
+    [Parameter]
+    public Guid Id { get; set; } = Guid.Empty;
+
+    RunItem CurrentRun = new RunItem();
+    private bool IsBusy = true;
+    private bool IsSaving = false;
+
+    private RunCheckResult? CheckResult { get; set; }
+    private RunPlanningView? Planning;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            var run = await _repo.GetOneAsync(this.Id);
+            if (run != null)
+            {
+                this.CurrentRun = run;
+                this.IsClean = true;
+                this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
+            }
+            else
+            {
+                // TODO: segnala un problema
+            }
+        }
+        finally
+        {
+            this.IsBusy = false;
+        }
+        await base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+        }
+    }
+
+    private async Task Save_Click()
+    {
+        await Task.CompletedTask;
+        IsSaving = true;
+
+        try
+        {
+            await this._repo.SaveRunAsync(
+                this.Id, this.CurrentRun);
+            this.IsClean = true;
+
+            if (this.Planning != null)
+            {
+                await this.Planning.ReloadDataAsync();
+            }
+            this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
+        }
+        catch (BadRequestException<RunCheckResult> ex)
+        {
+            this.CheckResult = ex.Payload;
+
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Dati non corretti",
+                "verificare i dati prima di procedere con il salvataggio"
+            );
+        }
+        catch (Exception ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Salvataggio corsa Fallito !",
+                ex.Message
+            );
+        }
+        finally
+        {
+            IsSaving = false;
+            this.StateHasChanged();
+        }
+    }
+
+    /*
+    private void Btn_Click()
+    {
+        this.IsClean = !IsClean;
+        this.EditMode = !this.EditMode;
+        this.StateHasChanged();
+    }
+    */
+}

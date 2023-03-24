@@ -1,0 +1,153 @@
+﻿@typeparam TItem
+@inject IQueryUtilityService QueryService
+
+@code {
+    private QueryDefinition _QueryDef = new QueryDefinition();
+
+    [Parameter]
+    public bool IsBusy { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> IsBusyChanged { get; set; }
+
+    [Parameter]
+    public string Endpoint
+    {
+        get { return this._QueryDef.EndPoint ?? string.Empty; }
+        set { this._QueryDef.EndPoint = value; }
+    }
+    [Parameter]
+    public object? PostPayload { get; set; }
+    [Parameter]
+    public bool ForceUseOfPostMethod { get; set; } = false;
+
+    [Parameter]
+    public string Filter { get; set; } = string.Empty;
+    [Parameter]
+    public string Sort { get; set; } = string.Empty;
+
+    [Parameter]
+    public IList<TItem> Data { get; set; } = new List<TItem>();
+    [Parameter]
+    public EventCallback<IList<TItem>> DataChanged { get; set; }
+
+    [Parameter]
+    public bool LoadAdStartup { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await this.LoadDataAsync();
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // await LoadDataAsync();
+        await base.OnParametersSetAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        if (this.LoadAdStartup == true)
+        {
+            var data = await GetAllAndCacheAsync();
+            this.Data = data?.ToList() ?? new List<TItem>();
+            await this.DataChanged.InvokeAsync(this.Data);
+        }
+    }
+
+    private string GetCacheKeyName(
+        string? cacheKey = null)
+    {
+        var id = string.Empty;
+        if (string.IsNullOrEmpty(cacheKey))
+        {
+            id = typeof(TItem).Name;
+        }
+        else
+        {
+            id = cacheKey;
+        }
+        return id + this.Filter + this.Sort;
+    }
+
+    public async Task<IEnumerable<TItem>?> GetAllAndCacheAsync(
+        string? cacheKey = null)
+    {
+        // TODO: controlla se il dato è in cache
+
+        // se non c'è lo carica dal back end
+        var data = await this.GetAllAsync();
+        if (data != null)
+        {
+            // TODO: ... e lo mette in cache
+
+
+        }
+
+        return await Task.FromResult(data);
+    }
+
+    public async Task<IEnumerable<TItem>?> GetAllAsync()
+    {
+        // applica il filtro indicato
+        _QueryDef.Filter = string.IsNullOrEmpty(this.Filter) == false ? this.Filter : null;
+        // applica sempre l'ordinamento indicato
+        _QueryDef.Sort = string.IsNullOrEmpty(this.Sort) == false ? Sort : null;
+
+        _QueryDef.Page = 1;
+        _QueryDef.PageSize = 10000;
+        _QueryDef.Skip = 0;
+        _QueryDef.Count = false;
+
+        var result = await this.SendRequestAsync();
+
+        _QueryDef.Count = true;
+
+        return result?.Items;
+    }
+
+    private IEnumerable<object> IterateAll(IEnumerable<TItem>? items)
+    {
+        if (items != null)
+        {
+            foreach (var item in items)
+            {
+                yield return item;
+            }
+        }
+    }
+
+    private bool UsePost()
+    {
+        return (this.ForceUseOfPostMethod == true
+            || this.PostPayload != null);
+    }
+    private async Task<QueryResult<TItem>?> SendRequestAsync()
+    {
+        QueryResult<TItem>? result = null;
+        try
+        {
+            this.SetBusy(true);
+            result = await QueryService.GetListAsync<TItem>(
+                    _QueryDef,
+                    this.UsePost(),
+                    this.PostPayload);
+        }
+        catch (Exception ex)
+        {
+            // TODO: mostra un errore
+            string e = string.Empty;
+        }
+        finally
+        {
+            this.SetBusy(false);
+        }
+        return result;
+    }
+
+    private void SetBusy(bool isBusy)
+    {
+        this.IsBusy = IsBusy;
+        this.IsBusyChanged.InvokeAsync(this.IsBusy);
+    }
+}

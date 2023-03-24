@@ -9,11 +9,9 @@ namespace CtaLineaApp.Application.Services.Utility
         string GetPRojection<TResource, TResult>();
 
         Task<QueryResult<TResul>?> GetListAsync<TResul>(
-            QueryDefinition queryDef
-            );
-        Task<QueryResult<TResul>?> GetListByPostAsync<TResul>(
             QueryDefinition queryDef,
-            object? payload
+            bool usePostMethod = false,
+            object? payload = null
             );
         Task<TResul?> GetOneAsync<TResul>(
             QueryDefinition queryDef

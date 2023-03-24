@@ -49,6 +49,11 @@ namespace CtaLineaApp.Application.Services.Utility
             isLoading = false;
         }
 
+        private bool UsePost ()
+        {
+            return (this._usePost == true
+                || this._postPayload != null);
+        }
 
         public async Task LoadData(
             LoadDataArgs args)
@@ -72,18 +77,9 @@ namespace CtaLineaApp.Application.Services.Utility
             _QueryDef.PageSize = args.GetQueryPageSize();
             try
             {
-                QueryResult<TItem>? result;
-                if (this._usePost == false)
-                {
-                    result = await _queryService.GetListAsync<TItem>(
-                            _QueryDef);
-                }
-                else
-                {
-                    result = await _queryService.GetListByPostAsync<TItem>(
-                            _QueryDef, _postPayload);
-                }
-
+                var result = await _queryService.GetListAsync<TItem>(
+                            _QueryDef, this.UsePost(),  _postPayload);
+                
                 if (result != null)
                 {
                     Data = result.Items;

@@ -1,0 +1,140 @@
+﻿@using CtaLinea.Model.Runs
+@using CtaLineaApp.Components.Base
+
+@inject IRunModelService RunModelService
+
+<RadzenTemplateForm Data=@Variation
+	Submit="@((RunVariation args) => { ; })">
+	<RadzenFieldset Text="Dati corsa">
+		<RadzenRow AlignItems="AlignItems.Center">
+			<RadzenColumn Size="3">
+				<RadzenLabel Component="LineNumber" Text="Nr. Linea" />
+			</RadzenColumn>
+			<RadzenColumn Size="3">
+				<RadzenNumeric Name="LineNumber" TValue="int?" @bind-Value=@Variation.LineNumber Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
+			</RadzenColumn>
+			<RadzenColumn Size="3">
+				<RadzenLabel Component="RunNumber" Text="Nr. Corsa" />
+			</RadzenColumn>
+			<RadzenColumn Size="3">
+				<RadzenNumeric Name="RunNumber" TValue="int?" @bind-Value=@Variation.RunNumber Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
+			</RadzenColumn>
+		</RadzenRow>
+
+		<FormTimeRangeSelector @bind-StartTime="Variation.StartTime"
+								@bind-EndTime="Variation.EndTime"
+								StartName="StartTime"
+								EndName="EndTime"
+								Changed=@(a=> this.EditableData?.SetDirty()) />
+
+		<RadzenRow AlignItems="AlignItems.Center">
+			<RadzenColumn Size="3">
+				<RadzenLabel Component="CalendarIds" Text="Calendari" />
+			</RadzenColumn>
+			<RadzenColumn Size="9">
+				<CalendarMultiSelect
+					AllowClear=true
+					Name="CalendarIds"
+					@bind-CalendarIds=@CalendarIds
+					Changed=@(a=> this.EditableData?.SetDirty()) />
+			</RadzenColumn>
+		</RadzenRow>
+		<RadzenRow AlignItems="AlignItems.Start" Gap="0">
+			<RadzenColumn Size="9">
+				<RadzenRow AlignItems="AlignItems.Center" Gap="5px">
+					<RadzenColumn Size="4">
+						<RadzenLabel Component="Km" Text="Km" />
+					</RadzenColumn>
+					<RadzenColumn Size="4">
+						<KmInput Name="Km" @bind-Value="Variation.Km" Changed=@(a=> this.EditableData?.SetDirty()) />
+					</RadzenColumn>
+				</RadzenRow>
+				<RadzenRow AlignItems="AlignItems.Center" Gap="5px">
+					<RadzenColumn Size="4">
+						<RadzenLabel Component="RequestedFrequency" Text="Frequenza" />
+					</RadzenColumn>
+					<RadzenColumn Size="8">
+						<RadzenTextBox Name="RequestedFrequency" @bind-Value="Variation.RequestedFrequency" MaxLength="200" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
+					</RadzenColumn>
+				</RadzenRow>
+				<RadzenRow AlignItems="AlignItems.Start" Gap="5px">
+					<RadzenColumn Size="4">
+						<RadzenLabel Component="Path" Text="Percorso" />
+					</RadzenColumn>
+					<RadzenColumn Size="8">
+						<RadzenTextArea Name="Path" @bind-Value="Variation.Path" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
+					</RadzenColumn>
+				</RadzenRow>
+				<RadzenRow AlignItems="AlignItems.Start" Gap="5px">
+					<RadzenColumn Size="4">
+						<RadzenLabel Component="Var_Note" Text="Note" />
+					</RadzenColumn>
+					<RadzenColumn Size="8">
+						<RadzenTextArea Name="Var_Note" @bind-Value="Variation.Note" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
+					</RadzenColumn>
+				</RadzenRow>
+			</RadzenColumn>
+			<RadzenColumn Size="3">
+				<FormWeekDays @bind-Monday="@this.Variation.Monday"
+								@bind-Tuesday="@this.Variation.Tuesday"
+								@bind-Wednesday="@this.Variation.Wednesday"
+								@bind-Thursday="@this.Variation.Thursday"
+								@bind-Friday="@this.Variation.Friday"
+								@bind-Saturday="@this.Variation.Saturday"
+								@bind-Sunday="@this.Variation.Sunday"
+								Changed=@(()=> this.EditableData?.SetDirty()) />
+
+			</RadzenColumn>
+		</RadzenRow>
+	</RadzenFieldset>
+</RadzenTemplateForm>
+
+@code {
+	[Parameter]
+	public IEditableData? EditableData { get; set; }
+
+	[Parameter]
+	public RunItem CurrentRun { get; set; } = new RunItem();
+	[Parameter]
+	public RunVariation Variation { get; set; } = new RunVariation();
+
+	private CalendarDropDown? Calendars;
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		await base.OnInitializedAsync();
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		await base.OnParametersSetAsync();
+	}
+
+	private string FormatDate(
+		DateTime? date)
+	{
+		if (date == null) return string.Empty;
+		return string.Format("{0:dd/MM/yyyy}", date);
+	}
+
+	private string FormatTime(
+		TimeSpan? time)
+	{
+		if (time == null) return string.Empty;
+		var to = new TimeOnly(time.Value.Hours, time.Value.Minutes, time.Value.Seconds);
+		return string.Format("{0:HH:mm}", to);
+	}
+
+	private IEnumerable<int>? CalendarIds
+	{
+		get { return this.Variation?.Calendars; }
+		set
+		{
+			if (this.Variation != null)
+			{
+				this.Variation.Calendars = value?.ToList();
+			}
+		}
+	}
+}

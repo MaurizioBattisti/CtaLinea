@@ -1,0 +1,50 @@
+﻿@inject IContractService ContractService
+
+<QueryLoader TItem="OperationPeriodQueryItem"
+    Endpoint="@(Constants.Endpoint_ContractsOperationalPeriods)"
+    @bind-Data=@Data />
+
+<RadzenSplitButton Text=@GetCurrentDescr() ButtonStyle="ButtonStyle.Light" >
+    <ChildContent>
+        <RadzenCard>
+            <p> prova </p>
+            <h2> testo di tipo header</h2>
+            <RadzenButton Text="Prova a schizare" />
+        </RadzenCard>
+    </ChildContent>
+</RadzenSplitButton>
+
+@code {
+    private IList<OperationPeriodQueryItem> _Data = new List<OperationPeriodQueryItem>();
+    public IList<OperationPeriodQueryItem> Data
+    {
+        get { return _Data; }
+        set
+        {
+            _Data = value;
+            this.CurrentPEriod = this.Data.Where(x => x.IsCurrent() == true).Select(x => x).FirstOrDefault();
+            // this.StateHasChanged();
+        }
+    }
+    public OperationPeriodQueryItem? CurrentPEriod { get; set; } = null;
+
+    private string GetCurrentDescr ()
+    {
+        return this.CurrentPEriod?.GetDescription() ?? "Nessun periodo";
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender == true)
+        {
+            
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+}

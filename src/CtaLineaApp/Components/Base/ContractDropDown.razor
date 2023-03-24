@@ -4,6 +4,7 @@
 
 <RadzenDropDown 
     Disabled=@Disabled
+    Name="@Name"
     Data=@Data 
     @bind-Value="CurrentItem"
     TValue="ContractQueryItem"
@@ -46,6 +47,9 @@
 
     [Parameter]
     public EventCallback<object> Changed { get; set; }
+
+    [Parameter]
+    public string? Name { get; set; }
 
     QueryDefinition _servicesQueryDef = new QueryDefinition();
     ContractQueryItem[]? Data = null;

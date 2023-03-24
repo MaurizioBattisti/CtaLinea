@@ -5,38 +5,38 @@
 	<RadzenRow>
 		<RadzenColumn Size="8">
 			<AssociateAndCarDropDown @bind-AssociateId="Filters.AssociateId"
-									 @bind-CarId="Filters.CarId"
-									 Inline=true
-									 AllowClear=true />
+										@bind-CarId="Filters.CarId"
+										Inline=true
+										AllowClear=true />
 		</RadzenColumn>
 		<RadzenColumn Size="1">
 			<RadzenText TextStyle="TextStyle.Overline" Text="Da posti" />
 			<RadzenNumeric TValue="int?"
-						   @bind-Value="Filters.MinSittings"
-						   Format="0"
-						   Class="w-100" />
+							@bind-Value="Filters.MinSittings"
+							Format="0"
+							Class="w-100" />
 		</RadzenColumn>
 		<RadzenColumn Size="1">
 			<RadzenText TextStyle="TextStyle.Overline" Text="a posti" />
 			<RadzenNumeric TValue="int?"
-						   @bind-Value="Filters.MaxSittings"
-						   Format="0"
-						   Class="w-100" />
+							@bind-Value="Filters.MaxSittings"
+							Format="0"
+							Class="w-100" />
 
 		</RadzenColumn>
 		<RadzenColumn Size="1">
 			<RadzenText TextStyle="TextStyle.Overline" Text="Nr. Linea" />
 			<RadzenNumeric TValue="int?"
-						   @bind-Value="Filters.LineNumber"
-						   Format="0"
-						   Class="w-100" />
+							@bind-Value="Filters.LineNumber"
+							Format="0"
+							Class="w-100" />
 		</RadzenColumn>
 		<RadzenColumn Size="1">
 			<RadzenText TextStyle="TextStyle.Overline" Text="Mr. Corsa" />
 			<RadzenNumeric TValue="int?"
-						   @bind-Value="Filters.RunNumber"
-						   Format="0"
-						   Class="w-100" />
+							@bind-Value="Filters.RunNumber"
+							Format="0"
+							Class="w-100" />
 		</RadzenColumn>
 
 	</RadzenRow>
@@ -64,7 +64,7 @@
 		<RadzenColumn Size="4">
 			<RadzenText TextStyle="TextStyle.Overline" Text="Frequenza" />
 			<RadzenTextBox @bind-Value="Filters.Frequency"
-						   Class="w-100" />
+							Class="w-100" />
 		</RadzenColumn>
 		<RadzenColumn Size="4">
 			<RadzenText TextStyle="TextStyle.Overline" Text="Calendari (uno qualsiasi)" />
@@ -103,7 +103,7 @@
 		<RadzenColumn Size="2">
 			<RadzenText TextStyle="TextStyle.Overline" Text="Data Riferimento" />
 			<DateSelector AllowClear=true
-						  @bind-Value="Filters.DateRef" />
+							@bind-Value="Filters.DateRef" />
 		</RadzenColumn>
 		<RadzenColumn Size="6">
 			<RadzenText TextStyle="TextStyle.Overline" Text="Etichette (una qualsiasi)" />
@@ -113,7 +113,7 @@
 	</RadzenRow>
 	<RadzenRow>
 		<RadzenButton Text="Filtra !"
-					  Click=@Filter_Click />
+						Click=@Filter_Click />
 	</RadzenRow>
 </RadzenStack>
 

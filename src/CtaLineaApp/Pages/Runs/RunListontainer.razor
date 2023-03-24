@@ -1,0 +1,760 @@
+﻿@page "/runs"
+@using CtaLinea.Model.Filters;
+@using CtaLinea.Model.QueryModel;
+@inject ContextMenuService ContextMenuService
+@inject IQueryUtilityService QueryService
+@inject DialogService DialogService
+@inject NavigationManager NavigationManager
+@inject NotificationService notificationService
+@inject IRunRepository RunRepo
+@inject IExcelExporterService ExcelService
+@attribute [Authorize]
+
+<PageTitle>@Constants.App_Title - Corse</PageTitle>
+
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Corse" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<RadzenLayout 
+    Style="height: 100%; grid-template-columns: auto 1fr auto; grid-template-areas: 'rz-header rz-header rz-header' 'rz-sidebar rz-body rz-right-sidebar'">
+    <RadzenBody>
+        <RadzenDataGrid @ref="@grdData"
+                        FilterMode="FilterMode.Simple"
+                        Count="@ItemCount"
+                        IsLoading=@IsLoading
+                        Data="@this.Data" TItem="RunItemQueryModel"
+                        AllowSorting="true"
+                        AllowFiltering="true"
+                        AllowColumnResize="true"
+                        LogicalFilterOperator="LogicalFilterOperator.And"
+                        SelectionMode="DataGridSelectionMode.Single"
+                        @bind-Value=@SelectedRuns
+                        CellContextMenu="@RowActionCellContextMenu"
+                        AllowVirtualization=true
+                        VirtualizationOverscanCount="10"
+                        ExpandMode="DataGridExpandMode.Single"
+                        RowRender=@RowRender
+                        RowExpand=@RowExpand
+                        Style="height:100%"
+                        Density=@Settings.Density>
+            <!--
+            CellRender=@CellRender
+            -->
+            <HeaderTemplate>
+                <RadzenStack Orientation="Orientation.Horizontal" Gap="4px">
+                    <RadzenButton ButtonStyle="ButtonStyle.Light"
+                                  Icon="file_download"
+                                  Click="@ExportToExcel" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Secondary"
+                                  IsBusy=@IsLoading
+                                  Icon="filter_alt"
+                                  Click="@OnShowFilter" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light"
+                                  IsBusy=@IsLoading
+                                  Icon="filter_alt_off"
+                                  Click="@ClearFilters_Click" />
+                    <RadzenTextBox @bind-Value=@this.FullTextSearch Placeholder="Cerca..." Change=@FullText_OnChange Style="width: 200px" Class="w-100" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Success"
+                                  IsBusy=@IsLoading
+                                  Icon="refresh"
+                                  Click="@ReloadData" />
+
+                    <RadzenButton ButtonStyle="ButtonStyle.Light"
+                                  Icon="@(DetailViewVisibile==false ? "visibility" : "visibility_off")"
+                                  Click="@(() => DetailViewVisibile = !DetailViewVisibile)" />
+
+
+
+                </RadzenStack>
+            </HeaderTemplate>
+            <EmptyTemplate>
+                <RadzenCard Visible=@(!IsLoading)>
+                    <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessuna corsa trovata !</p>
+                </RadzenCard>
+            </EmptyTemplate>
+            <Template Context="runItem">
+                <RadzenCard>
+                    <h4>Varianti</h4>
+                    <RadzenDataGrid IsLoading=@DetailIsLoading
+                                    Data="@this.Details"
+                                    TItem="RunVariationQueryModel"
+                                    AllowSorting="true"
+                                    AllowColumnResize="true"
+                                    Density=@Settings.Density>
+                        <Columns>
+                            <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Id" Title="Id variante" Visible=false />
+                            <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="VariationStartDate" Title="Inizio var." FormatString="{0:dd/MM/yyyy}" Width="120px" />
+
+                            <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="LineNumber" Title="Nr. Linea" Width="100px" />
+                            <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="RunNumber" Title="Nr. Corsa" Width="100px" />
+                            <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="StartTime" Title="Ora inizio" Width="120px">
+                                <Template Context="data">
+                                    @FormatTime(data?.StartTime)
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="EndTime" Title="Ora fine" Width="120px">
+                                <Template Context="data">
+                                    @FormatTime(data?.EndTime)
+                                </Template>
+                            </RadzenDataGridColumn>
+
+                            <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Monday" Title="Lunedì" Width="100px">
+                                <Template Context="data">
+                                    @if (data.Monday)
+                                    {
+                                        <RadzenIcon Icon="check" />
+                                    }
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Tuesday" Title="Martedì" Width="100px">
+                                <Template Context="data">
+                                    @if (data.Tuesday)
+                                    {
+                                        <RadzenIcon Icon="check" />
+                                    }
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Wednesday" Title="Mercoledì" Width="100px">
+                                <Template Context="data">
+                                    @if (data.Wednesday)
+                                    {
+                                        <RadzenIcon Icon="check" />
+                                    }
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Thursday" Title="Giovedì" Width="100px">
+                                <Template Context="data">
+                                    @if (data.Thursday)
+                                    {
+                                        <RadzenIcon Icon="check" />
+                                    }
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Friday" Title="Venerdì" Width="100px">
+                                <Template Context="data">
+                                    @if (data.Friday)
+                                    {
+                                        <RadzenIcon Icon="check" />
+                                    }
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Saturday" Title="Sabato" Width="100px">
+                                <Template Context="data">
+                                    @if (data.Saturday)
+                                    {
+                                        <RadzenIcon Icon="check" />
+                                    }
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Sunday" Title="Domenica" Width="100px">
+                                <Template Context="data">
+                                    @if (data.Sunday)
+                                    {
+                                        <RadzenIcon Icon="check" />
+                                    }
+                                </Template>
+                            </RadzenDataGridColumn>
+
+                            <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="CalendarDescr" Title="Calendari" Width="200px" />
+                            <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Path" Title="Percorso" Width="200px" />
+                            <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="RequestedFrequency" Title="Frequenza richiesta" Width="200px" />
+
+                            <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="Km" Title="Km" Width="100px" />
+                            <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="RequestedCapacity" Title="Capienza richiesta" Width="150px" />
+
+                            <RadzenDataGridColumn TItem="RunVariationQueryModel" Property="VariationNote" Title="Note prima Variante" Width="200px" />
+                        </Columns>
+                    </RadzenDataGrid>
+                </RadzenCard>
+            </Template>
+            <Columns>
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Id" Title="Id Servizio" Visible=false />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="CtaRunId" Title="Id CTA" Width="100px" FilterValue=@Filter_CtaRunId Frozen=true>
+                    <Template Context="item">
+                        @if (item.Color != null)
+                        {
+                            <div style="width: 100%; background-color: @item.BgColor">
+                                <span style="color: @item.Color">@item.CtaRunId</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <span>@item.CtaRunId</span>
+                        }
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="ContractRowNumber" Title="Riga Appalto" Width="100px" FilterValue=@Filter_ContractRowNumber Frozen=true>
+                    <Template Context="item">
+                        @if (item.Color != null)
+                        {
+                            <div style="width: 100%; background-color: @item.BgColor">
+                                <span style="color: @item.Color">@item.ContractRowNumber</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <span>@item.ContractRowNumber</span>
+                        }
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Extra" Title="Extra" Width="100px" FilterValue=@Filter_Extra Frozen=true>
+                    <Template Context="data">
+                        @if (data.Extra)
+                        {
+                            <RadzenIcon Icon="check" />
+                        }
+                    </Template>
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="StartDate" Title="Inizio" FormatString="{0:dd/MM/yyyy}" Width="180px" FilterValue=@Filter_StartDate>
+                    <FilterTemplate>
+                        <DateSelector @bind-Value="Filter_StartDate" AllowClear=true Changed=@StartDate_Changed />
+                    </FilterTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="EndDate" Title="Fine " FormatString="{0:dd/MM/yyyy}" Width="180px" FilterValue=@Filter_EndDate>
+                    <FilterTemplate>
+                        <DateSelector @bind-Value="Filter_EndDate" AllowClear=true Changed=@EndDate_Changed />
+                    </FilterTemplate>
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedDays" Title="GG Richiesti" Width="100px" FilterValue=@Filter_RequestedDays />
+
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="AssociatesDescr" Title="Ditte" Width="200px" FilterValue=@Filter_AssociatesDescr />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="PrimaryCarsDescr" Title="Mezzi Titolari" Width="200px" FilterValue=@Filter_PrimaryCarsDescr />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="SpareCarsDescr" Title="Mezzi di riserva" Width="200px" FilterValue=@Filter_SpareCarsDescr />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="CalendarsDescr" Title="Calendari usati" Width="200px" FilterValue=@Filter_CalendarsDescr />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="PathsDescr" Title="Percorso (Nodi)" Width="200px" FilterValue=@Filter_PathsDescr />
+
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="VariationStartDate" Title="Inizio var." FormatString="{0:dd/MM/yyyy}" Width="180px" FilterValue=@Filter_VariationStartDate>
+                    <FilterTemplate>
+                        <DateSelector @bind-Value="Filter_VariationStartDate" AllowClear=true Changed=@VariationStartDate_Changed />
+                    </FilterTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="LineNumber" Title="Nr. Linea" Width="100px" FilterValue=@Filter_LineNumber />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunNumber" Title="Nr. Corsa" Width="100px" FilterValue=@Filter_RunNumber />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="StartTime" Title="Ora inizio" Width="120px" FilterOperator="FilterOperator.Equals" FilterValue=@Filter_StartTime_2>
+                    <FilterTemplate>
+                        <TimeSelector @bind-Value="Filter_StartTime" AllowClear=true Changed=@StartTime_Changed />
+                    </FilterTemplate>
+                    <Template Context="data">
+                        @FormatTime(data?.StartTime)
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="EndTime" Title="Ora fine" Width="120px" FilterOperator="FilterOperator.Equals" FilterValue=@Filter_EndTime_2>
+                    <FilterTemplate>
+                        <TimeSelector @bind-Value="Filter_EndTime" AllowClear=true Changed=@EndTime_Changed />
+                    </FilterTemplate>
+                    <Template Context="data">
+                        @FormatTime(data?.EndTime)
+                    </Template>
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Monday" Title="Lunedì" Width="100px" FilterValue=@Filter_Monday>
+                    <Template Context="data">
+                        @if (data.Monday)
+                        {
+                            <RadzenIcon Icon="check" />
+                        }
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Tuesday" Title="Martedì" Width="100px" FilterValue=@Filter_Tuesday>
+                    <Template Context="data">
+                        @if (data.Tuesday)
+                        {
+                            <RadzenIcon Icon="check" />
+                        }
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Wednesday" Title="Mercoledì" Width="100px" FilterValue=@Filter_Wednesday>
+                    <Template Context="data">
+                        @if (data.Wednesday)
+                        {
+                            <RadzenIcon Icon="check" />
+                        }
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Thursday" Title="Giovedì" Width="100px" FilterValue=@Filter_Thursday>
+                    <Template Context="data">
+                        @if (data.Thursday)
+                        {
+                            <RadzenIcon Icon="check" />
+                        }
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Friday" Title="Venerdì" Width="100px" FilterValue=@Filter_Friday>
+                    <Template Context="data">
+                        @if (data.Friday)
+                        {
+                            <RadzenIcon Icon="check" />
+                        }
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Saturday" Title="Sabato" Width="100px" FilterValue=@Filter_Saturday>
+                    <Template Context="data">
+                        @if (data.Saturday)
+                        {
+                            <RadzenIcon Icon="check" />
+                        }
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Sunday" Title="Domenica" Width="100px" FilterValue=@Filter_Sunday>
+                    <Template Context="data">
+                        @if (data.Sunday)
+                        {
+                            <RadzenIcon Icon="check" />
+                        }
+                    </Template>
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Path" Title="Percorso" Width="200px" FilterValue=@Filter_Path />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedFrequency" Title="Frequenza richiesta" Width="200px" FilterValue=@Filter_RequestedFrequency />
+
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Km" Title="Km" Width="100px" FilterValue=@Filter_Km />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedCapacity" Title="Capienza richiesta" Width="150px" FilterValue=@Filter_RequestedCapacity />
+
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunNote" Title="Note Generali" Width="200px" FilterValue=@Filter_Note />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="VariationNote" Title="Note prima Variante" Width="200px" FilterValue=@Filter_VariationNote />
+            </Columns>
+        </RadzenDataGrid>
+    </RadzenBody>
+    @if (this.SelectedRuns.Count() > 0)
+    {
+        <RadzenSidebar @bind-Expanded="@DetailViewVisibile" Style="width: 800px; grid-area: rz-right-sidebar">
+            <RinItemEditView
+                Id="@GetSelectedId()" 
+                />
+        </RadzenSidebar>
+    }
+</RadzenLayout>
+
+@code {
+    public bool DetailViewVisibile { get; set;} = true;
+
+    private enum RunMenuItems
+    {
+        Detail,
+        Edit,
+        Delete,
+
+        Tags
+    };
+
+
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+    RadzenDataGrid<RunItemQueryModel>? grdData;
+
+    IList<RunItemQueryModel> SelectedRuns = new List<RunItemQueryModel>();
+
+    #region  details
+    private bool DetailIsLoading = false;
+    private IEnumerable<RunVariationQueryModel>? Details;
+    #endregion
+    #region filtri
+    private RunAdvancedFilters AdvancedFilter4s = new RunAdvancedFilters();
+
+    private int? Filter_CtaRunId;
+    private int? Filter_ContractRowNumber;
+    private bool? Filter_Extra;
+    private int? Filter_RequestedDays;
+    private string? Filter_AssociatesDescr;
+    private string? Filter_PrimaryCarsDescr;
+    private string? Filter_SpareCarsDescr;
+    private string? Filter_CalendarsDescr;
+    private string? Filter_PathsDescr;
+    private int? Filter_LineNumber;
+    private int? Filter_RunNumber;
+
+    private bool? Filter_Monday;
+    private bool? Filter_Tuesday;
+    private bool? Filter_Wednesday;
+    private bool? Filter_Thursday;
+    private bool? Filter_Friday;
+    private bool? Filter_Saturday;
+    private bool? Filter_Sunday;
+
+    private string? Filter_Path;
+    private string? Filter_RequestedFrequency;
+
+    private float? Filter_Km;
+    private int? Filter_RequestedCapacity;
+
+    private string? Filter_Note;
+    private string? Filter_VariationNote;
+
+    // ORe di inizioe fine
+    private DateTime? Filter_StartTime_2;
+    private TimeSpan? Filter_StartTime;
+    private void StartTime_Changed(object value)
+    {
+        DateTime? dt = null;
+        if (Filter_StartTime != null)
+        {
+            dt = new DateTime(1, 1, 1, Filter_StartTime.Value.Hours, Filter_StartTime.Value.Minutes, Filter_StartTime.Value.Seconds);
+        }
+
+        Filter_StartTime_2 = dt;
+        this.grdData?.Reload();
+    }
+    private DateTime? Filter_EndTime_2;
+    private TimeSpan? Filter_EndTime;
+    private void EndTime_Changed(object value)
+    {
+        DateTime? dt = null;
+        if (Filter_EndTime != null)
+        {
+            dt = new DateTime(1, 1, 1, Filter_EndTime.Value.Hours, Filter_EndTime.Value.Minutes, Filter_EndTime.Value.Seconds);
+        }
+
+        Filter_EndTime_2 = dt;
+        this.grdData?.Reload();
+    }
+    private DateTime? Filter_StartDate;
+    private void StartDate_Changed(object value)
+    {
+        this.grdData?.Reload();
+    }
+    private DateTime? Filter_EndDate;
+    private void EndDate_Changed(object value)
+    {
+        this.grdData?.Reload();
+    }
+
+    private DateTime? Filter_VariationStartDate;
+    private void VariationStartDate_Changed(object value)
+    {
+        this.grdData?.Reload();
+    }
+    #endregion
+
+
+    // TEST senza autoload con
+    // caricametno di tutti i dati e virtualizzazioen lato client
+
+    private int ItemCount = -1;
+    private bool IsLoading = false;
+    private IList<RunItemQueryModel> Data = new List<RunItemQueryModel>();
+    private string? FullTextSearch { get; set; } = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataASync();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task ExportToExcel()
+    {
+        this.IsLoading = true;
+        try
+        {
+            var columninfo = this.grdData?.GetExportColumnInfo();
+            await this.ExcelService.ExcelExport("Elenco Corse", this.Data, columninfo);
+        }
+        finally
+        {
+            this.IsLoading = false;
+        }
+    }
+
+    public Guid GetSelectedId ()
+    {
+        var id = Guid.Empty;
+        if (this.SelectedRuns.Count > 0)
+        {
+            id = this.SelectedRuns.Select(x => x.Id).First();
+        }
+
+        return id;
+    }
+
+    private async Task LoadDataASync()
+    {
+        var queryDef = new QueryDefinition();
+        queryDef.EndPoint = Constants.Endpoint_RunList_Adv;
+
+        this.IsLoading = true;
+        queryDef.FullText = this.FullTextSearch; ;
+
+        queryDef.Page = 1;
+        queryDef.PageSize = 100000;
+        queryDef.Count = false;
+        try
+        {
+            var result = await QueryService.GetListAsync<RunItemQueryModel>(
+            queryDef, true, this.AdvancedFilter4s);
+
+            if (result != null)
+            {
+                Data = result.Items;
+                ItemCount = Data.Count();
+            }
+        }
+        finally
+        {
+            this.IsLoading = false;
+        }
+    }
+
+    private async Task FullText_OnChange(string value)
+    {
+        await this.LoadDataASync();
+    }
+    private async Task ReloadData()
+    {
+        await this.LoadDataASync();
+        // this.grdData?.Reload();
+    }
+
+    private string FormatTime(
+        TimeSpan? time)
+    {
+        if (time == null) return string.Empty;
+        var to = new TimeOnly(time.Value.Hours, time.Value.Minutes, time.Value.Minutes);
+        return string.Format("{0:HH:mm}", to);
+    }
+
+    private void RowRender(RowRenderEventArgs<RunItemQueryModel> args)
+    {
+        args.Expandable = args.Data.VariationCount > 1;
+    }
+    private async Task RowExpand(RunItemQueryModel runItem)
+    {
+        await Task.CompletedTask;
+        this.Details = null;
+        if (runItem.Id == runItem.Id)
+        {
+            var t = InvokeAsync(
+            async () =>
+            {
+                var queryDef = new QueryDefinition();
+                queryDef.EndPoint = string.Format(Constants.Endpoint_RunVariationList_Fmt, runItem.Id);
+
+                DetailIsLoading = true;
+
+                queryDef.Page = 0;
+                queryDef.PageSize = 1000000;
+                try
+                {
+                    var result = await QueryService.GetListAsync<RunVariationQueryModel>(
+                        queryDef);
+
+                    if (result != null)
+                    {
+                        this.Details = result.Items;
+                    }
+                }
+                finally
+                {
+                    DetailIsLoading = false;
+                    this.StateHasChanged();
+                }
+            });
+        }
+    }
+
+    private async Task DeleteRunAsync(
+        Guid runId)
+    {
+        // chiede conferma e poi procede con la cancellazione
+        var title = "Eliminazione Corsa";
+        if (await this.DialogService.Confirm(
+        "Desideri veramente eliminare la corsa selezionata ? Tutti i dati ad essa associati verranno eliminati.",
+        title,
+        new ConfirmOptions
+                {
+                    OkButtonText = "Si, Elimina !",
+                    CancelButtonText = "Annulla"
+                }) == true)
+        {
+            try
+            {
+                await RunRepo.DeleteRunAsync(runId);
+                if (this.grdData != null)
+                {
+                    await this.grdData.Reload();
+                }
+            }
+            catch (Exception exc)
+            {
+                notificationService.Notify(
+                NotificationSeverity.Error,
+                "Eliminazione Falita",
+                exc.Message
+            );
+            }
+        }
+    }
+
+    private void RowActionCellContextMenu(DataGridCellMouseEventArgs<RunItemQueryModel> args)
+    {
+        SelectedRuns = new List<RunItemQueryModel>() { args.Data };
+
+        ContextMenuService.Open(args, ds =>
+    @<RadzenMenu Click=@((e)=>OnMenuItemClick(args, e))>
+        <RadzenMenuItem Text="Mostra i dettagli" Value=@RunMenuItems.Detail />
+        <RadzenMenuItem Text="Modifica..." Value=@RunMenuItems.Edit />
+        <RadzenMenuItem Text="Etichette..." Value=@RunMenuItems.Tags />
+        <hr class="separator">
+        <RadzenMenuItem Text="Elimina..." Value=@RunMenuItems.Delete />
+    </RadzenMenu>
+    );
+    }
+
+    private async Task OnMenuItemClick(
+        DataGridCellMouseEventArgs<RunItemQueryModel> args,
+        MenuItemEventArgs e
+        )
+    {
+        await Task.CompletedTask;
+        ContextMenuService.Close();
+
+        switch ((RunMenuItems)e.Value)
+        {
+            case RunMenuItems.Detail:
+                await DialogService.OpenSideAsync<RunItemDetail>($"Dettaglio della Corsa",
+                    new Dictionary<string, object>() { { "Id", args.Data.Id } },
+                    options: new SideDialogOptions() { CloseDialogOnOverlayClick = true, Width = "88%" }
+                    );
+                break;
+            case RunMenuItems.Edit:
+                NavigationManager.NavigateTo(
+                    string.Format("/run-edit/{0}", args.Data.Id)
+                    );
+                break;
+            case RunMenuItems.Delete:
+                await this.DeleteRunAsync(args.Data.Id);
+                break;
+            case RunMenuItems.Tags:
+                await this.ShowTagsEditor(args.Data.Id);
+                break;
+
+            default:
+                break;
+        };
+    }
+
+    private async Task ShowTagsEditor(
+        Guid runId)
+    {
+        var done = await DialogService.OpenAsync<RunTagsDialog>($"Etichette associate corsa",
+            new Dictionary<string, object>() { { "Id", runId } },
+            options: new DialogOptions()
+                {
+                    CloseDialogOnOverlayClick = false,
+                    Width = "800px"
+                });
+
+        if (done == true)
+        {
+            try
+            {
+                this.IsLoading = true;
+                // ricarica la riga della griglia e  la rimette nel posto giusto
+                var newItem = await this.RunRepo.GetOneDetailAsync(runId);
+                var oldItem = this.Data?.Where(x => x.Id == newItem.Id).SingleOrDefault();
+                if (newItem != null
+                    && oldItem != null)
+                {
+                    oldItem.CopyFrom(newItem);
+                    this.grdData?.UpdateRow(oldItem);
+                }
+            }
+            finally
+            {
+                this.IsLoading = false;
+            }
+
+        }
+    }
+
+    private async Task OnShowFilter()
+    {
+        var parameters = new Dictionary<string, object>();
+        parameters.Add("Filters", this.AdvancedFilter4s);
+
+        var res = await DialogService.OpenSideAsync<RunAdvancedFiltersDialog>($"Filtri avanzati",
+            parameters,
+            options: new SideDialogOptions()
+                {
+                    Position = DialogPosition.Top,
+                    ShowMask = true,
+                    CloseDialogOnOverlayClick = true,
+                    Height = "32em"
+                }
+            );
+        if (res == true)
+        {
+            await this.ReloadData();
+        }
+    }
+
+    private async Task ClearFilters_Click()
+    {
+        this.AdvancedFilter4s.ClearAll();
+        this.FullTextSearch = null;
+
+        this.Filter_CtaRunId = null;
+        this.Filter_ContractRowNumber = null;
+        this.Filter_Extra = null;
+        this.Filter_RequestedDays = null;
+        this.Filter_AssociatesDescr = null;
+        this.Filter_PrimaryCarsDescr = null;
+        this.Filter_SpareCarsDescr = null;
+        this.Filter_CalendarsDescr = null;
+        this.Filter_PathsDescr = null;
+        this.Filter_LineNumber = null;
+        this.Filter_RunNumber = null;
+
+        this.Filter_Monday = null;
+        this.Filter_Tuesday = null;
+        this.Filter_Wednesday = null;
+        this.Filter_Thursday = null;
+        this.Filter_Friday = null;
+        this.Filter_Saturday = null;
+        this.Filter_Sunday = null;
+
+        this.Filter_Path = null;
+        this.Filter_RequestedFrequency = null;
+
+        this.Filter_Km = null;
+        this.Filter_RequestedCapacity = null;
+
+        this.Filter_Note = null;
+        this.Filter_VariationNote = null;
+
+        this.Filter_StartDate = null;
+        this.Filter_EndDate = null;
+
+        this.Filter_StartTime = null;
+        this.Filter_EndTime = null;
+
+        this.Filter_StartTime_2 = null;
+        this.Filter_EndTime_2 = null;
+
+        this.Filter_VariationStartDate = null;
+
+        // this.StateHasChanged();
+        await this.ReloadData();
+    }
+    /*
+    private void CellRender(DataGridCellRenderEventArgs<RunItemQueryModel> args)
+        {
+        if (args.Column.Property == "CtaRunId"
+            || args.Column.Property == "ContractRowNumber")
+            {
+            if (args.Data.BgColor != null)
+                {
+                args.Attributes.Add("style",
+                    "background-color: " + args.Data.BgColor);
+        }
+    }
+    }
+    */
+}

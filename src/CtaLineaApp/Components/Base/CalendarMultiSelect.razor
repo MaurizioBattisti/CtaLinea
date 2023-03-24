@@ -5,6 +5,7 @@
 <RadzenDropDown 
     Disabled=@Disabled
     Data=@Data
+    Name="@Name"
     TValue="IEnumerable<int>"
     @bind-Value=@CalendarIds
     Multiple="true"
@@ -35,6 +36,8 @@
 
     [Parameter]
     public EventCallback<object> Changed { get; set; }
+    [Parameter]
+    public string? Name { get; set; }
 
     QueryDefinition _servicesQueryDef = new QueryDefinition();
     CalendarQueryItem[]? Data = null;

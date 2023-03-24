@@ -40,6 +40,9 @@ namespace CtaLineaApp
 
                 // My
                 .AddScoped(typeof(IAutoLoadDataList<>), typeof(AutoLoadDataList<>))
+                
+                // servizio di esportaizone in excel
+                .AddScoped<IExcelExporterService, ExcelExporterService> ()
 
                 .AddScoped<IApplicationSettings, ApplicationSettings>()
                 .AddScoped<IAccountService, AccountService>()

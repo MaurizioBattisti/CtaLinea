@@ -2,6 +2,7 @@
 
 <RadzenDatePicker 
 	TValue=DateTime?
+	Name="@Name"
 	@bind-Value=@NyValue
 	DateFormat="HHH:mm" 
 	Change=@OnChange 
@@ -43,6 +44,8 @@
 	public bool AllowClear { get; set; } = false;
 	[Parameter]
 	public bool Disabled { get; set; } = false;
+	[Parameter]
+	public string? Name { get; set; }
 
 	private void OnChange (DateTime? value)
 	{

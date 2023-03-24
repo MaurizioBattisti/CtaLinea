@@ -74,7 +74,9 @@ namespace CtaLineaApp
         internal const string Endpoint_Tags = "/api/tags";
         internal const string Endpoint_Tags_Single_Fmt = Endpoint_Tags + "/{0}";
 
-        internal const string Endpoint_Contracts = "/api/contracts";        
+        internal const string Endpoint_Contracts = "/api/contracts";
+        internal const string Endpoint_ContractsOperationalPeriods = Endpoint_Contracts+ "/periods";
+        
         internal const string Endpoint_Associates = "/api/associates";
         internal const string Endpoint_Cars = "/api/cars";
 

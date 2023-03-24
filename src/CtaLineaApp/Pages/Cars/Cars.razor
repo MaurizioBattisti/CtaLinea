@@ -1,5 +1,6 @@
 ﻿@page "/cars"
 @inject IAutoLoadDataList<Car> AutoLoad;
+@inject IExcelExporterService ExcelService
 @attribute [Authorize]
 
 <PageTitle>@Constants.App_Title - Mezzi</PageTitle>
@@ -31,7 +32,13 @@
         Density=@Settings.Density
         PageSize=@(Settings?.PageSize ?? 5)
         >
-    <EmptyTemplate>
+    <HeaderTemplate>
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="4px">
+            <RadzenButton ButtonStyle="ButtonStyle.Light"
+                          Icon="file_download"
+                          Click="@ExportToExcel" />
+        </RadzenStack>
+    </HeaderTemplate>    <EmptyTemplate>
         <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun mezzo trovato !</p>
     </EmptyTemplate>
     <Columns>
@@ -60,6 +67,15 @@
     [CascadingParameter]
     CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
     RadzenDataGrid<Car>? grdData;
+
+    private async Task ExportToExcel()
+    {
+        if (this.AutoLoad?.Data != null)
+        {
+            var columninfo = this.grdData?.GetExportColumnInfo();
+            await this.ExcelService.ExcelExport("Elenco Mezzi parziale", this.AutoLoad.Data, columninfo);
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {

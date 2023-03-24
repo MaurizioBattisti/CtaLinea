@@ -55,23 +55,23 @@ namespace CtaLineaApp.Application.Services.Utility
             }
         }
         public async Task<QueryResult<TResul>?> GetListAsync<TResul>(
-            QueryDefinition queryDef
-            )
-        {
-            return await this.SetRequestListAsync<TResul>(queryDef);
-        }
-        public async Task<QueryResult<TResul>?> GetListByPostAsync<TResul>(
             QueryDefinition queryDef,
-            object? payload
+            bool usePostMethod = false,
+            object? payload = null
             )
         {
+            Func<string, Task<HttpResponseMessage?>> sendAsync = async (u) => await this._httpService.Get(u);
+            if (usePostMethod == true
+                || payload != null)
+            {
+                sendAsync = async (u) => await this._httpService.Post(u, payload ?? new { });
+            }
             return await this.SetRequestListAsync<TResul>(
                 queryDef,
-                async(u) => await this._httpService.Post(u, payload)
+                sendAsync
                 );
         }
-
-        private async Task<QueryResult<TResul>?> SetRequestListAsync<TResul> (
+        private async Task<QueryResult<TResul>?> SetRequestListAsync<TResul>(
             QueryDefinition queryDef,
             Func<string, Task<HttpResponseMessage?>>? sendAsync = null
             )
@@ -96,9 +96,9 @@ namespace CtaLineaApp.Application.Services.Utility
                 {
                     queryString = "?" + queryString;
                 }
-                
+
                 // esegue la chiamata vera e propria all'endpoint
-                var response = await sendAsync (queryDef.EndPoint + queryString);
+                var response = await sendAsync(queryDef.EndPoint + queryString);
 
                 if (response?.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -106,7 +106,11 @@ namespace CtaLineaApp.Application.Services.Utility
                     {
                         var items = await response.Content.ReadFromJsonAsync<TResul[]>();
 
-                        totalRows = response.Headers.ParseInt(Constants.ResponseHeader_TotalRows);
+                        totalRows = -1;
+                        if (response.Headers.Contains(Constants.ResponseHeader_TotalRows) == true)
+                        {
+                            totalRows = response.Headers.ParseInt(Constants.ResponseHeader_TotalRows);
+                        }
 
                         // se tutto OK
                         return new QueryResult<TResul>(items, totalRows, queryDef.Page);

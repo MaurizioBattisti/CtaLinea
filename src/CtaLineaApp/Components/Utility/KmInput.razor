@@ -2,7 +2,8 @@
 
 <RadzenNumeric 
 	TValue="double?" 
-	@bind-Value="Value" 
+	@bind-Value="Value"
+	Name="@Name"
 	Disabled=@Disabled
 	Culture=@AppSettings.CurrentCulture
 	Format="0.00"
@@ -19,6 +20,8 @@
 
 	[Parameter]
 	public bool Disabled { get; set; } = false;
+	[Parameter]
+	public string? Name { get; set; }
 
 	private void OnChange (double? value)
 	{

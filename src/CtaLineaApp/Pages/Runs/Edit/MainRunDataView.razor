@@ -1,0 +1,238 @@
+﻿@using CtaLineaApp.Components.Base
+
+@using CtaLineaApp.Pages.Runs.Dialogs
+@inject IRunModelService RunModelService
+@inject DialogService DialogService
+@inject NotificationService notificationService
+
+<RadzenTemplateForm 
+	Data="@CurrentRun" 
+	Submit="@((RunItem args) => { ; })">
+	<Animate 
+		IsManual=false
+			Animation="Animations.ZoomIn"
+			Easing="Easings.Ease"
+			Duration="TimeSpan.FromSeconds(0.5)"
+		>
+		<div class="row">
+			<RadzenIcon Icon="@(this.CurrentRun.Extra ?"health_and_safety" : "shield")" IconStyle=@(this.CurrentRun.Extra ? IconStyle.Warning : IconStyle.Info) />
+		</div>
+		<div class="row">
+			<RadzenFieldset Text="Appalto">
+				<RadzenRow AlignItems="AlignItems.Center">
+					<RadzenColumn Size="3">
+						<RadzenLabel Text="Appalto" Component="ContractId" />
+					</RadzenColumn>
+					<RadzenColumn Size="6">
+						<ContractDropDown Name="ContractId" Disabled=@(SuperEditMode==false) @ref="@Contracts" @bind-ContractId="SelectedContractId" AllowClear=false />
+					</RadzenColumn>
+					<RadzenColumn Size="3" >
+						@if (this.SuperEditMode == false)
+						{
+							<RadzenButton Text="Modifica"							
+								ButtonStyle="ButtonStyle.Warning"
+								Icon="lock_open"
+								Click=@ActivateContractEdit_Click />
+						}
+						else
+						{
+							<RadzenButton Text="Modifica"
+										ButtonStyle="ButtonStyle.Success"
+										Icon="lock"
+										Click=@DeactivateContractEdit_Click />
+
+						}
+					</RadzenColumn>
+				</RadzenRow>
+				<RadzenRow AlignItems="AlignItems.Center">
+					<RadzenColumn Size="3">
+						<RadzenLabel Text="Inizio" />
+					</RadzenColumn>
+					<RadzenColumn Size="3">
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDate(CurrentRun.ContractData?.StartDate)</strong></RadzenText>
+					</RadzenColumn>
+					<RadzenColumn Size="3">
+						<RadzenLabel Text="Fine" />
+					</RadzenColumn>
+					<RadzenColumn Size="3">
+						<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDate(CurrentRun.ContractData?.EndDate)</strong></RadzenText>
+					</RadzenColumn>
+				</RadzenRow>
+				<RadzenRow AlignItems="AlignItems.Center">
+					<RadzenColumn Size="3">
+						<RadzenLabel Component="ContractRowNumber" Text="Riga Appalto" />
+					</RadzenColumn>
+					<RadzenColumn Size="3">
+						<RadzenNumeric Name="ContractRowNumber" TValue="int?" @bind-Value="this.CurrentRun.ContractRowNumber" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
+					</RadzenColumn>
+					<RadzenColumn Size="6">
+						<RadzenCheckBox Name="ExtraContract" @bind-Value=@this.CurrentRun.Extra  TValue="bool" />
+						<RadzenLabel Text="Extra Capitolato" Component="ExtraContract" Style="margin-left: 8px; vertical-align: middle;" />
+					</RadzenColumn>
+				</RadzenRow>
+			</RadzenFieldset>
+			<RadzenFieldset Text="Richieste">
+				<FormDateRangeSelector @bind-StartDate="CurrentRun.StartDate"
+					StartName="StartDate"
+					EndName="EndDate"
+					@bind-EndDate="CurrentRun.EndDate"
+					Min=@CurrentRun.ContractData?.StartDate
+					Max=@CurrentRun.ContractData?.EndDate />
+
+				<RadzenRow AlignItems="AlignItems.Center">
+					<RadzenColumn Size="3">
+						<RadzenLabel Component="RequestedDays" Text="Giorni" />
+					</RadzenColumn>
+					<RadzenColumn Size="3">
+						<RadzenNumeric Name="RequestedDays" TValue="int?" @bind-Value="CurrentRun.RequestedDays" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
+					</RadzenColumn>
+				</RadzenRow>
+				<RadzenRow AlignItems="AlignItems.Start">
+					<RadzenColumn Size="3">
+						<RadzenLabel Component="Note" Text="Note" />
+					</RadzenColumn>
+					<RadzenColumn Size="9">
+						<RadzenTextArea Name="Note" @bind-Value="CurrentRun.Note" Class="w-100 h-100" Change=@(a=> this.EditableData?.SetDirty()) Style="height: 60px" />
+					</RadzenColumn>
+				</RadzenRow>
+			</RadzenFieldset>
+		</div>
+
+		<RunVariationMainDataVide @ref=@RunVariationMainDataVide
+			EditableData="@this.EditableData"
+			CurrentRun="@CurrentRun"
+			Variation="@CurrentVariation"
+			/>
+
+		<RunNodeListView CurrentRun="@CurrentRun"
+			Variation="@CurrentVariation"
+			EditableData="@EditableData"
+			/>
+	</Animate>
+</RadzenTemplateForm>
+
+@code {
+	RunVariationMainDataVide? RunVariationMainDataVide;
+
+	[Parameter]
+	public IEditableData? EditableData { get; set; }
+
+	[Parameter]
+	public RunItem CurrentRun { get; set; } = new RunItem();
+
+	private bool SuperEditMode = false;
+	public RunVariation CurrentVariation { get; set; } = new RunVariation();
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnParametersSetAsync();
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		// recupera la variante di default
+		if (this.CurrentRun != null
+			&& this.CurrentRun?.Variations != null)
+		{
+			var variation = (from v in this.CurrentRun.Variations
+								where v.StartDate == null
+								select v).SingleOrDefault();
+			if (variation != null)
+			{
+				this.CurrentVariation = variation;
+			}
+		}
+
+		await base.OnParametersSetAsync();
+	}
+
+	private string FormatDate(
+		DateTime? date)
+	{
+		if (date == null) return string.Empty;
+		return string.Format("{0:dd/MM/yyyy}", date);
+	}
+
+
+
+	#region Appalto (Contract)
+	private ContractDropDown? Contracts;
+	private int? SelectedContractId
+	{
+		get { return this.CurrentRun.ContractId; }
+		set
+		{
+			if (value != null)
+			{
+				this.CurrentRun.ContractId = value.Value;
+				this.EditableData?.SetDirty();
+				if (Contracts != null)
+				{
+					var contract = Contracts.SelectedContractData;
+					if (contract == null)
+					{
+						this.CurrentRun.ContractData = null;
+					}
+					else
+					{
+						this.CurrentRun.ContractData = new Contract()
+								{
+									ContractId = contract.Id,
+									ContractName = contract.ContractName,
+									ContractDescription = contract.ContractDescription,
+									StartDate = contract.StartDate,
+									EndDate = contract.EndDate
+								};
+					}
+				}
+			}
+			else
+			{
+				this.StateHasChanged();
+			}
+		}
+	}
+	private async Task ActivateContractEdit_Click()
+	{
+		var result = await this.DialogService.Confirm(
+		"Attivare la modalità per modificare il contratto ?",
+		"Consenti modifica contratto",
+		new ConfirmOptions
+				{
+					OkButtonText = "Si, attiva !",
+					CancelButtonText = "Annulla"
+				});
+		if (result != null && result == true)
+		{
+			this.SuperEditMode = true;
+		}
+	}
+	private async Task DeactivateContractEdit_Click()
+	{
+		this.SuperEditMode = false;
+	}
+	#endregion
+
+	#region funzioni gestione dialog box
+	private async Task<bool> ShowGenericDialog(
+	string title,
+	RenderFragment<DialogService> renderFragment,
+	string okText = "OK",
+	string cancelText = "Annulla",
+	string width = "1000px")
+	{
+		bool? result = await DialogService.OpenAsync(
+		title,
+		ds =>
+			@<div>
+				@renderFragment(ds)
+				<RadzenButton Text="@okText" Click="()=>ds.Close(true)" ButtonStyle="ButtonStyle.Primary" />
+				<RadzenButton Text="@cancelText" Click="()=>ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" />
+			</div>
+			, new DialogOptions() { Width = width }
+			);
+
+		return (result != null && result == true);
+	}
+	#endregion
+}

@@ -8,7 +8,19 @@
 
 @if(this.AccountService.User == null)
 {
-	<WelcomeScreen />
+	<Animate Animation="Animations.SlideDown"
+		 IsManual=false
+		 Easing="Easings.Ease"
+		 Duration="TimeSpan.FromSeconds(0.5)"
+		>
+		<WelcomeScreen />
+	</Animate>
+	
 } else {
-	<DashBoard />
+	<Animate Animation="Animations.SlideDown"
+		 IsManual=false
+		 Duration="TimeSpan.FromSeconds(0.5)"
+		>
+		<DashBoard />
+	</Animate>
 }

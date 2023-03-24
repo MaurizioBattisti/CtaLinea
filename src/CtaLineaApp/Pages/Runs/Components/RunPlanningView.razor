@@ -39,9 +39,17 @@
     private bool isLoading = false;
     private IEnumerable<RunPlanningItem> Planning = new List<RunPlanningItem>();
 
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        if (this.scheduler != null)
+        {
+            await this.scheduler.Reload();
+        }
+    }
+
     public async Task ReloadDataAsync()
     {
-        await Task.CompletedTask;
         if (this.scheduler != null)
         {
             await this.scheduler.Reload();

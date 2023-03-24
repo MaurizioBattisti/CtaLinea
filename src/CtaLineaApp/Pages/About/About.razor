@@ -4,20 +4,31 @@
 
 <PageTitle>@Constants.App_Title - Informazioni</PageTitle>
 
-<h1>Informaizoni su CTA Linea</h1>
+<Animate Animation="Animations.SlideDown"
+         IsManual=false
+         Easing="Easings.Ease"
+         Duration="TimeSpan.FromSeconds(0.5)"
+         >
+    <h1>Informaizoni su CTA Linea</h1>
+</Animate>
 
-<RadzenDataGrid 
-    @ref=@grdInfo
-    Data="@Info"
-    TItem="KeyValuePair<string, string?>"
-    AllowPaging="false" 
-    AllowSorting="false">
-    <Columns>
-        <RadzenDataGridColumn TItem="KeyValuePair<string,string?>" Property="Key" Title="Info" />
-        <RadzenDataGridColumn TItem="KeyValuePair<string,string?>" Property="Value" Title="Valore" />
-    </Columns>
-</RadzenDataGrid>
-
+<Animate Animation="Animations.SlideLeft"
+            IsManual=false
+            Easing="Easings.Ease"
+            Duration="TimeSpan.FromSeconds(0.5)"
+         Delay="TimeSpan.FromSeconds(0.4)">
+    <RadzenDataGrid 
+        @ref=@grdInfo
+        Data="@Info"
+        TItem="KeyValuePair<string, string?>"
+        AllowPaging="false" 
+        AllowSorting="false">
+        <Columns>
+            <RadzenDataGridColumn TItem="KeyValuePair<string,string?>" Property="Key" Title="Info" />
+            <RadzenDataGridColumn TItem="KeyValuePair<string,string?>" Property="Value" Title="Valore" />
+        </Columns>
+    </RadzenDataGrid>
+</Animate>
 @code {
     RadzenDataGrid<KeyValuePair<string, string?>>? grdInfo;
     // lista con le informaizoni

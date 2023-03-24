@@ -1,6 +1,8 @@
 ﻿@using CtaLineaApp.Application.Services.Account;
 @using CtaLineaApp.Application.Model.Account;
 @using System.Net
+@using CtaLineaApp.Components.Base
+
 @inject IAccountService AccountService
 @inject NavigationManager NavigationManager
 
@@ -11,18 +13,21 @@
 }
 else
 {
-<RadzenMenu>
-    <RadzenMenuItem Text="@AccountService.User.Description" Icon="account_circle">
-        <RadzenMenuItem Text="Impostazioni" Icon="settings"></RadzenMenuItem>
-        <hr class="separator">
-        <RadzenMenuItem Text="Disconnetti" Path="/account/logout" Icon="logout"></RadzenMenuItem>
-    </RadzenMenuItem>
- </RadzenMenu>
+    <RadzenStack Orientation="Orientation.Horizontal" Gap="4px" AlignItems="AlignItems.Center">
+        <PEriodAndContractMenu />
+
+        <RadzenMenu>
+            <RadzenMenuItem Text="@AccountService.User.Description" Icon="account_circle">
+                <RadzenMenuItem Text="Impostazioni" Icon="settings"></RadzenMenuItem>
+                <hr class="separator">
+                <RadzenMenuItem Text="Disconnetti" Path="/account/logout" Icon="logout"></RadzenMenuItem>
+            </RadzenMenuItem>
+        </RadzenMenu>
+    </RadzenStack>
  }
  </div>
 
 @code {
-
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
