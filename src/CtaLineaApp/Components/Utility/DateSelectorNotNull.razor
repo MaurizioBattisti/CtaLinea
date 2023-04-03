@@ -1,0 +1,63 @@
+﻿ @inject IApplicationSettings AppSettings;
+
+<RadzenDatePicker 
+	TValue="DateTime"
+	@bind-Value=@Value 
+	DateFormat="dd/MM/yyyy" 
+	Change=@OnChange 
+	Culture=@AppSettings.CurrentCulture
+	Min=@Min
+	Max=@Max
+	AllowClear=false
+	Name=@Name
+	Disabled=@Disabled
+	Class="w-100" >
+	<FooterTemplate>
+		@if (this.SettodayButtonVisible() == true)
+		{
+			<RadzenButton Click=@OnTodayClick Text="Oggi" Class="my-3 w-100" />
+		}
+	</FooterTemplate>
+</RadzenDatePicker>
+
+@code {
+	[Parameter]
+	public DateTime Value { get; set; }
+	[Parameter]
+	public EventCallback<DateTime> ValueChanged { get; set; }
+	[Parameter]
+	public EventCallback<object> Changed { get; set; }
+
+	[Parameter]
+	public DateTime? Min { get; set; }
+	[Parameter]
+	public DateTime? Max { get; set; }
+
+	[Parameter]
+	public bool Disabled { get; set; } = false;
+	[Parameter]
+	public bool ShowSetTodayButton { get; set; } = false;
+
+	[Parameter]
+	public string? Name { get; set; }
+
+	private bool SettodayButtonVisible ()
+	{
+		if (this.ShowSetTodayButton == false) return false;
+		if (Min != null && DateTime.Today < this.Min) return false;
+		if (Max != null && DateTime.Today > this.Max) return false;
+		return true;
+	}
+
+	private void OnTodayClick()
+	{
+		this.Value = DateTime.Today;
+		ValueChanged.InvokeAsync(this.Value);
+		this.Changed.InvokeAsync(this);
+	}
+	private void OnChange (DateTime? value)
+	{
+		ValueChanged.InvokeAsync(this.Value);
+		this.Changed.InvokeAsync(this);
+	}
+}

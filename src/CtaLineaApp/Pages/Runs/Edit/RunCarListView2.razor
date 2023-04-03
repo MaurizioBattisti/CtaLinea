@@ -1,0 +1,465 @@
+﻿@using CtaLinea.Model.External;
+@inject IRunModelService RunModelService
+@inject DialogService DialogService
+
+@if(this.CanChangeData == false && CanSelectData == false)
+{
+	<RadzenDataGrid AllowFiltering="false"
+				AllowPaging="false" AllowSorting="false"
+				AllowColumnResize=true
+				Data="@this.GetCarList()"
+				TItem="RunPeriodCar">
+		<Columns>
+			<RadzenDataGridColumn TItem="RunPeriodCar" Title="Tipo" Width="120px" Visible=@IsCarTYpeColumnVisible()>
+				<Template Context="data">
+					<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+						<RadzenIcon Icon="directions_bus" IconStyle="@GetIconStyle((data))" />
+						<span>@GetRunCarTypeDescr(data)</span>
+					</RadzenStack>
+				</Template>
+			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="RunPeriodCar" Title="Ditta" Width="200px">
+				<Template Context="data">
+					<div class="@this.GetClassByStatus(data.CarData)">
+						<span>@data.AssociateData?.Description</span>
+					</div>
+				</Template>
+			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="RunPeriodCar" Title="Mezzo" Width="200px">
+				<Template Context="data">
+					<div class="@this.GetClassByStatus(data.CarData)">
+						<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+							<span>@data.CarData?.RegNumber</span>
+							<RadzenBadge>@data.CarData?.NrSittings</RadzenBadge>
+						</RadzenStack>
+					</div>
+				</Template>
+			</RadzenDataGridColumn>
+		</Columns>
+	</RadzenDataGrid>
+}
+else
+{
+	<RadzenDataGrid @ref=@PeriodList
+					AllowFiltering="false"
+					AllowPaging="false" AllowSorting="false"
+					AllowColumnResize=true
+					Data="@this.GetCarList()"
+					SelectionMode="@SelectionMode"
+					AllowRowSelectOnRowClick=true
+					Value=@SelectedCars
+					RowDeselect="@SelectionChanged"
+					RowSelect="@SelectionChanged"
+					ValueChanged="OnSelectionChanged"
+					TItem="RunPeriodCar">
+		<HeaderTemplate>
+			@if (CanChangeData == true)
+			{
+				<RadzenButton Click=@AddNewCar_Click Text="Nuovo Mezzo" Icon="add" />
+			}
+		</HeaderTemplate>
+		<Columns>
+			@if (this.SelectionMode == DataGridSelectionMode.Multiple)
+			{
+				<RadzenDataGridColumn TItem="RunPeriodCar" Width="60px" Sortable="false" Filterable="false">
+					<HeaderTemplate>
+						<RadzenCheckBox TriState="false" TValue="bool" Value="@(GetCarList().Any(i => this.SelectedCars != null && SelectedCars.Contains(i)))"
+								Change="@(args => SelectedCars = args ? this.GetCarList().ToList() : new List<RunPeriodCar>())" />
+					</HeaderTemplate>
+					<Template Context="data">
+						<RadzenCheckBox TriState="false" Value="@(SelectedCars != null && SelectedCars.Contains(data))"
+								TValue="bool" />
+					</Template>
+				</RadzenDataGridColumn>
+			}
+			<RadzenDataGridColumn TItem="RunPeriodCar" Title="Tipo" Width="120px" Visible=@IsCarTYpeColumnVisible()>
+				<Template Context="data">
+					<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+						<RadzenIcon Icon="directions_bus" IconStyle="@GetIconStyle((data))" />
+						<span >@GetRunCarTypeDescr(data)</span>
+					</RadzenStack>
+				</Template>
+			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="RunPeriodCar" Title="Ditta" Width="200px">
+				<Template Context="data">
+					<div class="@this.GetClassByStatus(data.CarData)">
+						<span>@data.AssociateData?.Description</span>
+					</div>
+				</Template>
+			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="RunPeriodCar" Title="Mezzo" Width="200px">
+				<Template Context="data">
+					<div class="@this.GetClassByStatus(data.CarData)">
+						<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+							<span>@data.CarData?.RegNumber</span> 
+							<RadzenBadge>@data.CarData?.NrSittings</RadzenBadge>
+						</RadzenStack>
+					</div>
+				</Template>
+			</RadzenDataGridColumn>
+			@if (CanChangeData == true)
+			{
+				<RadzenDataGridColumn TItem="RunPeriodCar" Context="node" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
+					<Template Context="data">
+						<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
+								Icon="edit"
+								Size="ButtonSize.Medium"
+								Click=@(() => EditCar_Click(data)) Text="" />
+						<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
+								Icon="delete"
+								Size="ButtonSize.Medium"
+								Click=@(() => DeleteCar_Click(data)) Text="" />
+					</Template>
+				</RadzenDataGridColumn>
+			}
+		</Columns>
+	</RadzenDataGrid>
+
+	@if (CanChangeData == true)
+	{
+		@if (this.SelectedCars.Count == 1)
+		{
+			<p> dati genrali del mezzo</p>
+
+			@if (this.CanShoCosts() == true)
+			{
+				<h3>Costi</h3>
+				<RunCarCostListView CurrentRun=@CurrentRun EditableData=@EditableData PeriodCar=@GetSingleSelectedCar() />
+			}
+		}
+
+		<DialogBoxWrapper @ref=@CarDialog
+				  Width="400px"
+				  Title="Mezzo" >
+			<Body Context="ds">
+				<RunCarEditDialog CanEditType=@IsCarTYpeColumnVisible()
+				PeriodCar=@PeriodCarInEdit />
+			</Body>
+			<Buttons Context="ds">
+				@if (this.IsAdding == true)
+				{
+					<RadzenButton Click="@(() => this.ConfirmUpdateCarASync(ds))"
+						  Text="Crea" />
+				}
+				else
+				{
+					<RadzenButton Click="@(() => this.ConfirmUpdateCarASync(ds))"
+					  Text="Aggiorna" />
+
+				}
+				<RadzenButton Click="@(() => ds.Close())"
+					  ButtonStyle="ButtonStyle.Secondary"
+					  Text="Annulla" />
+			</Buttons>
+		</DialogBoxWrapper>
+	}
+}
+
+@code {
+	private RadzenDataGrid<RunPeriodCar>? PeriodList;
+	private DialogBoxWrapper? CarDialog;
+
+	[CascadingParameter]
+	CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+	[Parameter]
+	public IEditableData? EditableData { get; set; }
+
+	[Parameter]
+	public RunItem CurrentRun { get; set; } = new RunItem();
+
+	[Parameter]
+	public IEnumerable<RunPeriodCar>? CarList { get; set; }
+
+	[Parameter]
+	public bool CanChangeData { get; set; } = false;
+	[Parameter]
+	public bool CanSelectData { get; set; } = false;
+
+	[Parameter]
+	public bool HandlePrimaryCar { get; set; } = true;
+	[Parameter]
+	public bool HandleSpareCars { get; set; } = true;
+	[Parameter]
+	public bool HandleReplacedCars { get; set; } = true;
+
+	[Parameter]
+	public DataGridSelectionMode SelectionMode { get; set; } = DataGridSelectionMode.Single;
+
+	[Parameter]
+	public IList<RunPeriodCar> SelectedCars { get; set; } = new List<RunPeriodCar>();
+	[Parameter]
+	public EventCallback<IList<RunPeriodCar>> SelectedCarsChanged { get; set; } 
+
+	[Parameter]
+	public EventCallback<BeforeActOnItemArgs<RunPeriodCar>> BeforeAddNew { get; set; }
+	[Parameter]
+	public EventCallback<RunPeriodCar> AfterAddNew { get; set; }
+	[Parameter]
+	public EventCallback<BeforeActOnItemArgs<RunPeriodCar>> BeforeUpdate { get; set; }
+	[Parameter]
+	public EventCallback<RunPeriodCar> AfterUpdate { get; set; }
+	[Parameter]
+	public EventCallback<BeforeActOnItemArgs<RunPeriodCar>> BeforeDelete { get; set; }
+	[Parameter]
+	public EventCallback<RunPeriodCar> AfterDelete { get; set; }
+
+	private bool IsCarTYpeColumnVisible ()
+	{
+		var count = 0;
+		if (this.HandlePrimaryCar == true) ++count;
+		if (this.HandleSpareCars == true) ++count;
+		if (this.HandleReplacedCars == true) ++count;
+
+		return count > 1;
+	}
+
+	private IList<RunPeriodCar> GetCarList ()
+	{
+		if (this.CarList != null)
+		{
+			var primaryCars = (from c in this.CarList
+										where c.RunCarType == CarTypeEnum.Primary
+											&& HandlePrimaryCar == true
+										orderby c.CarData?.RegNumber
+										select c);
+			var spareCars = (from c in this.CarList
+								where c.RunCarType == CarTypeEnum.Spare
+									&& HandleSpareCars == true
+								orderby c.CarData?.RegNumber
+								select c);
+			var replacementCars = (from c in this.CarList
+											where c.RunCarType == CarTypeEnum.Replacement
+												&& HandleReplacedCars == true
+											orderby c.CarData?.RegNumber
+											select c);
+			return primaryCars
+				.Union(spareCars)
+				.Union(replacementCars)
+				.ToList();
+		}
+		else
+		{
+			return new List<RunPeriodCar>();
+		}
+	}
+
+	private IconStyle GetIconStyle(RunPeriodCar? car)
+	{
+		IconStyle style = IconStyle.Danger;
+
+		if (car != null)
+		{
+			switch (car.RunCarType)
+			{
+				case CarTypeEnum.Primary:
+					style = IconStyle.Success;
+					break;
+				case CarTypeEnum.Replacement:
+					style = IconStyle.Warning;
+					break;
+				case CarTypeEnum.Spare:
+					style = IconStyle.Info;
+					break;
+			}
+		}
+
+		return style;
+	}
+	private string GetRunCarTypeDescr(RunPeriodCar? car)
+	{
+		var descr = string.Empty;
+		if (car != null)
+		{
+			switch (car.RunCarType)
+			{
+				case CarTypeEnum.Primary:
+					descr = "Titolare";
+					break;
+				case CarTypeEnum.Replacement:
+					descr = "Sostituzione";
+					break;
+				case CarTypeEnum.Spare:
+					descr = "Scorta";
+					break;
+			}
+		}
+		return descr;
+	}
+
+	private string GetClassByStatus(
+		Car? car)
+	{
+		if (car == null) return string.Empty;
+		if (car.Active == false) return this.GetStyle(this.Settings.InactiveCarBgStyle, this.Settings.InactiveCarFgStyle);
+		if (car.PrimaryCar) return this.GetStyle(this.Settings.PrimaryCarBgStyle, this.Settings.PrimaryCarFgStyle);
+		if (car.SpareCar) return this.GetStyle(this.Settings.SpareCarBgStyle, this.Settings.SpareCarFgStyle);
+		return this.GetStyle(this.Settings.OtherCarBgStyle, this.Settings.OtherCarFStyle);
+	}
+	private string GetStyle(
+		params string[] styles)
+	{
+		var str = string.Join(' ', styles);
+		return str.Trim();
+	}
+
+	public IList<RunPeriodCar> GetSelectedPeriodCars ()
+	{
+		return this.SelectedCars;
+	}
+	public RunPeriodCar? GetSingleSelectedCar()
+	{
+		return this.SelectedCars.FirstOrDefault();
+	}
+	public bool CanShoCosts ()
+	{
+		var car = this.GetSingleSelectedCar ();
+		return (car != null
+			&& (car.RunCarType == CarTypeEnum.Primary
+				|| car.RunCarType == CarTypeEnum.Replacement));
+	}
+
+	private CarTypeEnum GetDefaultRunCarType ()
+	{
+		var carTYpe = CarTypeEnum.Primary;
+
+		if (this.HandlePrimaryCar == false) carTYpe = CarTypeEnum.Spare;
+		if (this.HandleSpareCars == false && carTYpe == CarTypeEnum.Spare) carTYpe = CarTypeEnum.Replacement;
+		if (this.HandleReplacedCars == false && carTYpe == CarTypeEnum.Replacement) carTYpe = CarTypeEnum.Primary;
+
+		return carTYpe;
+	}
+
+	#region gestione della dialog di aggiunta o modiica del mezzo
+	private bool IsAdding = false;
+	private RunPeriodCar PeriodCarInEdit = new RunPeriodCar();
+
+	private string GetDialogTitle ()
+	{
+		return this.IsAdding ? "Nuovo MEzzo" : "Modifica MEzzo";
+	}
+
+	private async Task AddNewCar_Click()
+	{
+		if (this.CarDialog != null)
+		{
+			var editPeriod = new RunPeriodCar ();
+			editPeriod.RunCarType = this.GetDefaultRunCarType();
+
+			// recupera il periodo  selezionato o il primo
+			var carPeriod = this.GetSingleSelectedCar();
+			if (carPeriod == null
+				&& this.CurrentRun.SubPeriods != null)
+			{
+				carPeriod = this.GetCarList().FirstOrDefault();
+			}
+
+			editPeriod.RunCarId = Guid.NewGuid();
+			// recupera il consorziato del mezzo già inseriteo se c'è
+			editPeriod.AssociateId = Guid.Empty;
+			if (carPeriod != null)
+			{
+				editPeriod.AssociateId = carPeriod.AssociateId;
+				editPeriod.AssociateData = carPeriod.AssociateData;
+			}
+
+			// azzera il riferimento al mezzo
+			editPeriod.CarId = Guid.Empty;
+
+			IsAdding = true;
+			this.PeriodCarInEdit = editPeriod;
+			await CarDialog.ShowDialog(this.GetDialogTitle());
+		}
+	}
+
+	private async Task EditCar_Click (RunPeriodCar item)
+	{
+		if (this.CarDialog != null)
+		{
+			var carPeriod = this.GetSingleSelectedCar ();
+			if (carPeriod != null)
+			{
+				var editPeriod = new RunPeriodCar ();
+
+				editPeriod.RunCarId = carPeriod.RunCarId;
+				editPeriod.RunCarType = carPeriod.RunCarType;
+				editPeriod.AssociateId = carPeriod.AssociateId;
+				editPeriod.AssociateData = carPeriod.AssociateData;
+				editPeriod.CarId = carPeriod.CarId;
+				editPeriod.CarData = carPeriod.CarData;
+
+				IsAdding = false;
+				this.PeriodCarInEdit = editPeriod;
+				await CarDialog.ShowDialog(this.GetDialogTitle());
+			}
+		}
+	}
+
+	private async Task ConfirmUpdateCarASync(
+		DialogService ds)
+	{
+		// controllo formale prima di chiamare le funzionid callback
+		if (this.PeriodCarInEdit.AssociateId == Guid.Empty
+			|| this.PeriodCarInEdit.CarId == Guid.Empty)
+		{
+			await this.DialogService.Alert("Prima di poter confermare è necessario selezionare un consorziato e un mezzo", "Impossibile procedere");
+			return;
+		}
+
+		var beforeOp = new BeforeActOnItemArgs<RunPeriodCar>(this.PeriodCarInEdit);
+
+		if (IsAdding == true)
+		{
+			// era una aggiunta di mezzo
+			await this.BeforeAddNew.InvokeAsync(beforeOp);
+		}
+		else
+		{
+			// era la modifcia di un mezzo
+			await this.BeforeUpdate.InvokeAsync(beforeOp);
+		}
+		if (beforeOp.Cancelled == true) return;
+
+		// conclude l'ìoperaizone
+		if (IsAdding == true)
+		{
+			// era una add
+			await this.AfterAddNew.InvokeAsync(this.PeriodCarInEdit);
+		}
+		else
+		{
+			// era un update
+			await this.AfterUpdate.InvokeAsync(this.PeriodCarInEdit);
+		}
+		ds.Close();
+		if (this.PeriodList != null)
+		{
+			await this.PeriodList.Reload();
+		}
+	}
+	private async Task DeleteCar_Click(RunPeriodCar item)
+	{
+		var beforeOp = new BeforeActOnItemArgs<RunPeriodCar>(item);
+		await BeforeDelete.InvokeAsync(beforeOp);
+		if (beforeOp.Cancelled == true) return;
+
+		await AfterDelete.InvokeAsync(item);
+		if (this.PeriodList != null)
+		{
+			await this.PeriodList.Reload();
+		}
+	}
+	#endregion
+
+	private async Task SelectionChanged (RunPeriodCar item)
+	{
+		await Task.CompletedTask;
+
+		// await SelectedCarsChanged.InvokeAsync(this.SelectedCars);
+	}
+	private async Task OnSelectionChanged(IList<RunPeriodCar> list)
+	{
+		this.SelectedCars = list;
+		await SelectedCarsChanged.InvokeAsync(this.SelectedCars);
+	}
+}

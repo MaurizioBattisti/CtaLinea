@@ -16,6 +16,19 @@ namespace CtaLinea.Model.Runs
 
         public string Text => GetCarCostHeader();
 
+        public void CopyFrom (RunCarCost item)
+        {
+            this.RunCarCostId = item.RunCarCostId;
+			this.StartDate = item.StartDate;
+
+			this.KmPrice = item.KmPrice;
+			this.KmPriceExtra = item.KmPriceExtra;
+			this.DayPrice = item.DayPrice;
+
+			this.DayIntegration = item.DayIntegration;
+			this.DayForfait = item.DayForfait;
+	    }
+
         private string GetCarCostHeader()
         {
             string header = "dall''inizio";

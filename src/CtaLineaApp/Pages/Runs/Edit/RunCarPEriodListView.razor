@@ -12,8 +12,9 @@
 			 Easing="Easings.Ease"
 			 Duration="TimeSpan.FromSeconds(0.5)">
 
-		<RadzenDataGrid @ref="ordersGrid"  
-			AllowGrouping="true" AllowFiltering="true" AllowSorting="true" 
+		<RadzenDataGrid @ref="PeriodGrid"  
+			AllowGrouping="true" AllowFiltering="true" AllowSorting="true"
+			AllowColumnResize=true
 			Data="@CurrentRun.SubPeriods" 
 			SelectionMode="DataGridSelectionMode.Single"
 			@bind-Value=@SelectedPeriods
@@ -21,7 +22,7 @@
 			GroupRowRender="OnGroupRowRender">
 			
 			<HeaderTemplate>
-				<RadzenButton Click=@AddPeriod_Click Text="Nuovo Periodo" />
+				<RadzenButton Click=@AddPeriod_Click Text="Nuovo Periodo" Icon="add" />
 			</HeaderTemplate>
 
 			<Columns>
@@ -89,7 +90,7 @@
 						<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
 									  Icon="edit"
 									  Size="ButtonSize.Medium"
-									  Click=@(() => DEditPeriod_Click(data)) Text="" />
+									  Click=@(() => EditPeriod_Click(data)) Text="" />
 						<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
 									  Icon="delete"
 									  Size="ButtonSize.Medium"
@@ -98,34 +99,130 @@
 				</RadzenDataGridColumn>
 			</Columns>
 		</RadzenDataGrid>
-		 
+
+		@if (this.SelectedPeriods.Count > 0)
+		{
+			<RadzenTabs TabPosition="TabPosition.Top">
+				<Tabs>
+					<RadzenTabsItem Text="Mezzi usati" Selected=true >
+						<RunCarListView2 CurrentRun=@CurrentRun 
+									 EditableData=@EditableData 
+									 CarList="@this.GetSelectedPeriod().Cars"  
+									 BeforeAddNew="@BeforeAddCarAsync"
+									 AfterAddNew="@AfterAddCarAsync"
+									 BeforeUpdate="@BeforeUpdateCarAsync"
+									 AfterUpdate="@AfterUpdateCarAsync"
+									 BeforeDelete="@BeforeDeleteCarAsync"
+									 AfterDelete="@AfterDeleteCarAsync"
+									 CanChangeData=true
+									 HandleReplacedCars=false />
+					</RadzenTabsItem>
+					<RadzenTabsItem Text="Sostituzioni" >
+						<RunCarReplacementListView CurrentRun=@CurrentRun EditableData=@EditableData Period="@GetSelectedPeriod()" />
+					</RadzenTabsItem>
+					<RadzenTabsItem Text="Note Periodo" >
+						<RadzenRow AlignItems="AlignItems.Start">
+							<RadzenColumn Size="3">
+								<RadzenLabel Component="Note" Text="Note" />
+							</RadzenColumn>
+							<RadzenColumn Size="9">
+								<RadzenTextArea Name="Note" @bind-Value="CurrentPeriod.Note" Class="w-100 h-100" Change=@(a=> this.EditableData?.SetDirty()) Style="height: 60px" />
+							</RadzenColumn>
+						</RadzenRow>
+					</RadzenTabsItem>
+				</Tabs>
+			</RadzenTabs>
+		}
 	</Animate>
 </RadzenTemplateForm>
 
-<RadzenTabs TabPosition="TabPosition.Top"
-			RenderMode="TabRenderMode.Client">
-	<Tabs>
-		<RadzenTabsItem Text="Mezzi usati" Selected=true >
+<DialogBoxWrapper @ref=@PeriodDlg
+	Width="400px"
+	Title="Periodo Mezzi">
+	<Body Context="ds">
+		<RadzenRow>
+			<RadzenColumn Size="7">
+				<DateRangeSelector
+					@bind-StartDate=@this.PeriodInEdit.StartDate
+					@bind-EndDate=@this.PeriodInEdit.EndDate 
+					Inline=false
+					AllowClear=true
+					/>
+			</RadzenColumn>
+			<RadzenColumn Size="5">
+				<FormWeekDays @bind-Monday="@this.PeriodInEdit.Monday"
+							  @bind-Tuesday="@this.PeriodInEdit.Tuesday"
+							  @bind-Wednesday="@this.PeriodInEdit.Wednesday"
+							  @bind-Thursday="@this.PeriodInEdit.Thursday"
+							  @bind-Friday="@this.PeriodInEdit.Friday"
+							  @bind-Saturday="@this.PeriodInEdit.Saturday"
+							  @bind-Sunday="@this.PeriodInEdit.Sunday" />
+			</RadzenColumn>
+		</RadzenRow>
+	</Body>
+	<Buttons Context="ds">
+		@if (this.IsAdding == true)
+		{
+			<RadzenButton Click="@(() => this.ConfirmUpdateReplacementASync(ds))"
+					  Text="Crea" />
+		}
+		else
+		{
+			<RadzenButton Click="@(() => this.ConfirmUpdateReplacementASync(ds))"
+					  Text="Aggiorna" />
 
-		</RadzenTabsItem>
-		<RadzenTabsItem Text="Sostituzioni" >
-
-		</RadzenTabsItem>
-	</Tabs>
-</RadzenTabs>
+		}
+		<RadzenButton Click="@(() => ds.Close())"
+					  ButtonStyle="ButtonStyle.Secondary"
+					  Text="Annulla" />
+	</Buttons>
+</DialogBoxWrapper>
 
 @code {
-	private RadzenDataGrid<RunPeriod>? ordersGrid;
+	[Parameter]
+	public IEditableData? EditableData { get; set; }
 
+	[Parameter]
+	public RunItem CurrentRun { get; set; } = new RunItem();
 
+	private IList<RunPeriod> SelectedPeriods = new List<RunPeriod>();
+	private RadzenDataGrid<RunPeriod>? PeriodGrid;
 
 	void OnRender(DataGridRenderEventArgs<RunPeriod> args)
 	{
 		if (args.FirstRender)
 		{
+			// seleziona il peridoo attivo se esite
+			this.SelectCurrentPeriod();
+
 			args.Grid.Groups.Add(new GroupDescriptor() { Title = "Gruppo", Property = nameof(RunPeriod.MainPeriodText), SortOrder = SortOrder.Ascending });
 			StateHasChanged();
 		}
+	}
+
+	private void SelectCurrentPeriod ()
+	{
+		this.SelectedPeriods.Clear();
+		if (this.CurrentRun.SubPeriods != null)
+		{
+			var period = (from p in this.CurrentRun.SubPeriods
+								where (p.StartDate == null || p.StartDate.Value <= DateTime.Today)
+									&& (p.EndDate == null || p.EndDate.Value >= DateTime.Today)
+								orderby p.StartDate ascending
+								select p)
+					.FirstOrDefault();
+
+			if (period != null)
+			{
+				this.SelectedPeriods.Add(period);
+				this.PeriodGrid?.SelectRow(period);
+			}
+		}
+	}
+
+	private RunPeriod CurrentPeriod
+	{
+		get { return this.SelectedPeriods.First(); }
 	}
 
 	void OnGroupRowRender(GroupRowRenderEventArgs args)
@@ -133,17 +230,280 @@
 		args.Expanded = true;
 	}
 
+	private RunPeriod GetSelectedPeriod ()
+	{
+		var item = this.SelectedPeriods.FirstOrDefault();
+		return item ?? new RunPeriod();
+	}
 
-	[Parameter]
-	public IEditableData? EditableData { get; set; }
+	#region gestione dielog periodi
+	private DialogBoxWrapper? PeriodDlg;
+	private bool IsAdding = false;
+	private RunPeriod PeriodInEdit = new RunPeriod();
 
-	[Parameter]
-	public RunItem CurrentRun { get; set; } = new RunItem();
+	private async Task AddPeriod_Click()
+	{
+		var period = new RunPeriod ()
+		{
+			RunPeriodId = Guid.NewGuid()
+		};
 
+		this.IsAdding = true;
+		this.PeriodInEdit = period;
+		if (this.PeriodDlg != null)
+		{
+			await this.PeriodDlg.ShowDialog("Nuovo periodo");
+		}
+	}
+	public async Task EditPeriod_Click(RunPeriod item)
+	{
+		var period = new RunPeriod();
+		period.CopyFrom(item);
+
+		this.IsAdding = false;
+		this.PeriodInEdit = period;
+		if (this.PeriodDlg != null)
+		{
+			await this.PeriodDlg.ShowDialog("Nuovo periodo");
+		}
+	}
+	public async Task DeletePeriod_Click(RunPeriod item)
+	{
+		// chiede conferma per la cancellaizone
+		if (await this.DialogService.Confirm(
+			"Desideri veramente eliminare il periodo di operatività ? Eliminando il periodo verranno persi tutti i dati relativi ai mezzi , sostituzioni e soti associati a questo peridoo",
+			"Eliminaizone Periodo",
+			new ConfirmOptions
+				{
+					OkButtonText = "Si, Elimina",
+					CancelButtonText = "No"
+				}) != true)
+		{
+			return;
+		}
+
+		if (this.CurrentRun.SubPeriods != null)
+		{
+			this.CurrentRun.SubPeriods.Remove(item);
+			this.EditableData?.SetDirty();
+			if (PeriodGrid != null)
+			{
+				await this.PeriodGrid.Reload();
+			}
+			this.SelectCurrentPeriod();
+		}
+	}
+
+	private async Task ConfirmUpdateReplacementASync (DialogService  ds)
+	{
+		var msg = string.Empty;
+
+		// esegue il contorllo dei dati
+		if (this.PeriodInEdit.StartDate  != null
+			&& this.PeriodInEdit.EndDate != null
+			&& this.PeriodInEdit.StartDate >= this.PeriodInEdit.EndDate)
+		{
+			// le date sono incongruenti
+			msg += "Le date sono incongruenti tra loro. ";
+		}
+		if (this.PeriodInEdit.Monday == false
+			&& this.PeriodInEdit.Tuesday == false
+			&& this.PeriodInEdit.Wednesday == false
+			&& this.PeriodInEdit.Thursday == false
+			&& this.PeriodInEdit.Friday == false
+			&& this.PeriodInEdit.Saturday == false
+			&& this.PeriodInEdit.Sunday == false)
+		{
+			// nessun giorno selezionato
+			msg += "Deve essere selezionato almeno un giorno della settimana.";
+		}
+		if (string.IsNullOrEmpty(msg) == false)
+		{
+			await this.DialogService.Alert(msg, "dati periodo");
+			return;
+		}
+
+		// aggiunge o aggiorna i dati
+		if (this.IsAdding == true)
+		{
+			// nuovo periodo
+			if (this.CurrentRun.SubPeriods == null) this.CurrentRun.SubPeriods = new List<RunPeriod>();
+			this.CurrentRun.SubPeriods.Add(this.PeriodInEdit);
+
+			// aggiorna la lista e  seleziona la riga appena aggiunta
+			if (this.PeriodGrid != null)
+			{
+				await this.PeriodGrid.Reload();
+				await this.PeriodGrid.SelectRow(this.PeriodInEdit);
+			}
+		}
+		else
+		{
+			// aggiorna
+			CurrentPeriod.CopyFrom(this.PeriodInEdit);
+		}
+		this.EditableData?.SetDirty();
+		ds.Close();
+	}
+
+	#endregion
+
+	#region  Add car
+	private async Task BeforeAddCarAsync (BeforeActOnItemArgs<RunPeriodCar> beforeAction)
+	{
+		// controlla se il mezzo può essere aggiunto
+		if (this.CurrentPeriod.Cars != null)
+		{
+			if ((from c in this.CurrentPeriod.Cars
+					where c.CarId == beforeAction.Item.CarId
+						&& c.RunCarId != beforeAction.Item.RunCarId
+					select c).Count() > 0)
+			{
+				// il mezzo è già stato assegnao al periodo
+				await DialogService.Alert("Questo mezzo è già stato aggiunto, impossibile aggiungere lo stesso mezzo", "Errore Nuovo Mezzo");
+				beforeAction.Cancelled = true;
+				return;
+			}
+		}
+
+		await Task.CompletedTask;
+	}
+	private async Task AfterAddCarAsync(RunPeriodCar item)
+	{
+		if (this.CurrentPeriod.Cars == null)
+		{
+			this.CurrentPeriod.Cars = new List<RunPeriodCar>();
+		}
+		this.CurrentPeriod.Cars.Add(item);
+		this.EditableData?.SetDirty();
+		await Task.CompletedTask;
+	}
+	#endregion
+	#region update car
+	private async Task BeforeUpdateCarAsync(BeforeActOnItemArgs<RunPeriodCar> beforeAction)
+	{
+		// controlla se il mezzo può essere aggiunto
+		if (this.CurrentPeriod.Cars != null)
+		{
+			if ((from c in this.CurrentPeriod.Cars
+					where c.CarId == beforeAction.Item.CarId
+						&& c.RunCarId != beforeAction.Item.RunCarId
+					select c).Count() > 0)
+			{
+				// il mezzo è già stato assegnao al periodo
+				await DialogService.Alert("Questo mezzo è già stato usato, impossibile selezionare lo stesso mezzo", "Errore modifica mezzo");
+				beforeAction.Cancelled = true;
+				return;
+			}
+		}
+		// recupera il mezzo corrente
+		if (this.CurrentPeriod.Cars != null)
+		{
+			var car = this.CurrentPeriod.Cars.Where(c => c.RunCarId == beforeAction.Item.RunCarId).SingleOrDefault();
+			if (car != null)
+			{
+				// se è stato modificato il tipo di mezzo chiede conferma
+				if (beforeAction.Item.RunCarType != car.RunCarType
+					&& beforeAction.Item.RunCarType == CarTypeEnum.Spare
+					&& car.RunCarType != CarTypeEnum.Spare
+					)
+				{
+					var answer = await this.DialogService.Confirm(
+						"Sei sicuro di voler cambiare il tipo del mezzo ?  modificando il tipo del mezzo si perderanno tutit i costi ad esso associati", 
+						"Modifica tipo mezzo", 
+						new ConfirmOptions { OkButtonText = "Si", CancelButtonText = "No" }
+						);
+					if (answer != true) beforeAction.Cancelled = true;
+				}
+			}
+		}
+
+		await Task.CompletedTask;
+	}
+	private async Task AfterUpdateCarAsync(RunPeriodCar item)
+	{
+		if (this.CurrentPeriod.Cars != null)
+		{
+			var car = this.CurrentPeriod.Cars.Where(c => c.RunCarId == item.RunCarId).SingleOrDefault();
+			if (car != null)
+			{
+				car.RunCarType = item.RunCarType;
+
+				car.AssociateId = item.AssociateId;
+				car.AssociateData = item.AssociateData;
+				car.CarId = item.CarId;
+				car.CarData = item.CarData;
+
+				// se il tipo è scorta azzera la lista dei costi
+				if (car.RunCarType == CarTypeEnum.Spare) car.CarCosts = new List<RunCarCost>();
+
+				this.EditableData?.SetDirty();
+			}
+		}
+		await Task.CompletedTask;
+	}
+	#endregion
+	#region delete car
+	private async Task BeforeDeleteCarAsync(BeforeActOnItemArgs<RunPeriodCar> beforeAction)
+	{
+		// controlla che il mezzo non sia usato  nella lista di quelli sostituiti
+		if (CurrentPeriod.CarReplacements != null)
+		{
+			bool found = false;
+			foreach (var repl in CurrentPeriod.CarReplacements)
+			{
+				if (repl.OriginalPEriodCarIds == null) continue;
+				if (repl.OriginalPEriodCarIds.Contains(beforeAction.Item.RunCarId) == true)
+				{
+					found = true;
+					break;
+				}
+			}
+			if (found == true)
+			{
+				// mostra un messaggio che indica che non è possibile eliminare il mezzo
+				await DialogService.Alert("Il mezzo che si sta cancellado è stato già usato come mezzo originale in una sostituzione. Eliminare prima il mezzo dalla sostituzione, cambiarlo oppure eliminare la sostituzione prima di procedere con l'eleiminaizone del mezzo.");
+				beforeAction.Cancelled = true;
+				return;
+			}
+		}
+		// chiede conferma per la cancellazione dei costi nel caso ci siano dei costi associati
+		if (CurrentPeriod.Cars != null)
+		{
+			var car = this.CurrentPeriod.Cars.Where(c => c.RunCarId == beforeAction.Item.RunCarId).SingleOrDefault();
+			if (car != null)
+			{
+				// se è stato modificato il tipo di mezzo chiede conferma
+				if (car.RunCarType != CarTypeEnum.Spare
+					&& (car.CarCosts != null 
+						&& car.CarCosts.Count > 0
+					))
+				{
+					var answer = await this.DialogService.Confirm(
+						"Sei sicuro di voler eliminare il mezzo ? Eliminando il mezzo verranno persi anche tutti i costi associati.",
+						"Eliminazione mezzo",
+						new ConfirmOptions { OkButtonText = "Si, Elimina", CancelButtonText = "No" }
+						);
+					if (answer != true) beforeAction.Cancelled = true;
+				}
+			}
+		}
+	}
+	private async Task AfterDeleteCarAsync(RunPeriodCar item)
+	{
+		if (this.CurrentPeriod.Cars != null)
+		{
+			this.CurrentPeriod.Cars.Remove(item);
+			this.EditableData?.SetDirty();
+		}
+		await Task.CompletedTask;
+	}
+	#endregion
+
+	/*
 	private IList<RunPeriodGroup> PeriodGroupList { get; set; } = new List<RunPeriodGroup>();
 	private IList<RunPeriodGroup> SelectedPeriodGroups { get; set; } = new List<RunPeriodGroup>();
-	private IList<RunPeriod> SelectedPeriods { get; set; } = new List<RunPeriod>();
-
+	
 	private RunPeriodGroup? CurrentPeriodGroup { get; set; }
 
 	private void SelectPeriodGroup (RunPeriodGroup? item)
@@ -391,4 +751,5 @@
 		return (result != null && result == true);
 	}
 	#endregion
+	*/
 }

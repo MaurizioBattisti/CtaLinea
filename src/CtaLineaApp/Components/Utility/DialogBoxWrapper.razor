@@ -1,0 +1,51 @@
+﻿@inject DialogService DialogService
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+    [Parameter]
+    public RenderFragment<DialogService> Body { get; set; } = (ds) =>@<div></div>;
+    [Parameter]
+    public RenderFragment<DialogService> Buttons { get; set; } = (ds) =>@<div></div>;
+
+    [Parameter]
+    public string? Top { get; set; }
+    [Parameter]
+    public string? Left { get; set; }
+    [Parameter]
+    public string? Width { get; set; }
+    [Parameter]
+    public bool ShowClose { get; set; } = true;
+    [Parameter]
+    public bool CloseDialogOnEsc { get; set; } = true;
+    [Parameter]
+    public bool CloseDialogOnOverlayClick { get; set; } = true;
+
+    public async Task ShowDialog (
+        string? title = null)
+    {
+        if (title == null) title = this.Title;
+
+        await DialogService.OpenAsync(
+        title,
+            ds =>
+            @<RadzenStack Orientation="Orientation.Vertical">
+                @this.Body(ds)
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
+                    @this.Buttons(ds)
+                </RadzenStack>
+            </RadzenStack>
+            , new DialogOptions()  
+            { 
+                ShowClose = this.ShowClose,
+                CloseDialogOnEsc = this.CloseDialogOnEsc,
+                CloseDialogOnOverlayClick = this.CloseDialogOnOverlayClick,
+
+                Top = this.Top,
+                Left = this.Left,
+                Width = this.Width,
+                Draggable = false
+            }
+        );
+    }
+}

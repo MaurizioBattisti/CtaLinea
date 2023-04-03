@@ -15,12 +15,13 @@
 		<div class="d-flex flex-row">
 			<RadzenDataGrid AllowFiltering="false"
 							AllowPaging="false" AllowSorting="false"
+							AllowColumnResize=true
 							Data="@this.GetVariationList()"
 							SelectionMode="DataGridSelectionMode.Single"
 							@bind-Value=@SelectedVariations
 							TItem="RunVariation">
 				<HeaderTemplate>
-					<RadzenButton Click=@AddVariation_Click Text="Nuovo Nodo" />
+					<RadzenButton Click=@AddVariation_Click Text="Nuova Variazione" Icon="add" />
 				</HeaderTemplate>
 
 				<Columns>
@@ -40,12 +41,10 @@
 							<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
 										  Icon="edit"
 										  Size="ButtonSize.Medium"
-											class="m-1"
 										  Click=@(() => EditVariation_Click(data)) Text="" />
 							<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
 										  Icon="delete"
 										  Size="ButtonSize.Medium"
-											class="m-1"
 										  Click=@(() => DeleteVariation_Click(data)) Text="" />
 						</Template>
 					</RadzenDataGridColumn>

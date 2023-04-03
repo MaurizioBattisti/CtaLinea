@@ -11,7 +11,18 @@ namespace CtaLinea.Model.Runs
         public SuspensionType? SuspensionTypeData { get; set; }
         public string? SuspensionNote { get; set; }
 
-        public RunSuspension GetCopy ()
+
+        public void CopyFrom (RunSuspension item)
+        {
+			this.RunSuspensionId = item.RunSuspensionId;
+			this.StartDate = item.StartDate;
+			this.EndDate = item.EndDate;
+			this.SuspensionTypeId = item.SuspensionTypeId;
+			this.SuspensionTypeData = item.SuspensionTypeData;
+			this.SuspensionNote = item.SuspensionNote;
+		}
+
+		public RunSuspension GetCopy ()
         {
             return new RunSuspension()
             {

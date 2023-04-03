@@ -6,11 +6,12 @@
 <div class="d-flex flex-row">
 	<RadzenDataGrid 
 		AllowFiltering="false" AllowPaging="false" AllowSorting="false"
+		AllowColumnResize=true
 		Data="@this.GetNodes()"
 		TItem="RunNode">
 		<HeaderTemplate>
-			<RadzenButton Click=@AddNote_Click Text="Nuovo Nodo" />
-			<RadzenButton Click=@Reorder_Click Text="Riordina" ButtonStyle="ButtonStyle.Secondary" />
+			<RadzenButton Click=@AddNote_Click Text="Nuovo Nodo" Icon="add" />
+			<RadzenButton Click=@Reorder_Click Text="Riordina" ButtonStyle="ButtonStyle.Secondary" Icon="sort" />
 		</HeaderTemplate>
 		<Columns>
 			<RadzenDataGridColumn Width="50px" TItem="RunNode" Title="#" TextAlign="TextAlign.Center" Property="ProgrNumber" />
@@ -30,11 +31,11 @@
 					<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
 								  Icon="edit"
 								  Size="ButtonSize.Medium"
-								  class="m-1" Click=@(() => EditNode_Click(data)) Text="" />
+								  Click=@(() => EditNode_Click(data)) Text="" />
 					<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
 								  Icon="delete"
 								  Size="ButtonSize.Medium"
-								  class="m-1" Click=@(() => DeleteNode_Click(data)) Text="" />
+								  Click=@(() => DeleteNode_Click(data)) Text="" />
 				</Template>
 			</RadzenDataGridColumn>
 		</Columns>

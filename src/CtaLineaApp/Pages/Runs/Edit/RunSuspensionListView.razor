@@ -1,0 +1,226 @@
+﻿@inject DialogService DialogService
+
+<RadzenTemplateForm Data="@CurrentRun"
+					Submit="@((RunItem args) => { ; })">
+	<Animate IsManual="false"
+			 Animation="Animations.ZoomIn"
+			 Easing="Easings.Ease"
+			 Duration="TimeSpan.FromSeconds(0.5)">
+		<div class="d-flex flex-row">
+			<RadzenDataGrid @ref=SuspensionList
+							AllowFiltering="false"
+							AllowPaging="false" AllowSorting="false"
+							AllowColumnResize=true
+							Data="@this.GetSuspensionList()"
+							SelectionMode="DataGridSelectionMode.Single"
+							@bind-Value=@SelectedSuspensions
+							TItem="RunSuspension">
+				<HeaderTemplate>
+					<RadzenButton Click=@AddSuspnesion_Click Text="Nuova Sospensione" Icon="add" />
+				</HeaderTemplate>
+				<Columns>
+					<RadzenDataGridColumn TItem="RunSuspension" Property="@(nameof(RunSuspension.StartDate))" Title="Dal" Width="120px">
+						<Template Context="data">
+							@this.FormatDate(data.StartDate)
+						</Template>
+					</RadzenDataGridColumn>
+					<RadzenDataGridColumn TItem="RunSuspension" Property="@(nameof(RunSuspension.EndDate))" Title="Al" Width="120px">
+						<Template Context="data">
+							@this.FormatDate(data.EndDate)
+						</Template>
+					</RadzenDataGridColumn>
+					<RadzenDataGridColumn TItem="RunSuspension" Property="@(nameof(RunSuspension.SuspensionNote))" Title="Note" Width="200px" />
+
+					<RadzenDataGridColumn TItem="RunSuspension" Context="node" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
+						<Template Context="data">
+							<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
+										  Icon="edit"
+										  Size="ButtonSize.Medium"
+										  Click=@(() => EditSuspnesion_Click(data)) Text="" />
+							<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
+										  Icon="delete"
+										  Size="ButtonSize.Medium"
+										  Click=@(() => DeleteSuspnesion_Click(data)) Text="" />
+						</Template>
+					</RadzenDataGridColumn>
+				</Columns>
+			</RadzenDataGrid>
+		</div>
+	</Animate>
+</RadzenTemplateForm>
+
+<DialogBoxWrapper @ref=@SuspensionDialog
+					Title="Suspension"
+					Width="600px">
+	<Body Context="ds">
+		<RadzenRow>
+			<DateRangeSelectorNotNull 
+				StartName="StartDate"
+				EndName="EndDate"
+				@bind-StartDate="@SuspensionInEdit.StartDate"
+				@bind-EndDate="@SuspensionInEdit.EndDate"
+				Inline=true />
+		</RadzenRow>
+		<RadzenRow>
+			<RadzenColumn Size="3">
+				<RadzenLabel Component="Note sostituzione" Text="Note" />
+			</RadzenColumn>
+			<RadzenColumn Size="9">
+				<RadzenTextArea Name="Note" @bind-Value="SuspensionInEdit.SuspensionNote" Class="w-100 h-100" Change=@(a=> this.EditableData?.SetDirty()) Style="height: 60px" />
+			</RadzenColumn>
+		</RadzenRow>
+	</Body>
+	<Buttons Context="ds" >
+		@if (this.IsAdding == true)
+		{
+			<RadzenButton Click="@(() => this.ConfirmDialogAsync(ds))"
+					  Text="Crea" />
+		}
+		else
+		{
+			<RadzenButton Click="@(() => this.ConfirmDialogAsync(ds))"
+					  Text="Aggiorna" />
+
+		}
+		<RadzenButton Click="@(() => ds.Close())"
+					  ButtonStyle="ButtonStyle.Secondary"
+					  Text="Annulla" />
+	</Buttons>
+</DialogBoxWrapper>
+
+@code {
+	private RadzenDataGrid<RunSuspension>? SuspensionList;
+
+	[Parameter]
+	public IEditableData? EditableData { get; set; }
+
+	[Parameter]
+	public RunItem CurrentRun { get; set; } = new RunItem();
+
+	IList<RunSuspension> SelectedSuspensions = new List<RunSuspension>();
+
+	private IEnumerable<RunSuspension> GetSuspensionList ()
+	{
+		if (this.CurrentRun.Suspensions == null)
+		{
+			return new List<RunSuspension>();
+		}
+		return (from s in this.CurrentRun.Suspensions
+				orderby s.StartDate ascending
+				select s);
+	}
+
+	private string FormatDate(
+		DateTime? date)
+	{
+		if (date == null) return string.Empty;
+		return string.Format("{0:dd/MM/yyyy}", date);
+	}
+
+	DialogBoxWrapper? SuspensionDialog;
+	private bool IsAdding = false;
+	private RunSuspension SuspensionInEdit = new RunSuspension();
+
+	private async Task AddSuspnesion_Click()
+	{
+		var susp = new RunSuspension()
+			{
+				RunSuspensionId = Guid.NewGuid(),
+				StartDate = DateTime.Today,
+				EndDate = DateTime.Today.AddDays(1)
+			};
+
+		this.IsAdding = true;
+		this.SuspensionInEdit = susp;
+		if (this.SuspensionDialog != null)
+		{
+			await this.SuspensionDialog.ShowDialog("Nuova sospensione");
+		}
+	}
+	private async Task EditSuspnesion_Click(RunSuspension item)
+	{
+		var susp = new RunSuspension();
+		susp.CopyFrom(item);
+
+		this.IsAdding = false;
+		this.SuspensionInEdit = susp;
+		if (this.SuspensionDialog != null)
+		{
+			await this.SuspensionDialog.ShowDialog("Nuova sospensione");
+		}
+	}
+	private async Task DeleteSuspnesion_Click(RunSuspension item)
+	{
+		// chiede conferma per la cancellazione
+		if (await this.DialogService.Confirm(
+			"Sei sicuro di voler eliminare la sospensione ?",
+			"eliminaizone Sospensione",
+			new ConfirmOptions
+			{
+				OkButtonText = "si, Elimina",
+				CancelButtonText = "No"
+			}) != true)
+		{
+			return;
+		}
+
+		if (this.CurrentRun.Suspensions != null)
+		{
+			this.CurrentRun.Suspensions.Remove (item);
+			this.EditableData?.SetDirty();
+
+			if (this.SuspensionList != null)
+			{
+				await this.SuspensionList.Reload();
+			}
+		}
+	}
+	private async Task  ConfirmDialogAsync(DialogService ds)
+	{
+		var msg = string.Empty;
+		// controlla i dati  che siano  a posto
+		if (this.SuspensionInEdit.StartDate > this.SuspensionInEdit.EndDate)
+		{
+			msg += "La data di inizio deve essere precedetne a quella di fine. ";
+		}
+		if (string.IsNullOrWhiteSpace(this.SuspensionInEdit.SuspensionNote) == true)
+		{
+			msg += "Deve essere indicata una motivazione per la sospensione.";
+		}
+		if (string.IsNullOrEmpty(msg) == false)
+		{
+			await this.DialogService.Alert(
+				msg,
+				"Sospensione");
+			return;
+		}
+
+		if (this.IsAdding == true)
+		{
+			// aggiunge
+			if (this.CurrentRun.Suspensions == null) this.CurrentRun.Suspensions = new List<RunSuspension>();
+			this.CurrentRun.Suspensions.Add(this.SuspensionInEdit);
+
+			if (this.SuspensionList != null)
+			{
+				await this.SuspensionList.Reload();
+			}
+		}
+		else
+		{
+			// modifica i dati
+			if (this.CurrentRun.Suspensions != null)
+			{
+				var susp = (from s in this.CurrentRun.Suspensions
+							where s.RunSuspensionId == this.SuspensionInEdit.RunSuspensionId
+							select s).SingleOrDefault();
+				if (susp != null)
+				{
+					susp.CopyFrom(this.SuspensionInEdit);
+				}
+			}
+		}
+		this.EditableData?.SetDirty();
+		ds.Close();
+	}
+}

@@ -1,4 +1,5 @@
-﻿
+﻿@inject DialogService DialogService
+
 <h1>Hello, world!</h1>
 
 <RadzenButton Text="Hi"></RadzenButton>
@@ -10,10 +11,42 @@
 	Welcome to your new app.
 </Animate>
 
-
-
 <SurveyPrompt Title="How is Blazor working for you?" />
 
-@code {
+<DialogBoxWrapper @ref=@mydlg 
+			Width="300px"
+			Title="La mia dialog"
+			>
+	<Body Context="ds" >
+		<RadzenTextBox @bind-Value=@Testo />
+	</Body>
+	<Buttons Context="ds" >
+		<RadzenButton Click="@(() => Chiudi_Click(ds))"
+					  Text="Sera" />
+		<RadzenButton Click="@(() => NonChiudi_Click(ds))"
+					ButtonStyle="ButtonStyle.Secondary"
+					  Text="Sera" />
+	</Buttons>
+</DialogBoxWrapper>
+<RadzenButton Click=@(() => mydlg.ShowDialog()) Text="Schiza per la dialog" />
 
+@code {
+	private DialogBoxWrapper?  mydlg;
+
+	private string Testo = string.Empty;
+
+	private async Task Chiudi_Click (DialogService ds)
+	{
+		await Task.CompletedTask;
+
+		await DialogService.Alert("un alert tan che sia");
+
+		ds.Close();
+	}
+	private async Task NonChiudi_Click(DialogService ds)
+	{
+		await Task.CompletedTask;
+
+		await DialogService.Alert("un alert tan che sia");
+	}
 }

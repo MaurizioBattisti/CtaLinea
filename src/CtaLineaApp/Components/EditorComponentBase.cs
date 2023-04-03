@@ -32,10 +32,24 @@ namespace CtaLineaApp.Components
         /// </summary>
         public string RouteUrl { get; set; }
 
+
+        private bool _IsClean = true;
         /// <summary>
         /// IRecordRoutingComponent implementation
         /// </summary>
-        public bool IsClean { get; set; } = true;
+        public bool IsClean 
+        {
+            get => GetIsClean();
+            set => this.SetIsClean(value); 
+        }
+        protected virtual bool GetIsClean()
+        {
+            return _IsClean;
+        }
+        protected virtual void SetIsClean(bool value)
+        {
+            _IsClean = value; 
+        }
 
         /// <summary>
         /// Boolean property set when the user attempts to exit a dirty component
@@ -63,11 +77,7 @@ namespace CtaLineaApp.Components
         protected async void OnNavigationCancelled(object sender, EventArgs e)
         {
             this.ExitAttempt = true;
-            var result = await DialogService.Confirm(
-                "Ci sono dati non salvati nella pagina. Desideri comunque abbandonarla ?",
-                "Dati non Salvati",
-                new ConfirmOptions() { OkButtonText = "Si, abbandona !", CancelButtonText = "No, rimani qui !" }
-                );
+            var result = await this.AskForExitAsync();
             this.StateHasChanged();
 
             if (result == true)
@@ -76,6 +86,16 @@ namespace CtaLineaApp.Components
                 this.ExitAttempt = false;
                 this.NavManager.NavigateTo(this.RouterSessionService.NavigationCancelledUrl);
             }
+        }
+
+        public async Task<bool> AskForExitAsync ()
+        {
+            var result = await DialogService.Confirm(
+                "Ci sono dati non salvati nella pagina. Desideri comunque abbandonarla ?",
+                "Dati non Salvati",
+                new ConfirmOptions() { OkButtonText = "Si, abbandona !", CancelButtonText = "No, rimani qui !" }
+                );
+            return result == true;
         }
 
         public void Dispose()

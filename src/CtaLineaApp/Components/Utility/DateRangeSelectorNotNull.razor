@@ -1,0 +1,92 @@
+﻿
+<RadzenRow>
+    <RadzenColumn Size="@ColSize">
+        <RadzenLabel Component="@StartName" Text="Data Inizio" />
+    </RadzenColumn>
+    <RadzenColumn Size="@ColSize">
+        <DateSelectorNotNull @bind-Value="StartDate"
+                      Changed=@OnStartDateChanged
+                      Name=@StartName
+                      Min=@Min Max=@StartMax()
+                      Disabled=@Disabled
+                      ShowSetTodayButton=true
+                      />
+    </RadzenColumn>
+    <RadzenColumn Size="@ColSize">
+        <RadzenLabel Component="@EndName" Text="Data Fine" />
+    </RadzenColumn>
+    <RadzenColumn Size="@ColSize">
+        <DateSelectorNotNull @bind-Value="EndDate"
+                      Changed=@OnEndDateChanged
+                      Name=@EndName
+                      Min=@EndMin() Max=@Max
+                      Disabled=@Disabled
+                      ShowSetTodayButton=true
+                       />
+    </RadzenColumn>
+</RadzenRow>
+
+@code {
+    private int ColSize => this.Inline ? 3 :12;
+
+    [Parameter]
+    public DateTime StartDate { get; set; }
+    [Parameter]
+    public EventCallback<DateTime> StartDateChanged { get; set; }
+    [Parameter]
+    public DateTime EndDate { get; set; }
+    [Parameter]
+    public EventCallback<DateTime> EndDateChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<object> Changed { get; set; }
+
+    [Parameter]
+    public DateTime? Min { get; set; }
+    [Parameter]
+    public DateTime? Max { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+    [Parameter]
+    public bool Inline { get; set; } = false;
+
+    [Parameter]
+    public string? StartName { get; set; }
+    [Parameter]
+    public string? EndName { get; set; }
+
+    private DateTime? StartMax ()
+    {
+        if (this.Max != null) return this.Max > this.EndDate ? this.EndDate : this.Max;
+        return this.Max != null ? this.Max : this.EndDate;
+    }
+    private DateTime? EndMin ()
+    {
+        if (this.Min != null) return this.Min > this.StartDate ? this.StartDate : this.Min;
+        return this.Min != null ? this.Min : this.StartDate;
+    }
+
+    private string GetGeneralClass()
+    {
+        if (this.Inline == false) return string.Empty; 
+        return "d-flex flex-row";
+    }
+    private string GetColumnClass()
+    {
+        if (this.Inline == false) return string.Empty;
+        return "col-md-6";
+    }
+
+    private void OnStartDateChanged (object value)
+    {
+        this.StartDateChanged.InvokeAsync(this.StartDate);
+        this.Changed.InvokeAsync(this);
+
+    }
+    private void OnEndDateChanged (object value)
+    {
+        this.EndDateChanged.InvokeAsync(this.EndDate);
+        this.Changed.InvokeAsync(this);
+    }
+}

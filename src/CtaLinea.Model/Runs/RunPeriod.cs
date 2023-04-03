@@ -61,8 +61,26 @@ namespace CtaLinea.Model.Runs
 			return start + " " + end;
 	    }
 
+		public void CopyFrom (RunPeriod item)
+        {
+            this.RunPeriodId = item.RunPeriodId;
+            this.StartDate = item.StartDate;
+            this.EndDate = item.EndDate;
 
-	public RunPeriod CreateCopy()
+            this.Monday = item.Monday;
+            this.Tuesday = item.Tuesday;
+            this.Wednesday = item.Wednesday;
+            this.Thursday = item.Thursday;
+            this.Friday = item.Friday;
+            this.Saturday = item.Saturday;
+            this.Sunday = item.Sunday;
+
+            this.Note = item.Note;
+            this.Cars = item.Cars;
+            this.CarReplacements = item.CarReplacements;
+		}
+
+	    public RunPeriod CreateCopy()
         {
             return new RunPeriod
             {

@@ -8,6 +8,8 @@
 @inject NotificationService notificationService
 @inject IRunRepository RunRepo
 @inject IExcelExporterService ExcelService
+
+@inherits EditorComponentBase
 @attribute [Authorize]
 
 <PageTitle>@Constants.App_Title - Corse</PageTitle>
@@ -34,7 +36,8 @@
                         AllowColumnResize="true"
                         LogicalFilterOperator="LogicalFilterOperator.And"
                         SelectionMode="DataGridSelectionMode.Single"
-                        @bind-Value=@SelectedRuns
+                        Value=@SelectedRuns
+                        ValueChanged="@SelectionChanged"
                         CellContextMenu="@RowActionCellContextMenu"
                         AllowVirtualization=true
                         VirtualizationOverscanCount="10"
@@ -66,8 +69,8 @@
                                   Click="@ReloadData" />
 
                     <RadzenButton ButtonStyle="ButtonStyle.Light"
-                                  Icon="@(DetailViewVisibile==false ? "visibility" : "visibility_off")"
-                                  Click="@(() => DetailViewVisibile = !DetailViewVisibile)" />
+                                  Icon="@(EditorVisible==false ? "visibility" : "visibility_off")"
+                                  Click="@(() => EditorVisible = !EditorVisible)" />
 
 
 
@@ -323,34 +326,36 @@
             </Columns>
         </RadzenDataGrid>
     </RadzenBody>
-    @if (this.SelectedRuns.Count() > 0)
+    @if (this.RunEditId != null)
     {
-        <RadzenSidebar @bind-Expanded="@DetailViewVisibile" Style="width: 800px; grid-area: rz-right-sidebar">
-            <RinItemEditView
-                Id="@GetSelectedId()" 
+        <RadzenSidebar @bind-Expanded="@EditorVisible" Style="width: 1000px; grid-area: rz-right-sidebar">
+            <RinItemEditView @ref=@RunEditDetail
+                Id="@RunEditId.Value" 
                 />
         </RadzenSidebar>
     }
 </RadzenLayout>
 
 @code {
-    public bool DetailViewVisibile { get; set;} = true;
+    RadzenDataGrid<RunItemQueryModel>? grdData;
+    private  RinItemEditView? RunEditDetail;
 
     private enum RunMenuItems
     {
-        Detail,
-        Edit,
-        Delete,
+        Tags,
 
-        Tags
+        Delete
     };
-
 
     [CascadingParameter]
     CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
-    RadzenDataGrid<RunItemQueryModel>? grdData;
 
-    IList<RunItemQueryModel> SelectedRuns = new List<RunItemQueryModel>();
+    // TEST senza autoload con
+    // caricametno di tutti i dati e virtualizzazioen lato client
+    private int ItemCount = -1;
+    private bool IsLoading = false;
+    private IList<RunItemQueryModel> Data = new List<RunItemQueryModel>();
+    private string? FullTextSearch { get; set; } = null;
 
     #region  details
     private bool DetailIsLoading = false;
@@ -433,15 +438,6 @@
     }
     #endregion
 
-
-    // TEST senza autoload con
-    // caricametno di tutti i dati e virtualizzazioen lato client
-
-    private int ItemCount = -1;
-    private bool IsLoading = false;
-    private IList<RunItemQueryModel> Data = new List<RunItemQueryModel>();
-    private string? FullTextSearch { get; set; } = null;
-
     protected override async Task OnInitializedAsync()
     {
         await LoadDataASync();
@@ -461,17 +457,6 @@
         {
             this.IsLoading = false;
         }
-    }
-
-    public Guid GetSelectedId ()
-    {
-        var id = Guid.Empty;
-        if (this.SelectedRuns.Count > 0)
-        {
-            id = this.SelectedRuns.Select(x => x.Id).First();
-        }
-
-        return id;
     }
 
     private async Task LoadDataASync()
@@ -553,7 +538,7 @@
                 finally
                 {
                     DetailIsLoading = false;
-                    this.StateHasChanged();
+                    // this.StateHasChanged();
                 }
             });
         }
@@ -594,16 +579,18 @@
 
     private void RowActionCellContextMenu(DataGridCellMouseEventArgs<RunItemQueryModel> args)
     {
-        SelectedRuns = new List<RunItemQueryModel>() { args.Data };
+        if (grdData != null)
+        {
+            this.grdData.SelectRow(args.Data);
+        }
+        if (this.IsClean == false) return ;
 
         ContextMenuService.Open(args, ds =>
-    @<RadzenMenu Click=@((e)=>OnMenuItemClick(args, e))>
-        <RadzenMenuItem Text="Mostra i dettagli" Value=@RunMenuItems.Detail />
-        <RadzenMenuItem Text="Modifica..." Value=@RunMenuItems.Edit />
-        <RadzenMenuItem Text="Etichette..." Value=@RunMenuItems.Tags />
-        <hr class="separator">
-        <RadzenMenuItem Text="Elimina..." Value=@RunMenuItems.Delete />
-    </RadzenMenu>
+            @<RadzenMenu Click=@((e)=>OnMenuItemClick(args, e))>
+                <RadzenMenuItem Text="Etichette..." Value=@RunMenuItems.Tags />
+                <hr class="separator">
+                <RadzenMenuItem Text="Elimina..." Value=@RunMenuItems.Delete />
+        </RadzenMenu>
     );
     }
 
@@ -614,20 +601,11 @@
     {
         await Task.CompletedTask;
         ContextMenuService.Close();
+        
+        if (this.IsClean == false) return ;
 
         switch ((RunMenuItems)e.Value)
         {
-            case RunMenuItems.Detail:
-                await DialogService.OpenSideAsync<RunItemDetail>($"Dettaglio della Corsa",
-                    new Dictionary<string, object>() { { "Id", args.Data.Id } },
-                    options: new SideDialogOptions() { CloseDialogOnOverlayClick = true, Width = "88%" }
-                    );
-                break;
-            case RunMenuItems.Edit:
-                NavigationManager.NavigateTo(
-                    string.Format("/run-edit/{0}", args.Data.Id)
-                    );
-                break;
             case RunMenuItems.Delete:
                 await this.DeleteRunAsync(args.Data.Id);
                 break;
@@ -639,6 +617,65 @@
                 break;
         };
     }
+
+    #region gestione Editor e selezione corrente
+    
+    List<RunItemQueryModel> SelectedRuns = new List<RunItemQueryModel>();
+    private Guid? RunEditId = null;
+
+    private bool _EditorVisible  = true;
+    public bool EditorVisible 
+    {
+        get 
+        {
+            return (this.IsClean == false
+                || this._EditorVisible);
+        }
+        set { this._EditorVisible = value;}
+    }
+    
+    private async Task SelectionChanged(IList<RunItemQueryModel> list)
+    {
+        if (this.IsClean == false)
+        {
+            var result = await this.AskForExitAsync();
+            if (result == true)
+            {
+                this.IsClean = true;
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        // seleziona la riga se può
+        this.SelectedRuns = new List<RunItemQueryModel>(list);
+
+        // imposta il valore dell'id da modoificare
+        if (this.SelectedRuns.Count > 0)
+        {
+            this.RunEditId = this.SelectedRuns.Select(x => x.Id).First();
+        }
+        else
+        {
+            this.RunEditId =null;
+        }
+    }
+
+    protected override bool GetIsClean ()
+    {
+        return (this.RunEditDetail as EditorComponentBase)?.IsClean ?? true;
+    }
+    protected override void  SetIsClean(bool value)
+    {
+        var editor = this.RunEditDetail as EditorComponentBase;
+        if (editor != null)
+        {
+            editor.IsClean = value;
+        }
+    }
+     #endregion
 
     private async Task ShowTagsEditor(
         Guid runId)
@@ -670,7 +707,6 @@
             {
                 this.IsLoading = false;
             }
-
         }
     }
 
@@ -700,6 +736,15 @@
         this.AdvancedFilter4s.ClearAll();
         this.FullTextSearch = null;
 
+        if (this.grdData != null)
+        {
+            foreach (var col in this.grdData.ColumnsCollection)
+            {
+                col.ClearFilters();
+            }
+        }
+
+        /*
         this.Filter_CtaRunId = null;
         this.Filter_ContractRowNumber = null;
         this.Filter_Extra = null;
@@ -739,6 +784,7 @@
         this.Filter_EndTime_2 = null;
 
         this.Filter_VariationStartDate = null;
+        */
 
         // this.StateHasChanged();
         await this.ReloadData();

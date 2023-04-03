@@ -23,7 +23,7 @@ else
         TabPosition="TabPosition.Top" 
         RenderMode="TabRenderMode.Client">
          <Tabs>
-            <RadzenTabsItem Text="Errori" Selected=true  >
+            <RadzenTabsItem Text="Errori" Icon="beenhere">
                 <Animate Animation="Animations.ZoomIn"
                      IsManual=false
                      Easing="Easings.Ease"
@@ -34,39 +34,37 @@ else
                 </Animate>
             </RadzenTabsItem>
 
-            <RadzenTabsItem Text="Dati generali" Selected=true >
-                <Template>
-                    <div><RadzenIcon Icon="@(this.CurrentRun.Extra ?"health_and_safety" : "shield")" IconStyle=@(this.CurrentRun.Extra ? IconStyle.Warning : IconStyle.Info) /> Dati generali</div>
-                </Template>
-                <ChildContent>
-                    <MainRunDataView 
-                        CurrentRun=@this.CurrentRun EditableData=@this />
-                </ChildContent>
+            <RadzenTabsItem Text="Dati generali" Selected=true Icon="home">
+                <MainRunDataView CurrentRun=@this.CurrentRun EditableData=@this />
             </RadzenTabsItem>
 
-            <RadzenTabsItem Text="Varianti">
+            <RadzenTabsItem Text="Varianti" Icon="fork_right">
                 <RunVariationListView CurrentRun=@this.CurrentRun EditableData=@this />
             </RadzenTabsItem>
 
-            <RadzenTabsItem Text="Mezzi" >
+            <RadzenTabsItem Text="Mezzi" Icon="airport_shuttle">
                 <RunCarPEriodListView CurrentRun=@this.CurrentRun EditableData=@this />
             </RadzenTabsItem>
             
             <RadzenTabsItem Text="Sospensioni">
+                <Template>
+                    <RadzenStack AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Orientation="Orientation.Horizontal">
+                        <RadzenIcon Icon="block" />
+                        <RadzenText Text="Sospensioni" />
+                        <RadzenBadge Text="@(this.CurrentRun.Suspensions == null ? "0" : this.CurrentRun.Suspensions.Count.ToString())" />
+                    </RadzenStack>
+                </Template>
+                <ChildContent>
+                    <RunSuspensionListView CurrentRun=@this.CurrentRun EditableData=@this />
+                </ChildContent>
             </RadzenTabsItem>
 
-            <RadzenTabsItem Text="Giorni Add." >
-                <AditionalDaysView EditableData=@this CurrentRun=@CurrentRun EditMode=true />
+            <RadzenTabsItem Text="Giorni Add." Icon="free_cancellation">
+                <RunAdditionalDayListView EditableData=@this CurrentRun=@CurrentRun  />
             </RadzenTabsItem>
 
-            <RadzenTabsItem Text="Planning" >
-                <RadzenCard>
-                    <RunPlanningView @ref=@Planning RunId=@Id />
-                </RadzenCard>
-            </RadzenTabsItem>
-
-            <RadzenTabsItem Text="Corsa">
-                <BaseRunDataView EditableData=@this CurrentRun=@CurrentRun EditMode=@true />
+            <RadzenTabsItem Text="Planning" Icon="calendar_month">
+                <RunPlanningView @ref=@Planning RunId=@Id />
             </RadzenTabsItem>
         </Tabs>
     </RadzenTabs>
