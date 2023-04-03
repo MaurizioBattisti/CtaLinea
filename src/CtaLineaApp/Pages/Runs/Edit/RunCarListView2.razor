@@ -40,7 +40,7 @@
 }
 else
 {
-	<RadzenDataGrid @ref=@PeriodList
+	<RadzenDataGrid @ref=@CarGrid
 					AllowFiltering="false"
 					AllowPaging="false" AllowSorting="false"
 					AllowColumnResize=true
@@ -156,7 +156,7 @@ else
 }
 
 @code {
-	private RadzenDataGrid<RunPeriodCar>? PeriodList;
+	private RadzenDataGrid<RunPeriodCar>? CarGrid;
 	private DialogBoxWrapper? CarDialog;
 
 	[CascadingParameter]
@@ -432,9 +432,10 @@ else
 			await this.AfterUpdate.InvokeAsync(this.PeriodCarInEdit);
 		}
 		ds.Close();
-		if (this.PeriodList != null)
+		if (this.CarGrid != null)
 		{
-			await this.PeriodList.Reload();
+			await this.CarGrid.Reload();
+			await this.CarGrid.SelectRow(this.PeriodCarInEdit);
 		}
 	}
 	private async Task DeleteCar_Click(RunPeriodCar item)
@@ -444,10 +445,13 @@ else
 		if (beforeOp.Cancelled == true) return;
 
 		await AfterDelete.InvokeAsync(item);
-		if (this.PeriodList != null)
+		this.SelectedCars.Remove(item);
+		if (this.CarGrid != null)
 		{
-			await this.PeriodList.Reload();
+			await this.CarGrid.Reload();
+			await CarGrid.SelectRow(item, false);
 		}
+		await this.SelectedCarsChanged.InvokeAsync (this.SelectedCars);
 	}
 	#endregion
 

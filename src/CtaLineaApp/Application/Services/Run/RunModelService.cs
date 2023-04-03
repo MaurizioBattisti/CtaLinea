@@ -212,7 +212,8 @@ namespace CtaLineaApp.Application.Services.Run
 
         public RunCarCost? CreateRunCarCost(
             RunPeriodCar periodCar,
-            DateTime? startdate = null)
+            DateTime? startdate = null,
+            bool add = true)
         {
             if (periodCar.RunCarType != CarTypeEnum.Primary
                 && periodCar.RunCarType != CarTypeEnum.Replacement)
@@ -248,13 +249,107 @@ namespace CtaLineaApp.Application.Services.Run
                 DayIntegration = oldCost.DayIntegration
             };
 
-            if (periodCar.CarCosts == null) periodCar.CarCosts = new List<RunCarCost>() { cost };
-            else periodCar.CarCosts.Add(cost);
+            if (add == true)
+            {
+                if (periodCar.CarCosts == null) periodCar.CarCosts = new List<RunCarCost>() { cost };
+                else periodCar.CarCosts.Add(cost);
+            }
 
             return cost;
         }
 
-        public RunVariation? GetDefaultVariation (
+        public RunCarCost ComputeReplacementCost(
+			RunPeriod period,
+			CarReplacement currRepl
+			)
+		{
+			var cost = new RunCarCost()
+			{
+				RunCarCostId = Guid.NewGuid(),
+				StartDate = null
+			};
+
+			// corregge il vaore dei costi
+			if (period.Cars != null
+				&& currRepl.OriginalPEriodCarIds != null)
+			{
+				var orCarCost = period.Cars.Where(c => currRepl.OriginalPEriodCarIds.Contains(c.RunCarId))
+								.SelectMany(c => c.CarCosts ?? new List<RunCarCost>());
+
+				// calcola il totale dei costi dei mezzi originali
+				var orgCosts = (from cc in orCarCost
+								where cc.StartDate == null
+								group cc by cc.StartDate into tot
+								select new RunCarCost()
+								{
+									StartDate = tot.Key,
+									KmPrice = tot.Sum(x => x.KmPrice),
+									KmPriceExtra = tot.Sum(x => x.KmPriceExtra),
+									DayPrice = tot.Sum(x => x.DayPrice),
+
+									DayForfait = tot.Sum(x => x.DayForfait),
+									DayIntegration = tot.Sum(x => x.DayIntegration)
+								}).FirstOrDefault();
+
+				if (orgCosts != null)
+				{
+					cost.KmPrice = orgCosts.KmPrice;
+					cost.KmPriceExtra = orgCosts.KmPriceExtra;
+					cost.DayPrice = orgCosts.DayPrice;
+					cost.DayForfait = orgCosts.DayForfait;
+					cost.DayIntegration = orgCosts.DayIntegration;
+				}
+
+				if (currRepl.ReplacedPEriodCarIds != null)
+				{
+					var newCarCost = period.Cars.Where(c => currRepl.ReplacedPEriodCarIds.Contains(c.RunCarId))
+									.SelectMany(c => c.CarCosts ?? new List<RunCarCost>());
+
+					// calcola il  totale dei mezzi già sostituiti
+					var myCost = (from cc in newCarCost
+								  where cc.StartDate == null
+								  group cc by cc.StartDate into tot
+								  select new RunCarCost()
+								  {
+									  StartDate = tot.Key,
+									  KmPrice = tot.Sum(x => x.KmPrice),
+									  KmPriceExtra = tot.Sum(x => x.KmPriceExtra),
+									  DayPrice = tot.Sum(x => x.DayPrice),
+
+									  DayForfait = tot.Sum(x => x.DayForfait),
+									  DayIntegration = tot.Sum(x => x.DayIntegration)
+								  }).FirstOrDefault();
+
+					// sottrai il totale dei mezzi già sostituitoi da quello  degli originali
+					if (myCost != null)
+					{
+						cost.KmPrice -= myCost.KmPrice;
+						cost.KmPriceExtra -= myCost.KmPriceExtra;
+						cost.DayPrice -= myCost.DayPrice;
+						cost.DayForfait = (cost.DayForfait ?? decimal.Zero) - (myCost.DayForfait ?? decimal.Zero);
+						cost.DayIntegration = (cost.DayIntegration ?? decimal.Zero) - (myCost.DayIntegration ?? decimal.Zero);
+					}
+				}
+			}
+
+			return cost;
+		}
+
+        public RunPeriodCar AddReplacmeent (
+			RunPeriod period,
+			RunPeriodCar car,
+            CarReplacement currRepl
+			)
+		{
+			if (currRepl.ReplacedPEriodCarIds == null)
+			{
+				currRepl.ReplacedPEriodCarIds = new List<Guid>();
+			}
+			currRepl.ReplacedPEriodCarIds.Add(car.RunCarId);
+            return car;
+		}
+
+		public RunVariation? GetDefaultVariation (
             RunItem run)
         {
             RunVariation? variation = null;

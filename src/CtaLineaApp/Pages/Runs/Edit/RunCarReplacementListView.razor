@@ -1,4 +1,5 @@
 ﻿@inject DialogService DialogService
+@inject IRunModelService RunModelService
 
 <RadzenDataGrid @ref=@ReplList
 				AllowGrouping="true" AllowFiltering="true" AllowSorting="true"
@@ -362,19 +363,23 @@
 		var currRepl = this.GetCurrentCarReplacement();
 		if (currRepl != null)
 		{
-			// aggiunge il car period alla lista dei mezzi
-			if (this.Period.Cars == null)
-			{
-				this.Period.Cars = new List<RunPeriodCar>();
-			}
-			this.Period.Cars.Add(item);
+			var car = RunModelService.CreatePeriodCar(
+				this.Period,
+				item.RunCarType,
+				item.AssociateId,
+				item.CarId);
 
-			// aggiunge l'id alla lista dei mezzi rimpiazzati
-			if (currRepl.ReplacedPEriodCarIds == null)
-			{
-				currRepl.ReplacedPEriodCarIds = new List<Guid> ();
-			}
-			currRepl.ReplacedPEriodCarIds.Add(item.RunCarId);
+			// assegna i valori recueprati dall'oggetto
+			car.RunCarId = item.RunCarId;
+			car.AssociateData = item.AssociateData;
+			car.CarData = item.CarData;
+			car.Note = item.Note;
+
+			// aggiunge il costo al mezzo
+			var cost = RunModelService.ComputeReplacementCost(this.Period, currRepl);
+			car.CarCosts = new List<RunCarCost>() { cost };
+
+			RunModelService.AddReplacmeent(this.Period, car, currRepl);
 			this.EditableData?.SetDirty();
 		}
 		await Task.CompletedTask;
@@ -471,3 +476,4 @@
 	#endregion
 
 }
+

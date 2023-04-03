@@ -13,7 +13,8 @@
 			 Duration="TimeSpan.FromSeconds(0.5)">
 
 		<div class="d-flex flex-row">
-			<RadzenDataGrid AllowFiltering="false"
+			<RadzenDataGrid @ref=@VariationList
+							AllowFiltering="false"
 							AllowPaging="false" AllowSorting="false"
 							AllowColumnResize=true
 							Data="@this.GetVariationList()"
@@ -66,8 +67,41 @@
 	</Animate>
 </RadzenTemplateForm>
 
+<DialogBoxWrapper @ref=@VariantDialog
+	Width="300px"
+	Title="Variazione">
+	<Body Context="ds">
+		<RadzenRow>
+			<RadzenColumn Size="6">
+				<RadzenLabel Component="StartDate" Text="Data Inizio" />
+			</RadzenColumn>
+			<RadzenColumn Size="6" >
+				<DateSelectorNotNull Name="StartDate"
+									 @bind-Value=@Edit_StartDate />
+			</RadzenColumn>
+		</RadzenRow>
+	</Body>
+	<Buttons Context="ds">
+		@if (this.IsAdding == true)
+		{
+			<RadzenButton Click="@(() => this.ConfirmUpdateVariantAsync(ds))"
+					  Text="Crea" />
+		}
+		else
+		{
+			<RadzenButton Click="@(() => this.ConfirmUpdateVariantAsync(ds))"
+					  Text="Aggiorna" />
+
+		}
+		<RadzenButton Click="@(() => ds.Close())"
+					  ButtonStyle="ButtonStyle.Secondary"
+					  Text="Annulla" />
+	</Buttons>
+</DialogBoxWrapper>
+
 @code {
 	RunVariationMainDataVide? RunVariationMainDataVide;
+	RadzenDataGrid<RunVariation>? VariationList;
 
 	[Parameter]
 	public IEditableData? EditableData { get; set; }
@@ -148,167 +182,97 @@
 		return string.Format("{0:HH:mm}", to);
 	}
 
-	#region gestione varianti
+	#region gestione dialog variaizoni
+	private DialogBoxWrapper? VariantDialog;
+	private bool IsAdding = false;
+	private DateTime Edit_StartDate { get; set; }
+	private RunVariation Edit_Item = new RunVariation();
+
 	private async Task AddVariation_Click()
 	{
-		string title = "Nuova Variante";
-		DateTime? askStartDate = null;
-		bool result = await this.ShowGenericDialog(
-		title,
-		(ds) =>
-	@<div>
-		<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Data di inizio</RadzenText>
-		<DateSelector @bind-Value="askStartDate" Min=@this.RunModelService.GetMinValidDate(this.CurrentRun, DateTime.MinValue) Max=@(this.RunModelService.GetMaxValidDate(this.CurrentRun, DateTime.MaxValue)) ShowSetTodayButton=true />
-		</div>
-	, "Crea Variante"
-		);
-
-		if (result == true)
+		this.IsAdding = true;
+		this.Edit_StartDate = DateTime.Today;
+		Edit_Item = new RunVariation()
 		{
-			var date = askStartDate;
-			if (date == null)
-			{
-				this.notificationService.Notify(
-				NotificationSeverity.Warning,
-				title,
-				"Non è possible creare una variante che pata dall'inizio");
-			}
-			else
-			{
-				// controlla che nonc i siano variazioni che partono alla stessa data
-				var already = (from v in this.CurrentRun.Variations
-										where v.StartDate == date
-										select v).FirstOrDefault();
-				if (already != null)
-				{
-					this.notificationService.Notify(
-					NotificationSeverity.Warning,
-					title,
-					string.Format("Esiste già una variante che inizia il {0:dd/MM/yyyy}", date));
-				}
-				else
-				{
-					// crea la nuova variante
-					var newVar = this.RunModelService.CreateNewVariation(this.CurrentRun, date);
-					this.SelectedVariations.Clear();
-					this.SelectedVariations.Add(newVar);
-					this.EditableData?.SetDirty();
-					this.StateHasChanged();
-				}
-			}
+			RunVariationId = Guid.NewGuid()
+		};
+		if (VariantDialog != null)
+		{
+			await this.VariantDialog.ShowDialog("Nuova Variante");
 		}
-		askStartDate = null;
-		return;
 	}
 	private async Task EditVariation_Click(RunVariation item)
 	{
-		string title = "Cambia Inizio Variante ";
-		DateTime? askStartDate = item.StartDate;
-		bool result = await this.ShowGenericDialog(
-	title,
-	(ds) =>
-	@<div>
-		<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Data di inizio</RadzenText>
-		<DateSelector @bind-Value="askStartDate" Min=@this.RunModelService.GetMinValidDate(this.CurrentRun, DateTime.MinValue) Max=@(this.RunModelService.GetMaxValidDate(this.CurrentRun, DateTime.MaxValue)) ShowSetTodayButton=true />
-	</div>
-		, "Cambia Inizio"
-		);
-
-		if (result == true)
+		this.IsAdding = false;
+		this.Edit_StartDate = item.StartDate ?? DateTime.Today;
+		Edit_Item = item;
+		if (VariantDialog != null)
 		{
-			var date = askStartDate;
-			if (date == null)
+			await this.VariantDialog.ShowDialog("Nuova Variante");
+		}
+	}
+
+	private async Task ConfirmUpdateVariantAsync (DialogService ds)
+	{
+		var already = (from v in this.CurrentRun.Variations
+								where v.StartDate == this.Edit_StartDate
+									&& v.RunVariationId != this.Edit_Item.RunVariationId
+								select v).FirstOrDefault();
+		if (already != null)
+		{
+			await this.DialogService.Alert("La data indicata è già stata usata come data di inizio di una variazione");
+			return;
+		}
+
+		if (this.IsAdding == true)
+		{
+			var newVar = this.RunModelService.CreateNewVariation(this.CurrentRun, this.Edit_StartDate);
+			if (this.VariationList != null)
 			{
-				this.notificationService.Notify(
-				NotificationSeverity.Warning,
-				title,
-				"Non è possibile modificare la data di inizio in modo che sostituisca la variante iniziale , modificare i dati della variante iniziale");
+				await this.VariationList.Reload();
+				await this.VariationList.SelectRow(newVar);
 			}
-			else
+		}
+		else
+		{
+			if (this.CurrentRun.Variations != null)
 			{
-				// controlla che nonc i siano variazioni che partono alla stessa data
-				var already = (from v in this.CurrentRun.Variations
-										where v.StartDate == date
-										&& v != item
-										select v).FirstOrDefault();
-				if (already != null)
+				var newVar =(from v in this.CurrentRun.Variations
+									where v.RunVariationId == Edit_Item.RunVariationId
+									select v).SingleOrDefault();
+				if (newVar != null)
 				{
-					this.notificationService.Notify(
-					NotificationSeverity.Warning,
-					title,
-					string.Format("Esiste già una variante che inizia il {0:dd/MM/yyyy}", date));
-				}
-				else
-				{
-					// aggiorna il valore della data di inizio
-					item.StartDate = date;
-					this.EditableData?.SetDirty();
-					this.StateHasChanged();
+					newVar.StartDate = this.Edit_StartDate;
 				}
 			}
 		}
-		askStartDate = null;
-		return;
+
+		ds.Close();
+		this.EditableData?.SetDirty();
 	}
+
 
 	private async Task DeleteVariation_Click(RunVariation item)
 	{
-		string start = string.Format("{0:dd/MM/yyyy}", item.StartDate);
 		var result = await this.DialogService.Confirm(
-		string.Format("Sei sicuro di voler eliminare la variante che inizia il {0} ?", start),
-		"Eliminazione variante",
-		new ConfirmOptions
+			string.Format("Sei sicuro di voler eliminare la variante che inizia il {0:dd/MM/yyyy} ?", item.StartDate ?? DateTime.Today),
+			"Eliminazione variante",
+			new ConfirmOptions
 				{
-					OkButtonText = "Elimina",
-					CancelButtonText = "Annulla"
+					OkButtonText = "Si, Elimina",
+					CancelButtonText = "No"
 				}
-	);
+			);
 		if (result == true)
 		{
 			this.CurrentRun?.Variations?.Remove(item);
-			this.SelectedVariations.Clear();
 			this.EditableData?.SetDirty();
+			if (this.VariationList != null)
+			{
+				await this.VariationList.Reload();
+			}
 			this.SelectCurrentVariation();
 		}
-	}
-
-	private bool CanDeleteVariation(RunVariation? variation)
-	{
-		if (variation == null) return false;
-		bool canDelete = (this.CurrentRun.Variations != null
-		&& this.CurrentRun.Variations.Count() > 1);
-		if (canDelete == true)
-		{
-			canDelete = (variation.StartDate != null);
-		}
-
-		return canDelete;
-	}
-	#endregion
-
-
-
-	
-	#region funzioni gestione dialog box
-	private async Task<bool> ShowGenericDialog(
-		string title,
-		RenderFragment<DialogService> renderFragment,
-		string okText = "OK",
-		string cancelText = "Annulla",
-		string width = "1000px")
-	{
-		bool? result = await DialogService.OpenAsync(
-	title,
-	ds =>
-	@<div>
-		@renderFragment(ds)
-		<RadzenButton Text="@okText" Click="()=>ds.Close(true)" ButtonStyle="ButtonStyle.Primary" />
-		<RadzenButton Text="@cancelText" Click="()=>ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" />
-	</div>
-	, new DialogOptions() { Width = width }
-	);
-
-		return (result != null && result == true);
 	}
 	#endregion
 }

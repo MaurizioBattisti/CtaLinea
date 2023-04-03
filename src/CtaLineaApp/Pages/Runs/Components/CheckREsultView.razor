@@ -1,34 +1,34 @@
 ﻿
 @if(CheckResult ==null || this.CheckResult?.Status == CheckStatus.Success)
 {
-    <div>
-        <RadzenAlert Title="Dati corretti" AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Shade="Shade.Lighter">
+    <RadzenRow>
+        <RadzenAlert AllowClose=false Title="Dati corretti" AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Shade="Shade.Lighter">
             Nulla da segnaalre i dati sono corretti
         </RadzenAlert>
-    </div>
+    </RadzenRow>
 }
 @if(CheckResult != null)
 {
-    <div>
+    <RadzenStack Orientation="Orientation.Vertical">
         @foreach (var err in this.GetERrorList())
         {
-            <RadzenAlert Title=@err.Title AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter">
+            <RadzenAlert AllowClose=false Title=@err.Title AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter">
                 @err.Description
             </RadzenAlert>
         }
         @foreach (var err in this.GetWarningList())
         {
-            <RadzenAlert Title=@err.Title AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter">
+            <RadzenAlert AllowClose=false Title=@err.Title AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter">
                 @err.Description
             </RadzenAlert>
         }
         @foreach (var err in this.getInformationList())
         {
-            <RadzenAlert Title=@err.Title AlertStyle="AlertStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter">
+            <RadzenAlert AllowClose=false Title=@err.Title AlertStyle="AlertStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter">
                 @err.Description
             </RadzenAlert>
         }
-    </div>
+    </RadzenStack>
 }
 
 @code {

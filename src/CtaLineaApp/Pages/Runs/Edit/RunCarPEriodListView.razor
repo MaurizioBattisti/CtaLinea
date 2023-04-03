@@ -370,11 +370,18 @@
 	}
 	private async Task AfterAddCarAsync(RunPeriodCar item)
 	{
-		if (this.CurrentPeriod.Cars == null)
-		{
-			this.CurrentPeriod.Cars = new List<RunPeriodCar>();
-		}
-		this.CurrentPeriod.Cars.Add(item);
+		var car =RunModelService.CreatePeriodCar(
+			this.CurrentPeriod,
+			item.RunCarType,
+			item.AssociateId,
+			item.CarId);
+		
+		// assegna i valori recueprati dall'oggetto
+		car.RunCarId = item.RunCarId;
+		car.AssociateData = item.AssociateData;
+		car.CarData = item.CarData;
+		car.Note = item.Note;
+
 		this.EditableData?.SetDirty();
 		await Task.CompletedTask;
 	}

@@ -1,11 +1,12 @@
 ﻿@inject IApplicationSettings AppSettings;
 @inject DialogService DialogService;
+@inject IRunModelService RunModelService
 
 <RadzenDataGrid @ref=@CostGrid
 				AllowFiltering="false"
-				AllowPaging="false" AllowSorting="false"
+				AllowPaging="false" AllowSorting="true"
 				AllowColumnResize=true
-				Data="@this.GetCarCosts()"
+				Data="@this.PeriodCar.CarCosts"
 				Culture=@AppSettings.CurrentCulture
                 EditMode="DataGridEditMode.Single"
 				RowUpdate="@OnUpdateRow" 
@@ -42,7 +43,7 @@
 							   @bind-Value="@cost.KmPriceExtra"
 							   Culture=@AppSettings.CurrentCulture
 							   Format="0.00"
-		  Class="w-100" />
+								class="w-100" />
 			</EditTemplate>
 		</RadzenDataGridColumn>
 		<RadzenDataGridColumn TItem="RunCarCost" Title="Al Giorno" Property="@nameof(RunCarCost.DayPrice)" FormatString="{0:C}" Width="85px">
@@ -74,7 +75,7 @@
 			</EditTemplate>
 		</RadzenDataGridColumn>
 
-		<RadzenDataGridColumn TItem="RunCarCost" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="60px">
+		<RadzenDataGridColumn TItem="RunCarCost" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="90px">
 			<Template Context="data">
 				<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
 							  Icon="edit"
@@ -113,16 +114,13 @@
 	private RunCarCost? CostToInsert;
 	private RunCarCost? CostToUpdate;
 
-	private IEnumerable<RunCarCost>? GetCarCosts ()
+	protected override void OnInitialized()
 	{
-		if (this.PeriodCar.CarCosts != null)
+		base.OnInitialized();
+		if (this.PeriodCar.CarCosts == null)
 		{
-			var qry = (from cc in this.PeriodCar.CarCosts 
-								orderby cc.StartDate ascending
-								select cc);
-			return qry;
+			this.PeriodCar.CarCosts = new List<RunCarCost>();
 		}
-		return null;
 	}
 
 	private async Task<bool> CheckCostAsync (RunCarCost item)
@@ -154,7 +152,8 @@
 
 	private async Task InsertRow_Click()
 	{
-		CostToInsert = new RunCarCost()
+		var item = RunModelService.CreateRunCarCost(this.PeriodCar, DateTime.Now, false);
+		CostToInsert = item ?? new RunCarCost ()
 		{
 			RunCarCostId = Guid.NewGuid(),
 			StartDate = DateTime.Now
