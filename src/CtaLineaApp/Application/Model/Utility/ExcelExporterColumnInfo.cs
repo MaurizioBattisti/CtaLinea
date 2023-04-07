@@ -1,8 +1,6 @@
-﻿using ClosedXML.Excel;
-
-namespace CtaLineaApp.Application.Model.Utility
+﻿namespace CtaLineaApp.Application.Model.Utility
 {
-    public class ExcelExporterColumnInfo<TEntity>
+	public class ExcelExporterColumnInfo<TEntity>
         where TEntity : class
     {
         public string ColumnName { get; set; } = string.Empty;

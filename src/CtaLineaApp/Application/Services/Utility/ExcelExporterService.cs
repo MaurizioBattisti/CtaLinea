@@ -1,204 +1,199 @@
-﻿using ClosedXML.Excel;
-using CtaLineaApp.Application.Model.Utility;
+﻿using CtaLineaApp.Application.Model.Utility;
 using CtaLineaApp.Application.Services.Account;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.JSInterop;
-using System.Net.Security;
+using System.Reflection;
 using System.Text;
 
 namespace CtaLineaApp.Application.Services.Utility
 {
-    public class ExcelExporterService 
+	public class ExcelExporterService 
         : IExcelExporterService
     {
-        private readonly IAccountService _userService;
-        private readonly IJSRuntime _js;
+        private const string Field_Separator = ";";
+        private const string Text_Format = "\"{0}\"";
+        private const string Date_Format = "\"{0:dd/MM/yyyy}\"";
+		private const string Time_Format = "\"{0:hh:mm}\"";
+		private const string Number_Format = "{0}";
+		private const string DecimalNumber_Format = "{0:0.0000}";
+		private const string FloatNumber_Format = "{0:0.00}";
+		private const string Boolean_Format = "{0}";
 
-        public ExcelExporterService(
+		private readonly IAccountService _userService;
+        private readonly IJSRuntime _js;
+        private readonly IApplicationSettings _appSettings;
+
+		public ExcelExporterService(
             IJSRuntime js,
-            IAccountService userService
-            )
+            IAccountService userService,
+			IApplicationSettings appSettings
+			)
         {
             _js = js;
             _userService = userService;
-        }
+			_appSettings = appSettings;
+		}
 
-        public async Task ExcelExport<TEntity>(
-            string title,
-            IEnumerable<TEntity> items,
-            IEnumerable<ExcelExporterColumnInfo<TEntity>>? columns = null,
-            string? sheetTitle = null
-            )
-            where TEntity : class
+		public async Task ExcelExport<TEntity>(
+			string title,
+			IEnumerable<TEntity> items,
+			IEnumerable<ExcelExporterColumnInfo<TEntity>>? columns = null,
+			string? sheetTitle = null
+			)
+			where TEntity : class
+		{
+            Encoding encoding = Encoding.UTF8;
+            using var stream = new MemoryStream();
+            TextWriter wrt = new StreamWriter(stream, encoding);
+
+			var colList = (columns ??
+						this.GetDefaultColumns<TEntity>()).ToList();
+
+            // scrive le intestazioni delle colonne
+            await this.WriteHEaderAsync(wrt, colList);
+
+            await this.WriteAllRowsAsunc(wrt, colList, items);
+            stream.Position = 0;
+
+			var fileName = title + ".csv";
+
+			using var streamRef = new DotNetStreamReference(stream: stream);
+			await _js.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+
+			return;
+		}
+
+		#region funzioni interne
+		private IEnumerable<ExcelExporterColumnInfo<TEntity>> GetDefaultColumns<TEntity>()
+			where TEntity : class
+		{
+			var t = typeof(TEntity);
+			var props = t.GetProperties();
+			foreach (var prop in props)
+			{
+				yield return new ExcelExporterColumnInfo<TEntity>()
+				{
+					ColumnName = prop.Name
+				};
+			}
+		}
+
+        private string? CleanText (string? text)
         {
-            var wb = new XLWorkbook();
+            if (text == null) return null;
+            return text.Replace("\t", " ")
+                .Replace("\n", " ")
+                .Replace("\r", " ")
+                .Replace("\b", " ")
+				.Replace("\"", "'")
+				;
+		}
 
-            wb.Properties.Author = _userService.User?.Description ?? string.Empty;
-            wb.Properties.Title = title;
-            wb.Properties.Subject = DateTime.Today.ToString();
+		private async Task WriteHEaderAsync<TEntity>(
+			TextWriter wrt,
+			IList<ExcelExporterColumnInfo<TEntity>> columns
+			)
+			where TEntity : class
+		{
+            var headersLine = new List<string>();
 
-            var ws = wb.Worksheets.Add(sheetTitle ?? "Dati");
-
-            var colList = (columns ??
-                        this.GetDefaultColumns<TEntity>()).ToList();
-
-            // crea le intestazioni di colonna
-            this.WriteHEader(ws, colList, 1);
-
-            // scrive tutte le righe a partire dalla numero 1
-            this.WriteAllRows(ws, items, colList, 2);
-
-            // salva ilf ile in uno stream
-            var XLSStream = new MemoryStream();
-            wb.SaveAs(XLSStream);
-
-            var fileName = title + ".xlsx";
-            
-            await _js.InvokeVoidAsync("BlazorDownloadFile", fileName, "application/octet-stream", XLSStream.GetBuffer());
-
-            // await _js.InvokeAsync<object>("saveFile", fileName, XLSStream);
-            // await _js.InvokeVoidAsync("saveFile", fileName, XLSStream);
-            // using var streamRef = new DotNetStreamReference(stream: XLSStream);
-            // await _js.InvokeVoidAsync("BlazorDownloadFile", fileName, streamRef);
-        }
-
-        private void WriteHEader<TEntity>(
-            IXLWorksheet ws,
-            IList<ExcelExporterColumnInfo<TEntity>> columns,
-            int row = 0
-            )
-            where TEntity : class
+			foreach (var column in columns)
+			{
+				string header = column.ColumnName;
+				if (string.IsNullOrWhiteSpace(column.Header) == false) header = column.Header;
+                
+                var headerText = string.Format(Text_Format, 
+                    this.CleanText(header));
+                headersLine.Add(headerText);
+			}
+            await wrt.WriteLineAsync(
+                string.Join(Field_Separator, headersLine));
+		}
+        private async Task WriteAllRowsAsunc<TEntity>(
+			TextWriter wrt,
+			IList<ExcelExporterColumnInfo<TEntity>> columns,
+            IEnumerable<TEntity> items
+			)
+			where TEntity : class
         {
-            var col = 1;
+			Type t = typeof(TEntity);
+			var props = t.GetProperties();
 
-            foreach (var column in columns)
+			foreach (TEntity item in items)
             {
-                string header = column.ColumnName;
-                if (string.IsNullOrWhiteSpace(column.Header) == false) header = column.Header;
-                ws.Cell(row, col).Value = header;
-                ++col;
-            }
-        }
+				var headersLine = new List<string>();
 
-        private void WriteAllRows<TEntity>(
-            IXLWorksheet ws,
-            IEnumerable<TEntity> items,
-            IList<ExcelExporterColumnInfo<TEntity>> columns,
-            int startRow = 1
-            )
-            where TEntity : class
-        {
-            int row = startRow;
-            foreach (var item in items)
-            {
-                this.WriteOneRow(ws, item, columns, row);
-                ++row;
-            }
-        }
+				foreach (var column in columns)
+				{
+					var prop = props.Where(p => p.Name == column.ColumnName).SingleOrDefault();
+					if (prop != null)
+					{
+						object? value = prop.GetValue(item);
 
-        private void WriteOneRow<TEntity>(
-            IXLWorksheet ws,
-            TEntity item,
-            IList<ExcelExporterColumnInfo<TEntity>> columns,
-            int row
-            )
-            where TEntity : class
-        {
-            Type t = typeof(TEntity);
-            var props = t.GetProperties();
-
-            int colIndex = 1;
-            foreach (var column in columns)
-            {
-                var prop = props.Where(p => p.Name == column.ColumnName).SingleOrDefault();
-                if (prop != null)
-                {
-                    object? value = prop.GetValue(item);
-                    this.WriteOneCell(ws, item, value, column, row, colIndex);
-                }
-                ++colIndex;
-            }
+                        var txtValue = FormatValue(value, prop);
+                        headersLine.Add(txtValue ?? string.Empty);
+					}
+				}
+				await wrt.WriteLineAsync(
+					string.Join(Field_Separator, headersLine));
+			}
+			await wrt.FlushAsync();
         }
-        private void WriteOneCell<TEntity>(
-            IXLWorksheet ws,
-            TEntity item,
+        private string? FormatValue (
             object? value,
-            ExcelExporterColumnInfo<TEntity> column,
-            int rowIndex,
-            int colIndex
-            )
-            where TEntity : class
+            PropertyInfo  prop)
         {
-            if (value != null)
-            {
-                SetAnDromatCell(ws.Cell(rowIndex, colIndex), value);
-            }
-        }
+            if (value == null) return null;
+            string txt = string.Empty;
 
-        private IEnumerable<ExcelExporterColumnInfo<TEntity>> GetDefaultColumns<TEntity>()
-            where TEntity : class
-        {
-            var t = typeof(TEntity);
-            var props = t.GetProperties();
-            foreach (var prop in props)
-            {
-                yield return new ExcelExporterColumnInfo<TEntity>()
-                {
-                    ColumnName = prop.Name
-                };
-            }
-        }
+			var t = value.GetType();
+			// testo
+			if (t == typeof(string))
+			{
+				// assegna un  testo pulito
+				txt = (string)value;
+				txt = this.CleanText(txt) ?? string.Empty;
+				txt = string.Format(_appSettings.CurrentCulture, Text_Format, txt);
+			}
+			// date
+			else if (t == typeof(DateTime))
+			{
+				txt = string.Format(_appSettings.CurrentCulture, Date_Format, value);
+			}
+			// ore
+			else if (t == typeof(TimeSpan))
+			{
+				var ts = (TimeSpan)value;
+				var to = new TimeOnly(ts.Hours, ts.Minutes, ts.Seconds); ;
+				txt = string.Format(_appSettings.CurrentCulture, Time_Format, to);
+			}
+			// numerici
+			else if (t == typeof(int)
+				|| t == typeof(long)
+				)
+			{
+				txt = string.Format(_appSettings.CurrentCulture, Number_Format, value);
+			}
+			else if (t == typeof(float)
+				|| t == typeof(double)
+				)
+			{
+				txt = string.Format(_appSettings.CurrentCulture, FloatNumber_Format, value);
+			}
+			else if (t == typeof(decimal))
+			{
+				txt = string.Format(_appSettings.CurrentCulture, DecimalNumber_Format, value);
+			}
+			else if (t == typeof(bool))
+			{
+				txt = string.Format(_appSettings.CurrentCulture, Boolean_Format, value);
+			}
+			else
+			{
+				txt = string.Format(_appSettings.CurrentCulture, Text_Format, value.ToString());
+			}
 
-        private static void SetAnDromatCell(
-            IXLCell cell,
-            object value)
-        {
-            var cellVal = new XLCellValue();
-            var t = value.GetType();
-            // testo
-            if (t == typeof(string))
-            {
-                cell.Value = (string)value;
-            }
-            // date
-            else if (t == typeof(DateTime))
-            {
-                cell.Value = (DateTime)value;
-            }
-            // ore
-            else if (t == typeof(TimeSpan))
-            {
-                var ts = (TimeSpan)value;
-                var to = new TimeOnly(ts.Hours, ts.Minutes, ts.Seconds); ;
-                cell.Value = string.Format("{0:HH:mm:ss}", to);
-            }
-            // numerici
-            else if (t == typeof(int))
-            {
-                cell.Value = (int)value;
-            }
-            else if (t == typeof(long))
-            {
-                cell.Value = (long)value;
-            }
-            else if (t == typeof(float))
-            {
-                cell.Value = (float)value;
-            }
-            else if (t == typeof(double))
-            {
-                cell.Value = (double)value;
-            }
-            else if (t == typeof(decimal))
-            {
-                cell.Value = (decimal)value;
-            }
-            // bbooleani
-            else if (t == typeof(bool))
-            {
-                cell.Value = (bool)value;
-            }
+			return txt;
         }
-    }
+		#endregion
+	}
 }
