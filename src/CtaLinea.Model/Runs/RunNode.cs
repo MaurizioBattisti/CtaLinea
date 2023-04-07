@@ -11,7 +11,16 @@ namespace CtaLinea.Model.Runs
         public TimeSpan Hour { get; set; }
         public int ProgrNumber { get; set; }
 
-        public RunNode GetClone ()
+        public void copyFrom (RunNode item)
+        {
+			this.RunNodeId = item.RunNodeId;
+			this.CollectionPointId = item.CollectionPointId;
+			this.CollectionPointData = item.CollectionPointData; ;
+			this.Hour = item.Hour;
+			this.ProgrNumber = item.ProgrNumber;
+		}
+
+		public RunNode GetClone ()
         {
             return new RunNode()
             {

@@ -119,7 +119,7 @@ else
 	{
 		@if (this.SelectedCars.Count == 1)
 		{
-			<p> dati genrali del mezzo</p>
+			<RunCarExtraDataView CurrentRun="@CurrentRun" EditableData="@EditableData" Car=@(this.GetSingleSelectedCar() ?? new RunPeriodCar()) />
 
 			@if (this.CanShoCosts() == true)
 			{

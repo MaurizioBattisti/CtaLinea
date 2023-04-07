@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using CtaLinea.QueryModel;
+using CtaLinea.Model.QueryModel;
 using ZzSoft.QueryHelper;
 
 namespace ZzSoft.CtaLinea.Dal.Queries

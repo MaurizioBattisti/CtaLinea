@@ -107,5 +107,13 @@ namespace CtaLineaApp.Components
         {
             this.IsClean = false;
         }
+
+        protected async Task RaiseSavedEvent ()
+        {
+            await this.Saved.InvokeAsync();
+		}
+
+        // solleva l'evento alla fine del salvataggio se tutto è andato OK
+        public EventCallback Saved { get; set; }
     }
 }

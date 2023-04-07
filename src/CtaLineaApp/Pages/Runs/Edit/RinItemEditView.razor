@@ -135,6 +135,7 @@ else
                 await this.Planning.ReloadDataAsync();
             }
             this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
+            await this.RaiseSavedEvent();
         }
         catch (BadRequestException<RunCheckResult> ex)
         {

@@ -5,6 +5,7 @@
 
 <div class="d-flex flex-row">
 	<RadzenDataGrid 
+		@ref=@NodeGrid
 		AllowFiltering="false" AllowPaging="false" AllowSorting="false"
 		AllowColumnResize=true
 		Data="@this.GetNodes()"
@@ -42,7 +43,32 @@
 	</RadzenDataGrid>
 </div>
 
+<DialogBoxWrapper @ref=@NodeEditDialogBox
+	Width="1000px"
+	Title="Nodo">
+	<Body Context="ds">
+		<NodeEditDialogBox @bind-Node="@NodeInEdit" />
+	</Body>
+	<Buttons Context="ds" >
+		@if (this.IsAdding == true)
+		{
+			<RadzenButton Click="@(() => this.ConfirmNodeUpdateAsync(ds))"
+					  Text="Crea" />
+		}
+		else
+		{
+			<RadzenButton Click="@(() => this.ConfirmNodeUpdateAsync(ds))"
+					  Text="Aggiorna" />
+
+		}
+		<RadzenButton Click="@(() => ds.Close())"
+					  ButtonStyle="ButtonStyle.Secondary"
+					  Text="Annulla" />
+	</Buttons>
+</DialogBoxWrapper>
+
 @code {
+	private RadzenDataGrid<RunNode>? NodeGrid;
 
 	[Parameter]
 	public IEditableData? EditableData { get; set; }
@@ -100,58 +126,68 @@
 		this.EditableData?.SetDirty();
 		await Task.CompletedTask;
 	}
-	private async Task EditNode_Click(RunNode node)
-	{
-		this.DialogNode = node.GetClone();
 
-		if (await this.ShowNodeDialog("Modifica fermata (Nodo)") == true)
-		{
-			// elimina il vecchio nodo
-			this.RunModelService.RemoveNode(
-				this.Variation,
-				node);
-			this.RunModelService.AddNodeToVariation(
-				this.Variation,
-				this.DialogNode);
-			this.EditableData?.SetDirty();
-		}
-		this.DialogNode = null;
-		this.StateHasChanged();
+	#region edit node dialog
+	private DialogBoxWrapper? NodeEditDialogBox;
+	private bool IsAdding = false;
+	private RunNode NodeInEdit = new RunNode();
 
-		await Task.CompletedTask;
-	}
 	private async Task AddNote_Click()
 	{
-		this.DialogNode = this.RunModelService.CreateNewNode(this.Variation, false);
+		this.NodeInEdit = this.RunModelService.CreateNewNode(this.Variation, false);
+		this.IsAdding = true;
+		if (this.NodeEditDialogBox != null)
+		{
+			await this.NodeEditDialogBox.ShowDialog("Nuovo nodo");
+		}
+	}
 
-		if (await this.ShowNodeDialog("Nuova fermata (Nodo)") == true)
+	private async Task EditNode_Click(RunNode node)
+	{
+		var item = new RunNode();
+		item.copyFrom(node);
+		NodeInEdit = item;
+
+		this.IsAdding = false;
+		if (this.NodeEditDialogBox != null)
+		{
+			await this.NodeEditDialogBox.ShowDialog("Nuovo nodo");
+		}
+	}
+
+	private async Task ConfirmNodeUpdateAsync (DialogService ds)
+	{
+		// contorlla i dati immessi
+
+
+
+		// aggiunge o aggiorna il nodo
+		if (this.IsAdding == true)
 		{
 			this.RunModelService.AddNodeToVariation(
-			this.Variation,
-			this.DialogNode);
-			this.EditableData?.SetDirty();
+				this.Variation,
+				this.NodeInEdit);
 		}
-		this.DialogNode = null;
-		this.StateHasChanged();
-	}
+		else
+		{
+			if ( this.Variation.Nodes != null)
+			{
+				var node = this.Variation.Nodes.Where(n => n.RunNodeId == this.NodeInEdit.RunNodeId).SingleOrDefault();
+				if (node != null)
+				{
+					node.copyFrom(this.NodeInEdit);
+				}
+			}
+		}
+		if (this.NodeGrid != null)
+		{
+			await NodeGrid.Reload();
+		}
 
-	private async Task<bool> ShowNodeDialog(
-	string title)
-	{
-		var okText = "OK";
-		bool? result = await DialogService.OpenAsync(
-		title,
-		ds =>
-	@<div>
-		<RunNodeEditDialog Node=@DialogNode />
-		<RadzenButton Text="@okText" Click="()=>ds.Close(true)" ButtonStyle="ButtonStyle.Primary" />
-		<RadzenButton Text="Annulla" Click="()=>ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" />
-	</div>
-	, new DialogOptions() { Width = "1000px" }
-	);
-
-		return (result != null && result == true);
+		ds.Close();
+		this.EditableData?.SetDirty();
 	}
+	#endregion
 
 	private void Reorder_Click()
 	{

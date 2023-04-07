@@ -60,7 +60,7 @@ namespace CtaLineaApp
         internal const string EndPoint_CostsByAssociate_CarId = "carId";
         internal const string EndPoint_CostsByAssociate_RunId = "runId";
 
-
+        // Calenari
         internal const string Endpoint_Calendars = "/api/calendars";
         internal const string Endpoint_Calendar_One_Fmr = Endpoint_Calendars + "/{0}";
         internal const string Endpoint_Calendar_SingleOne_Fmr = Endpoint_Calendar_One_Fmr + "/simple";
@@ -71,16 +71,23 @@ namespace CtaLineaApp
         internal const string Endpoint_CalendarPeriods_Single_Fmt = Endpoint_CalendarPeriods + "/{0}";
         internal const string Endpoint_Calendar_Days = Endpoint_Calendar_One_Fmr + "/days?startDate={1:yyyy-MM-dd}&endDate={2:yyyy-MM-dd}";
 
+        // TAgs
         internal const string Endpoint_Tags = "/api/tags";
         internal const string Endpoint_Tags_Single_Fmt = Endpoint_Tags + "/{0}";
 
+        // contratti
         internal const string Endpoint_Contracts = "/api/contracts";
         internal const string Endpoint_ContractsOperationalPeriods = Endpoint_Contracts+ "/periods";
         
+        // ditte
         internal const string Endpoint_Associates = "/api/associates";
         internal const string Endpoint_Cars = "/api/cars";
 
-        internal const string Endpoint_Drivers = "/api/drivers";
+		// punti di raccolta
+		internal const string Endpoint_CollectionPoints = "/api/collectionpoints";
+
+
+		internal const string Endpoint_Drivers = "/api/drivers";
         internal const string Endpoint_PendingImport = "/api/importlogs/pending/{0}";
         internal const string Endpoint_ImportLog = "/api/importlogs";
         internal const string Endpoint_ImportLog_Single = "/api/importlogs/{0}";
