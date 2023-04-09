@@ -4,6 +4,7 @@
 
 <CascadingValue Value=@this>
 <CascadingValue Value=@this.LineaSettings >
+<CascadingValue Value=@this.GlobalFilters>
     <RadzenNotification />
     <RadzenDialog />
     <RadzenContextMenu />
@@ -47,6 +48,7 @@
     </RadzenLayout>
 </CascadingValue>
 </CascadingValue>
+</CascadingValue>
 
 @code {
     protected RenderFragment? TopLine = null;
@@ -56,6 +58,7 @@
     bool bodyExpanded = false;
 
     CtaLineaSettings LineaSettings = new CtaLineaSettings();
+    CtaLineaGlobalFilters GlobalFilters = new CtaLineaGlobalFilters();
 
     protected override async Task OnInitializedAsync()
     {

@@ -11,51 +11,42 @@ namespace CtaLineaApp.Application.Services.Account
     {
         private IHttpService _httpService;
         private NavigationManager _navigationManager;
-        private ILocalStorageService _localStorageService;
+        private ICurrentUserService _currentUserSvc;
 
-        private UserModel? _User;
-        public UserModel? User  
-        {
-            get {  return _User; }
-            private set 
-            { 
-                _User = value;
-                if (UserStatusChanged != null) this.UserStatusChanged();
-            }
-        }
-        public Action? UserStatusChanged { get; set; } = null;
+        public UserModel? User => _currentUserSvc.User;
+        public Action? UserStatusChanged { get => this._currentUserSvc.UserStatusChanged; set => this._currentUserSvc.UserStatusChanged = value; }
 
         public AccountService(
             IHttpService httpService,
-            NavigationManager navigationManager,
-            ILocalStorageService localStorageService
+            ICurrentUserService currentUserSvc,
+            NavigationManager navigationManager
             )
         {
             _httpService = httpService;
             _navigationManager = navigationManager;
-            _localStorageService = localStorageService;
-        }
-
-        public async Task Initialize()
-        {
-            User = await _localStorageService.GetItem<UserModel>(Constants.LoalStorageKey_User);
+            _currentUserSvc = currentUserSvc;
         }
 
         public async Task Login(LoginModel model)
         {
-            this.User = await _httpService.Post<UserModel, string>("api/auth/login", model);
-            await _localStorageService.SetItem(Constants.LoalStorageKey_User, this.User);
+            await this._currentUserSvc.SetUser(
+                await _httpService.Post<UserModel, string>("api/auth/login", model)
+                );
         }
         public async Task Logout()
         {
-            User = null;
-            await _localStorageService.RemoveItem(Constants.LoalStorageKey_User);
+            await this._currentUserSvc.SetUser(null);
             _navigationManager.NavigateTo("/");
         }
 
         public async Task ChangePassword(ChangePasswordModel model)
         {
             await Task.CompletedTask;
+        }
+
+        public async Task Initialize()
+        {
+            await _currentUserSvc.Initialize();
         }
     }
 }

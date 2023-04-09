@@ -18,5 +18,10 @@ namespace CtaLinea.Model.QueryModel
 
         public string GetDescription() => string.Format("{0:yyyy} / {1:yyyy}",
                     this.StartDate, this.EndDate);
+
+        public override string ToString()
+        {
+            return this.GetDescription();
+        }
     }
 }

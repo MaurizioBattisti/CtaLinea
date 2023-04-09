@@ -7,7 +7,10 @@ namespace CtaLineaApp.Application.Services.Run
     public interface IRunModelService
     {
         RunPeriod CreateNewPeriod(RunItem run, DateTime? startDate = null, DateTime? endDate = null);
-        RunItem CreateNewRun(Contract contract);
+        RunItem CreateNewRun(
+            Contract contract,
+            Guid? nreRunId = null);
+
         RunVariation CreateNewVariation(RunItem run, DateTime? startDate = null);
         RunPeriodCar CreatePeriodCar(RunPeriod period, CarTypeEnum runCarType = CarTypeEnum.Primary, Guid? associateId = null, Guid? carId = null);
         RunCarCost ComputeReplacementCost(

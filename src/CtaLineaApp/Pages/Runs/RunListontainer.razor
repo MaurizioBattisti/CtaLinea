@@ -39,11 +39,11 @@
                         Value=@SelectedRuns
                         ValueChanged="@SelectionChanged"
                         CellContextMenu="@RowActionCellContextMenu"
-                        AllowVirtualization=true
-                        VirtualizationOverscanCount="10"
                         ExpandMode="DataGridExpandMode.Single"
                         RowRender=@RowRender
                         RowExpand=@RowExpand
+                        AllowVirtualization=true
+                        VirtualizationOverscanCount="10"
                         Style="height:100%"
                         Density=@Settings.Density>
             <!--
@@ -51,9 +51,17 @@
             -->
             <HeaderTemplate>
                 <RadzenStack Orientation="Orientation.Horizontal" Gap="4px">
-                    <RadzenButton ButtonStyle="ButtonStyle.Light"
-                                  Icon="file_download"
-                                  Click="@ExportToExcel" />
+                    <RadzenSplitButton 
+                            ButtonStyle="ButtonStyle.Dark"
+                            Icon="file_download" Click=@DownloadData_Click >
+                        <ChildContent>
+                            <!--
+                            <RadzenSplitButtonItem Text="Excel" Value="X" Icon="grid_on" />
+                            -->
+                            <RadzenSplitButtonItem Text="CSV" Value="C" Icon="wrap_text" />
+                        </ChildContent>
+                    </RadzenSplitButton>
+
                     <RadzenButton ButtonStyle="ButtonStyle.Secondary"
                                   IsBusy=@IsLoading
                                   Icon="filter_alt"
@@ -331,6 +339,7 @@
         <RadzenSidebar @bind-Expanded="@EditorVisible" Style="width: 1000px; grid-area: rz-right-sidebar">
             <RinItemEditView @ref=@RunEditDetail
                 Id="@RunEditId.Value" 
+                Saved=@RunSaved
                 />
         </RadzenSidebar>
     }
@@ -445,13 +454,31 @@
         await base.OnInitializedAsync();
     }
 
-    private async Task ExportToExcel()
+
+    private async Task DownloadData_Click(RadzenSplitButtonItem item)
     {
         this.IsLoading = true;
+        var columninfo = this.grdData?.GetExportColumnInfo();
+
         try
         {
-            var columninfo = this.grdData?.GetExportColumnInfo();
-            await this.ExcelService.ExcelExport("Elenco Corse", this.Data, columninfo);
+            if (item == null)
+            {
+                await this.ExcelService.ExportCsv("Elenco Corse", this.Data, columninfo);
+            }
+            else
+            {
+                switch (item.Value)
+                {
+                    case "X":
+                        break;
+                    case "C":
+                        await this.ExcelService.ExportCsv("Elenco Corse", this.Data, columninfo);
+                        break;
+                }
+            }
+            this.notificationService.Notify(NotificationSeverity.Info, "File pronto per il donwload");
+
         }
         finally
         {
@@ -601,7 +628,7 @@
     {
         await Task.CompletedTask;
         ContextMenuService.Close();
-        
+
         if (this.IsClean == false) return ;
 
         switch ((RunMenuItems)e.Value)
@@ -619,7 +646,7 @@
     }
 
     #region gestione Editor e selezione corrente
-    
+
     List<RunItemQueryModel> SelectedRuns = new List<RunItemQueryModel>();
     private Guid? RunEditId = null;
 
@@ -633,7 +660,7 @@
         }
         set { this._EditorVisible = value;}
     }
-    
+
     private async Task SelectionChanged(IList<RunItemQueryModel> list)
     {
         if (this.IsClean == false)
@@ -675,7 +702,7 @@
             editor.IsClean = value;
         }
     }
-     #endregion
+    #endregion
 
     private async Task ShowTagsEditor(
         Guid runId)
@@ -730,6 +757,55 @@
             await this.ReloadData();
         }
     }
+
+    private async Task RunSaved ()
+    {
+        if (this.RunEditId != null
+            && this.grdData != null)
+        {
+            // recupera l'id della riga salvata
+            var runId = RunEditId.Value;
+
+            try
+            {
+                this.IsLoading = true;
+
+                // ricarica la riga della griglia e  la rimette nel posto giusto
+                var newItem = await this.RunRepo.GetOneDetailAsync(runId);
+                var oldItem = this.Data?.Where(x => x.Id == runId).SingleOrDefault();
+                if (newItem != null
+                    && oldItem != null)
+                {
+                    // aggiorna i dati
+                    oldItem.CopyFrom(newItem);
+                    this.grdData?.UpdateRow(oldItem);
+                    // aggiorna il reiferimento della nuova riga
+                    newItem = oldItem;
+                }
+                else if (newItem != null)
+                {
+                    // se la riga nuova non è presente  nela lista la ggige
+                    if (this.Data == null) this.Data = new List<RunItemQueryModel>() { newItem };
+                    else
+                    {
+                        this.Data.Add(newItem);
+                    }
+                }
+                
+                if (newItem != null
+                    && this.grdData != null)
+                {
+                    await this.grdData.Reload();
+                    await this.grdData.SelectRow(newItem);
+                }
+            }
+            finally
+            {
+                this.IsLoading = false;
+            }
+        }
+    }
+
 
     private async Task ClearFilters_Click()
     {

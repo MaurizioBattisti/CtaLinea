@@ -45,6 +45,7 @@ namespace CtaLineaApp
                 .AddScoped<IExcelExporterService, ExcelExporterService> ()
 
                 .AddScoped<IApplicationSettings, ApplicationSettings>()
+                .AddScoped<ICurrentUserService, CurrentUserService>()
                 .AddScoped<IAccountService, AccountService>()
                 // .AddScoped<IAlertService, AlertService>()
                 .AddScoped<IHttpService, HttpService>()

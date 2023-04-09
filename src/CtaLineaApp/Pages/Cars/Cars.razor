@@ -73,7 +73,7 @@
         if (this.AutoLoad?.Data != null)
         {
             var columninfo = this.grdData?.GetExportColumnInfo();
-            await this.ExcelService.ExcelExport("Elenco Mezzi parziale", this.AutoLoad.Data, columninfo);
+            await this.ExcelService.ExportCsv("Elenco Mezzi parziale", this.AutoLoad.Data, columninfo);
         }
     }
 

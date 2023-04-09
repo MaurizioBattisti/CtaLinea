@@ -12,11 +12,12 @@ namespace CtaLineaApp.Application.Services.Run
         : IRunModelService
     {
         public RunItem CreateNewRun(
-            Contract contract)
+            Contract contract,
+            Guid? nreRunId = null)
         {
             var run = new RunItem()
             {
-                RunId = Guid.NewGuid(),
+                RunId = nreRunId ?? Guid.NewGuid(),
                 ContractId = contract.ContractId,
                 ContractData = contract,
                 Extra = false,

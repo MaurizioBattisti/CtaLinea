@@ -14,12 +14,19 @@
 {
     <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
 }
-else
+else if (this.NoData == false)
 {
-    <div class="row">
-        
+    <div class="row justify-content-start align-items-center">
+        <div class="col-5 d-flex align-items-center">
+            <h3>@(this.IsADding ? "Nuova corsa" : "Modifica Corsa")</h3>
+        </div>
+        <div class="col-7 d-flex align-items-center justify-content-end">
+            <RadzenButton Click=@Save_Click IsBusy=@IsSaving Text="Salva Corsa" BusyText="Salvataggio...." ButtonStyle="ButtonStyle.Primary" />
+        </div>
     </div>
+
     <RadzenTabs 
+        @bind-SelectedIndex=@TabSelectedIndex
         TabPosition="TabPosition.Top" 
         RenderMode="TabRenderMode.Client">
          <Tabs>
@@ -62,28 +69,39 @@ else
             <RadzenTabsItem Text="Giorni Add." Icon="free_cancellation">
                 <RunAdditionalDayListView EditableData=@this CurrentRun=@CurrentRun  />
             </RadzenTabsItem>
-
-            <RadzenTabsItem Text="Planning" Icon="calendar_month">
-                <RunPlanningView @ref=@Planning RunId=@Id />
-            </RadzenTabsItem>
+            
+            @if (this.IsADding == false)
+            {
+                <RadzenTabsItem Text="Planning" Icon="calendar_month">
+                    <RunPlanningView @ref=@Planning RunId=@Id />
+                </RadzenTabsItem>
+            }
         </Tabs>
     </RadzenTabs>
-
-    <RadzenCard>
-        <RadzenButton Click=@Save_Click IsBusy=@IsSaving Text="Salva Corsa" BusyText="Salvataggio...." ButtonStyle="ButtonStyle.Primary" />
-    </RadzenCard>
-
 }
+else if (this.NoData == true)
+{
+    <h1>Nessun dato visualizzabile !</h1>
+}
+
 @code {
+    private int TabSelectedIndex { get; set; } = 1;
+
     [Parameter]
     public Guid Id { get; set; } = Guid.Empty;
+
+    [CascadingParameter]
+    CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
 
     RunItem CurrentRun = new RunItem();
     private bool IsBusy = true;
     private bool IsSaving = false;
+    private bool NoData = false;
 
     private RunCheckResult? CheckResult { get; set; }
     private RunPlanningView? Planning;
+
+    private bool IsADding { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -99,10 +117,41 @@ else
                 this.CurrentRun = run;
                 this.IsClean = true;
                 this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
+                this.IsADding = false;
+                this.NoData = false;
             }
             else
             {
-                // TODO: segnala un problema
+                var contr = this.GlobalFilters.Contract;
+                if (contr != null)
+                {
+                    // s mette in modalità ADD new
+                    var contract = new Contract()
+                        {
+                            ContractId = contr.Id,
+                            ContractName = contr.ContractName,
+                            ContractDescription = contr.ContractDescription,
+
+                            StartDate = contr.StartDate,
+                            EndDate = contr.EndDate
+                        };
+
+                    // crea un nuovo run e lo piazza nel current run
+                    run = this.RunModelService.CreateNewRun(
+                        contract,
+                        this.Id);
+
+                    this.CurrentRun = run;
+                    this.IsClean = true;
+                    this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
+                    this.IsADding = true;
+                    this.NoData = false;
+                }
+                else
+                {
+                    this.NoData = true;
+                    this.notificationService.Notify(NotificationSeverity.Warning, "Selezionare un appalto prima di aggiungere una corsa");
+                }
             }
         }
         finally
@@ -116,6 +165,7 @@ else
     {
         if (firstRender)
         {
+            
         }
     }
 
@@ -130,11 +180,24 @@ else
                 this.Id, this.CurrentRun);
             this.IsClean = true;
 
+            // segnala che tutto è andato OK
+            this.notificationService.Notify(
+                NotificationSeverity.Success,
+                "Salvataggio",
+                "Salvataggio dati corsa OK"
+            );
+            this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
+            if (this.CheckResult.Status != CheckStatus.Success)
+            {
+                this.TabSelectedIndex = 0;
+            }
+
+            this.IsADding = false;
             if (this.Planning != null)
             {
                 await this.Planning.ReloadDataAsync();
             }
-            this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
+            
             await this.RaiseSavedEvent();
         }
         catch (BadRequestException<RunCheckResult> ex)

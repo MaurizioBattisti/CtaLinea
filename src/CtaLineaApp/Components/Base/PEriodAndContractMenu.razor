@@ -1,37 +1,62 @@
 ﻿@inject IContractService ContractService
+@inject IQueryUtilityService queryService
+@inject IAccountService AccountService
+
+<CtaLineaGlobalFiltersManager 
+    @ref=@globalFiltersManager
+    Changed="@((settings) => this.StateHasChanged())"
+    />
 
 <QueryLoader TItem="OperationPeriodQueryItem"
-    Endpoint="@(Constants.Endpoint_ContractsOperationalPeriods)"
-    @bind-Data=@Data />
+             Endpoint="@(Constants.Endpoint_ContractsOperationalPeriods)"
+             @bind-Data=@PeriodData
+             DataLoaded="@PeriodLoaded" />
+<QueryLoader TItem="ContractQueryItem"
+             @ref=@ContractQuery
+             Filter=@ContractFilters
+             Endpoint="@(Constants.Endpoint_Contracts)"
+             @bind-Data=@ContractData
+             DataLoaded="@ContactsLoaded" />
 
-<RadzenSplitButton Text=@GetCurrentDescr() ButtonStyle="ButtonStyle.Light" >
+<RadzenSplitButton Text=@GetCurrentDescr() ButtonStyle="ButtonStyle.Light" 
+        Click="@SetDefaultPeriod_Click"
+    >
     <ChildContent>
-        <RadzenCard>
-            <p> prova </p>
-            <h2> testo di tipo header</h2>
-            <RadzenButton Text="Prova a schizare" />
+        <RadzenCard Style="width: 400px">
+            <RadzenStack Orientation="Orientation.Vertical">
+                <RadzenLabel Text="Periodo" Component="Period" />
+                <RadzenDropDown Name="Period"
+                                Value=@GlobalFilters.Period
+                                ValueChanged=@PeriodChanged
+                                TValue="OperationPeriodQueryItem"
+                                Data=@PeriodData
+                                Style="width: 100%; max-width: 400px;" />
+
+                <RadzenLabel Text="Appalto" Component="ContractId" />
+                <RadzenDropDown Name="ContractId"
+                                Value=@GlobalFilters.Contract
+                                ValueChanged=@ContractChanged
+                                TValue="ContractQueryItem"
+                                Data=@ContractData
+                                Style="width: 100%; max-width: 400px;" />
+            </RadzenStack>
         </RadzenCard>
     </ChildContent>
 </RadzenSplitButton>
 
 @code {
-    private IList<OperationPeriodQueryItem> _Data = new List<OperationPeriodQueryItem>();
-    public IList<OperationPeriodQueryItem> Data
-    {
-        get { return _Data; }
-        set
-        {
-            _Data = value;
-            this.CurrentPEriod = this.Data.Where(x => x.IsCurrent() == true).Select(x => x).FirstOrDefault();
-            // this.StateHasChanged();
-        }
-    }
-    public OperationPeriodQueryItem? CurrentPEriod { get; set; } = null;
+    QueryLoader<ContractQueryItem>? ContractQuery;
 
-    private string GetCurrentDescr ()
-    {
-        return this.CurrentPEriod?.GetDescription() ?? "Nessun periodo";
-    }
+    private CtaLineaGlobalFiltersManager? globalFiltersManager;
+    private ContractDropDown? contractSelector;
+
+    [CascadingParameter]
+    CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
+
+    public IList<OperationPeriodQueryItem> PeriodData { get; set; } = new List<OperationPeriodQueryItem>();
+    public IList<ContractQueryItem> ContractData { get; set; } = new List<ContractQueryItem>();
+    public OperationPeriodQueryItem? SelectedPeriod { get; set; }
+    string ContractFilters = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -42,9 +67,103 @@
     {
         if (firstRender == true)
         {
-            
         }
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    private string GetCurrentDescr()
+    {
+        return this.GlobalFilters?.Period?.GetDescription() ?? "Nessun periodo";
+    }
+    private async Task SetDefaultPeriod_Click(RadzenSplitButtonItem item)
+    {
+        var period = this.PeriodData.Where(x => x.IsCurrent() == true).Select(x => x).FirstOrDefault();
+        await this.SetCurrentPeriodAsync(period);
+    }
+
+    private async Task PeriodChanged(OperationPeriodQueryItem? period)
+    {
+        await this.SetCurrentPeriodAsync(period);
+    }
+    private async Task ContractChanged(ContractQueryItem? contract)
+    {
+        if (globalFiltersManager != null)
+        {
+            await globalFiltersManager.SetContractAsync(contract);
+        }        
+    }
+
+    private async Task SetCurrentPeriodAsync(OperationPeriodQueryItem? period)
+    {
+        if (globalFiltersManager != null)
+        {
+            await this.globalFiltersManager.SetPeriodAsync(period);
+            this.ContractFilters = string.Empty;
+            if (period != null)
+            {
+                var startStr = string.Format("$ge(endDate,{0:yyyy-MM-dd})", period.StartDate);
+                var endStr = string.Format("$le(startDate,{0:yyyy-MM-dd})", period.EndDate);
+                this.ContractFilters = string.Format("$and({0},{1})",
+                        startStr, endStr);
+
+                // ricarica i contratti
+                if (this.ContractQuery != null)
+                {
+                    await this.ContractQuery.LoadDataAsync(this.ContractFilters);
+                }
+            }
+            else
+            {
+                await this.SetCurrentContractAsync();
+            }
+        }
+        
+    }
+    private async Task SetCurrentContractAsync()
+    {
+        if (globalFiltersManager != null)
+        {
+            var period = this.GlobalFilters.Period;
+            var contract = await this.GetSelectedContractAsync(period, this.GlobalFilters.Contract?.Id);
+            if (contract != null)
+            {
+                // seleziona un contratto di default
+                await this.globalFiltersManager.SetContractAsync(contract);
+            }
+            this.StateHasChanged();
+        }
+    }
+
+    private async Task<ContractQueryItem?> GetSelectedContractAsync(
+        OperationPeriodQueryItem? period,
+        int? contractId)
+    {
+        await Task.CompletedTask;
+        ContractQueryItem? contract = null;
+        if (contractId != null)
+        {
+            // prova a selezionare un contratto
+            contract = (from c in this.ContractData
+                        where c.Id == contractId
+                        select c).FirstOrDefault();
+        }
+
+        if (contract == null)
+        {
+            contract = (from c in this.ContractData
+                        select c).FirstOrDefault();
+        }
+
+        return contract;
+    }
+
+    private async Task ContactsLoaded()
+    {
+        await this.SetCurrentContractAsync();
+    }
+    private async Task PeriodLoaded()
+    {
+        var period = this.PeriodData.Where(x => x.IsCurrent() == true).Select(x => x).FirstOrDefault();
+        await this.SetCurrentPeriodAsync(period);
+    }
 }

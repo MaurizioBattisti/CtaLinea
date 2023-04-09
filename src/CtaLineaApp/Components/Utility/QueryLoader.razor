@@ -29,30 +29,35 @@
     public IList<TItem> Data { get; set; } = new List<TItem>();
     [Parameter]
     public EventCallback<IList<TItem>> DataChanged { get; set; }
+    [Parameter]
+    public EventCallback DataLoaded { get; set; }
 
     [Parameter]
     public bool LoadAdStartup { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
     {
-        await this.LoadDataAsync();
+        if (this.LoadAdStartup == true)
+        {
+            await this.LoadDataAsync();
+        }
         await base.OnInitializedAsync();
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        // await LoadDataAsync();
+        //await LoadDataAsync();
         await base.OnParametersSetAsync();
     }
 
-    private async Task LoadDataAsync()
+    public async Task LoadDataAsync(
+        string? filter = null)
     {
-        if (this.LoadAdStartup == true)
-        {
-            var data = await GetAllAndCacheAsync();
-            this.Data = data?.ToList() ?? new List<TItem>();
-            await this.DataChanged.InvokeAsync(this.Data);
-        }
+        this.Filter = filter ?? this.Filter;
+        var data = await GetAllAndCacheAsync();
+        this.Data = data?.ToList() ?? new List<TItem>();
+        await this.DataChanged.InvokeAsync(this.Data);
+        await this.DataLoaded.InvokeAsync();
     }
 
     private string GetCacheKeyName(

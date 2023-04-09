@@ -57,6 +57,8 @@
     bool isLoading = false;
     ContractQueryItem? CurrentItem = null;
 
+    public IEnumerable<ContractQueryItem>? GetData() => this.Data;
+
     public ContractQueryItem? SelectedContractData
     {
         get

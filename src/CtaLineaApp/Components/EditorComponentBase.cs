@@ -114,6 +114,7 @@ namespace CtaLineaApp.Components
 		}
 
         // solleva l'evento alla fine del salvataggio se tutto è andato OK
+        [Parameter]
         public EventCallback Saved { get; set; }
     }
 }
