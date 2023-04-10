@@ -25,6 +25,12 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             return id;
         }
 
+        protected TimeSpan? NormalizeTimeSpanValue (TimeSpan? value)
+        {
+            if (value == null) return null;
+            return new TimeSpan (0, value.Value.Hours, value.Value.Minutes, value.Value.Seconds, value.Value.Milliseconds);
+        }
+
         #region funzioni generiche di lavoro
         protected async Task InsertTableAsync<T>(
             string tableName,

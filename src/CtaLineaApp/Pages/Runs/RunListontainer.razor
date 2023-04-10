@@ -80,6 +80,10 @@
                                   Icon="@(EditorVisible==false ? "visibility" : "visibility_off")"
                                   Click="@(() => EditorVisible = !EditorVisible)" />
 
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary"
+                                  Icon="domain_add"
+                                  Click="@AddLine_Click" />
+
 
 
                 </RadzenStack>
@@ -334,11 +338,11 @@
             </Columns>
         </RadzenDataGrid>
     </RadzenBody>
-    @if (this.RunEditId != null)
+    @if (this.EditArgs != null)
     {
         <RadzenSidebar @bind-Expanded="@EditorVisible" Style="width: 1000px; grid-area: rz-right-sidebar">
             <RinItemEditView @ref=@RunEditDetail
-                Id="@RunEditId.Value" 
+                EditArgs="@EditArgs" 
                 Saved=@RunSaved
                 />
         </RadzenSidebar>
@@ -504,7 +508,7 @@
 
             if (result != null)
             {
-                Data = result.Items;
+                Data = result.Items.ToList();
                 ItemCount = Data.Count();
             }
         }
@@ -648,7 +652,7 @@
     #region gestione Editor e selezione corrente
 
     List<RunItemQueryModel> SelectedRuns = new List<RunItemQueryModel>();
-    private Guid? RunEditId = null;
+    private RunEditArguments? EditArgs = null;
 
     private bool _EditorVisible  = true;
     public bool EditorVisible 
@@ -682,12 +686,38 @@
         // imposta il valore dell'id da modoificare
         if (this.SelectedRuns.Count > 0)
         {
-            this.RunEditId = this.SelectedRuns.Select(x => x.Id).First();
+            this.EditArgs = new RunEditArguments()
+                {
+                    RunId = this.SelectedRuns.Select(x => x.Id).First()
+                };
         }
         else
         {
-            this.RunEditId =null;
+            this.EditArgs =null;
         }
+    }
+    private async Task AddLine_Click()
+    {
+        if (this.IsClean == false)
+        {
+            var result = await this.AskForExitAsync();
+            if (result == true)
+            {
+                this.IsClean = true;
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        // deseleziona la ria corrente
+        this.SelectedRuns = new List<RunItemQueryModel>();
+        this.EditArgs  = new RunEditArguments ()
+        {
+            RunId = Guid.NewGuid(),
+            IsAdding = true
+        };
     }
 
     protected override bool GetIsClean ()
@@ -760,11 +790,12 @@
 
     private async Task RunSaved ()
     {
-        if (this.RunEditId != null
+        if (this.EditArgs != null
             && this.grdData != null)
         {
             // recupera l'id della riga salvata
-            var runId = RunEditId.Value;
+            var runId = EditArgs.RunId;
+            this.EditArgs.IsAdding = false;
 
             try
             {
@@ -791,13 +822,18 @@
                         this.Data.Add(newItem);
                     }
                 }
-                
+
                 if (newItem != null
                     && this.grdData != null)
                 {
                     await this.grdData.Reload();
                     await this.grdData.SelectRow(newItem);
                 }
+            }
+            catch (Exception exc)
+            {
+                this.notificationService.Notify(NotificationSeverity.Warning, "errore durante l'aggiornamento della lista", exc.Message);
+
             }
             finally
             {

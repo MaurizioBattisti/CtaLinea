@@ -745,9 +745,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             return new
             {
                 variation.StartDate,
-                
-                variation.StartTime,
-                variation.EndTime,
+
+                StartTime = this.NormalizeTimeSpanValue(variation.StartTime),
+                EndTime = this.NormalizeTimeSpanValue (variation.EndTime),
 
                 variation.LineNumber,
                 variation.RunNumber,
@@ -855,7 +855,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             return new
             {
                 node.ProgrNumber,
-                node.Hour,
+                Hour = this.NormalizeTimeSpanValue( node.Hour),
                 node.CollectionPointId
             };
         }

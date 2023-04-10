@@ -18,7 +18,7 @@ else if (this.NoData == false)
 {
     <div class="row justify-content-start align-items-center">
         <div class="col-5 d-flex align-items-center">
-            <h3>@(this.IsADding ? "Nuova corsa" : "Modifica Corsa")</h3>
+            <h3>@(this.EditArgs.IsAdding ? "Nuova corsa" : "Modifica Corsa")</h3>
         </div>
         <div class="col-7 d-flex align-items-center justify-content-end">
             <RadzenButton Click=@Save_Click IsBusy=@IsSaving Text="Salva Corsa" BusyText="Salvataggio...." ButtonStyle="ButtonStyle.Primary" />
@@ -70,10 +70,10 @@ else if (this.NoData == false)
                 <RunAdditionalDayListView EditableData=@this CurrentRun=@CurrentRun  />
             </RadzenTabsItem>
             
-            @if (this.IsADding == false)
+            @if (this.EditArgs.IsAdding == false)
             {
                 <RadzenTabsItem Text="Planning" Icon="calendar_month">
-                    <RunPlanningView @ref=@Planning RunId=@Id />
+                    <RunPlanningView @ref=@Planning RunId=@EditArgs.RunId />
                 </RadzenTabsItem>
             }
         </Tabs>
@@ -88,7 +88,7 @@ else if (this.NoData == true)
     private int TabSelectedIndex { get; set; } = 1;
 
     [Parameter]
-    public Guid Id { get; set; } = Guid.Empty;
+    public RunEditArguments EditArgs { get; set; } = new RunEditArguments();
 
     [CascadingParameter]
     CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
@@ -101,8 +101,6 @@ else if (this.NoData == true)
     private RunCheckResult? CheckResult { get; set; }
     private RunPlanningView? Planning;
 
-    private bool IsADding { get; set; } = false;
-
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -111,14 +109,16 @@ else if (this.NoData == true)
     {
         try
         {
-            var run = await _repo.GetOneAsync(this.Id);
-            if (run != null)
+            if (this.EditArgs.IsAdding == false)
             {
-                this.CurrentRun = run;
-                this.IsClean = true;
-                this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
-                this.IsADding = false;
-                this.NoData = false;
+                var run = await _repo.GetOneAsync(this.EditArgs.RunId);
+                if (run != null)
+                {
+                    this.CurrentRun = run;
+                    this.IsClean = true;
+                    this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
+                    this.NoData = false;
+                }
             }
             else
             {
@@ -137,14 +137,13 @@ else if (this.NoData == true)
                         };
 
                     // crea un nuovo run e lo piazza nel current run
-                    run = this.RunModelService.CreateNewRun(
+                    var run = this.RunModelService.CreateNewRun(
                         contract,
-                        this.Id);
+                        this.EditArgs.RunId);
 
                     this.CurrentRun = run;
                     this.IsClean = true;
                     this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
-                    this.IsADding = true;
                     this.NoData = false;
                 }
                 else
@@ -153,6 +152,11 @@ else if (this.NoData == true)
                     this.notificationService.Notify(NotificationSeverity.Warning, "Selezionare un appalto prima di aggiungere una corsa");
                 }
             }
+        }
+        catch (Exception exc )
+        {
+            this.notificationService.Notify(NotificationSeverity.Error, "Errore caricando i dati", exc.Message);
+            this.NoData = true;
         }
         finally
         {
@@ -176,8 +180,15 @@ else if (this.NoData == true)
 
         try
         {
+            this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
+            if (this.CheckResult.Status != CheckStatus.Success)
+            {
+                this.TabSelectedIndex = 0;
+            }
+
             await this._repo.SaveRunAsync(
-                this.Id, this.CurrentRun);
+                this.EditArgs.RunId, this.CurrentRun);
+            this.EditArgs.IsAdding = false;
             this.IsClean = true;
 
             // segnala che tutto è andato OK
@@ -186,13 +197,8 @@ else if (this.NoData == true)
                 "Salvataggio",
                 "Salvataggio dati corsa OK"
             );
-            this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
-            if (this.CheckResult.Status != CheckStatus.Success)
-            {
-                this.TabSelectedIndex = 0;
-            }
 
-            this.IsADding = false;
+            
             if (this.Planning != null)
             {
                 await this.Planning.ReloadDataAsync();
@@ -203,6 +209,7 @@ else if (this.NoData == true)
         catch (BadRequestException<RunCheckResult> ex)
         {
             this.CheckResult = ex.Payload;
+            this.TabSelectedIndex = 0;
 
             this.notificationService.Notify(
                 NotificationSeverity.Error,

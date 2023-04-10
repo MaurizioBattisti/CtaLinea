@@ -24,7 +24,8 @@ namespace CtaLineaApp.Application.Services.Run
 
                 Variations = new List<RunVariation>(),
                 SubPeriods = new List<RunPeriod>(),
-                Suspensions = new List<RunSuspension>()
+                Suspensions = new List<RunSuspension>(),
+                AdditionalDays = new List<RunAdditionalDay>(),
             };
 
             // aggiune la variante di default
