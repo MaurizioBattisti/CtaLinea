@@ -16,7 +16,8 @@ namespace CtaLinea.Model.Utilities
         public string? BsCarId { get; set; }
         public string? CarDescr { get; set; }
         
-        public int? LineNumber { get; set; }
+        public string? RunName { get; set; }
+		public int? LineNumber { get; set; }
         public int? RunNumber { get; set; }
         public string? Path { get; set; }
 

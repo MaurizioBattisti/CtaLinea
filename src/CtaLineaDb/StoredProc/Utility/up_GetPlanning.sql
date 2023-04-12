@@ -20,6 +20,7 @@ BEGIN
 	(
 		SELECT  DISTINCT c.RunId,
 				c.RunVariationId,
+				r.RunName,
 				r.ContractId,
 				c.RunCarId,
 				rc.AssociateId,
@@ -51,6 +52,7 @@ BEGIN
 			c.CarId,
 			c.BsCarId,
 			c.Description AS CarDescr,
+			d.RunName,
 			v.LineNumber,
 			v.RunNumber,
 			v.Path

@@ -16,7 +16,10 @@ namespace CtaLinea.Model.QueryModel
 		public Guid Id { get; set; }
         public int CtaRunId { get; set; }
 
-        public int? ContractId { get; set; }
+		[SqlField(FullText = true)]
+		public string? RunName { get; set; }
+
+		public int? ContractId { get; set; }
 
 		public bool Extra { get; set; }
 		[SqlField(SortPosition = 0)]

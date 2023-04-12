@@ -26,6 +26,7 @@ WITH CTE_Variants_Base AS
 )
 SELECT  r.RunId,
 		r.CtaRunId,
+		r.RunName,
 		r.ContractId, r.Extra,
 		r.ContractRowNumber,
 		r.StartDate, r.EndDate,

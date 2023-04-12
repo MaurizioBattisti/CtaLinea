@@ -724,6 +724,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 runItem.ContractId,
                 runItem.ContractRowNumber,
                 runItem.Extra,
+				runItem.RunName,
 
                 runItem.Note
             };

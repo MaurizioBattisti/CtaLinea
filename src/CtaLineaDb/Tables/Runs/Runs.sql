@@ -12,6 +12,7 @@
     -- Identificativo univoco autoincrementante non più modificabile di una corsa
     [CtaRunId] INT NOT NULL IDENTITY, 
 
+    [RunName] VARCHAR(MAX) NULL, 
     CONSTRAINT [FK_Funs_Contract] 
         FOREIGN KEY (ContractId) 
         REFERENCES [dbo].[Contracts](ContractId)

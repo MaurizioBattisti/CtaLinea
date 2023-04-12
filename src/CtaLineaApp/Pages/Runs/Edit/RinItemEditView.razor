@@ -10,7 +10,7 @@
 
 <CtaLineaSttingsNotifier Changed=@StateHasChanged />
 
-@if (IsBusy == true)
+@if (this.NoData == false && IsBusy == true)
 {
     <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
 }
@@ -18,7 +18,7 @@ else if (this.NoData == false)
 {
     <div class="row justify-content-start align-items-center">
         <div class="col-5 d-flex align-items-center">
-            <h3>@(this.EditArgs.IsAdding ? "Nuova corsa" : "Modifica Corsa")</h3>
+            <h3>@(this.IsAdding ? "Nuova corsa" : "Modifica Corsa")</h3>
         </div>
         <div class="col-7 d-flex align-items-center justify-content-end">
             <RadzenButton Click=@Save_Click IsBusy=@IsSaving Text="Salva Corsa" BusyText="Salvataggio...." ButtonStyle="ButtonStyle.Primary" />
@@ -70,10 +70,10 @@ else if (this.NoData == false)
                 <RunAdditionalDayListView EditableData=@this CurrentRun=@CurrentRun  />
             </RadzenTabsItem>
             
-            @if (this.EditArgs.IsAdding == false)
+            @if (this.IsAdding == false)
             {
                 <RadzenTabsItem Text="Planning" Icon="calendar_month">
-                    <RunPlanningView @ref=@Planning RunId=@EditArgs.RunId />
+                    <RunPlanningView @ref=@Planning RunId=@RunId />
                 </RadzenTabsItem>
             }
         </Tabs>
@@ -87,16 +87,16 @@ else if (this.NoData == true)
 @code {
     private int TabSelectedIndex { get; set; } = 1;
 
-    [Parameter]
-    public RunEditArguments EditArgs { get; set; } = new RunEditArguments();
-
     [CascadingParameter]
     CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
+
+    private Guid RunId { get; set; } = Guid.Empty;
 
     RunItem CurrentRun = new RunItem();
     private bool IsBusy = true;
     private bool IsSaving = false;
-    private bool NoData = false;
+    private bool IsAdding = false;
+    private bool NoData = true;
 
     private RunCheckResult? CheckResult { get; set; }
     private RunPlanningView? Planning;
@@ -107,11 +107,30 @@ else if (this.NoData == true)
     }
     protected override async Task OnParametersSetAsync()
     {
+
+        await base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+        }
+    }
+
+    public async Task LoadDataAsync (
+        Guid runId,
+        bool isAdding = false)
+    {
+        this.RunId = runId;
+        this.IsAdding = isAdding;
+
         try
         {
-            if (this.EditArgs.IsAdding == false)
+            if (this.IsAdding == false)
             {
-                var run = await _repo.GetOneAsync(this.EditArgs.RunId);
+                var run = await _repo.GetOneAsync(this.RunId);
                 if (run != null)
                 {
                     this.CurrentRun = run;
@@ -139,7 +158,7 @@ else if (this.NoData == true)
                     // crea un nuovo run e lo piazza nel current run
                     var run = this.RunModelService.CreateNewRun(
                         contract,
-                        this.EditArgs.RunId);
+                        this.RunId);
 
                     this.CurrentRun = run;
                     this.IsClean = true;
@@ -153,7 +172,7 @@ else if (this.NoData == true)
                 }
             }
         }
-        catch (Exception exc )
+        catch (Exception exc)
         {
             this.notificationService.Notify(NotificationSeverity.Error, "Errore caricando i dati", exc.Message);
             this.NoData = true;
@@ -161,15 +180,7 @@ else if (this.NoData == true)
         finally
         {
             this.IsBusy = false;
-        }
-        await base.OnParametersSetAsync();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            
+            // this.StateHasChanged();
         }
     }
 
@@ -187,8 +198,8 @@ else if (this.NoData == true)
             }
 
             await this._repo.SaveRunAsync(
-                this.EditArgs.RunId, this.CurrentRun);
-            this.EditArgs.IsAdding = false;
+                this.RunId, this.CurrentRun);
+            this.IsAdding = false;
             this.IsClean = true;
 
             // segnala che tutto è andato OK

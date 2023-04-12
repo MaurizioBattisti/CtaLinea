@@ -251,6 +251,8 @@
                         <DateSelector @bind-Value="Filter_VariationStartDate" AllowClear=true Changed=@VariationStartDate_Changed />
                     </FilterTemplate>
                 </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunName" Title="Nome Corsa" Width="250px"  />
+
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="LineNumber" Title="Nr. Linea" Width="100px" FilterValue=@Filter_LineNumber />
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunNumber" Title="Nr. Corsa" Width="100px" FilterValue=@Filter_RunNumber />
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="StartTime" Title="Ora inizio" Width="120px" FilterOperator="FilterOperator.Equals" FilterValue=@Filter_StartTime_2>
@@ -338,15 +340,11 @@
             </Columns>
         </RadzenDataGrid>
     </RadzenBody>
-    @if (this.EditArgs != null)
-    {
-        <RadzenSidebar @bind-Expanded="@EditorVisible" Style="width: 1000px; grid-area: rz-right-sidebar">
-            <RinItemEditView @ref=@RunEditDetail
-                EditArgs="@EditArgs" 
-                Saved=@RunSaved
-                />
-        </RadzenSidebar>
-    }
+    <RadzenSidebar @bind-Expanded="@EditorVisible" Style="width: 1000px; grid-area: rz-right-sidebar">
+        <RinItemEditView @ref=@RunEditDetail
+            Saved=@RunSaved
+            />
+    </RadzenSidebar>
 </RadzenLayout>
 
 @code {
@@ -457,7 +455,6 @@
 
         await base.OnInitializedAsync();
     }
-
 
     private async Task DownloadData_Click(RadzenSplitButtonItem item)
     {
@@ -687,9 +684,13 @@
         if (this.SelectedRuns.Count > 0)
         {
             this.EditArgs = new RunEditArguments()
-                {
-                    RunId = this.SelectedRuns.Select(x => x.Id).First()
-                };
+            {
+                RunId = this.SelectedRuns.Select(x => x.Id).First()
+            };
+            if (this.RunEditDetail != null)
+            {
+                await this.RunEditDetail.LoadDataAsync(this.EditArgs.RunId, this.EditArgs.IsAdding);
+            }
         }
         else
         {
@@ -718,6 +719,10 @@
             RunId = Guid.NewGuid(),
             IsAdding = true
         };
+        if (this.RunEditDetail != null)
+        {
+            await this.RunEditDetail.LoadDataAsync(this.EditArgs.RunId, this.EditArgs.IsAdding);
+        }
     }
 
     protected override bool GetIsClean ()
@@ -856,7 +861,8 @@
             }
         }
 
-        /*
+        // rivedere la sezione dei filtri forse non servono tutti gli oggetti
+        // ma solo qeulli particolari 
         this.Filter_CtaRunId = null;
         this.Filter_ContractRowNumber = null;
         this.Filter_Extra = null;
@@ -896,7 +902,7 @@
         this.Filter_EndTime_2 = null;
 
         this.Filter_VariationStartDate = null;
-        */
+
 
         // this.StateHasChanged();
         await this.ReloadData();

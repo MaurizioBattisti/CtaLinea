@@ -89,6 +89,14 @@
 				</RadzenRow>
 				<RadzenRow AlignItems="AlignItems.Start">
 					<RadzenColumn Size="3">
+						<RadzenLabel Text="Nome Corsa" Component="RunName" />
+					</RadzenColumn>
+					<RadzenColumn Size="9">
+						<RadzenTextArea Name="RunName" @bind-Value="CurrentRun.RunName" Class="w-100 h-100" Change=@(a=> this.EditableData?.SetDirty()) Style="height: 60px" />
+					</RadzenColumn>
+				</RadzenRow>
+				<RadzenRow AlignItems="AlignItems.Start">
+					<RadzenColumn Size="3">
 						<RadzenLabel Component="Note" Text="Note" />
 					</RadzenColumn>
 					<RadzenColumn Size="9">

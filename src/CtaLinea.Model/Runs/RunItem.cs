@@ -8,7 +8,10 @@ namespace CtaLinea.Model.Runs
         // identificativo univoco per CTA 
         // solo in lettura è calcolato dal sErver
         public int? CtaRunId { get; set; }
-        public int ContractId { get; set; } = 0;
+
+        public string? RunName { get; set; }
+
+		public int ContractId { get; set; } = 0;
         public Contract? ContractData { get; set; }
 
         public bool Extra { get; set; } = false;
