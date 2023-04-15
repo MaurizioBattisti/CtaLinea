@@ -7,30 +7,28 @@ using System.Runtime.CompilerServices;
 namespace CtaLineaApp
 {
     public class CtaLineaGlobalFiltersManager
-        : ComponentBase
+        : ComponentBase,
+        IDisposable
     {
         [Parameter]
         public EventCallback<CtaLineaGlobalFilters> Changed { get; set; }
 
-        [Parameter]
-        public EventCallback<ContractQueryItem?> ContractChanged { get; set; }
-        [Parameter]
-        public EventCallback<OperationPeriodQueryItem?> PeriodChanged { get; set; }
-
         [CascadingParameter]
         public CtaLineaGlobalFilters Filters { get; set; } = new CtaLineaGlobalFilters();
 
-        public async Task SetContractAsync (ContractQueryItem? contract)
+        protected override void OnInitialized()
         {
-            this.Filters.Contract = contract;
-            await this.ContractChanged.InvokeAsync(this.Filters.Contract);
-            await this.Changed.InvokeAsync(this.Filters);
+            Filters.FilterChange += this.FilterChanged;
         }
-        public async Task SetPeriodAsync(OperationPeriodQueryItem? period)
+
+        public void Dispose()
         {
-            this.Filters.Period  =period;
-            await this.PeriodChanged.InvokeAsync(this.Filters.Period);
-            await this.Changed.InvokeAsync(this.Filters);
+            Filters.FilterChange -= this.FilterChanged;
+        }
+
+        private void FilterChanged()
+        {
+            this.Changed.InvokeAsync();
         }
     }
 }

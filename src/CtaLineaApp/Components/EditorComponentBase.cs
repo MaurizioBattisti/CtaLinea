@@ -98,7 +98,7 @@ namespace CtaLineaApp.Components
             return result == true;
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             this.RouterSessionService.NavigationCancelled -= OnNavigationCancelled;
         }

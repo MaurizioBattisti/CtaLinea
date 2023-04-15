@@ -8,6 +8,11 @@ namespace CtaLinea.Model.Filters
 {
     public class RunAdvancedFilters
     {
+        // dati filtri generali
+        public int? ContractId { get; set; }
+        public DateTime? StartPeriod { get; set; }
+        public DateTime? EndPeriod { get; set; }
+
         public Guid? AssociateId { get; set; }
         public Guid? CarId { get; set; }
         public int? MinSittings { get; set; }

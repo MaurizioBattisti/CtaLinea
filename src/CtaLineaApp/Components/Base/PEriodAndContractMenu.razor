@@ -3,7 +3,6 @@
 @inject IAccountService AccountService
 
 <CtaLineaGlobalFiltersManager 
-    @ref=@globalFiltersManager
     Changed="@((settings) => this.StateHasChanged())"
     />
 
@@ -47,7 +46,6 @@
 @code {
     QueryLoader<ContractQueryItem>? ContractQuery;
 
-    private CtaLineaGlobalFiltersManager? globalFiltersManager;
     private ContractDropDown? contractSelector;
 
     [CascadingParameter]
@@ -87,51 +85,49 @@
     }
     private async Task ContractChanged(ContractQueryItem? contract)
     {
-        if (globalFiltersManager != null)
-        {
-            await globalFiltersManager.SetContractAsync(contract);
-        }        
+        await Task.CompletedTask;
+        this.GlobalFilters.Contract = contract;
+        this.RaiseFilterChanged();
     }
 
     private async Task SetCurrentPeriodAsync(OperationPeriodQueryItem? period)
     {
-        if (globalFiltersManager != null)
-        {
-            await this.globalFiltersManager.SetPeriodAsync(period);
-            this.ContractFilters = string.Empty;
-            if (period != null)
-            {
-                var startStr = string.Format("$ge(endDate,{0:yyyy-MM-dd})", period.StartDate);
-                var endStr = string.Format("$le(startDate,{0:yyyy-MM-dd})", period.EndDate);
-                this.ContractFilters = string.Format("$and({0},{1})",
-                        startStr, endStr);
+        await Task.CompletedTask;
 
-                // ricarica i contratti
-                if (this.ContractQuery != null)
-                {
-                    await this.ContractQuery.LoadDataAsync(this.ContractFilters);
-                }
-            }
-            else
-            {
-                await this.SetCurrentContractAsync();
-            }
-        }
-        
-    }
-    private async Task SetCurrentContractAsync()
-    {
-        if (globalFiltersManager != null)
+        this.GlobalFilters.Period = period;
+        this.ContractFilters = string.Empty;
+        if (period != null)
         {
-            var period = this.GlobalFilters.Period;
-            var contract = await this.GetSelectedContractAsync(period, this.GlobalFilters.Contract?.Id);
-            if (contract != null)
+            var startStr = string.Format("$ge(endDate,{0:yyyy-MM-dd})", period.StartDate);
+            var endStr = string.Format("$le(startDate,{0:yyyy-MM-dd})", period.EndDate);
+            this.ContractFilters = string.Format("$and({0},{1})",
+                    startStr, endStr);
+
+            // ricarica i contratti
+            if (this.ContractQuery != null)
             {
-                // seleziona un contratto di default
-                await this.globalFiltersManager.SetContractAsync(contract);
+                await this.ContractQuery.LoadDataAsync(this.ContractFilters);
             }
-            this.StateHasChanged();
         }
+        else
+        {
+            await this.SetCurrentContractAsync(false);
+        }
+        this.RaiseFilterChanged();
+
+    }
+    private async Task SetCurrentContractAsync(bool raiseChanged = true)
+    {
+        await Task.CompletedTask;
+        var period = this.GlobalFilters.Period;
+        var contract = await this.GetSelectedContractAsync(period, this.GlobalFilters.Contract?.Id);
+        if (contract != null)
+        {
+            // seleziona un contratto di default
+            this.GlobalFilters.Contract = contract;
+        }
+        this.StateHasChanged();
+        if (raiseChanged) this.RaiseFilterChanged();
     }
 
     private async Task<ContractQueryItem?> GetSelectedContractAsync(
@@ -165,5 +161,10 @@
     {
         var period = this.PeriodData.Where(x => x.IsCurrent() == true).Select(x => x).FirstOrDefault();
         await this.SetCurrentPeriodAsync(period);
+    }
+
+    private void RaiseFilterChanged ()
+    {
+        this.GlobalFilters.RaiseChanged();
     }
 }

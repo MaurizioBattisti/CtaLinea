@@ -23,6 +23,10 @@
 </LayoutSetter>
 <CtaLineaSttingsNotifier Changed=@StateHasChanged />
 
+<CtaLineaGlobalFiltersManager 
+    Changed="@GlobalFilterChanged"
+    />
+
 <RadzenLayout 
     Style="height: 100%; grid-template-columns: auto 1fr auto; grid-template-areas: 'rz-header rz-header rz-header' 'rz-sidebar rz-body rz-right-sidebar'">
     <RadzenBody>
@@ -348,6 +352,9 @@
 </RadzenLayout>
 
 @code {
+    [CascadingParameter]
+    CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
+
     RadzenDataGrid<RunItemQueryModel>? grdData;
     private  RinItemEditView? RunEditDetail;
 
@@ -449,6 +456,11 @@
     }
     #endregion
 
+    private async Task GlobalFilterChanged ()
+    {
+        await LoadDataASync();
+    }
+
     protected override async Task OnInitializedAsync()
     {
         await LoadDataASync();
@@ -489,6 +501,13 @@
 
     private async Task LoadDataASync()
     {
+        if (this.GlobalFilters.IsFilterSet() == false) return;
+
+        // aggiorna il filtro avanzato con i filtri generali
+        this.AdvancedFilter4s.ContractId = this.GlobalFilters.Contract?.Id;
+        this.AdvancedFilter4s.StartPeriod = this.GlobalFilters.Period?.StartDate;
+        this.AdvancedFilter4s.EndPeriod = this.GlobalFilters.Period?.EndDate;
+
         var queryDef = new QueryDefinition();
         queryDef.EndPoint = Constants.Endpoint_RunList_Adv;
 
@@ -501,7 +520,7 @@
         try
         {
             var result = await QueryService.GetListAsync<RunItemQueryModel>(
-            queryDef, true, this.AdvancedFilter4s);
+                queryDef, true, this.AdvancedFilter4s);
 
             if (result != null)
             {

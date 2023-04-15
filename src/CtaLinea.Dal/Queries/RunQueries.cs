@@ -12,6 +12,7 @@ using System.Xml.Linq;
 using ZzSoft.CtaLinea.Dal.Context;
 using ZzSoft.QueryHelper;
 using Dapper;
+using System.Globalization;
 
 namespace ZzSoft.CtaLinea.Dal.Queries
 {
@@ -41,9 +42,35 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 			object args = null;
 			string table = RunItemListSql_Table;
 
-			using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.Database.GetDbConnection();
 
-			if (advancedFilter != null
+            // filtri standard
+            string stdFilters = string.Empty;
+            if (advancedFilter != null)
+            {
+                if (advancedFilter.ContractId != null)
+                {
+                    stdFilters += "r.ContractId = @ContractId";
+                }
+                if (advancedFilter.StartPeriod != null)
+                {
+                    if (stdFilters.Length > 0) stdFilters += " AND ";
+                    stdFilters += "COALESCE(r.EndDate, r.ctrEndDAte) >= @StartPeriod";
+                }
+                if (advancedFilter.EndPeriod != null)
+                {
+                    if (stdFilters.Length > 0) stdFilters += " AND ";
+                    stdFilters += "COALESCE(r.StartDate, r.ContractStart) <= @EndPeriod";
+                }
+                args = new
+                {
+                    ContractId = advancedFilter.ContractId,
+                    StartPeriod = advancedFilter.StartPeriod,
+                    EndPeriod = advancedFilter.EndPeriod
+                };
+            }
+
+            if (advancedFilter != null
                 && advancedFilter.HasImpact())
             {
                 // controlla se  prima di fare la ricerca deve anche eseguire un ricalcolo dei calendari
@@ -81,14 +108,21 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                     InContract = advancedFilter.InContract,
                     ActiveRun = advancedFilter.ActiveRun,
                     DateRef = advancedFilter.DateRef,
-                    TabIds = advancedFilter.TabIds != null ? string.Join(",", advancedFilter.TabIds) : (string)null
+                    TabIds = advancedFilter.TabIds != null ? string.Join(",", advancedFilter.TabIds) : (string)null,
+
+                    ContractId = advancedFilter.ContractId,
+                    StartPeriod = advancedFilter.StartPeriod,
+                    EndPeriod = advancedFilter.EndPeriod
                 };
             }
 
-			var queryDef = new QueryDefinition<RunItemQueryModel>(
+            // se non sono stati aggiunti filtri ne aggiunge uno ininfluente
+            if (string.IsNullOrEmpty(stdFilters) == true) stdFilters = "1 = 1";
+
+            var queryDef = new QueryDefinition<RunItemQueryModel>(
 				table,
 				filterContext,
-				"1 = 1",
+                stdFilters,
 				args);
 
 			return await conn.QueryListAsync(
