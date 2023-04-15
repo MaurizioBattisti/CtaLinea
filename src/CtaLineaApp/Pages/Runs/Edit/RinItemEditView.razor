@@ -118,7 +118,7 @@ else if (this.NoData == true)
     {
         if (firstRender)
         {
-
+            await Task.CompletedTask;
         }
     }
 
@@ -128,6 +128,15 @@ else if (this.NoData == true)
     {
         this.RunId = runId;
         this.IsAdding = isAdding;
+
+        // se il guid è empty non tenta neanche ilc aricamento e segna subito che non ci sono dati
+        if (this.RunId == Guid.Empty)
+        {
+            this.NoData = true;
+            this.IsClean = true;
+            this.IsAdding = false;
+            return;
+        }
 
         try
         {

@@ -610,9 +610,19 @@
             try
             {
                 await RunRepo.DeleteRunAsync(runId);
+                var item = this.Data.Where(x => x.Id == runId).FirstOrDefault();
+                if (item != null)
+                {
+                    this.SelectedRuns = new List<RunItemQueryModel>();
+                    this.Data.Remove(item);
+                }
                 if (this.grdData != null)
                 {
                     await this.grdData.Reload();
+                }
+                if (RunEditDetail != null)
+                {
+                    await this.RunEditDetail.LoadDataAsync(Guid.Empty);
                 }
             }
             catch (Exception exc)
