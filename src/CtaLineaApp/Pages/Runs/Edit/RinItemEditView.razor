@@ -81,7 +81,9 @@ else if (this.NoData == false)
 }
 else if (this.NoData == true)
 {
-    <h1>Nessun dato visualizzabile !</h1>
+    <RadzenAlert Variant="Variant.Filled" AlertStyle="AlertStyle.Info" Size="AlertSize.Large" Shade="Shade.Darker" AllowClose=false>
+        Nessun dato da visualizzare
+    </RadzenAlert>
 }
 
 @code {
@@ -96,7 +98,8 @@ else if (this.NoData == true)
     private bool IsBusy = true;
     private bool IsSaving = false;
     private bool IsAdding = false;
-    private bool NoData = true;
+    [Parameter]
+    public bool NoData { get; set; } = true;
 
     private RunCheckResult? CheckResult { get; set; }
     private RunPlanningView? Planning;

@@ -16,15 +16,15 @@
 </LayoutSetter>
 <CtaLineaSttingsNotifier Changed=@StateHasChanged />
 
-<RadzenLayout Style="width: 100%" >
+<RadzenLayout Style="height: 100%; grid-template-columns: auto 1fr auto; grid-template-areas: 'rz-header rz-header rz-header' 'rz-sidebar rz-body rz-right-sidebar'">
     <RadzenHeader>
         <RadzenStack Orientation="Orientation.Vertical"
                     AlignItems="AlignItems.Stretch">
             <RadzenRow>
-                <RadzenColumn>
+                <RadzenColumn Size="10">
                     <AssociateAndCarDropDown @bind-AssociateId=@AssociateId @bind-CarId=@CarId Inline=true AllowClear=true />
                 </RadzenColumn>
-                <RadzenColumn Size="1">
+                <RadzenColumn Size="2">
                     <RadzenButton Text="Carica..."
                                   IsBusy=@isLoading
                                   BusyText="Ricerca..."
@@ -51,12 +51,19 @@
             <RadzenDayView />
             <RadzenWeekView />
             <RadzenMonthView />
-
         </RadzenScheduler>
     </RadzenBody>
+    <!--
+    <RadzenSidebar @bind-Expanded="@EditorVisible" Style="width: 1000px; grid-area: rz-right-sidebar">
+        <RinItemEditView @ref=@RunEditDetail
+                         Saved=@RunSaved />
+    </RadzenSidebar>
+    -->
 </RadzenLayout>
 
 @code {
+    // RinItemEditView? RunEditDetail;
+
     [CascadingParameter]
     public CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
 
@@ -95,19 +102,27 @@
     private Guid? CarId { get; set; } = null;
 
     /*
+     * private bool EditorVisible = false;
+    private async Task RunSaved ()
+    {
+        await this.ReloadDataAsync ();
+    }
+    */
+
+    /*
     protected override async Task OnInitializedAsync()
     {
 
 
-        await base.OnInitializedAsync();
+    await base.OnInitializedAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
-        {
+    if (firstRender)
+    {
 
-        }
+    }
     }
     */
 
@@ -172,10 +187,17 @@
 
     private async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<CarPlanningItem> args)
     {
+        /*
+        if (RunEditDetail != null)
+        {
+            await this.RunEditDetail.LoadDataAsync(args.Data.RunId);
+        }
+        */
         await DialogService.OpenSideAsync<RunItemDetail>($"Dettaglio della Corsa",
             new Dictionary<string, object>() { { "Id", args.Data.RunId } },
             options: new SideDialogOptions() { CloseDialogOnOverlayClick = true, Width = "88%" }
             );
+
     }
 
     private void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<CarPlanningItem> args)

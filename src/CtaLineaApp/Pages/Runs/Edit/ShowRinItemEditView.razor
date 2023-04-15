@@ -1,0 +1,35 @@
+﻿@inherits EditorComponentBase
+
+<RinItemEditView @ref=@RunEditDetail
+				 NoData=false
+				 Saved=@RunSaved />
+
+@code {
+	private RinItemEditView? RunEditDetail;
+
+	[CascadingParameter]
+	CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
+
+	[Parameter]
+	public Guid? RunId { get; set; } 
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			if (RunEditDetail != null
+				&& this.RunId != null)	
+			{
+				await RunEditDetail.LoadDataAsync(this.RunId.Value);
+				this.StateHasChanged();
+			}
+		}
+		await Task.CompletedTask;
+	}
+
+
+	private async Task RunSaved ()
+	{
+		await  this.Saved.InvokeAsync();
+	}
+}
