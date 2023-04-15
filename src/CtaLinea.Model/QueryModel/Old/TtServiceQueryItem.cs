@@ -38,11 +38,11 @@ namespace CtaLinea.QueryModel
         public int? ServiceTypeId { get; set; }
 
         [SqlField(FullText = true)]
-        public string StartingLocation { get; set; }
+        public string? StartingLocation { get; set; }
         [SqlField(FullText = true)]
-        public string EndingLocation { get; set; }
+        public string? EndingLocation { get; set; }
         [SqlField(FullText = true)]
-        public string Note { get; set; }
+        public string? Note { get; set; }
 
         public DateTime? StartHour { get; set; }
         public DateTime? EndHour { get; set; }

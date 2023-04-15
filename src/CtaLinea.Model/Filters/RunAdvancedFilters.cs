@@ -18,7 +18,7 @@ namespace CtaLinea.Model.Filters
         public int? MinSittings { get; set; }
         public int? MaxSittings { get; set; }
         public int? LineNumber { get; set; }
-        public int? RunNumber { get; set; }
+        public string? RunNumber { get; set; }
         public string? Node { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime?  EndDate { get; set; }

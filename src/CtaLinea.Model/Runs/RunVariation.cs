@@ -8,7 +8,7 @@ namespace CtaLinea.Model.Runs
 
         public DateTime? StartDate { get; set; }
         public  int? LineNumber { get; set; }
-        public int? RunNumber { get; set; }
+        public string? RunNumber { get; set; }
         public string Path { get; set; } = string.Empty;
 
         public TimeSpan? StartTime { get; set; }

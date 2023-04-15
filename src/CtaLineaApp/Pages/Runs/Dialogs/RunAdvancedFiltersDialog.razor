@@ -33,9 +33,7 @@
 		</RadzenColumn>
 		<RadzenColumn Size="1">
 			<RadzenText TextStyle="TextStyle.Overline" Text="Mr. Corsa" />
-			<RadzenNumeric TValue="int?"
-							@bind-Value="Filters.RunNumber"
-							Format="0"
+			<RadzenTextBox @bind-Value="Filters.RunNumber"
 							Class="w-100" />
 		</RadzenColumn>
 

@@ -48,7 +48,8 @@ namespace CtaLinea.Model.QueryModel
 		public Guid RunVariationId { get; set; }
         public DateTime? VariationStartDate { get; set; }
 		public int? LineNumber { get; set; }
-		public int? RunNumber { get; set; }
+        [SqlField(FullText = true)]
+        public string? RunNumber { get; set; }
 		public TimeSpan? StartTime { get; set; }
 		public TimeSpan? EndTime { get; set; }
 

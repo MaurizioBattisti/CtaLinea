@@ -18,7 +18,7 @@ namespace CtaLinea.Model.Utilities
         
         public string? RunName { get; set; }
 		public int? LineNumber { get; set; }
-        public int? RunNumber { get; set; }
+        public string? RunNumber { get; set; }
         public string? Path { get; set; }
 
         public string Text
@@ -29,7 +29,7 @@ namespace CtaLinea.Model.Utilities
                 sb.Append(this.CarDescr ?? string.Empty);
                 sb.AppendFormat(" - {0} / {1} - {2}",
                     LineNumber ?? 0,
-                    RunNumber ?? 0,
+                    RunNumber ?? string.Empty,
                     Path ?? string.Empty
                     );
                 return sb.ToString();

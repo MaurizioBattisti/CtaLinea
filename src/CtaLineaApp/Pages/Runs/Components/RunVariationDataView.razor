@@ -10,7 +10,7 @@
 			<RadzenNumeric TValue="int?" @bind-Value=@Variation.LineNumber Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 					
 			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Nr. Corsa</RadzenText>
-			<RadzenNumeric TValue="int?" @bind-Value=@Variation.RunNumber Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
+			<RadzenTextBox @bind-Value=@Variation.RunNumber Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 		}
 		else
 		{

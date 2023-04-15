@@ -17,7 +17,7 @@
 				<RadzenLabel Component="RunNumber" Text="Nr. Corsa" />
 			</RadzenColumn>
 			<RadzenColumn Size="3">
-				<RadzenNumeric Name="RunNumber" TValue="int?" @bind-Value=@Variation.RunNumber Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
+				<RadzenTextBox Name="RunNumber" @bind-Value=@Variation.RunNumber Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 			</RadzenColumn>
 		</RadzenRow>
 

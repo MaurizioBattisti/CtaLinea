@@ -10,7 +10,7 @@ CREATE FUNCTION [dbo].[tvf_Runs_AdvancedFilter]
 	@MinSittings		int = NULL,
 	@MaxSittings		int = NULL,
 	@LineNumber			int = NULL,
-	@RunNumber			int = NULL,
+	@RunNumber			VARCHAR(MAX) = NULL,
 	@Node				VARCHAR(MAX) = NULL,
 	@StartDate			Date = NULL,
 	@EndDate			Date = NULL,

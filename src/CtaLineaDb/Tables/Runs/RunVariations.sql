@@ -10,7 +10,7 @@ CREATE TABLE [dbo].[RunVariations]
     [RunId] UNIQUEIDENTIFIER NOT NULL,
     [StartDate] DATE NULL DEFAULT NULL, 
     [LineNumber] INT NULL, 
-    [RunNumber] INT NULL,
+    [RunNumber] VARCHAR(MAX) NULL,
     [Path] VARCHAR(MAX) NOT NULL, 
     [StartTime] TIME NULL, 
     [EndTime] TIME NULL,
