@@ -1,4 +1,5 @@
-﻿using CtaLinea.Model.Costs;
+﻿using CtaLinea.Model.Checks;
+using CtaLinea.Model.Costs;
 using CtaLinea.Model.Runs;
 using CtaLinea.Model.Utilities;
 using CtaLineaApp.Application.Services.Helper;
@@ -60,6 +61,27 @@ namespace CtaLineaApp.Application.Services.Utilities
 			// esegue la chiamata al server
 			var items = await _http.Get<IEnumerable<RunPlanningItem>>(url);
 			return items ?? new List<RunPlanningItem>();
+		}
+
+		public async Task<IEnumerable<OverlappingCarItem>> GetOverlappingCarsAsync(
+			Guid runCarId,
+			DateTime? startDate = null,
+			DateTime? endDate = null
+			)
+		{
+			var url = Constants.EndPoint_OverlappingCars;
+			// crea gli arggomenti opzionali
+			var args = new List<string>();
+			args.Add(string.Format("{0}={1}", Constants.EndPoint_Args_RunCarId, runCarId));
+			if (startDate != null) args.Add(string.Format("{0}={1:yyyy-MM-dd}", Constants.EndPoint_CostsByAssociate_StartDate, startDate));
+			if (endDate != null) args.Add(string.Format("{0}={1:yyyy-MM-dd}", Constants.EndPoint_CostsByAssociate_EndDAte, endDate));
+			// aggiunge gli argomeni all'url
+			var strArgs = string.Join("&", args);
+			if (string.IsNullOrEmpty(strArgs) == false) url += "?" + strArgs;
+
+			// esegue la chiamata al server
+			var items = await _http.Get<IEnumerable<OverlappingCarItem>>(url);
+			return items ?? new List<OverlappingCarItem>();
 		}
 	}
 }

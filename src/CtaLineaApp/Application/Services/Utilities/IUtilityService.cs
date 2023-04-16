@@ -1,4 +1,5 @@
-﻿using CtaLinea.Model.Utilities;
+﻿using CtaLinea.Model.Checks;
+using CtaLinea.Model.Utilities;
 
 namespace CtaLineaApp.Application.Services.Utilities
 {
@@ -10,6 +11,10 @@ namespace CtaLineaApp.Application.Services.Utilities
 			DateTime? startDate = null,
 			DateTime? endDate = null
 			);
-
+		Task<IEnumerable<OverlappingCarItem>> GetOverlappingCarsAsync(
+			Guid runCarId,
+			DateTime? startDate = null,
+			DateTime? endDate = null
+			);
 	}
 }

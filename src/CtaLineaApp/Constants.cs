@@ -52,16 +52,20 @@ namespace CtaLineaApp
         internal const string EndPoint_Utilitys = "api/utility";
         internal const string EndPoint_CarPlanning = EndPoint_Utilitys + "/carplanning";
 		internal const string EndPoint_RunPlanning = EndPoint_Utilitys + "/runplanning";
-		// argomenti
-		internal const string EndPoint_CostsByAssociate_ContractId = "contractId";
+        internal const string EndPoint_OverlappingCars = EndPoint_Utilitys + "/overlappingcars";
+        
+        // argomenti
+        internal const string EndPoint_CostsByAssociate_ContractId = "contractId";
         internal const string EndPoint_CostsByAssociate_StartDate= "startDate";
         internal const string EndPoint_CostsByAssociate_EndDAte = "endDate";
         internal const string EndPoint_CostsByAssociate_AssociateId = "associateId";
         internal const string EndPoint_CostsByAssociate_CarId = "carId";
         internal const string EndPoint_CostsByAssociate_RunId = "runId";
 
-        // Calenari
-        internal const string Endpoint_Calendars = "/api/calendars";
+		internal const string EndPoint_Args_RunCarId = "runCarId";
+
+		// Calenari
+		internal const string Endpoint_Calendars = "/api/calendars";
         internal const string Endpoint_Calendar_One_Fmr = Endpoint_Calendars + "/{0}";
         internal const string Endpoint_Calendar_SingleOne_Fmr = Endpoint_Calendar_One_Fmr + "/simple";
         internal const string Endpoint_Calendar_Periods_Fmr = Endpoint_Calendar_One_Fmr + "/periods";

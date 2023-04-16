@@ -1,0 +1,149 @@
+﻿@using CtaLinea.Model.Checks;
+@using CtaLineaApp.Application.Services.Utilities;
+@inject IUtilityService _utilityService;
+@inject NotificationService _NotificationService;
+
+<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Stretch" JustifyContent="JustifyContent.Stretch">
+	<RadzenDataGrid @ref="@grdData"
+					FilterMode="FilterMode.Simple"
+					IsLoading=@IsLoading
+					Count="@Data.Count()"
+					Data="@Data"
+					TItem="OverlappingCarItem"
+					AllowGrouping=true
+					AllowVirtualization=true
+					AllowFiltering="true"
+					AllowColumnResize="true"
+					AllowSorting="true"
+					LogicalFilterOperator="LogicalFilterOperator.And"
+					Style="height:600px; width: 950px"
+					Density=@Settings.Density
+					PageSize=@(Settings?.PageSize ?? 5)>
+		<HeaderTemplate>
+			<RadzenStack Orientation="Orientation.Horizontal">
+				<RadzenButton ButtonStyle="ButtonStyle.Success"
+								IsBusy=@IsLoading
+								Icon="refresh"
+								Click="@(()=>LoadDataAsync())" />
+			</RadzenStack>
+		</HeaderTemplate>
+		<EmptyTemplate>
+			<p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessuna sovrapposizione </p>
+		</EmptyTemplate>
+		<Columns>
+			<RadzenDataGridColumn TItem="OverlappingCarItem" Property="CtaRunId" Title="ID CTA" Width="100px" />
+
+			<RadzenDataGridColumn TItem="OverlappingCarItem" Property="ContractName" Title="Appalto" Width="250px" />
+			<RadzenDataGridColumn TItem="OverlappingCarItem" Property="ContractRowNumber" Title="Riga" Width="100px" />
+
+			<RadzenDataGridColumn TItem="OverlappingCarItem" Property="RunName" Title="Nome corsa" Width="250px" />
+			<RadzenDataGridColumn TItem="OverlappingCarItem" Property="LineNumber" Title="Nr. Linea" Width="100px" />
+			<RadzenDataGridColumn TItem="OverlappingCarItem" Property="RunNumber" Title="Nome Corsa" Width="250px" />
+			<RadzenDataGridColumn TItem="OverlappingCarItem" Property="Path" Title="Percorso" Width="250px" />
+
+			<RadzenDataGridColumn TItem="OverlappingCarItem" Property="CarType" Title="Tipo mezzo" Width="250px" >
+				<Template Context="data">
+					@GetCarTypeDescfr(data)
+				</Template>
+			</RadzenDataGridColumn>
+		
+			<RadzenDataGridColumn TItem="OverlappingCarItem" Property="Day" Title="Data" FormatString="{0:dd/MM/yyyy}" Width="120px" />
+			<RadzenDataGridColumn TItem="OverlappingCarItem" Property="StartTime" Title="Ora inizio" Width="120px">
+				<Template Context="data">
+					@FormatTime(data.StartTime)
+				</Template>
+			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="OverlappingCarItem" Property="EndTime" Title="Ora fine" Width="120px">
+				<Template Context="data">
+					@FormatTime(data.EndTime)
+				</Template>
+			</RadzenDataGridColumn>
+		</Columns>
+	</RadzenDataGrid>
+</RadzenStack>
+
+@code {
+	RadzenDataGrid<OverlappingCarItem>? grdData;
+
+	[CascadingParameter]
+	CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+	[Parameter]
+	public Guid RunCarId { get; set; } = Guid.Empty;
+
+	[CascadingParameter]
+	CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
+
+	private bool IsLoading = false;
+	private IEnumerable<OverlappingCarItem> Data = new List<OverlappingCarItem>();
+
+	protected override Task OnParametersSetAsync()
+	{
+		if (this.grdData != null)
+		{
+			foreach (var col in this.grdData.ColumnsCollection)
+			{
+				col.ClearFilters();
+			}
+		}
+
+		return base.OnParametersSetAsync();
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		// carica i dati
+		await this.LoadDataAsync();
+	}
+
+	private async Task LoadDataAsync()
+	{
+		if (GlobalFilters?.Period == null) return;
+
+		try
+		{
+			this.IsLoading = true;
+			var data = await this._utilityService.GetOverlappingCarsAsync(
+				this.RunCarId,
+				GlobalFilters.Period.StartDate,
+				GlobalFilters.Period.EndDate
+				);
+			this.Data = data;
+		}
+		catch (Exception exc)
+		{
+			this._NotificationService.Notify(NotificationSeverity.Error,
+				"Errore cercando le sovrapposizioni",
+				exc.Message);
+		}
+		finally
+		{
+			this.IsLoading = false;
+			this.StateHasChanged();
+		}
+	}
+
+	private string FormatTime(
+		TimeSpan? time)
+	{
+		if (time == null) return string.Empty;
+		var to = new TimeOnly(time.Value.Hours, time.Value.Minutes, time.Value.Minutes);
+		return string.Format("{0:HH:mm}", to);
+	}
+
+	private string GetCarTypeDescfr(OverlappingCarItem item)
+	{
+		switch (item.CarType.ToString ())
+		{
+			case "P":
+				return "Titolare";
+			case "S":
+				return "Scorta";
+			case "R":
+				return "Sostituzione";
+		}
+		return string.Empty;
+	}
+	
+
+}

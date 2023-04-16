@@ -1,8 +1,11 @@
-﻿using CtaLinea.Model.Costs;
+﻿using CtaLinea.Model.Checks;
+using CtaLinea.Model.Costs;
 using CtaLinea.Model.Utilities;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -18,6 +21,7 @@ namespace ZzSoft.CtaLinea.Dal.Queries
     {
         private const string SQL_up_GetPlanning = "[dbo].[up_GetPlanning]";
         private const string SQL_up_GetRunPlanning = "[dbo].[up_GetRunPlanning]";
+        private const string SQç_uo_OverlappingCars = "[dbo].[up_Check_CarOverlappings]";
 
 		private readonly CtaDbContext _context;
         private readonly ILogger _logger;
@@ -81,5 +85,28 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 			return await Task.FromResult(items);
 		}
 
+        // carica i dati delle sovrapposizioni dei mezzi
+        public async Task<IEnumerable<OverlappingCarItem>> GetOverlappingRunCarAsync (
+            Guid runCarId,
+            DateTime startDate,
+            DateTime endDate)
+        {
+            using IDbConnection conn = this._context.Database.GetDbConnection();
+            conn.Open();
+
+            using var reader = await conn.QueryMultipleAsync(
+                SQç_uo_OverlappingCars,
+                param: new
+                {
+                    RunCarId = runCarId,
+                    StartDate = startDate,
+                    EndDate = endDate
+                },
+                commandType: CommandType.StoredProcedure,
+                commandTimeout: 600);
+
+            var items = reader.Read<OverlappingCarItem>();
+            return await Task.FromResult(items);
+        }
 	}
 }

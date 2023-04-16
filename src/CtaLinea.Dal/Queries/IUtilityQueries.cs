@@ -1,4 +1,5 @@
-﻿using CtaLinea.Model.Utilities;
+﻿using CtaLinea.Model.Checks;
+using CtaLinea.Model.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,5 +14,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 			DateTime? startDate = null,
 			DateTime? endDate = null
 			);
-	}
+        Task<IEnumerable<OverlappingCarItem>> GetOverlappingRunCarAsync(
+            Guid runCarId,
+            DateTime startDate,
+            DateTime endDate);
+    }
 }

@@ -1,4 +1,5 @@
-﻿
+﻿@inject DialogService _DialogService;
+
 <RadzenRow AlignItems="AlignItems.Start" Gap="5px">
 	<RadzenColumn Size="4">
 		<RadzenLabel Component="Var_Note" Text="Note Mezzo" />
@@ -19,7 +20,22 @@
 					Text="Sovrapposizioni" />
 </RadzenStack>
 
+<DialogBoxWrapper @ref=@OverlappingCarDialog
+				  Width="1000px"
+				  Title="Sovrapposizioni">
+	<Body Context="ds">
+		<OverlappingRunCarView RunCarId="@Car.RunCarId" />
+	</Body>
+	<Buttons Context="ds">
+		<RadzenButton Click="@(() => ds.Close())"
+					  ButtonStyle="ButtonStyle.Secondary"
+					  Text="Chiudi" />
+	</Buttons>
+</DialogBoxWrapper>
+
 @code {
+	DialogBoxWrapper? OverlappingCarDialog;
+
 	[Parameter]
 	public IEditableData? EditableData { get; set; }
 
@@ -31,9 +47,21 @@
 
 	private async Task CheckOVerlapping_Click ()
 	{
+		if (EditableData != null)
+		{
+			if (EditableData.IsClean == false)
+			{
+				await this._DialogService.Alert(
+					"Per poter vedere le sovrapposizioni è necessario non ci siano modiiche pendenti. Salvare la corsa prima di procedere.",
+					"Impossivile vedere le sovrapposizioni"
+					);
+				return;				
+			}
+		}
 
-
-
-		await Task.CompletedTask;
+		if (OverlappingCarDialog!= null)
+		{
+			await this.OverlappingCarDialog.ShowDialog();
+		}
 	}
 }

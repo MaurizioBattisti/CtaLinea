@@ -18,6 +18,7 @@ using ZzSoft.CtaLinea.Dal.Queries;
 using CtaLinea.QueryModel;
 using CtaLinea.Model.Costs;
 using CtaLinea.Model.Utilities;
+using CtaLinea.Model.Checks;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -82,7 +83,29 @@ namespace CtaLineaWebApi.Controllers
 			return this.Ok(result);
 		}
 
-		[ProducesResponseType(StatusCodes.Status200OK)]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpGet]
+        [Route("overlappingcars")]
+        public async Task<ActionResult<IEnumerable<OverlappingCarItem>>> GetRunPlanningAsync(
+            [FromQuery] Guid runCarId,
+            [FromQuery] DateTime startDate,
+            [FromQuery] DateTime endDate
+            )
+        {
+            var result = await this._queries.GetOverlappingRunCarAsync(
+                runCarId,
+                startDate, endDate
+                )
+                .ConfigureAwait(false);
+
+            return this.Ok(result);
+        }
+
+        
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("ttservices")]
         [HttpPost, DisableRequestSizeLimit]
