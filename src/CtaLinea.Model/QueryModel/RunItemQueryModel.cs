@@ -1,4 +1,5 @@
-﻿using CtaLinea.Model.Runs;
+﻿using CtaLinea.Model.Attributes;
+using CtaLinea.Model.Runs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,77 +13,124 @@ namespace CtaLinea.Model.QueryModel
 	[SqlAlias("r")]
 	public class RunItemQueryModel
 	{
-		[SqlField("RunId")]
+		[ColumnDescription(Header ="Id", Ignore = true)]
+        [SqlField("RunId")]
 		public Guid Id { get; set; }
+        [ColumnDescription(Header = "Id CTA")]
         public int CtaRunId { get; set; }
 
-		[SqlField(FullText = true)]
+        [ColumnDescription(Header = "Nome corsa")]
+        [SqlField(FullText = true)]
 		public string? RunName { get; set; }
 
-		public int? ContractId { get; set; }
+        [ColumnDescription(Header = "Id Appalto")]
+        public int? ContractId { get; set; }
 
-		public bool Extra { get; set; }
-		[SqlField(SortPosition = 0)]
+        [ColumnDescription(Header = "Extra")]
+        public bool Extra { get; set; }
+        [ColumnDescription(Header = "Riga Appalto")]
+        [SqlField(SortPosition = 0)]
         public int? ContractRowNumber { get; set; }
 
-		[SqlField(SortPosition = 1)]
+        [ColumnDescription(Header = "Data Inizio")]
+        [SqlField(SortPosition = 1)]
 		public DateTime? StartDate { get; set; }
-		public DateTime? EndDate { get; set; }
+        [ColumnDescription(Header = "Data Fine")]
+        public DateTime? EndDate { get; set; }
 
-		public int? RequestedDays { get; set; }
-		[SqlField(FullText = true)]
+        [ColumnDescription(Header = "GG. Richiesti")]
+        public int? RequestedDays { get; set; }
+        [ColumnDescription(Header = "Note Corsa")]
+        [SqlField(FullText = true)]
 		public string? RunNote { get; set; }
 
-		// Descrizioni
-		[SqlField(SortPosition = 3, FullText = true)]
+        // Descrizioni
+        [ColumnDescription(Header = "Ditte")]
+        [SqlField(SortPosition = 3, FullText = true)]
 		public string? AssociatesDescr { get; set; }
-		[SqlField(FullText = true)]
+        [ColumnDescription(Header = "Titolari")]
+        [SqlField(FullText = true)]
 		public string? PrimaryCarsDescr { get; set; }
 		[SqlField(FullText = true)]
-		public string? SpareCarsDescr { get; set; }
+        [ColumnDescription(Header = "Scorte")]
+        public string? SpareCarsDescr { get; set; }
 		[SqlField(FullText = true)]
-		public string? CalendarsDescr { get; set; }
+        [ColumnDescription(Header = "Calendari")]
+        public string? CalendarsDescr { get; set; }
 		[SqlField(FullText = true)]
-		public string? PathsDescr { get; set; }
-
-		public Guid RunVariationId { get; set; }
+        [ColumnDescription(Header = "Percorsi")]
+        public string? PathsDescr { get; set; }
+        
+		[ColumnDescription(Header = "Id Variante", Ignore =true)]
+        public Guid RunVariationId { get; set; }
+        [ColumnDescription(Header = "Data Inizio Variante")]
         public DateTime? VariationStartDate { get; set; }
-		public int? LineNumber { get; set; }
+        [ColumnDescription(Header = "Nr. Linea")]
+        public int? LineNumber { get; set; }
+        [ColumnDescription(Header = "Nr. Corsa")]
         [SqlField(FullText = true)]
         public string? RunNumber { get; set; }
-		public TimeSpan? StartTime { get; set; }
-		public TimeSpan? EndTime { get; set; }
 
-		public bool Monday { get; set; }
-		public bool Tuesday { get; set; }
-		public bool Wednesday { get; set; }
-		public bool Thursday { get; set; }
-		public bool Friday { get; set; }
-		public bool Saturday { get; set; }
-		public bool Sunday { get; set; }
+        [ColumnDescription(Header = "Ora Inizio")]
+        public TimeSpan? StartTime { get; set; }
+        [ColumnDescription(Header = "Ora Fine")]
+        public TimeSpan? EndTime { get; set; }
 
-		[SqlField(FullText = true)]
+        [ColumnDescription(Header = "Lunedì")]
+        public bool Monday { get; set; }
+        [ColumnDescription(Header = "Martedì")]
+        public bool Tuesday { get; set; }
+        [ColumnDescription(Header = "Mercoledì")]
+        public bool Wednesday { get; set; }
+        [ColumnDescription(Header = "Giovedì")]
+        public bool Thursday { get; set; }
+        [ColumnDescription(Header = "Venerdì")]
+        public bool Friday { get; set; }
+        [ColumnDescription(Header = "Sabato")]
+        public bool Saturday { get; set; }
+        [ColumnDescription(Header = "Domenica")]
+        public bool Sunday { get; set; }
+
+        [ColumnDescription(Header = "Percorso")]
+        [SqlField(FullText = true)]
 		public string? Path { get; set; }
-		[SqlField(FullText = true)]
+        [ColumnDescription(Header = "Frequenza Richiesta")]
+        [SqlField(FullText = true)]
 		public string? RequestedFrequency { get; set; }
 
-		public double? Km { get; set; }
-		public int? RequestedCapacity { get; set; }
-		[SqlField(FullText = true)]
+        [ColumnDescription(Header = "Km")]
+        public double? Km { get; set; }
+        [ColumnDescription(Header = "Capienza Richiesta")]
+        public int? RequestedCapacity { get; set; }
+        [ColumnDescription(Header = "Note Variante")]
+        [SqlField(FullText = true)]
 		public string? VariationNote { get; set; }
 
 
-		public string? ContractDescription { get; set; }
-		public DateTime? ContractStart { get; set; }
-		public DateTime? ctrEndDAte { get; set; }
+        [ColumnDescription(Header = "Appalto")]
+        public string? ContractDescription { get; set; }
+        [ColumnDescription(Header = "Inizio Appalto")]
+        public DateTime? ContractStart { get; set; }
+        [ColumnDescription(Header = "Fine Appalto")]
+        public DateTime? ctrEndDAte { get; set; }
 
-		public int VariationCount { get; set; }
+        [ColumnDescription(Header = "Nr. Varianti")]
+        public int VariationCount { get; set; }
 
-		public string? TagName { get; set; }
-		public string? BgColor { get; set; }
-		public string? Color { get; set; }
+        [ColumnDescription(Header = "Etichetta")]
+        public string? TagName { get; set; }
+        [ColumnDescription(Ignore = true)]
+        public string? BgColor { get; set; }
+        [ColumnDescription(Ignore = true)]
+        public string? Color { get; set; }
 
-		public void CopyFrom (RunItemQueryModel source)
+        [ColumnDescription(Ignore = true)]
+        public int RunStatus { get; set; }
+        [ColumnDescription(Header = "Status")]
+        [SqlField(FullText = true)]
+        public string? RunStatusDesvr { get; set; } 
+
+        public void CopyFrom (RunItemQueryModel source)
 		{
             Id = source.Id;
             CtaRunId = source.CtaRunId;
@@ -133,6 +181,7 @@ namespace CtaLinea.Model.QueryModel
 			TagName = source.TagName;
 			BgColor = source.BgColor;
 			Color = source.Color;
+            RunStatus = source.RunStatus;
         }
     }
 }

@@ -14,11 +14,13 @@ AS
 BEGIN
     DECLARE @RunId uniqueidentifier = NULL;
     -- recupera l'id della corsa  di base
+    /*  Non è sufficiente ricalcola re la corsa attuale
+    ma bisogna ricalcolarle tutete
     SELECT @RunId = rp.RunId
-    FROM dbo.RunCars rc
-    INNER JOIN dbo.RunPeriods rp
-        ON rp.RunPeriodId = rc.RunPeriodId;
-
+        FROM dbo.RunCars rc
+        INNER JOIN dbo.RunPeriods rp
+            ON rp.RunPeriodId = rc.RunPeriodId;
+    */
 	-- si assicura che tutti i dati da ricalcolare siano ricalcolati
 	EXEC [dbo].[uo_RecalcRunDays_Massive] 0, @RunId;
 

@@ -78,6 +78,7 @@
     <Folder Include="Triggers\Calendars" />
     <Folder Include="Views\Base" />
     <Folder Include="StoredProc\Checks" />
+    <Folder Include="StoredProc\Actions" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post_Deploy.sql" />
@@ -146,5 +147,7 @@
     <Build Include="Functions\Run\tvf_Runs_AdvancedFilter.sql" />
     <Build Include="Views\Base\vw_OperationalPEriods.sql" />
     <Build Include="StoredProc\Checks\up_Check_CarOverlappings.sql" />
+    <Build Include="StoredProc\Actions\up_ChangeCarsFromDate.sql" />
+    <Build Include="StoredProc\Actions\up_GetCarForDiscontinuation.sql" />
   </ItemGroup>
 </Project>

@@ -4,22 +4,16 @@
 
 <RadzenPanelMenu>
     <RadzenPanelMenuItem Text="Home" Path="/" Icon="home"></RadzenPanelMenuItem>
+    
+    <RadzenPanelMenuItem Text="Elenco Corse" Path="/runs" Icon="departure_board"></RadzenPanelMenuItem>
+    <RadzenPanelMenuItem Text="Utility" Icon="construction">
+        <RadzenPanelMenuItem Text="Planning" Path="/planning" Icon="calendar_view_week"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Costi per Ditta" Path="/costbyassociate" Icon="point_of_sale"></RadzenPanelMenuItem>
 
-    <RadzenPanelMenuItem Text="Gestione" Icon="work">
-        <RadzenPanelMenuItem Text="Elenco Corse" Path="/runs" Icon="departure_board"></RadzenPanelMenuItem>
-
-        <RadzenPanelMenuItem Text="Utility" Icon="construction">
-            <RadzenPanelMenuItem Text="Planning" Path="/planning" Icon="calendar_view_week"></RadzenPanelMenuItem>
-            <RadzenPanelMenuItem Text="Costi per Ditta" Path="/costbyassociate" Icon="point_of_sale"></RadzenPanelMenuItem>
-
-        </RadzenPanelMenuItem>
     </RadzenPanelMenuItem>
-
+    
     <RadzenPanelMenuItem Text="Anagrafiche" Icon="folder">
-        <RadzenPanelMenuItem Text="Contratti" Icon="assignment_turned_in">
-            <RadzenPanelMenuItem Text="Lista Contratti" Path="/cars" Icon="assignment"></RadzenPanelMenuItem>
-            <RadzenPanelMenuItem Text="Nuovo Contratto" Path="/cars" Icon="assignment"></RadzenPanelMenuItem>
-        </RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Appalti" Path="/contracts" Icon="assignment"></RadzenPanelMenuItem>
 
         <RadzenPanelMenuItem Text="Calendari" Icon="calendar_month">
             <RadzenPanelMenuItem Text="Lista Calendari" Path="/calendars" Icon="calendar_today"></RadzenPanelMenuItem>

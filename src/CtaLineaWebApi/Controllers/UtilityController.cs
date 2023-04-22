@@ -19,6 +19,8 @@ using CtaLinea.QueryModel;
 using CtaLinea.Model.Costs;
 using CtaLinea.Model.Utilities;
 using CtaLinea.Model.Checks;
+using NPOI.HSSF.Record.Chart;
+using ZzSoft.CtaLinea.Dal.Repositories;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -32,14 +34,17 @@ namespace CtaLineaWebApi.Controllers
         private readonly IMediator _mediator;
 
         private readonly IUtilityQueries _queries;
+        private readonly IUtilityREpository _utilityRepo; 
 
         public UtilityController(
             IMediator mediator,
             IUtilityQueries queries,
-            ILogger<UtilityController> logger)
+			IUtilityREpository utilityRepo,
+			ILogger<UtilityController> logger)
         {
             this._mediator = mediator;
             this._queries = queries;
+            this._utilityRepo = utilityRepo;
             this._logger = logger;
         }
 
@@ -103,9 +108,45 @@ namespace CtaLineaWebApi.Controllers
             return this.Ok(result);
         }
 
-        
+		[Consumes(MediaTypeNames.Application.Json)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[HttpGet]
+		[Route("carsfordiscontinuation")]
+		public async Task<ActionResult<IEnumerable<Guid>>> GetCarsFporDiscontinuationAsync(
+			[FromQuery] Guid associateId,
+			[FromQuery] DateTime? refDate = null
+			)
+		{
+			var result = await this._utilityRepo.GetCarForDiscontinuationAsync(
+				associateId, refDate 
+				)
+				.ConfigureAwait(false);
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
+			return this.Ok(result);
+		}
+		[Consumes(MediaTypeNames.Application.Json)]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[HttpPost]
+		[Route("replacecars")]
+		public async Task<ActionResult> ReplaceCArsASync(
+			[FromBody] IDictionary<Guid, Guid > carmap,
+			[FromQuery] DateTime? refDate = null
+			)
+		{
+			 await this._utilityRepo.ChangeRunCarDataAsync(
+				carmap, refDate
+				)
+				.ConfigureAwait(false);
+
+            return this.NoContent();
+		}
+
+
+
+
+		[ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("ttservices")]
         [HttpPost, DisableRequestSizeLimit]

@@ -193,17 +193,19 @@ namespace CtaLineaWebApi
                 .AddScoped<IRunRepository, RunRepository>()
                 .AddScoped<ITtServiceRepository,TtServiceRepository>()
                 .AddScoped<ITagRepository, TagRepository>()
+                .AddScoped<IContractRepository, ContractRepository> ()
+                .AddScoped<IUtilityREpository, UtilityREpository>()
                 ;
 
             // servizi per il contorllo dei dati
             services.AddScoped<IRunChecker, RunChecker>()
                 .AddScoped<ICompleteRunCheckerService, CompleteRunCheckerService>()
+                .AddScoped<IContractChecker, ContractChecker> ()
                 ;
 
 
             return services;
         }
     }
-
 }
 

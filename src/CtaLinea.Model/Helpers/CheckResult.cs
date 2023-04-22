@@ -15,5 +15,17 @@ namespace CtaLinea.Model.Helpers
         public IEnumerable<CheckResultItem>? Errors { get; set; }
         public IEnumerable<CheckResultItem>? Warnings { get; set; }
         public IEnumerable<CheckResultItem>? Informations { get; set; }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder(1024);
+            sb.Append(this.Description ?? string.Empty);
+            if (this.Errors != null
+                && this.Errors.Count() > 0)
+            {
+                sb.Append(string.Join(", ", this.Errors));
+            }
+            return sb.ToString();
+        }
     }
 }

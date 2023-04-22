@@ -1,6 +1,7 @@
 ﻿@page "/runs"
 @using CtaLinea.Model.Filters;
 @using CtaLinea.Model.QueryModel;
+
 @inject ContextMenuService ContextMenuService
 @inject IQueryUtilityService QueryService
 @inject DialogService DialogService
@@ -49,10 +50,8 @@
                         AllowVirtualization=true
                         VirtualizationOverscanCount="10"
                         Style="height:100%"
+                        CellRender=@CellRender
                         Density=@Settings.Density>
-            <!--
-            CellRender=@CellRender
-            -->
             <HeaderTemplate>
                 <RadzenStack Orientation="Orientation.Horizontal" Gap="4px">
                     <RadzenSplitButton 
@@ -97,6 +96,7 @@
                     <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessuna corsa trovata !</p>
                 </RadzenCard>
             </EmptyTemplate>
+            <!--
             <Template Context="runItem">
                 <RadzenCard>
                     <h4>Varianti</h4>
@@ -192,6 +192,7 @@
                     </RadzenDataGrid>
                 </RadzenCard>
             </Template>
+            -->
             <Columns>
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Id" Title="Id Servizio" Visible=false />
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="CtaRunId" Title="Id CTA" Width="100px" FilterValue=@Filter_CtaRunId Frozen=true>
@@ -208,6 +209,36 @@
                         }
                     </Template>
                 </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="@nameof(RunItemQueryModel.RunStatusDesvr)" Title="Stato" Width="180px" FilterValue=@Filter_CtaRunId Frozen=true>
+                    <Template Context="item">
+                        <div style="width: 100%;" class="@GetRunStatusStyleClass(item.RunStatus)" >
+                            @item.RunStatusDesvr
+                        </div>
+                    </Template>
+                </RadzenDataGridColumn>
+                
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="AssociatesDescr" Title="Ditte" Width="200px" FilterValue=@Filter_AssociatesDescr />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="StartTime" Title="Ora inizio" Width="120px" FilterOperator="FilterOperator.Equals" FilterValue=@Filter_StartTime_2>
+                    <FilterTemplate>
+                        <TimeSelector @bind-Value="Filter_StartTime" AllowClear=true Changed=@StartTime_Changed />
+                    </FilterTemplate>
+                    <Template Context="data">
+                        @FormatTime(data?.StartTime)
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="PathsDescr" Title="Percorso (Nodi)" Width="200px" FilterValue=@Filter_PathsDescr />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Path" Title="Percorso" Width="200px" FilterValue=@Filter_Path />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedFrequency" Title="Frequenza richiesta" Width="200px" FilterValue=@Filter_RequestedFrequency />
+
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunName" Title="Nome Corsa" Width="250px" />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="LineNumber" Title="Nr. Linea" Width="100px" FilterValue=@Filter_LineNumber />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunNumber" Title="Nr. Corsa" Width="100px" FilterValue=@Filter_RunNumber />
+
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedCapacity" Title="Capienza richiesta" Width="150px" FilterValue=@Filter_RequestedCapacity />
+
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Km" Title="Km" Width="100px" FilterValue=@Filter_Km />
+
+                <!--
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="ContractRowNumber" Title="Riga Appalto" Width="100px" FilterValue=@Filter_ContractRowNumber Frozen=true>
                     <Template Context="item">
                         @if (item.Color != null)
@@ -222,6 +253,7 @@
                         }
                     </Template>
                 </RadzenDataGridColumn>
+                
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Extra" Title="Extra" Width="100px" FilterValue=@Filter_Extra Frozen=true>
                     <Template Context="data">
                         @if (data.Extra)
@@ -241,10 +273,9 @@
                         <DateSelector @bind-Value="Filter_EndDate" AllowClear=true Changed=@EndDate_Changed />
                     </FilterTemplate>
                 </RadzenDataGridColumn>
-
+                
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedDays" Title="GG Richiesti" Width="100px" FilterValue=@Filter_RequestedDays />
 
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="AssociatesDescr" Title="Ditte" Width="200px" FilterValue=@Filter_AssociatesDescr />
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="PrimaryCarsDescr" Title="Mezzi Titolari" Width="200px" FilterValue=@Filter_PrimaryCarsDescr />
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="SpareCarsDescr" Title="Mezzi di riserva" Width="200px" FilterValue=@Filter_SpareCarsDescr />
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="CalendarsDescr" Title="Calendari usati" Width="200px" FilterValue=@Filter_CalendarsDescr />
@@ -255,18 +286,7 @@
                         <DateSelector @bind-Value="Filter_VariationStartDate" AllowClear=true Changed=@VariationStartDate_Changed />
                     </FilterTemplate>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunName" Title="Nome Corsa" Width="250px"  />
 
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="LineNumber" Title="Nr. Linea" Width="100px" FilterValue=@Filter_LineNumber />
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunNumber" Title="Nr. Corsa" Width="100px" FilterValue=@Filter_RunNumber />
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="StartTime" Title="Ora inizio" Width="120px" FilterOperator="FilterOperator.Equals" FilterValue=@Filter_StartTime_2>
-                    <FilterTemplate>
-                        <TimeSelector @bind-Value="Filter_StartTime" AllowClear=true Changed=@StartTime_Changed />
-                    </FilterTemplate>
-                    <Template Context="data">
-                        @FormatTime(data?.StartTime)
-                    </Template>
-                </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="EndTime" Title="Ora fine" Width="120px" FilterOperator="FilterOperator.Equals" FilterValue=@Filter_EndTime_2>
                     <FilterTemplate>
                         <TimeSelector @bind-Value="Filter_EndTime" AllowClear=true Changed=@EndTime_Changed />
@@ -276,7 +296,6 @@
                     </Template>
                 </RadzenDataGridColumn>
 
-                <!--
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Monday" Title="Lunedì" Width="100px" FilterValue=@Filter_Monday>
                     <Template Context="data">
                         @if (data.Monday)
@@ -333,16 +352,10 @@
                         }
                     </Template>
                 </RadzenDataGridColumn>
-                -->
-
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Path" Title="Percorso" Width="200px" FilterValue=@Filter_Path />
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedFrequency" Title="Frequenza richiesta" Width="200px" FilterValue=@Filter_RequestedFrequency />
-
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Km" Title="Km" Width="100px" FilterValue=@Filter_Km />
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedCapacity" Title="Capienza richiesta" Width="150px" FilterValue=@Filter_RequestedCapacity />
 
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunNote" Title="Note Generali" Width="200px" FilterValue=@Filter_Note />
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="VariationNote" Title="Note prima Variante" Width="200px" FilterValue=@Filter_VariationNote />
+                -->
             </Columns>
         </RadzenDataGrid>
     </RadzenBody>
@@ -473,13 +486,15 @@
     private async Task DownloadData_Click(RadzenSplitButtonItem item)
     {
         this.IsLoading = true;
-        var columninfo = this.grdData?.GetExportColumnInfo();
+        // var columninfo = this.grdData?.GetExportColumnInfo();
+        var columninfo = this.Data.GetExportColumnInfo();
 
         try
         {
+            string title = "Elenco Corse";
             if (item == null)
             {
-                await this.ExcelService.ExportCsv("Elenco Corse", this.Data, columninfo);
+                await this.ExcelService.ExportCsv(title, this.Data, columninfo);
             }
             else
             {
@@ -488,7 +503,7 @@
                     case "X":
                         break;
                     case "C":
-                        await this.ExcelService.ExportCsv("Elenco Corse", this.Data, columninfo);
+                        await this.ExcelService.ExportCsv(title, this.Data, columninfo);
                         break;
                 }
             }
@@ -544,6 +559,21 @@
     {
         await this.LoadDataASync();
         // this.grdData?.Reload();
+    }
+
+    private string GetRunStatusStyleClass (int runStatus)
+    {
+        switch (runStatus)
+        {
+            case 1:
+                return "rz-background-color-danger-darker";
+            case 2:
+                return "rz-background-color-warning-darker";
+            case 100:
+                return "rz-background-color-info-darker";
+            default:
+                return string.Empty;
+        }
     }
 
     private string FormatTime(
@@ -649,7 +679,7 @@
                 <RadzenMenuItem Text="Etichette..." Value=@RunMenuItems.Tags />
                 <hr class="separator">
                 <RadzenMenuItem Text="Elimina..." Value=@RunMenuItems.Delete />
-        </RadzenMenu>
+            </RadzenMenu>
     );
     }
 
@@ -938,18 +968,37 @@
         // this.StateHasChanged();
         await this.ReloadData();
     }
-    /*
     private void CellRender(DataGridCellRenderEventArgs<RunItemQueryModel> args)
+    {
+        if (args.Column.Property == nameof(RunItemQueryModel.RunStatus))
         {
+            switch (args.Data.RunStatus)
+            {
+                case 1:
+                    args.Attributes.Add("class",
+                        "--rz-danger-darker") ;
+                    break;
+                case 2:
+                    args.Attributes.Add("class",
+                        "--rz-warning-darker") ;
+                    break;
+                case 100:
+                    break;
+                default:
+                    break;
+            }
+
+        }
+        /*
         if (args.Column.Property == "CtaRunId"
             || args.Column.Property == "ContractRowNumber")
-            {
+        {
             if (args.Data.BgColor != null)
-                {
+            {
                 args.Attributes.Add("style",
                     "background-color: " + args.Data.BgColor);
+            }
         }
+        */
     }
-    }
-    */
 }

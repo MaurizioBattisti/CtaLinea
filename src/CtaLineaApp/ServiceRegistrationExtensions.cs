@@ -67,6 +67,7 @@ namespace CtaLineaApp
 
                 // servizio di controllo delle corse
                 .AddScoped<IRunChecker, RunChecker> ()
+                .AddScoped<IContractChecker, ContractChecker> ()
                 ;
 
             /*

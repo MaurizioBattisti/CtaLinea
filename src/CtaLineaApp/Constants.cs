@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -81,7 +82,8 @@ namespace CtaLineaApp
 
         // contratti
         internal const string Endpoint_Contracts = "/api/contracts";
-        internal const string Endpoint_ContractsOperationalPeriods = Endpoint_Contracts+ "/periods";
+		internal const string Endpoint_ContractsOperationalPeriods = Endpoint_Contracts+ "/periods";
+        internal const string Endpoint_OneContract_Fmt = Endpoint_Contracts + "/{0}";
         
         // ditte
         internal const string Endpoint_Associates = "/api/associates";
@@ -89,6 +91,11 @@ namespace CtaLineaApp
 
 		// punti di raccolta
 		internal const string Endpoint_CollectionPoints = "/api/collectionpoints";
+
+		// utility
+		internal const string Endpoint_Utility = "/api/utility";
+		internal const string Endpoint_Utility_CarForDiscontinuation = Endpoint_Utility + "/carsfordiscontinuation";
+		internal const string Endpoint_Utility_ReplaceCars = Endpoint_Utility+ "/replacecars";
 
 
 		internal const string Endpoint_Drivers = "/api/drivers";

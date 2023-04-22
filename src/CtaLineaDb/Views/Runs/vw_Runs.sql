@@ -57,7 +57,19 @@ SELECT  r.RunId,
 		-- tag con priorità più alta
 		tag.TagName,
 		tag.BgColor,
-		tag.Color
+		tag.Color,
+		(CASE
+			WHEN r.Extra = 0 AND r.EndDate IS NOT  NULL AND r.EndDate < GETDATE() THEN 1		-- soppressa
+			WHEN r.Extra = 1 AND r.EndDate IS NOT  NULL AND r.EndDate < GETDATE() THEN 2		-- Terminata
+			WHEN r.StartDate IS NOT NULL AND r.StartDate > GETDATE()  THEN 100					-- non ancora attivata
+			ELSE 0
+		END) AS RunStatus,
+		(CASE
+			WHEN r.Extra = 0 AND r.EndDate IS NOT  NULL AND r.EndDate < GETDATE() THEN 'Soppressa'
+			WHEN r.Extra = 1 AND r.EndDate IS NOT  NULL AND r.EndDate < GETDATE() THEN 'Terminata'
+			WHEN r.StartDate IS NOT NULL AND r.StartDate > GETDATE()  THEN 'Non ancora attivata'
+			ELSE NULL
+		END) AS RunStatusDesvr
 	FROM dbo.Runs r
 	INNER JOIN CTE_Variants v
 		ON R.RunId = v.RunId

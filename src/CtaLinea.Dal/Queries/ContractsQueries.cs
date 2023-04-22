@@ -31,7 +31,7 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 ContractsSql_Table,
                 filterContext);
 
-            IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.Database.GetDbConnection();
             return await conn.QueryListAsync(
                 queryDef)
                 .ConfigureAwait(false);
@@ -45,7 +45,7 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 "c.ContractId = @ContractId",
                 new { ContractId = id });
 
-            IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.Database.GetDbConnection();
             return await conn.QueryOneAsync(
                 queryDef)
                 .ConfigureAwait(false);
@@ -58,7 +58,7 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 OperationalPEriod_Table,
                 filterContext);
 
-            IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.Database.GetDbConnection();
             return await conn.QueryListAsync(
                 queryDef)
                 .ConfigureAwait(false);
