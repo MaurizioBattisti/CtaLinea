@@ -6,7 +6,7 @@ GO
 	21/04/2023
 	iimporta da viaggi 2
 ******************************************************* */
-CREATE OR ALTER PROC dbo.up_Utility_ImportFrom_Viaggi_2
+CREATE OR ALTER PROC import.up_Utility_ImportFrom_Viaggi_2
 AS
 BEGIN
 	BEGIN TRAN;
@@ -144,5 +144,5 @@ BEGIN
 END
 GO
 
-EXEC dbo.up_Utility_ImportFrom_Viaggi_2;
+EXEC import.up_Utility_ImportFrom_Viaggi_2;
 GO

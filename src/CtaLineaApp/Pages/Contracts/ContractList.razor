@@ -294,12 +294,16 @@
                 {
                     data.CopyFrom(newDAta);
                 }
+                this.notificationService.Notify(
+                    NotificationSeverity.Success,
+                    "Salvataggio OK"
+                );
             }
 
         }
         catch (BadRequestException<CheckResult> ex)
         {
-            // TODO: se ci sono errorei mostra un messaggio ed esce
+            // se ci sono errorei mostra un messaggio ed esce
             this.notificationService.Notify(
                 NotificationSeverity.Error,
                 "Dati non corretti",

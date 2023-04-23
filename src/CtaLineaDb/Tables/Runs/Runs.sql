@@ -16,7 +16,7 @@
     CONSTRAINT [FK_Funs_Contract] 
         FOREIGN KEY (ContractId) 
         REFERENCES [dbo].[Contracts](ContractId)
-        ON DELETE CASCADE
+        ON DELETE NO ACTION
         ON UPDATE CASCADE
 )
 

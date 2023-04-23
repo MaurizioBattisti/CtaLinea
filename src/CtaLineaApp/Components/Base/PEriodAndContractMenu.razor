@@ -6,9 +6,11 @@
     Changed="@((settings) => this.StateHasChanged())"
     />
 
-<QueryLoader TItem="OperationPeriodQueryItem"
+<QueryLoader @ref=@PeriodQueryLoader
+             TItem="OperationPeriodQueryItem"
              Endpoint="@(Constants.Endpoint_ContractsOperationalPeriods)"
              @bind-Data=@PeriodData
+             @bind-IsBusy=@PeriodBusy
              DataLoaded="@PeriodLoaded" />
 <QueryLoader TItem="ContractQueryItem"
              @ref=@ContractQuery
@@ -39,11 +41,20 @@
                                 Data=@ContractData
                                 Style="width: 100%; max-width: 400px;" />
             </RadzenStack>
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
+                <RadzenButton 
+                    ButtonStyle="ButtonStyle.Success"
+                    Icon="refresh"
+                    Text="Ricarica"
+                    IsBusy=@PeriodBusy
+                    Click="@Reload_Click" />
+            </RadzenStack>
         </RadzenCard>
     </ChildContent>
 </RadzenSplitButton>
 
 @code {
+    QueryLoader<OperationPeriodQueryItem>? PeriodQueryLoader;
     QueryLoader<ContractQueryItem>? ContractQuery;
 
     private ContractDropDown? contractSelector;
@@ -55,6 +66,7 @@
     public IList<ContractQueryItem> ContractData { get; set; } = new List<ContractQueryItem>();
     public OperationPeriodQueryItem? SelectedPeriod { get; set; }
     string ContractFilters = string.Empty;
+    private bool PeriodBusy { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -67,6 +79,14 @@
         {
         }
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public async Task Reload_Click ()
+    {
+        if (this.PeriodQueryLoader != null)
+        {
+            await this.PeriodQueryLoader.LoadDataAsync();
+        }
     }
 
     private string GetCurrentDescr()
