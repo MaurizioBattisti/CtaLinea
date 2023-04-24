@@ -2,9 +2,17 @@
 @using CtaLinea.QueryModel;
 @inject IQueryUtilityService queryService
 
+<QueryLoader @ref=@AssociateQueryLoader
+             TItem="AssociateQueryItem"
+             Endpoint="@(Constants.Endpoint_Associates)"
+             @bind-Data=@Data
+             DataLoaded=@DataLoaded
+             @bind-IsBusy=@isLoading />
+
 <RadzenDropDown 
     Disabled=@Disabled
-    Data=@Data 
+    Data=@Data
+    Name="@Name"
     @bind-Value="CurrentItem"
     TValue="AssociateQueryItem" 
     AllowClear=@AllowClear
@@ -17,6 +25,8 @@
 </RadzenDropDown>
 
 @code {
+    QueryLoader<AssociateQueryItem>? AssociateQueryLoader;
+
     /*
     [CascadingParameter]
     CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
@@ -43,12 +53,14 @@
     public bool AllowClear { get; set; } = false;
     [Parameter]
     public bool Disabled { get; set; } = false;
+    [Parameter]
+    public string? Name { get; set; }
 
     [Parameter]
     public EventCallback<object> Changed { get; set; }
 
     QueryDefinition _servicesQueryDef = new QueryDefinition();
-    AssociateQueryItem[]? Data = null; 
+    IList <AssociateQueryItem>? Data = null; 
     int RowCount = 0;
     bool isLoading = false;
     AssociateQueryItem? CurrentItem = null;
@@ -63,9 +75,11 @@
 
     protected override async Task OnInitializedAsync()
     {
+        /*
         this._servicesQueryDef.EndPoint = Constants.Endpoint_Associates;
 
         await LoadData();
+        */
         this.StateHasChanged();
     }
     protected override async Task OnParametersSetAsync()
@@ -74,26 +88,33 @@
         await Task.CompletedTask;
     }
 
+    /*
     private async Task LoadData ()
     {
-        await Task.CompletedTask;
+    await Task.CompletedTask;
 
-        this._servicesQueryDef.Filter = string.Empty;
-        this._servicesQueryDef.Sort = string.Empty;
-        this._servicesQueryDef.FullText = string.Empty;
+    this._servicesQueryDef.Filter = string.Empty;
+    this._servicesQueryDef.Sort = string.Empty;
+    this._servicesQueryDef.FullText = string.Empty;
 
-        this._servicesQueryDef.Page = 0;
-        this._servicesQueryDef.PageSize = 100000;
+    this._servicesQueryDef.Page = 0;
+    this._servicesQueryDef.PageSize = 100000;
 
-        var result = await queryService.GetListAsync<AssociateQueryItem>(
-                    this._servicesQueryDef);
+    var result = await queryService.GetListAsync<AssociateQueryItem>(
+    this._servicesQueryDef);
 
-        if (result != null)
+    if (result != null)
         {
-            this.Data = result.Items;
-            this.RowCount = result.TotalRows;
-            SelectItem(this.AssociateId);
-        }
+        this.Data = result.Items;
+        this.RowCount = result.TotalRows;
+        SelectItem(this.AssociateId);
+    }
+    }
+    */
+    private async Task DataLoaded ()
+    {
+        SelectItem(this.AssociateId);
+        await Task.CompletedTask;
     }
 
     private void SelectItem (Guid? associateId)

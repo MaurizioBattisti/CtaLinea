@@ -37,7 +37,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 			conn.Open();
 
 			using var reader = await conn.QueryMultipleAsync(
-				"[dbo].[up_ChangeCarsFromDate]",
+                "[dbo].[up_GetCarForDiscontinuation]",
 				param: new
 				{
 					AssociateId = associateId,

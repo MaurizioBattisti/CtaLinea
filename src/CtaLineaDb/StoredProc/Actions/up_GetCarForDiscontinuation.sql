@@ -5,7 +5,7 @@
 	che sono stati usati da qualche parte sulle corse a partire da una certa data
 *************************************************************************** */
 CREATE PROCEDURE [dbo].[up_GetCarForDiscontinuation]
-	@AssocaiteId		uniqueidentifier,
+	@AssociateId		uniqueidentifier,
 	@RefDate			Date = NULL
 AS
 BEGIN
@@ -24,6 +24,7 @@ BEGIN
 					ON r.ContractId = c.ContractId
 				WHERE @RefDate BETWEEN COALESCE (rp.StartDate, r.StartDate, c.StartDate)
 								AND COALESCE (rp.EndDate, r.EndDate, c.EndDate)
+					AND rc.AssociateId = @AssociateId
 		) UNION (
 			SELECT DISTINCT rc.CarId
 				FROM dbo.RunCars rc

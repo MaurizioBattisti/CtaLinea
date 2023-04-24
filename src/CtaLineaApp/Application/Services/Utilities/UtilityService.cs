@@ -83,5 +83,18 @@ namespace CtaLineaApp.Application.Services.Utilities
 			var items = await _http.Get<IEnumerable<OverlappingCarItem>>(url);
 			return items ?? new List<OverlappingCarItem>();
 		}
+
+		public async Task<IEnumerable<Guid>?> GetCarsForDiscontinuationAsunc (
+			Guid associateId,
+			DateTime? refDate)
+		{
+			var url = Constants.Endpoint_Utility_CarForDiscontinuation + "?" + Constants.EndPoint_Args_AssociateId + "=" + associateId.ToString();
+			if (refDate != null)
+			{
+				url += "&" + Constants.EndPoint_Args_RefDate + string.Format("=" + Constants.DateArgs_Format, refDate.Value);
+			}
+            var items = await _http.Get<IEnumerable<Guid>>(url);
+			return items;
+        }
 	}
 }

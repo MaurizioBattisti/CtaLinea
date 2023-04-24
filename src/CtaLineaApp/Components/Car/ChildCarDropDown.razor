@@ -4,6 +4,14 @@
 
 <CtaLineaSttingsNotifier Changed=@StateHasChanged />
 
+<QueryLoader @ref=@CarQueryLoader
+             TItem="CarQueryItem"
+             Endpoint="@(Constants.Endpoint_Cars)"
+             Filter="@Filter"
+             @bind-Data=@Data
+             DataLoaded=@DataLoaded
+             @bind-IsBusy=@isLoading />
+
 <RadzenDropDown 
     Disabled=@Disabled
     Data=@Data 
@@ -23,6 +31,8 @@
 </RadzenDropDown>
 
 @code {
+    QueryLoader<CarQueryItem>? CarQueryLoader;
+
     [CascadingParameter]
     CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
 
@@ -52,11 +62,12 @@
     public EventCallback<object> Changed { get; set; }
 
     QueryDefinition _servicesQueryDef = new QueryDefinition();
-    CarQueryItem[]? Data = null; 
-    int RowCount = 0;
+    IList<CarQueryItem>? Data = null;
+    // int RowCount = 0;
     bool isLoading = false;
     CarQueryItem? CurrentItem = null;
     private bool SuccesfullyInitialized = false;
+    private string? Filter { get; set; }
 
     public CarQueryItem? SelectedCarData
     {
@@ -68,7 +79,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        this._servicesQueryDef.EndPoint = Constants.Endpoint_Cars;
+        // this._servicesQueryDef.EndPoint = Constants.Endpoint_Cars;
         SuccesfullyInitialized = true;
         this.StateHasChanged();
         await base.OnInitializedAsync();
@@ -80,6 +91,30 @@
     }
 
     private Guid? LastAssociateId = null;
+    private async Task LoadDataAsync()
+    {
+        var id = this.AssociateId;
+        await Task.CompletedTask;
+
+        if (SuccesfullyInitialized == false) return;
+        if (id == LastAssociateId && id != null) return;
+        LastAssociateId = id;
+
+        if (id == null)
+        {
+            this.Data = null;
+            this.CurrentItem = null;
+            this.StateHasChanged();
+            return;
+        }
+
+        this.Filter = string.Format("$eq(associateId,'{0}')", id.Value);
+        if (this.CarQueryLoader != null)
+        {
+            await this.CarQueryLoader.LoadDataAsync(this.Filter);
+        }
+    }
+    /*
     private async Task LoadDataAsync ()
     {
         var id = this.AssociateId;
@@ -115,6 +150,14 @@
         }
         this.SelectItem(this.CarId);
         this.StateHasChanged();
+    }
+    */
+    private async Task DataLoaded()
+    {
+        this.SelectItem(this.CarId);
+        this.StateHasChanged();
+
+        await Task.CompletedTask;
     }
 
     private string GetClassByStatus (

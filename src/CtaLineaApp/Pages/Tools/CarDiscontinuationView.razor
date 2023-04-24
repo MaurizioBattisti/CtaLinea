@@ -1,0 +1,254 @@
+﻿@page "/cardiscontinuation"
+
+@inject IApplicationSettings AppSettings;
+@inject ContextMenuService ContextMenuService
+@inject DialogService DialogService
+@inject NotificationService notificationService
+@inject IExcelExporterService ExcelService
+@inject IUtilityService utilityService
+
+@attribute [Authorize]
+
+<PageTitle>@Constants.App_Title - Rimpiazzo Mezzi</PageTitle>
+
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Rimpiazzo Mezzi" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<CtaLineaGlobalFiltersManager Changed="@GlobalFilterChanged" />
+
+<RadzenSteps @ref=@StepView
+             Change=@OnStepChange 
+             Culture=@AppSettings.CurrentCulture
+             ShowStepsButtons=true>
+    <Steps>
+        <RadzenStepsItem Text="Seleziona ditta" Disabled=@AssociateSelectionStepDisabled() >
+            <RadzenStack Orientation="Orientation.Vertical">
+                <RadzenRow>
+                    <RadzenColumn Size="1">
+                        <RadzenLabel Text="Ditta" Component="Ditta" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="6">
+                        <AssociateDropDown @bind-AssociateId="@ASsociateId" Name="Ditta" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="1">
+                        <RadzenLabel Text="Dalla data" Component="Date" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="3">
+                        <DateSelector Name="Date" @bind-Value=@RefDate />
+                    </RadzenColumn>
+                    <RadzenColumn Size="1">
+                        <RadzenButton Text="Go"
+                            Click="@SearchCars_Click"/>
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenStack>
+        </RadzenStepsItem>
+        <RadzenStepsItem Text="Mappa mezzi" Disabled=@this.CarMapStepDisabled()>
+            <RadzenDataList AllowVirtualization=true 
+                            WrapItems=false 
+                            AllowPaging=false
+                            Data="@CarMap"
+                            TItem="CarReplace"
+                            PageSize="5" >
+                <Template Context="map">
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn >
+                            <RadzenCheckBox @bind-Value=@map.Replace TValue="bool" Change=@(async (args) => await this.SomethingChanged()) />
+                        </RadzenColumn>
+                        <RadzenColumn Size="2"  >
+                            <ChildCarDropDown AssociateId=@map.OldAssociateId CarId=@map.OldCarId Disabled=true Changed=@(async (args) => await this.SomethingChanged()) />
+                        </RadzenColumn>
+                        <RadzenColumn Size="9">
+                            <AssociateAndCarDropDown @bind-AssociateId=@map.NewAssociateId
+                                                    @bind-CarId=@map.NewCarId
+                                                     Disabled=@(!map.Replace)
+                                                    Inline=true
+                                                    AllowClear=false
+                                                     Changed=@(async (args) => await this.SomethingChanged()) 
+                                                     />
+                        </RadzenColumn>
+                    </RadzenRow>
+                </Template>
+            </RadzenDataList>
+        </RadzenStepsItem>
+        <RadzenStepsItem Text="Fine" Disabled=@this.FinalStepDisabled()>
+            <RadzenCard>
+                <RadzenButton Text="Esegui il Rimpiazzo"
+                              IsBusy=@IsBusy
+                              Icon="no_crash"
+                              Click=@ReplaceCar_Click
+                              />
+            </RadzenCard>
+        </RadzenStepsItem>
+    </Steps>
+</RadzenSteps>
+
+@code {
+    private RadzenSteps? StepView;
+
+    public class CarReplace
+    {
+        public bool Replace { get; set; } = true;
+        public Guid? OldAssociateId { get; set; }
+        public Guid? OldCarId { get; set; }
+        public Guid? NewAssociateId { get; set; }
+        public Guid? NewCarId { get; set; }
+    }
+
+    [CascadingParameter]
+    CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+    private Guid? ASsociateId { get; set; }
+    private DateTime? RefDate { get; set; }
+
+    private bool IsBusy { get; set; } = false;
+
+    // contiene la mappa deli mezzi
+    private IList<CarReplace> CarMap { get; set; } = new List<CarReplace>();
+    private DateTime? RefDateToPass;
+    private IDictionary<Guid, Guid> RealMAp = new Dictionary<Guid, Guid>();
+
+    private bool AssociateSelectionStepDisabled ()
+    {
+        return false;
+    }
+    private bool CarMapStepDisabled ()
+    {
+        bool disabled = false;
+
+        disabled = (this.CarMap.Count() < 1);
+
+        return disabled;
+    }
+    private bool FinalStepDisabled ()
+    {
+        return RealMAp.Count() < 1;
+    }
+
+    private async Task GlobalFilterChanged()
+    {
+        await Task.CompletedTask;
+        // await LoadDataASync();
+    }
+
+    private IDictionary<Guid, Guid> GetRealMap ()
+    {
+        var dict = new Dictionary<Guid, Guid>();
+
+        var data = (from d in this.CarMap
+                    where d.Replace == true
+                        && d.OldCarId != null
+                        &&  d.NewCarId != null
+                        && d.OldCarId != d.NewCarId
+                    select d);
+
+        foreach  (var d in data)
+        {
+            if (d.OldCarId != null
+                && d.NewCarId != null)
+            {
+                dict.Add(d.OldCarId.Value, d.NewCarId.Value);
+            }
+        }
+        return dict;
+    }
+
+    private async Task OnStepChange (int index)
+    {
+        await Task.CompletedTask;
+    }
+
+    private async Task SearchCars_Click ()
+    {
+        await this.LoadCarMapAsync();
+    }
+
+    private async Task LoadCarMapAsync ()
+    {
+        if (this.ASsociateId == null) return;
+
+        try
+        {
+            this.IsBusy = true;
+            var data = await this.utilityService.GetCarsForDiscontinuationAsunc(
+                this.ASsociateId.Value,
+                this.RefDate)
+                .ConfigureAwait(false);
+
+            // crea l alista di mappatura
+            if (data != null
+                && data.Count () > 0)
+            {
+                // azzera i dati 
+                this.CarMap = new List<CarReplace>();
+                this.RefDateToPass = this.RefDate;
+                this.RealMAp = new Dictionary<Guid, Guid>();
+
+                this.CarMap = (from d in data
+                               select new CarReplace()
+                                 {
+                                     OldAssociateId = this.ASsociateId,
+                                     OldCarId = d,
+                                     NewAssociateId = this.ASsociateId,
+                                     NewCarId = d
+                                 }).ToList();
+
+                // aggiorna anche la mappa reale
+                this.RealMAp = this.GetRealMap();
+
+                this.notificationService.Notify(
+                    NotificationSeverity.Info,
+                    "Lista mezzi caricata"
+                    );
+            }
+            else
+            {
+                this.notificationService.Notify(
+                    NotificationSeverity.Warning,
+                    "Nessun mezzo tovato"
+                    );
+            }
+        }
+        catch (Exception ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "errore caricando i mezzi",
+                ex.Message
+                );
+        }
+        finally
+        {
+            this.IsBusy = false;
+            this.StateHasChanged();
+        }
+    }
+
+    private async Task SomethingChanged ()
+    {
+        // aggiorna anche la mappa reale
+        this.RealMAp = this.GetRealMap();
+
+        await Task.CompletedTask;
+    }
+
+    private async Task ReplaceCar_Click ()
+    {
+        // TODO: alza un flag per impedire di spostarsi da questo step
+
+        // TODO: tenta l'operaizone
+
+        // TODO: se l'operaizone va a buon fien azzera tutti i dati 
+        // TODO: lascia attivo lo step 2 ma permette solo di selezioanre il primo 
+
+        await Task.CompletedTask;
+    }
+}

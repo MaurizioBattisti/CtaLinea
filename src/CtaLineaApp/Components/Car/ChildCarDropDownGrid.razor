@@ -2,6 +2,14 @@
 @using CtaLinea.Model.QueryModel
 @inject IQueryUtilityService queryService
 
+<QueryLoader @ref=@CarQueryLoader
+             TItem="CarQueryItem"
+             Endpoint="@(Constants.Endpoint_Cars)"
+             Filter="@Filter"
+             @bind-Data=@Data
+             DataLoaded=@DataLoaded
+             @bind-IsBusy=@isLoading />
+
 <RadzenDropDownDataGrid 
         Data=@Data 
         TValue="CarQueryItem" 
@@ -10,7 +18,6 @@
         AllowFiltering="true" 
         AllowSorting="true"
         AllowClear="@AllowClear"
-        Count="@RowCount"
         IsLoading=@isLoading
         TextProperty="Description" 
         Change=@OnChange 
@@ -40,6 +47,7 @@
 </RadzenDropDownDataGrid>
 
 @code {
+    QueryLoader<CarQueryItem>? CarQueryLoader;
     /*
     [CascadingParameter]
     CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
@@ -78,21 +86,41 @@
     public EventCallback<object> Changed { get; set; }
 
     QueryDefinition _servicesQueryDef = new QueryDefinition();
-    CarQueryItem[]? Data = null; 
-    int RowCount = 0;
+    IList<CarQueryItem>? Data = null;
+    // int RowCount = 0;
     bool isLoading = false;
     CarQueryItem? CurrentItem = null;
+    private string? Filter { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        /*
         this._servicesQueryDef.EndPoint = Constants.Endpoint_Cars;
         this.StateHasChanged();
+        */
+        await base.OnInitializedAsync();
     }
     protected override async Task OnParametersSetAsync()
     {
-        await Task.CompletedTask;
+        await base.OnParametersSetAsync();
     }
 
+    private async Task LoadData(Guid? associateId)
+    {
+        if (_AssociateId == null)
+        {
+            this.Data = null;
+            this.CurrentItem = null;
+            this.StateHasChanged();
+            return;
+        }
+        this.Filter = string.Format("$eq(associateId,'{0}')", _AssociateId.Value);
+        if (this.CarQueryLoader != null)
+        {
+            await this.CarQueryLoader.LoadDataAsync(this.Filter);
+        }
+    }
+    /*
     private async Task LoadData (Guid? associateId)
     {
         await Task.CompletedTask;
@@ -115,7 +143,7 @@
         this._servicesQueryDef.PageSize = 100000;
 
         var result = await queryService.GetListAsync<CarQueryItem>(
-                    this._servicesQueryDef);
+        this._servicesQueryDef);
 
         if (result != null)
         {
@@ -124,6 +152,14 @@
         }
         this.SelectItem(this.CarId);
         this.StateHasChanged();
+    }
+    */
+    private async Task DataLoaded ()
+    {
+        this.SelectItem(this.CarId);
+        this.StateHasChanged();
+
+        await Task.CompletedTask;
     }
 
     private void SelectItem (Guid? carId)
