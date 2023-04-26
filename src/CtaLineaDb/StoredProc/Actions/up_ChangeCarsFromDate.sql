@@ -66,7 +66,7 @@ BEGIN
 			INNER JOIN dbo.Runs r
 				ON rp.RunId = r.RunId
 			INNER JOIN Dbo.Contracts c
-				ON r.ContractId = c.ContractDescription
+				ON r.ContractId = c.ContractId
 			INNER JOIN @Tbl_CarMap cm
 				ON rc.CarId = cm.Old_CarId
 			WHERE @RefDate BETWEEN COALESCE (rp.StartDate, r.StartDate,c.StartDate)
@@ -92,7 +92,7 @@ BEGIN
 			INNER JOIN dbo.Runs r
 				ON rp.RunId = r.RunId
 			INNER JOIN Dbo.Contracts c
-				ON r.ContractId = c.ContractDescription
+				ON r.ContractId = c.ContractId
 			INNER JOIN @Tbl_CarMap cm
 				ON rc.CarId = cm.Old_CarId
 			WHERE @RefDate BETWEEN COALESCE (cr.StartDate, rp.StartDate, r.StartDate,c.StartDate)

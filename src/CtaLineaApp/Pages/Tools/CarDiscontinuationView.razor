@@ -79,11 +79,33 @@
         </RadzenStepsItem>
         <RadzenStepsItem Text="Fine" Disabled=@this.FinalStepDisabled()>
             <RadzenCard>
-                <RadzenButton Text="Esegui il Rimpiazzo"
-                              IsBusy=@IsBusy
-                              Icon="no_crash"
-                              Click=@ReplaceCar_Click
-                              />
+                <RadzenStack Orientation="Orientation.Vertical" 
+                             AlignItems=AlignItems.Center 
+                             JustifyContent="JustifyContent.Center">
+
+                    @if (this.ProcessComplete == false)
+                    {
+                        <RadzenText Text="Mezzi da rimpiazzare"/>
+                        <RadzenBadge Text="@(this.RealMAp.Count().ToString())"  BadgeStyle="BadgeStyle.Info"/>
+                    }
+                    else
+                    {
+                        <RadzenBadge Text="@(this.RealMAp.Count().ToString())" BadgeStyle="BadgeStyle.Info" />
+                        <h2>Mezzi rimpiazzati con successo</h2>
+                    }
+                    
+                    <RadzenButton Text="Esegui il Rimpiazzo"
+                                  IsBusy=@IsProcessing
+                                  Disabled=@ProcessComplete
+                                  Icon="no_crash"
+                                  Click=@ReplaceCar_Click />
+                    @if(this.IsProcessing == true)
+                    {
+                        <div class="w-100">
+                            <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate"  />
+                        </div>
+                    }
+                </RadzenStack>
             </RadzenCard>
         </RadzenStepsItem>
     </Steps>
@@ -110,6 +132,8 @@
     private DateTime? RefDate { get; set; }
 
     private bool IsBusy { get; set; } = false;
+    private bool IsProcessing { get; set; } = false;
+    private bool ProcessComplete { get; set; } = false;
 
     // contiene la mappa deli mezzi
     private IList<CarReplace> CarMap { get; set; } = new List<CarReplace>();
@@ -118,13 +142,15 @@
 
     private bool AssociateSelectionStepDisabled ()
     {
-        return false;
+        return this.IsProcessing;
     }
     private bool CarMapStepDisabled ()
     {
-        bool disabled = false;
-
-        disabled = (this.CarMap.Count() < 1);
+        bool disabled = this.IsProcessing;
+        if (disabled == false)
+        {
+            disabled = (this.CarMap.Count() < 1);
+        }
 
         return disabled;
     }
@@ -163,6 +189,9 @@
 
     private async Task OnStepChange (int index)
     {
+        // crea la mappa dei mezzi
+        this.RealMAp = this.GetRealMap();
+
         await Task.CompletedTask;
     }
 
@@ -173,6 +202,7 @@
 
     private async Task LoadCarMapAsync ()
     {
+        this.ProcessComplete = false;
         if (this.ASsociateId == null) return;
 
         try
@@ -240,15 +270,42 @@
         await Task.CompletedTask;
     }
 
-    private async Task ReplaceCar_Click ()
+    private void ReplaceCar_Click ()
     {
-        // TODO: alza un flag per impedire di spostarsi da questo step
+        // tenta l'operaizone
+        var operationTask = this.utilityService.ReplaceCarsAsync (this.RealMAp, this.RefDateToPass);
+        operationTask.ContinueWith(
+            (t) =>
+            {
+                this.IsProcessing = false;
+                this.IsBusy = false;
+                this.StateHasChanged ();
 
-        // TODO: tenta l'operaizone
+                if (t.Exception != null)
+                {
+                    // ci sono stati errori
+                    this.notificationService.Notify(
+                        NotificationSeverity.Error,
+                        "Rimpiazzo mezzi fallito",
+                        t.Exception.Message
+                        );
 
-        // TODO: se l'operaizone va a buon fien azzera tutti i dati 
-        // TODO: lascia attivo lo step 2 ma permette solo di selezioanre il primo 
+                    return;
+                }
+                // se l'operaizone va a buon fien azzera tutti i dati
+                this.CarMap = new List<CarReplace>(); ;
+                this.ProcessComplete = true;
+                this.StateHasChanged();
 
-        await Task.CompletedTask;
+                this.notificationService.Notify(
+                    NotificationSeverity.Success,
+                    "Rimpiazzo mezzi terminato con successo"
+                    );
+            }
+        );
+        
+        // alza un flag per impedire di spostarsi da questo step
+        this.IsProcessing = true;
+        this.IsBusy = true;
     }
 }

@@ -19,6 +19,8 @@ namespace CtaLineaApp.Application.Services.Utilities
 		Task<IEnumerable<Guid>?> GetCarsForDiscontinuationAsunc(
 			Guid associateId,
 			DateTime? refDate);
-
+		Task ReplaceCarsAsync(
+			IDictionary<Guid, Guid> carMap,
+			DateTime? refDate);
     }
 }

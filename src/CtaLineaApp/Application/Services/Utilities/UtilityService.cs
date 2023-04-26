@@ -96,5 +96,16 @@ namespace CtaLineaApp.Application.Services.Utilities
             var items = await _http.Get<IEnumerable<Guid>>(url);
 			return items;
         }
-	}
+        public async Task ReplaceCarsAsync(
+            IDictionary <Guid, Guid> carMap,
+            DateTime? refDate)
+        {
+			var url = Constants.Endpoint_Utility_ReplaceCars;
+            if (refDate != null)
+            {
+                url += "?" + Constants.EndPoint_Args_RefDate + string.Format("=" + Constants.DateArgs_Format, refDate.Value);
+            }
+            await _http.Post(url, carMap);
+        }
+    }
 }
