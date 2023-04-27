@@ -64,8 +64,8 @@ namespace CtaLineaWebApi.Auth.Services
             {
                 return null;
             }
-            if (user.ExpirationDate != null
-                && user.ExpirationDate.Value <= DateTime.Now)
+            if (user.Expiration != null
+                && user.Expiration.Value <= DateTime.Now)
             {
                 // utente scaduto
                 return null;
@@ -85,7 +85,7 @@ namespace CtaLineaWebApi.Auth.Services
                 user.Email,
                 user.AssociateId,
                 user.Roles,
-                user.MustChangePAssword
+                user.MustChangePassword
                 );
 
             result = new AuthenticateResponse(
@@ -96,17 +96,55 @@ namespace CtaLineaWebApi.Auth.Services
             return result;
         }
 
-        public async Task<ChangePasswordResult> ChangePAsswordASync(
+        public async Task<ChangePasswordResult> ChangePasswordASync(
             string userName,
             string oldPAssword,
             string newPAssowrd)
         {
-            await Task.CompletedTask;
+            try
+            {
+                var user = await this._userRepository.GetUserAsync(userName)
+                    .ConfigureAwait(false);
 
-            var result = new ChangePasswordResult(
-                true, string.Empty);
+                // se l'utente non esiste
+                if (user == null)
+                {
+                    return new ChangePasswordResult(
+                        false, "Impossibile trovare l'utente");
+                }
+                if (user.Expiration != null
+                    && user.Expiration.Value <= DateTime.Now)
+                {
+                    // utente scaduto
+                    return new ChangePasswordResult(
+                        false, "L'utente è scaduto");
+                }
+                // controlla che la vecchia password sia uguale a quella attualemente  nel db
+                if (user.PasswordHash != this.GetPasswordHash(oldPAssword))
+                {
+                    // utente scaduto
+                    return new ChangePasswordResult(
+                        false, "La vecchia password non è valida");
+                }
 
-            return result;
+                // aggiorna i dati 
+                user.PasswordHash = this.GetPasswordHash(newPAssowrd);
+                user.MustChangePassword = false;
+
+                //  aggiorna la password 
+                await this._userRepository.UpdateUserAsync(user)
+                    .ConfigureAwait(false);
+
+                var result = new ChangePasswordResult(
+                    true, string.Empty);
+
+                return result;
+            }
+            catch (Exception exc)
+            {
+                return new ChangePasswordResult(
+                    false, "Errore cambiando la password.\n" + exc);
+            }
         }
 
         private async Task<string> GenerateRandomPAsswordAsync()

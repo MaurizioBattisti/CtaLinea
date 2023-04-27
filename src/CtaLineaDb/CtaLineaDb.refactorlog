@@ -721,4 +721,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="Day" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="120e0917-8803-4ec5-b2b6-e7a3866469bb" ChangeDateTime="04/26/2023 16:52:46">
+    <Property Name="ElementName" Value="[dbo].[Meta_Users].[MistChangePAssword]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Meta_Users]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="MustChangePassword" />
+  </Operation>
 </Operations>

@@ -6,6 +6,6 @@ namespace CtaLineaWebApi.Auth.Services
     public interface IUserService
     {
         Task<AuthenticateResponse?> AuthenticateAsync(AuthenticateRequest model);
-        Task<ChangePasswordResult> ChangePAsswordASync(string userName, string oldPAssword, string newPAssowrd);
+        Task<ChangePasswordResult> ChangePasswordASync(string userName, string oldPAssword, string newPAssowrd);
     }
 }

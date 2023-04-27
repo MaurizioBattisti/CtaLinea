@@ -1,7 +1,9 @@
 ﻿using CtaLinea.Model.Runs;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using ZzSoft.CtaLinea.Dal.Model.Runs;
@@ -32,6 +34,12 @@ namespace ZzSoft.CtaLinea.Dal.Context
             optionsBuilder.UseSqlServer(
                 this._config.ConnectionString
                 );
+        }
+
+        public IDbConnection GetNewConnection ()
+        {
+            var conn = new SqlConnection(this.Database.GetConnectionString());
+            return conn;
         }
 
         protected override void OnModelCreating(

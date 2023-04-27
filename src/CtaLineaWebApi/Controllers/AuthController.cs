@@ -57,34 +57,46 @@ namespace CtaLineaWebApi.Controllers
             return Ok(response);
         }
 
-        /*
         [Route("password")]
         [HttpPost]
         [SwaggerOperation(
-            summary: "autentica un utente",
-            description: "restituisce un JWT se l'utente è censito",
+            summary: "Cambio password",
+            description: "cambia la password dell'utente connesso",
             Tags = new string[] { "Authorizaiton" }
             )]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize]
         // [Authorize(Policy = CtaLineaConstants.AuthPolicy_ChangePAssword)]
         public async Task<IActionResult> ChangePasswordAsync(
             [FromBody] ChangePasswordModel model)
         {
             // controlla che la nuova e la vecchia password non siano uguali
-            if (model?.OldPAssword == model?.NewPassword)
+            if (model?.OldPAssword.ToUpper () == model?.NewPassword.ToUpper())
             {
-                return this.BadRequest("vecchia password e  nuova password identiche");
+                return BadRequest(
+                    new ValidationProblemDetails(new Dictionary<string, string[]>())
+                    {
+                        Title = "Cambio password falito",
+                        Detail = "vecchia password e nuova password identiche o diverse solo per le maiuscole"
+                    });
             }
-
             // chiama la funzione  di modifica della password
-            
-
-
-            await Task.CompletedTask;
+            var result = await this._userService.ChangePasswordASync(
+                this.User.Identity.Name,
+                model.OldPAssword, model.NewPassword
+                );
+            if (result.Changed == false)
+            {
+                return this.BadRequest (
+                    new ValidationProblemDetails(new Dictionary<string, string[]>())
+                    {
+                        Title = "Cambio password falito",
+                        Detail = result.Message
+                    });
+            }
             return this.NoContent();
         }
-        */
 
     }
 }

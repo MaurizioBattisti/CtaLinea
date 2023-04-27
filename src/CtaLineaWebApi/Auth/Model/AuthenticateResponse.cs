@@ -23,7 +23,7 @@ namespace CtaLineaWebApi.Auth.Model
             Description = user.Description;
             Username = user.UserName;
             Email = user.Email;
-            MustChangePAssword = user.MustChangePAssword;
+            MustChangePAssword = user.MustChangePassword;
 
             Roles = user.Roles;
             AssociateId = user.AssociateId;

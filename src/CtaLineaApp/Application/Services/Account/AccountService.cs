@@ -41,7 +41,7 @@ namespace CtaLineaApp.Application.Services.Account
 
         public async Task ChangePassword(ChangePasswordModel model)
         {
-            await Task.CompletedTask;
+            await _httpService.Post<string>("api/auth/password", model);
         }
 
         public async Task Initialize()

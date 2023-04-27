@@ -30,7 +30,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task<UserEntity> GetUserAsync(
             string userName)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
             string sql = "SELECT * FROM dbo.Meta_Users WHERE UserName = @UserName";
             var user = await conn.QuerySingleOrDefaultAsync<UserEntity>(
@@ -51,64 +51,62 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             UserEntity user
             )
         {
-            using (IDbConnection conn = this._context.Database.GetDbConnection())
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            var tran = conn.BeginTransaction();
+            string sql = "UPDATE dbo.Meta_Users SET PasswordHash = @PasswordHash, Description = @Description, Email = @Email, MustChangePassword = @MustChangePassword, Expiration = @Expiration, AssociateId = @AssociateId  WHERE UserName = @UserName";
+            var rows = await conn.ExecuteAsync(
+                sql,
+                user,
+                tran
+                );
+            if (rows > 0
+                && user.Roles != null)
             {
-                conn.Open();
-                var tran = conn.BeginTransaction();
-                string sql = "UPDATE dbo.Meta_Users SET PasswordHash = @PasswordHash, Description = @Description, Email = @Email, MustChangePAssword = @MustChangePAssword, Expiration = @Expiration, AssociateId = @AssociateId  WHERE UserName = @UserName";
-                var rows = await conn.ExecuteAsync(
-                    sql,
-                    user,
-                    tran
-                    );
-                if (rows > 0
-                    && user.Roles != null)
+                // recupera i ruoli per vedere se deve aggioranrli
+                var roles = await this.GetUserRolesAsync(user.UserName, conn, tran);
+
+                if (roles != null)
                 {
-                    // recupera i ruoli per vedere se deve aggioranrli
-                    var roles = await this.GetUserRolesAsync(user.UserName, conn, tran);
 
-                    if (roles != null)
+                    // trova i ruoli da eliminare
+                    var rolesToDelete = roles.Where(
+                        r => user.Roles.Contains(r) == false
+                        );
+
+                    // trova i ruoli da aggiungere
+                    var rolesToAdd = user.Roles.Where(
+                        r => roles.Contains(r) == false
+                        );
+
+                    // elimina i ruoli in eccesso
+                    foreach (var r in rolesToDelete)
                     {
+                        await conn.ExecuteAsync(
+                            "DELETE FROM dbo.Met_Roles WHERE UserName = @UserName AND RoleId = @RoleId",
+                            new
+                            {
+                                UserName = user.UserName,
+                                RoleId = r
+                            },
+                            tran);
+                    }
 
-                        // trova i ruoli da eliminare
-                        var rolesToDelete = roles.Where(
-                            r => user.Roles.Contains(r) == false
-                            );
-
-                        // trova i ruoli da aggiungere
-                        var rolesToAdd = user.Roles.Where(
-                            r => roles.Contains(r) == false
-                            );
-
-                        // elimina i ruoli in eccesso
-                        foreach (var r in rolesToDelete)
-                        {
-                            await conn.ExecuteAsync(
-                                "DELETE FROM dbo.Met_Roles WHERE UserName = @UserName AND RoleId = @RoleId",
-                                new
-                                {
-                                    UserName = user.UserName,
-                                    RoleId = r
-                                },
-                                tran);
-                        }
-
-                        // aggiunge i nuovi ruoi
-                        foreach (var r in rolesToAdd)
-                        {
-                            await conn.ExecuteAsync(
-                                "INSERT INTO dbo.Met_Roles VALUES (@UserName, @RoleId)",
-                                new
-                                {
-                                    UserName = user.UserName,
-                                    RoleId = r
-                                },
-                                tran);
-                        }
+                    // aggiunge i nuovi ruoi
+                    foreach (var r in rolesToAdd)
+                    {
+                        await conn.ExecuteAsync(
+                            "INSERT INTO dbo.Met_Roles VALUES (@UserName, @RoleId)",
+                            new
+                            {
+                                UserName = user.UserName,
+                                RoleId = r
+                            },
+                            tran);
                     }
                 }
-                tran.Commit();
             }
+            tran.Commit();
 
             return await this.GetUserAsync(user.UserName); ;
         }

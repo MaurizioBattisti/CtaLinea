@@ -5,7 +5,7 @@
     [Description] VARCHAR(1024) NULL, 
     [Email] VARCHAR(1024) NULL, 
     [Expiration] DATE NULL, 
-    [MistChangePAssword] BIT NOT NULL DEFAULT 1, 
+    [MustChangePassword] BIT NOT NULL DEFAULT 1, 
     [AssociateId] UNIQUEIDENTIFIER NULL, 
 
     CONSTRAINT [FK_Associate_Users] 

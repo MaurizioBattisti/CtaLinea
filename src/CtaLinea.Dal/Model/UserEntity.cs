@@ -12,8 +12,8 @@ namespace ZzSoft.CtaLinea.Dal.Model
 
         public Guid? AssociateId { get; set; }
 
-        public DateTime? ExpirationDate { get; set; }
-        public bool MustChangePAssword { get; set; }
+        public DateTime? Expiration { get; set; }
+        public bool MustChangePassword { get; set; }
 
         public IEnumerable<string> Roles { get; set; }
     }

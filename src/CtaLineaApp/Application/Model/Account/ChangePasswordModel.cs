@@ -7,7 +7,7 @@ namespace CtaLineaApp.Application.Model.Account
         [Required]
         public string? OldPassword { get; set; }
         [Required]
-        public string? NewdPassword { get; set; }
+        public string? NewPassword { get; set; }
         [Required]
         public string? ConfirmdPassword { get; set; }
     }
