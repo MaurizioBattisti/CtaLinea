@@ -212,13 +212,30 @@ namespace CtaLineaWebApi.Controllers
         [SwaggerOperation("Esegue un controllo su tutti i dati di una corsa")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RunCheckResult))]
         [HttpPost]
-        [Route("/check")]
+        [Route("check")]
         public async Task<IActionResult> CheckOneAsync(
             [FromBody] RunItem model)
         {
             // per prima cosa contorlli dati in ingresso
             var checkResult = await _Checker.CheckRunAsync(model);
             return this.Ok(checkResult);
+        }
+
+        [SwaggerOperation("Decodifica i nodi")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<RunNode>))]
+        [HttpPost]
+        [Route("decodenodes")]
+        public async Task<IActionResult> NodeDecodeAsync(
+            [FromBody] RunNodeDecodeRequest model)
+        {
+            var request = new NodeDecodeRequest()
+            {
+                NodesText = model.NodesText
+            };
+            var result = await this._mediator.Send(request)
+                .ConfigureAwait(false);
+
+            return this.Ok(result);
         }
 
         #region dettagli

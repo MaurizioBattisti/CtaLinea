@@ -1,0 +1,159 @@
+﻿@inject NotificationService _notificationService
+@inject IRunRepository _runRepo;
+@inject IRunModelService RunModelService
+
+<RadzenStack Orientation="Orientation.Vertical">
+	<RadzenRow>
+		<RadzenColumn Size="6">
+			<RadzenTextArea @bind-Value=@NodesTest
+							Style="height: 500px; width:100%" />
+
+			<RadzenButton Text="Cerca"
+						  Icon="auto_fix_high"
+						  Click=@this.FindNodes_Click />
+		</RadzenColumn>
+		<RadzenColumn Size="6">
+			<RadzenDataGrid AllowFiltering="false" AllowPaging="false" AllowSorting="false"
+							AllowColumnResize=true
+							Data="@this.NodesToAdd"
+							TItem="RunNode"
+							Style="height: 500px">
+				<Columns>
+					<RadzenDataGridColumn Width="50px" TItem="RunNode" Title="#" TextAlign="TextAlign.Center" Property="ProgrNumber" />
+					<RadzenDataGridColumn TItem="RunNode" Title="Orafio" Width="70px">
+						<Template Context="data">
+							@this.FormatTime(data.Hour)
+						</Template>
+					</RadzenDataGridColumn>
+					<RadzenDataGridColumn TItem="RunNode" Property="CollectionPointId" Title="Codice Nodo" Width="120px" />
+					<RadzenDataGridColumn TItem="RunNode" Title="Descrizione Nodo">
+						<Template Context="data">
+							@data.CollectionPointData?.Description
+						</Template>
+					</RadzenDataGridColumn>
+				</Columns>
+			</RadzenDataGrid>
+		</RadzenColumn>
+	</RadzenRow>
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
+		<RadzenButton Click="@(() => this.ReplaceNodes(ds))"
+					  Disabled=@(!CanAddNodes)
+					  ButtonStyle="ButtonStyle.Primary"
+					  Text="Sostituisci" />
+		<RadzenButton Click="@(() => this.AddNodes(ds))"
+					  Disabled=@(!CanAddNodes)
+					  ButtonStyle="ButtonStyle.Dark"
+					  Text="Aggiungi" />
+		<RadzenButton Click="@(() => ds.Close())"
+					  ButtonStyle="ButtonStyle.Secondary"
+					  Text="Annulla" />
+	</RadzenStack>
+</RadzenStack>
+
+@code {
+	[Parameter]
+	public DialogService ds { get; set; }
+
+	[Parameter]
+	public IEditableData? EditableData { get; set; }
+
+	[Parameter]
+	public RunItem CurrentRun { get; set; } = new RunItem();
+	[Parameter]
+	public RunVariation Variation { get; set; } = new RunVariation();
+
+	private string FormatTime(
+		TimeSpan? time)
+	{
+		if (time == null) return string.Empty;
+		var to = new TimeOnly(time.Value.Hours, time.Value.Minutes, time.Value.Seconds);
+		return string.Format("{0:HH:mm}", to);
+	}
+
+	protected override void OnInitialized()
+	{
+		this.CanAddNodes = false;
+		this.NodesTest = string.Empty;
+		NodesToAdd = new List<RunNode>();
+
+		base.OnInitialized();
+	}
+
+	private DialogBoxWrapper? NodeImportDialog;
+	private bool CanAddNodes = false;
+	private string NodesTest { get; set; } = string.Empty;
+	private IEnumerable<RunNode> NodesToAdd = new List<RunNode>();
+	private IList<RunNode> ValidNodesToAdd = new List<RunNode>();
+	private async Task ImportNode_Click()
+	{
+		this.CanAddNodes = false;
+		this.NodesTest = string.Empty;
+		NodesToAdd = new List<RunNode>();
+
+		if (this.NodeImportDialog != null)
+		{
+			await this.NodeImportDialog.ShowDialog("Carica Nodi");
+		}
+	}
+	private async Task FindNodes_Click()
+	{
+		try
+		{
+			var data = await _runRepo.DecodeNodeAsync(this.NodesTest);
+			this.NodesToAdd = data ?? new List<RunNode>();
+
+			// assegna la lista die nodi validi
+			this.ValidNodesToAdd = (from n in this.NodesToAdd
+									where n.CollectionPointData != null
+									select n).ToList();
+			this.CanAddNodes = this.ValidNodesToAdd.Count() > 0;
+
+			if (CanAddNodes == true)
+			{
+				_notificationService.Notify(
+					NotificationSeverity.Success,
+					"Nodi recuperati  con successo");
+			}
+			else
+			{
+				_notificationService.Notify(
+					NotificationSeverity.Warning,
+					"Lista recuperata ma nessun nodo può essere aggiunto");
+
+			}
+		}
+		catch (Exception exc)
+		{
+			_notificationService.Notify(
+				NotificationSeverity.Error,
+				"Errore recuperando la lista dei nodi",
+				exc.Message);
+		}
+		finally
+		{
+			this.StateHasChanged();
+		}
+	}
+	private async Task ReplaceNodes(DialogService ds)
+	{
+		await Task.CompletedTask;
+		this.Variation.Nodes = this.ValidNodesToAdd;
+		this.EditableData?.SetDirty();
+		RunModelService.ReorderNodes(this.Variation);
+
+		ds.Close();
+	}
+	private async Task AddNodes(DialogService ds)
+	{
+		await Task.CompletedTask;
+		var nodes = (this.Variation.Nodes ?? new List<RunNode>())
+					.Union(this.ValidNodesToAdd)
+					.ToList();
+
+		this.Variation.Nodes = nodes;
+		this.EditableData?.SetDirty();
+		RunModelService.ReorderNodes(this.Variation);
+
+		ds.Close();
+	}
+}

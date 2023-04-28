@@ -18,6 +18,7 @@ using CtaLineaWebApi.Utility.BackGround;
 using CtaLineaWebApi.Auth;
 using CtaLinea.Model.ModelServices;
 using CtaLineaWebApi.Application.Services;
+using ZzSoft.CtaLinea.Dal.Services;
 
 namespace CtaLineaWebApi
 {
@@ -188,13 +189,16 @@ namespace CtaLineaWebApi
                 .AddScoped<ICalendarRepository, CalendarRepository>()
                 ;
 
-            // repository per le importazioni da TT
-            services.AddScoped<IUserRepository,UserRepository>()
+            // repository 
+            services.AddScoped<IUserRepository, UserRepository>()
                 .AddScoped<IRunRepository, RunRepository>()
-                .AddScoped<ITtServiceRepository,TtServiceRepository>()
+                .AddScoped<ITtServiceRepository, TtServiceRepository>()
                 .AddScoped<ITagRepository, TagRepository>()
-                .AddScoped<IContractRepository, ContractRepository> ()
+                .AddScoped<IContractRepository, ContractRepository>()
                 .AddScoped<IUtilityREpository, UtilityREpository>()
+
+                // altri servizi del DAL
+                .AddScoped<INodeMatchService, NodeMatchService>()
                 ;
 
             // servizi per il contorllo dei dati

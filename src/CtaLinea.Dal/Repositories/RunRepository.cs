@@ -50,7 +50,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task<RunItem> GetOneRunItemAsync(
             Guid runId)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
 
             return await this.InternalGetOneRunItemAsync(

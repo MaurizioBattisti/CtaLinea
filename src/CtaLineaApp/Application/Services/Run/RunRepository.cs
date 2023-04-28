@@ -100,5 +100,11 @@ namespace CtaLineaApp.Application.Services.Run
 			var url = string.Format(Constants.Endpoint_Run_Tags_Fmt, runId);
 			await this._http.Post<CheckResult>(url, tags);
 		}
+
+        public async Task <IEnumerable<RunNode>?> DecodeNodeAsync (string text)
+        {
+            var data = new RunNodeDecodeRequest() { NodesText = text };
+			return await this._http.Post<IEnumerable<RunNode>, string>(Constants.Endpoint_Run_NodeDecode, data);
+		}
 	}
 }

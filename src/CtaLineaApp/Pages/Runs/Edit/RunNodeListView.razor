@@ -2,6 +2,8 @@
 @using CtaLineaApp.Pages.Runs.Dialogs
 @inject IRunModelService RunModelService
 @inject DialogService DialogService
+@inject NotificationService _notificationService
+@inject IRunRepository _runRepo;
 
 <div class="d-flex flex-row">
 	<RadzenDataGrid 
@@ -15,6 +17,7 @@
 			{
 				<RadzenButton Click=@AddNote_Click Text="Nuovo Nodo" Icon="add" />
 				<RadzenButton Click=@Reorder_Click Text="Riordina" ButtonStyle="ButtonStyle.Secondary" Icon="sort" />
+				<RadzenButton Click=@ImportNode_Click Text="Importa" ButtonStyle="ButtonStyle.Success" Icon="auto_fix_high" />
 			}
 		</HeaderTemplate>
 		<Columns>
@@ -203,6 +206,25 @@
 		this.EditableData?.SetDirty();
 		this.StateHasChanged();
 	}
+
+	#region dialog di improt dei nodi
+	private async Task ImportNode_Click ()
+	{
+		await DialogService.OpenAsync(
+			"Carica Nodi",
+			ds => @<NodesImportWizardDialog ds=@ds CurrentRun="@CurrentRun" Variation=@Variation EditableData=@EditableData />
+			, new DialogOptions()
+			{
+				ShowClose = true,
+				CloseDialogOnEsc = true,
+				CloseDialogOnOverlayClick = true,
+
+				Width = "1000px",
+				Draggable = false
+			}
+		);
+	}
+	#endregion
 
 	void OnTabChange(int index)
 	{

@@ -20,5 +20,7 @@ namespace CtaLineaApp.Application.Services.Run
         Task SaveRunTagsAsync(
             Guid runId,
             IEnumerable<int> tags);
+
+        Task<IEnumerable<RunNode>?> DecodeNodeAsync(string text);
 	}
 }
