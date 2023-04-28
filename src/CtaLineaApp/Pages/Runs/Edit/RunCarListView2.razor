@@ -53,13 +53,13 @@ else
 					ValueChanged="OnSelectionChanged"
 					TItem="RunPeriodCar">
 		<HeaderTemplate>
-			@if (CanChangeData == true)
+			@if (CanChangeData == true && ReadOnly == false)
 			{
 				<RadzenButton Click=@AddNewCar_Click Text="Nuovo Mezzo" Icon="add" />
 			}
 		</HeaderTemplate>
 		<Columns>
-			@if (this.SelectionMode == DataGridSelectionMode.Multiple)
+			@if (this.SelectionMode == DataGridSelectionMode.Multiple && this.ReadOnly == false)
 			{
 				<RadzenDataGridColumn TItem="RunPeriodCar" Width="60px" Sortable="false" Filterable="false">
 					<HeaderTemplate>
@@ -97,7 +97,7 @@ else
 					</div>
 				</Template>
 			</RadzenDataGridColumn>
-			@if (CanChangeData == true)
+			@if (CanChangeData == true && ReadOnly == false)
 			{
 				<RadzenDataGridColumn TItem="RunPeriodCar" Context="node" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
 					<Template Context="data">
@@ -119,12 +119,12 @@ else
 	{
 		@if (this.SelectedCars.Count == 1)
 		{
-			<RunCarExtraDataView CurrentRun="@CurrentRun" EditableData="@EditableData" Car=@(this.GetSingleSelectedCar() ?? new RunPeriodCar()) />
+			<RunCarExtraDataView ReadOnly=@ReadOnly CurrentRun="@CurrentRun" EditableData="@EditableData" Car=@(this.GetSingleSelectedCar() ?? new RunPeriodCar()) />
 
 			@if (this.CanShoCosts() == true)
 			{
 				<h3>Costi</h3>
-				<RunCarCostListView CurrentRun=@CurrentRun EditableData=@EditableData PeriodCar=@GetSingleSelectedCar() />
+				<RunCarCostListView ReadOnly=@ReadOnly CurrentRun=@CurrentRun EditableData=@EditableData PeriodCar=@GetSingleSelectedCar() />
 			}
 		}
 
@@ -203,6 +203,9 @@ else
 	public EventCallback<BeforeActOnItemArgs<RunPeriodCar>> BeforeDelete { get; set; }
 	[Parameter]
 	public EventCallback<RunPeriodCar> AfterDelete { get; set; }
+
+	[Parameter]
+	public bool ReadOnly { get; set; } = false;
 
 	private bool IsCarTYpeColumnVisible ()
 	{

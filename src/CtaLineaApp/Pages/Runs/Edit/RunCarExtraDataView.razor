@@ -5,21 +5,23 @@
 		<RadzenLabel Component="Var_Note" Text="Note Mezzo" />
 	</RadzenColumn>
 	<RadzenColumn Size="8">
-		<RadzenTextArea Name="Var_Note" @bind-Value="Car.Note" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
+		<RadzenTextArea ReadOnly=@ReadOnly Name="Var_Note" @bind-Value="Car.Note" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 	</RadzenColumn>
 </RadzenRow>
-<RadzenRow>
-	<RadzenText>
-		il controllo delle sovrapposizoni del mezzo funziona solo se i dati sono salvati
-	</RadzenText>
-</RadzenRow>
-<RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Center">
-	<RadzenButton Click="@CheckOVerlapping_Click"
-					ButtonStyle="ButtonStyle.Light"
-					Icon="join_full"
-					Text="Sovrapposizioni" />
-</RadzenStack>
-
+@if(ReadOnly == false)
+{
+	<RadzenRow>
+		<RadzenText>
+			il controllo delle sovrapposizoni del mezzo funziona solo se i dati sono salvati
+		</RadzenText>
+	</RadzenRow>
+	<RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Center">
+		<RadzenButton Click="@CheckOVerlapping_Click"
+						ButtonStyle="ButtonStyle.Light"
+						Icon="join_full"
+						Text="Sovrapposizioni" />
+	</RadzenStack>
+}
 <DialogBoxWrapper @ref=@OverlappingCarDialog
 				  Width="1000px"
 				  Title="Sovrapposizioni">
@@ -44,6 +46,9 @@
 
 	[Parameter]
 	public RunPeriodCar Car { get; set; } = new RunPeriodCar();
+
+	[Parameter]
+	public bool ReadOnly { get; set; } = false;
 
 	private async Task CheckOVerlapping_Click ()
 	{

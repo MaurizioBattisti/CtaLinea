@@ -1,30 +1,30 @@
 ﻿<RadzenFieldset Text="Giorni">
 	<RadzenRow AlignItems="AlignItems.Center">
-		<RadzenCheckBox @bind-Value=@this.Monday Name="Monday" TValue="bool" Change=@Tell_MondayChanged />
+		<RadzenCheckBox Disabled=@Disabled @bind-Value=@this.Monday Name="Monday" TValue="bool" Change=@Tell_MondayChanged />
 		<RadzenLabel Text="Lunedì" Component="Monday" Style="vertical-align: middle;" />
 	</RadzenRow>
 	<RadzenRow AlignItems="AlignItems.Center">
-		<RadzenCheckBox @bind-Value=@this.Tuesday Name="Tuesday" TValue="bool" Change=@Tell_TuesdayChanged />
+		<RadzenCheckBox Disabled=@Disabled @bind-Value=@this.Tuesday Name="Tuesday" TValue="bool" Change=@Tell_TuesdayChanged />
 		<RadzenLabel Text="Martedì" Component="Tuesday" Style="vertical-align: middle;" />
 	</RadzenRow>
 	<RadzenRow AlignItems="AlignItems.Center">
-		<RadzenCheckBox @bind-Value=@this.Wednesday Name="Wednesday" TValue="bool" Change=@Tell_WednesdayChanged />
+		<RadzenCheckBox Disabled=@Disabled @bind-Value=@this.Wednesday Name="Wednesday" TValue="bool" Change=@Tell_WednesdayChanged />
 		<RadzenLabel Text="Mercoledì" Component="Wednesday" Style="vertical-align: middle;" />
 	</RadzenRow>
 	<RadzenRow AlignItems="AlignItems.Center">
-		<RadzenCheckBox @bind-Value=@this.Thursday Name="Thursday" TValue="bool" Change=@Tell_ThursdayChanged />
+		<RadzenCheckBox Disabled=@Disabled @bind-Value=@this.Thursday Name="Thursday" TValue="bool" Change=@Tell_ThursdayChanged />
 		<RadzenLabel Text="Giovedì" Component="Thursday" Style="vertical-align: middle;" />
 	</RadzenRow>
 	<RadzenRow AlignItems="AlignItems.Center">
-		<RadzenCheckBox @bind-Value=@this.Friday Name="Friday" TValue="bool" Change=@Tell_FridayChanged />
+		<RadzenCheckBox Disabled=@Disabled @bind-Value=@this.Friday Name="Friday" TValue="bool" Change=@Tell_FridayChanged />
 		<RadzenLabel Text="Venerdì" Component="Friday" Style="vertical-align: middle;" />
 	</RadzenRow>
 	<RadzenRow AlignItems="AlignItems.Center">
-		<RadzenCheckBox @bind-Value=@this.Saturday Name="Saturday" TValue="bool" Change=@Tell_SaturdayChanged />
+		<RadzenCheckBox Disabled=@Disabled @bind-Value=@this.Saturday Name="Saturday" TValue="bool" Change=@Tell_SaturdayChanged />
 		<RadzenLabel Text="Sabato" Component="Saturday" Style="vertical-align: middle;" />
 	</RadzenRow>
 	<RadzenRow AlignItems="AlignItems.Center">
-		<RadzenCheckBox @bind-Value=@this.Sunday Name="Sunday" TValue="bool" Change=@Tell_SundayChanged />
+		<RadzenCheckBox Disabled=@Disabled @bind-Value=@this.Sunday Name="Sunday" TValue="bool" Change=@Tell_SundayChanged />
 		<RadzenLabel Text="Domenica" Component="Sunday" Style="vertical-align: middle;" />
 	</RadzenRow>
 </RadzenFieldset>
@@ -61,6 +61,9 @@
 
 	[Parameter]
 	public EventCallback Changed { get; set; }
+
+	[Parameter]
+	public bool Disabled { get; set; } = false;
 
 	private async Task Tell_MondayChanged (bool value)
 	{

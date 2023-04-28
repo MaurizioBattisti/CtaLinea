@@ -10,7 +10,10 @@
 				TItem="CarReplacement" 
 				>
 	<HeaderTemplate>
-		<RadzenButton Click=@AddReplcement_Click Text="Nuova Sostituzione" Icon="add" />
+		@if (ReadOnly == false)
+		{
+			<RadzenButton Click=@AddReplcement_Click Text="Nuova Sostituzione" Icon="add" />
+		}
 	</HeaderTemplate>
 
 	<Columns>
@@ -27,18 +30,21 @@
 
 		<RadzenDataGridColumn TItem="CarReplacement" Property="Note" Width="250px" Title="Note" />
 
-		<RadzenDataGridColumn TItem="CarReplacement" Context="group" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
-			<Template Context="data">
-				<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
+		@if (ReadOnly == false)
+		{
+			<RadzenDataGridColumn TItem="CarReplacement" Context="group" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
+				<Template Context="data">
+					<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
 							  Icon="edit"
 							  Size="ButtonSize.Medium"
 							  Click=@(() => EditReplacement_Click(data)) Text="" />
-				<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
+					<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
 							  Icon="delete"
 							  Size="ButtonSize.Medium"
 							  Click=@(() => DeleteReplacement_Click(data)) Text="" />
-			</Template>
-		</RadzenDataGridColumn>
+				</Template>
+			</RadzenDataGridColumn>
+		}
 	</Columns>
 </RadzenDataGrid>
 
@@ -49,12 +55,13 @@
 			<RadzenLabel Component="Note sostituzione" Text="Note" />
 		</RadzenColumn>
 		<RadzenColumn Size="9">
-			<RadzenTextArea Name="Note" @bind-Value="CurrentCarReplacement.Note" Class="w-100 h-100" Change=@(a=> this.EditableData?.SetDirty()) Style="height: 60px" />
+			<RadzenTextArea ReadOnly=@ReadOnly Name="Note" @bind-Value="CurrentCarReplacement.Note" Class="w-100 h-100" Change=@(a=> this.EditableData?.SetDirty()) Style="height: 60px" />
 		</RadzenColumn>
 	</RadzenRow>
 
 	<h3>Mezzi Originali</h3>
 	<RunCarListView2 CurrentRun=@CurrentRun EditableData=@EditableData
+			ReadOnly=@ReadOnly
 			CarList=@GetOriginalCars()
 			CanChangeData=false
 			HandlePrimaryCar=true
@@ -63,6 +70,7 @@
 
 	<h3>Sotituiti da</h3>
 	<RunCarListView2 CurrentRun=@CurrentRun EditableData=@EditableData
+				 ReadOnly=@ReadOnly
 				 CarList=@GetReplacedCars()
 				 CanChangeData=true
 				 HandlePrimaryCar=false
@@ -74,7 +82,6 @@
 				 AfterUpdate="@AfterUpdateCarAsync"
 				 BeforeDelete="@BeforeDeleteCarAsync"
 				 AfterDelete="@AfterDeleteCarAsync" />
-
 }
 
 <DialogBoxWrapper @ref=@ReplacementDlg 
@@ -136,6 +143,9 @@
 
 	[Parameter]
 	public RunPeriod Period { get; set; } = new RunPeriod();
+
+	[Parameter]
+	public bool ReadOnly { get; set; } = false;
 
 	private IList<CarReplacement> SelectedCarReplacements { get; set; } = new List<CarReplacement>();
 

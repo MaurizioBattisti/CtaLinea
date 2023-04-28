@@ -22,7 +22,10 @@
 			GroupRowRender="OnGroupRowRender">
 			
 			<HeaderTemplate>
-				<RadzenButton Click=@AddPeriod_Click Text="Nuovo Periodo" Icon="add" />
+				@if (ReadOnly == false)
+				{
+					<RadzenButton Click=@AddPeriod_Click Text="Nuovo Periodo" Icon="add" />
+				}
 			</HeaderTemplate>
 
 			<Columns>
@@ -85,18 +88,21 @@
 
 				<RadzenDataGridColumn TItem="RunPeriod" Property="MainPeriodText" Width="250px" Title="Gruppo" />
 
-				<RadzenDataGridColumn TItem="RunPeriod" Context="group" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
-					<Template Context="data">
-						<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
+				@if (ReadOnly == false)
+				{
+					<RadzenDataGridColumn TItem="RunPeriod" Context="group" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
+						<Template Context="data">
+							<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
 									  Icon="edit"
 									  Size="ButtonSize.Medium"
 									  Click=@(() => EditPeriod_Click(data)) Text="" />
-						<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
+							<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
 									  Icon="delete"
 									  Size="ButtonSize.Medium"
 									  Click=@(() => DeletePeriod_Click(data)) Text="" />
-					</Template>
-				</RadzenDataGridColumn>
+						</Template>
+					</RadzenDataGridColumn>
+				}
 			</Columns>
 		</RadzenDataGrid>
 
@@ -105,7 +111,8 @@
 			<RadzenTabs TabPosition="TabPosition.Top">
 				<Tabs>
 					<RadzenTabsItem Text="Mezzi usati" Selected=true >
-						<RunCarListView2 CurrentRun=@CurrentRun 
+						<RunCarListView2 CurrentRun=@CurrentRun
+									 ReadOnly="@ReadOnly"
 									 EditableData=@EditableData 
 									 CarList="@this.GetSelectedPeriod().Cars"  
 									 BeforeAddNew="@BeforeAddCarAsync"
@@ -118,7 +125,7 @@
 									 HandleReplacedCars=false />
 					</RadzenTabsItem>
 					<RadzenTabsItem Text="Sostituzioni" >
-						<RunCarReplacementListView CurrentRun=@CurrentRun EditableData=@EditableData Period="@GetSelectedPeriod()" />
+						<RunCarReplacementListView ReadOnly=@ReadOnly CurrentRun=@CurrentRun EditableData=@EditableData Period="@GetSelectedPeriod()" />
 					</RadzenTabsItem>
 					<RadzenTabsItem Text="Note Periodo" >
 						<RadzenRow AlignItems="AlignItems.Start">
@@ -126,7 +133,7 @@
 								<RadzenLabel Component="Note" Text="Note" />
 							</RadzenColumn>
 							<RadzenColumn Size="9">
-								<RadzenTextArea Name="Note" @bind-Value="CurrentPeriod.Note" Class="w-100 h-100" Change=@(a=> this.EditableData?.SetDirty()) Style="height: 60px" />
+								<RadzenTextArea ReadOnly=@ReadOnly Name="Note" @bind-Value="CurrentPeriod.Note" Class="w-100 h-100" Change=@(a=> this.EditableData?.SetDirty()) Style="height: 60px" />
 							</RadzenColumn>
 						</RadzenRow>
 					</RadzenTabsItem>
@@ -184,6 +191,9 @@
 
 	[Parameter]
 	public RunItem CurrentRun { get; set; } = new RunItem();
+
+    [Parameter]
+    public bool ReadOnly { get; set; } = false;
 
 	private IList<RunPeriod> SelectedPeriods = new List<RunPeriod>();
 	private RadzenDataGrid<RunPeriod>? PeriodGrid;

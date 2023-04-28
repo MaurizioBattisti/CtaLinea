@@ -26,10 +26,13 @@
 				Page="@Reset" 
 				Filter="@Reset">
 				<HeaderTemplate>
+					@if(ReadOnly == false)
+					{
 					<RadzenButton Text="Nuogo Giorno"
 								  ButtonStyle="ButtonStyle.Primary"
 								  Icon="add"
 								  Click=@AddDay_Click />
+					}
 				</HeaderTemplate>
 				<Columns>
 					<RadzenDataGridColumn TItem="RunAdditionalDay" Property="Day" Title="Giorno" Width="150px">
@@ -50,22 +53,25 @@
 						</EditTemplate>
 					</RadzenDataGridColumn>
 
-					<RadzenDataGridColumn TItem="RunAdditionalDay" Context="item" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
-						<Template Context="item">
-							<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@(args => EditRow_Click(item))" @onclick:stopPropagation="true">
-							</RadzenButton>
-							<RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteRow_Click(item))" @onclick:stopPropagation="true">
-							</RadzenButton>
-						</Template>
-						<EditTemplate Context="item">
-							<RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@((args) => SaveRow_Click(item))">
-							</RadzenButton>
-							<RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@((args) => CancelEdit_Click(item))">
-							</RadzenButton>
-							<RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteRow_Click(item))">
-							</RadzenButton>
-						</EditTemplate>
-					</RadzenDataGridColumn>
+					@if (ReadOnly == false)
+					{
+						<RadzenDataGridColumn TItem="RunAdditionalDay" Context="item" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
+							<Template Context="item">
+								<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@(args => EditRow_Click(item))" @onclick:stopPropagation="true">
+								</RadzenButton>
+								<RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteRow_Click(item))" @onclick:stopPropagation="true">
+								</RadzenButton>
+							</Template>
+							<EditTemplate Context="item">
+								<RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@((args) => SaveRow_Click(item))">
+								</RadzenButton>
+								<RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@((args) => CancelEdit_Click(item))">
+								</RadzenButton>
+								<RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteRow_Click(item))">
+								</RadzenButton>
+							</EditTemplate>
+						</RadzenDataGridColumn>
+					}
 				</Columns>
 			</RadzenDataGrid>
 		</RadzenRow>
@@ -77,6 +83,8 @@
 	public IEditableData? EditableData { get; set; }
 	[Parameter]
 	public RunItem CurrentRun { get; set; } = new RunItem();
+	[Parameter]
+	public bool ReadOnly { get; set; } = false;
 
 	RunAdditionalDay? DayToInsert;
 	RunAdditionalDay? DayToUpdate;

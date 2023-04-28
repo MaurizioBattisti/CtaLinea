@@ -11,17 +11,18 @@
 				<RadzenLabel Component="LineNumber" Text="Nr. Linea" />
 			</RadzenColumn>
 			<RadzenColumn Size="3">
-				<RadzenNumeric Name="LineNumber" TValue="int?" @bind-Value=@Variation.LineNumber Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
+				<RadzenNumeric ReadOnly=@ReadOnly Name="LineNumber" TValue="int?" @bind-Value=@Variation.LineNumber Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 			</RadzenColumn>
 			<RadzenColumn Size="3">
 				<RadzenLabel Component="RunNumber" Text="Nr. Corsa" />
 			</RadzenColumn>
 			<RadzenColumn Size="3">
-				<RadzenTextBox Name="RunNumber" @bind-Value=@Variation.RunNumber Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
+				<RadzenTextBox ReadOnly=@ReadOnly Name="RunNumber" @bind-Value=@Variation.RunNumber Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 			</RadzenColumn>
 		</RadzenRow>
 
 		<FormTimeRangeSelector @bind-StartTime="Variation.StartTime"
+							   Disabled=@ReadOnly
 								@bind-EndTime="Variation.EndTime"
 								StartName="StartTime"
 								EndName="EndTime"
@@ -32,7 +33,7 @@
 				<RadzenLabel Component="CalendarIds" Text="Calendari" />
 			</RadzenColumn>
 			<RadzenColumn Size="9">
-				<CalendarMultiSelect
+				<CalendarMultiSelect Disabled=@ReadOnly
 					AllowClear=true
 					Name="CalendarIds"
 					@bind-CalendarIds=@CalendarIds
@@ -46,7 +47,7 @@
 						<RadzenLabel Component="Km" Text="Km" />
 					</RadzenColumn>
 					<RadzenColumn Size="4">
-						<KmInput Name="Km" @bind-Value="Variation.Km" Changed=@(a=> this.EditableData?.SetDirty()) />
+						<KmInput Disabled=@ReadOnly Name="Km" @bind-Value="Variation.Km" Changed=@(a=> this.EditableData?.SetDirty()) />
 					</RadzenColumn>
 				</RadzenRow>
 				<RadzenRow AlignItems="AlignItems.Center" Gap="5px">
@@ -54,7 +55,7 @@
 						<RadzenLabel Component="RequestedFrequency" Text="Frequenza" />
 					</RadzenColumn>
 					<RadzenColumn Size="8">
-						<RadzenTextBox Name="RequestedFrequency" @bind-Value="Variation.RequestedFrequency" MaxLength="200" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
+						<RadzenTextBox ReadOnly=@ReadOnly Name="RequestedFrequency" @bind-Value="Variation.RequestedFrequency" MaxLength="200" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 					</RadzenColumn>
 				</RadzenRow>
 				<RadzenRow AlignItems="AlignItems.Start" Gap="5px">
@@ -62,7 +63,7 @@
 						<RadzenLabel Component="Path" Text="Percorso" />
 					</RadzenColumn>
 					<RadzenColumn Size="8">
-						<RadzenTextArea Name="Path" @bind-Value="Variation.Path" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
+						<RadzenTextArea ReadOnly=@ReadOnly Name="Path" @bind-Value="Variation.Path" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 					</RadzenColumn>
 				</RadzenRow>
 				<RadzenRow AlignItems="AlignItems.Start" Gap="5px">
@@ -70,12 +71,13 @@
 						<RadzenLabel Component="Var_Note" Text="Note" />
 					</RadzenColumn>
 					<RadzenColumn Size="8">
-						<RadzenTextArea Name="Var_Note" @bind-Value="Variation.Note" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
+						<RadzenTextArea ReadOnly=@ReadOnly Name="Var_Note" @bind-Value="Variation.Note" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 					</RadzenColumn>
 				</RadzenRow>
 			</RadzenColumn>
 			<RadzenColumn Size="3">
 				<FormWeekDays @bind-Monday="@this.Variation.Monday"
+								Disabled=@ReadOnly
 								@bind-Tuesday="@this.Variation.Tuesday"
 								@bind-Wednesday="@this.Variation.Wednesday"
 								@bind-Thursday="@this.Variation.Thursday"
@@ -97,6 +99,9 @@
 	public RunItem CurrentRun { get; set; } = new RunItem();
 	[Parameter]
 	public RunVariation Variation { get; set; } = new RunVariation();
+
+	[Parameter]
+	public bool ReadOnly { get; set; } = false;
 
 	private CalendarDropDown? Calendars;
 

@@ -17,12 +17,21 @@
 else if (this.NoData == false)
 {
     <div class="row justify-content-start align-items-center">
-        <div class="col-5 d-flex align-items-center">
-            <h3>@(this.IsAdding ? "Nuova corsa" : "Modifica Corsa")</h3>
-        </div>
-        <div class="col-7 d-flex align-items-center justify-content-end">
-            <RadzenButton Click=@Save_Click IsBusy=@IsSaving Text="Salva Corsa" BusyText="Salvataggio...." ButtonStyle="ButtonStyle.Primary" />
-        </div>
+        @if (ReadOnly == false)
+        {
+            <div class="col-5 d-flex align-items-center">
+                <h3>@(this.IsAdding ? "Nuova corsa" : "Modifica Corsa")</h3>
+            </div>
+            <div class="col-7 d-flex align-items-center justify-content-end">
+                    <RadzenButton Click=@Save_Click IsBusy=@IsSaving Text="Salva Corsa" BusyText="Salvataggio...." ButtonStyle="ButtonStyle.Primary" />
+            </div>
+        }
+        else
+        {
+            <div class="col-5 d-flex align-items-center">
+                <h3>Dati Corsa</h3>
+            </div>
+        }
     </div>
 
     <RadzenTabs 
@@ -42,15 +51,15 @@ else if (this.NoData == false)
             </RadzenTabsItem>
 
             <RadzenTabsItem Text="Dati generali" Selected=true Icon="home">
-                <MainRunDataView CurrentRun=@this.CurrentRun EditableData=@this />
+                <MainRunDataView ReadOnly=@ReadOnly CurrentRun=@this.CurrentRun EditableData=@this />
             </RadzenTabsItem>
 
             <RadzenTabsItem Text="Varianti" Icon="fork_right">
-                <RunVariationListView CurrentRun=@this.CurrentRun EditableData=@this />
+                <RunVariationListView ReadOnly=@ReadOnly CurrentRun=@this.CurrentRun EditableData=@this />
             </RadzenTabsItem>
 
             <RadzenTabsItem Text="Mezzi" Icon="airport_shuttle">
-                <RunCarPEriodListView CurrentRun=@this.CurrentRun EditableData=@this />
+                <RunCarPEriodListView ReadOnly=@ReadOnly CurrentRun=@this.CurrentRun EditableData=@this />
             </RadzenTabsItem>
             
             <RadzenTabsItem Text="Sospensioni">
@@ -62,12 +71,12 @@ else if (this.NoData == false)
                     </RadzenStack>
                 </Template>
                 <ChildContent>
-                    <RunSuspensionListView CurrentRun=@this.CurrentRun EditableData=@this />
+                    <RunSuspensionListView ReadOnly="@ReadOnly" CurrentRun=@this.CurrentRun EditableData=@this />
                 </ChildContent>
             </RadzenTabsItem>
 
             <RadzenTabsItem Text="Giorni Add." Icon="free_cancellation">
-                <RunAdditionalDayListView EditableData=@this CurrentRun=@CurrentRun  />
+                <RunAdditionalDayListView ReadOnly="@ReadOnly" EditableData=@this CurrentRun=@CurrentRun />
             </RadzenTabsItem>
             
             @if (this.IsAdding == false)
@@ -91,6 +100,9 @@ else if (this.NoData == true)
 
     [CascadingParameter]
     CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
+
+    [Parameter]
+    public bool ReadOnly { get; set; } = false;
 
     private Guid RunId { get; set; } = Guid.Empty;
 
@@ -158,14 +170,14 @@ else if (this.NoData == true)
                 {
                     // s mette in modalità ADD new
                     var contract = new Contract()
-                        {
-                            ContractId = contr.Id,
-                            ContractName = contr.ContractName,
-                            ContractDescription = contr.ContractDescription,
+                    {
+                        ContractId = contr.Id,
+                        ContractName = contr.ContractName,
+                        ContractDescription = contr.ContractDescription,
 
-                            StartDate = contr.StartDate,
-                            EndDate = contr.EndDate
-                        };
+                        StartDate = contr.StartDate,
+                        EndDate = contr.EndDate
+                    };
 
                     // crea un nuovo run e lo piazza nel current run
                     var run = this.RunModelService.CreateNewRun(
@@ -192,7 +204,7 @@ else if (this.NoData == true)
         finally
         {
             this.IsBusy = false;
-            // this.StateHasChanged();
+            this.StateHasChanged();
         }
     }
 

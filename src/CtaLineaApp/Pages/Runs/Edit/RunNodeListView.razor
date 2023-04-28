@@ -11,8 +11,11 @@
 		Data="@this.GetNodes()"
 		TItem="RunNode">
 		<HeaderTemplate>
-			<RadzenButton Click=@AddNote_Click Text="Nuovo Nodo" Icon="add" />
-			<RadzenButton Click=@Reorder_Click Text="Riordina" ButtonStyle="ButtonStyle.Secondary" Icon="sort" />
+			@if (ReadOnly == false)
+			{
+				<RadzenButton Click=@AddNote_Click Text="Nuovo Nodo" Icon="add" />
+				<RadzenButton Click=@Reorder_Click Text="Riordina" ButtonStyle="ButtonStyle.Secondary" Icon="sort" />
+			}
 		</HeaderTemplate>
 		<Columns>
 			<RadzenDataGridColumn Width="50px" TItem="RunNode" Title="#" TextAlign="TextAlign.Center" Property="ProgrNumber" />
@@ -27,18 +30,21 @@
 					@data.CollectionPointData?.Description
 				</Template>
 			</RadzenDataGridColumn>
-			<RadzenDataGridColumn TItem="RunNode" Context="node" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
-				<Template Context="data">
-					<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
+			@if (ReadOnly == false)
+			{
+				<RadzenDataGridColumn TItem="RunNode" Context="node" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
+					<Template Context="data">
+						<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
 								  Icon="edit"
 								  Size="ButtonSize.Medium"
 								  Click=@(() => EditNode_Click(data)) Text="" />
-					<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
+						<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
 								  Icon="delete"
 								  Size="ButtonSize.Medium"
 								  Click=@(() => DeleteNode_Click(data)) Text="" />
-				</Template>
-			</RadzenDataGridColumn>
+					</Template>
+				</RadzenDataGridColumn>
+			}
 		</Columns>
 	</RadzenDataGrid>
 </div>
@@ -78,6 +84,8 @@
 	[Parameter]
 	public RunVariation Variation { get; set; } = new RunVariation();
 
+	[Parameter]
+	public bool ReadOnly { get; set; } = false;
 
 	// nodo per il dialog
 	private RunNode? DialogNode = null;

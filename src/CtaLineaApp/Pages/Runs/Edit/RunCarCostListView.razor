@@ -16,7 +16,10 @@
 				Filter="@Reset"
 				TItem="RunCarCost">
 	<HeaderTemplate>
-		<RadzenButton Click=@InsertRow_Click Text="Nuovo Costo" Icon="add" />
+		@if (ReadOnly == false)
+		{
+			<RadzenButton Click=@InsertRow_Click Text="Nuovo Costo" Icon="add" />
+		}
 	</HeaderTemplate>
 	<Columns>
 		<RadzenDataGridColumn TItem="RunCarCost" Title="Inizio" Width="130px">
@@ -75,24 +78,27 @@
 			</EditTemplate>
 		</RadzenDataGridColumn>
 
-		<RadzenDataGridColumn TItem="RunCarCost" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="90px">
-			<Template Context="data">
-				<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
+		@if (ReadOnly == false)
+		{
+			<RadzenDataGridColumn TItem="RunCarCost" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="90px">
+				<Template Context="data">
+					<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
 							  Icon="edit"
 							  Size="ButtonSize.Medium"
                               Click=@(() => EditRow_Click(data)) Text="" />
-				<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
+					<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
 							Icon="delete"
 							Size="ButtonSize.Medium"
                               Click=@(() => DeleteRow_Click(data)) Text="" />
-			</Template>
-			<EditTemplate Context="data">
-                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@((args) => SaveRow_Click(data))">
-				</RadzenButton>
-                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@((args) => CancelEdit_Click(data))">
-				</RadzenButton>
-			</EditTemplate>
-		</RadzenDataGridColumn>
+				</Template>
+				<EditTemplate Context="data">
+					<RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@((args) => SaveRow_Click(data))">
+					</RadzenButton>
+					<RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@((args) => CancelEdit_Click(data))">
+					</RadzenButton>
+				</EditTemplate>
+			</RadzenDataGridColumn>
+		}
 	</Columns>
 </RadzenDataGrid>
 
@@ -110,6 +116,9 @@
 
 	[Parameter]
 	public RunPeriodCar PeriodCar { get; set; } = new RunPeriodCar();
+
+	[Parameter]
+	public bool ReadOnly { get; set; } = false;
 
 	private RunCarCost? CostToInsert;
 	private RunCarCost? CostToUpdate;

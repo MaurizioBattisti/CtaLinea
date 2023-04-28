@@ -20,15 +20,24 @@
     <RadzenHeader>
         <RadzenStack Orientation="Orientation.Vertical"
                     AlignItems="AlignItems.Stretch">
-            <RadzenRow>
+            <RadzenRow AlignItems=AlignItems.Center
+                       JustifyContent="JustifyContent.Normal" >
                 <RadzenColumn Size="10">
                     <AssociateAndCarDropDown @bind-AssociateId=@AssociateId @bind-CarId=@CarId Inline=true AllowClear=true />
                 </RadzenColumn>
                 <RadzenColumn Size="2">
-                    <RadzenButton Text="Carica..."
-                                  IsBusy=@isLoading
-                                  BusyText="Ricerca..."
-                                  Click=@ReloadDataAsync />
+                    <RadzenStack Orientation="Orientation.Horizontal"
+                                 Gap="2px"
+                                 AlignItems=AlignItems.Center
+                                 JustifyContent="JustifyContent.End">
+                        <RadzenButton Text="Carica..."
+                                      IsBusy=@isLoading
+                                      BusyText="Ricerca..."
+                                      Click=@ReloadDataAsync />
+                        <RadzenButton ButtonStyle="ButtonStyle.Light"
+                                      Icon="@(EditorVisible==false ? "visibility" : "visibility_off")"
+                                      Click="@(() => EditorVisible = !EditorVisible)" />
+                    </RadzenStack>
                 </RadzenColumn>
             </RadzenRow>
         </RadzenStack>
@@ -53,16 +62,14 @@
             <RadzenMonthView />
         </RadzenScheduler>
     </RadzenBody>
-    <!--
     <RadzenSidebar @bind-Expanded="@EditorVisible" Style="width: 1000px; grid-area: rz-right-sidebar">
         <RinItemEditView @ref=@RunEditDetail
-                         Saved=@RunSaved />
+                         ReadOnly=true />
     </RadzenSidebar>
-    -->
 </RadzenLayout>
 
 @code {
-    // RinItemEditView? RunEditDetail;
+    RinItemEditView? RunEditDetail;
 
     [CascadingParameter]
     public CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
@@ -101,28 +108,11 @@
     private Guid? AssociateId { get; set; } = null;
     private Guid? CarId { get; set; } = null;
 
+    private bool EditorVisible = false;
     /*
-     * private bool EditorVisible = false;
     private async Task RunSaved ()
-    {
+        {
         await this.ReloadDataAsync ();
-    }
-    */
-
-    /*
-    protected override async Task OnInitializedAsync()
-    {
-
-
-    await base.OnInitializedAsync();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-    if (firstRender)
-    {
-
-    }
     }
     */
 
@@ -187,17 +177,17 @@
 
     private async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<CarPlanningItem> args)
     {
-        /*
         if (RunEditDetail != null)
         {
             await this.RunEditDetail.LoadDataAsync(args.Data.RunId);
         }
-        */
+
+       /*
         await DialogService.OpenSideAsync<RunItemDetail>($"Dettaglio della Corsa",
             new Dictionary<string, object>() { { "Id", args.Data.RunId } },
             options: new SideDialogOptions() { CloseDialogOnOverlayClick = true, Width = "88%" }
             );
-
+        */
     }
 
     private void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<CarPlanningItem> args)

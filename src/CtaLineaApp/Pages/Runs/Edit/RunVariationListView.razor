@@ -22,7 +22,10 @@
 							@bind-Value=@SelectedVariations
 							TItem="RunVariation">
 				<HeaderTemplate>
-					<RadzenButton Click=@AddVariation_Click Text="Nuova Variazione" Icon="add" />
+					@if (ReadOnly == false)
+					{
+						<RadzenButton Click=@AddVariation_Click Text="Nuova Variazione" Icon="add" />
+					}
 				</HeaderTemplate>
 
 				<Columns>
@@ -42,29 +45,34 @@
 						</Template>
 					</RadzenDataGridColumn>
 
-					<RadzenDataGridColumn TItem="RunVariation" Context="node" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
-						<Template Context="data">
-							<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
+					@if (ReadOnly == false)
+					{
+						<RadzenDataGridColumn TItem="RunVariation" Context="node" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
+							<Template Context="data">
+								<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
 										  Icon="edit"
 										  Size="ButtonSize.Medium"
 										  Click=@(() => EditVariation_Click(data)) Text="" />
-							<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
+								<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
 										  Icon="delete"
 										  Size="ButtonSize.Medium"
 										  Click=@(() => DeleteVariation_Click(data)) Text="" />
-						</Template>
-					</RadzenDataGridColumn>
+							</Template>
+						</RadzenDataGridColumn>
+					}
 				</Columns>
 			</RadzenDataGrid>
 		</div>
 		@if(this.SelectedVariations.Count > 0)
 		{
 			<RunVariationMainDataVide @ref=@RunVariationMainDataVide
+							      ReadOnly=@ReadOnly
 								  EditableData="@this.EditableData"
 								  CurrentRun="@CurrentRun"
 								  Variation="@GetSelectedVariaiton()" />
 
 			<RunNodeListView CurrentRun="@CurrentRun"
+					     ReadOnly=@ReadOnly
 						 Variation="@GetSelectedVariaiton()"
 						 EditableData="@EditableData" />
 
@@ -113,6 +121,9 @@
 
 	[Parameter]
 	public RunItem CurrentRun { get; set; } = new RunItem();
+
+	[Parameter]
+	public bool ReadOnly { get; set; } = false;
 
 	IList<RunVariation> SelectedVariations = new List<RunVariation>();
 

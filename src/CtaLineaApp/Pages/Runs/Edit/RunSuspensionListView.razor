@@ -16,7 +16,10 @@
 							@bind-Value=@SelectedSuspensions
 							TItem="RunSuspension">
 				<HeaderTemplate>
-					<RadzenButton Click=@AddSuspnesion_Click Text="Nuova Sospensione" Icon="add" />
+					@if (ReadOnly == false)
+					{
+						<RadzenButton Click=@AddSuspnesion_Click Text="Nuova Sospensione" Icon="add" />
+					}
 				</HeaderTemplate>
 				<Columns>
 					<RadzenDataGridColumn TItem="RunSuspension" Property="@(nameof(RunSuspension.StartDate))" Title="Dal" Width="120px">
@@ -31,18 +34,21 @@
 					</RadzenDataGridColumn>
 					<RadzenDataGridColumn TItem="RunSuspension" Property="@(nameof(RunSuspension.SuspensionNote))" Title="Note" Width="200px" />
 
-					<RadzenDataGridColumn TItem="RunSuspension" Context="node" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
-						<Template Context="data">
-							<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
+					@if (ReadOnly == false)
+					{
+						<RadzenDataGridColumn TItem="RunSuspension" Context="node" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
+							<Template Context="data">
+								<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
 										  Icon="edit"
 										  Size="ButtonSize.Medium"
 										  Click=@(() => EditSuspnesion_Click(data)) Text="" />
-							<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
+								<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
 										  Icon="delete"
 										  Size="ButtonSize.Medium"
 										  Click=@(() => DeleteSuspnesion_Click(data)) Text="" />
-						</Template>
-					</RadzenDataGridColumn>
+							</Template>
+						</RadzenDataGridColumn>
+					}
 				</Columns>
 			</RadzenDataGrid>
 		</div>
@@ -96,6 +102,9 @@
 
 	[Parameter]
 	public RunItem CurrentRun { get; set; } = new RunItem();
+
+	[Parameter]
+	public bool ReadOnly { get; set; } = false;
 
 	IList<RunSuspension> SelectedSuspensions = new List<RunSuspension>();
 

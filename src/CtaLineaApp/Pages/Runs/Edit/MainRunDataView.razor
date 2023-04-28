@@ -27,20 +27,23 @@
 						<ContractDropDown Name="ContractId" Disabled=@(SuperEditMode==false) @ref="@Contracts" @bind-ContractId="SelectedContractId" AllowClear=false />
 					</RadzenColumn>
 					<RadzenColumn Size="3" >
-						@if (this.SuperEditMode == false)
+						@if (ReadOnly == false)
 						{
-							<RadzenButton Text="Modifica"							
+							@if (this.SuperEditMode == false)
+							{
+								<RadzenButton Text="Modifica"							
 								ButtonStyle="ButtonStyle.Warning"
 								Icon="lock_open"
 								Click=@ActivateContractEdit_Click />
-						}
-						else
-						{
-							<RadzenButton Text="Modifica"
+							}
+							else
+							{
+								<RadzenButton Text="Modifica"
 										ButtonStyle="ButtonStyle.Success"
 										Icon="lock"
 										Click=@DeactivateContractEdit_Click />
 
+							}
 						}
 					</RadzenColumn>
 				</RadzenRow>
@@ -63,16 +66,17 @@
 						<RadzenLabel Component="ContractRowNumber" Text="Riga Appalto" />
 					</RadzenColumn>
 					<RadzenColumn Size="3">
-						<RadzenNumeric Name="ContractRowNumber" TValue="int?" @bind-Value="this.CurrentRun.ContractRowNumber" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
+						<RadzenNumeric ReadOnly=@ReadOnly Name="ContractRowNumber" TValue="int?" @bind-Value="this.CurrentRun.ContractRowNumber" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 					</RadzenColumn>
 					<RadzenColumn Size="6">
-						<RadzenCheckBox Name="ExtraContract" @bind-Value=@this.CurrentRun.Extra  TValue="bool" />
+						<RadzenCheckBox Disabled=@ReadOnly Name="ExtraContract" @bind-Value=@this.CurrentRun.Extra TValue="bool" />
 						<RadzenLabel Text="Extra Capitolato" Component="ExtraContract" Style="margin-left: 8px; vertical-align: middle;" />
 					</RadzenColumn>
 				</RadzenRow>
 			</RadzenFieldset>
 			<RadzenFieldset Text="Richieste">
 				<FormDateRangeSelector @bind-StartDate="CurrentRun.StartDate"
+					Disabled=@ReadOnly
 					StartName="StartDate"
 					EndName="EndDate"
 					@bind-EndDate="CurrentRun.EndDate"
@@ -84,7 +88,7 @@
 						<RadzenLabel Component="RequestedDays" Text="Giorni" />
 					</RadzenColumn>
 					<RadzenColumn Size="3">
-						<RadzenNumeric Name="RequestedDays" TValue="int?" @bind-Value="CurrentRun.RequestedDays" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
+						<RadzenNumeric ReadOnly=@ReadOnly Name="RequestedDays" TValue="int?" @bind-Value="CurrentRun.RequestedDays" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 					</RadzenColumn>
 				</RadzenRow>
 				<RadzenRow AlignItems="AlignItems.Start">
@@ -92,7 +96,7 @@
 						<RadzenLabel Text="Nome Corsa" Component="RunName" />
 					</RadzenColumn>
 					<RadzenColumn Size="9">
-						<RadzenTextArea Name="RunName" @bind-Value="CurrentRun.RunName" Class="w-100 h-100" Change=@(a=> this.EditableData?.SetDirty()) Style="height: 60px" />
+						<RadzenTextArea ReadOnly=@ReadOnly Name="RunName" @bind-Value="CurrentRun.RunName" Class="w-100 h-100" Change=@(a=> this.EditableData?.SetDirty()) Style="height: 60px" />
 					</RadzenColumn>
 				</RadzenRow>
 				<RadzenRow AlignItems="AlignItems.Start">
@@ -100,19 +104,21 @@
 						<RadzenLabel Component="Note" Text="Note" />
 					</RadzenColumn>
 					<RadzenColumn Size="9">
-						<RadzenTextArea Name="Note" @bind-Value="CurrentRun.Note" Class="w-100 h-100" Change=@(a=> this.EditableData?.SetDirty()) Style="height: 60px" />
+						<RadzenTextArea ReadOnly=@ReadOnly Name="Note" @bind-Value="CurrentRun.Note" Class="w-100 h-100" Change=@(a=> this.EditableData?.SetDirty()) Style="height: 60px" />
 					</RadzenColumn>
 				</RadzenRow>
 			</RadzenFieldset>
 		</div>
 
 		<RunVariationMainDataVide @ref=@RunVariationMainDataVide
+			ReadOnly=@ReadOnly
 			EditableData="@this.EditableData"
 			CurrentRun="@CurrentRun"
 			Variation="@CurrentVariation"
 			/>
 
 		<RunNodeListView CurrentRun="@CurrentRun"
+			ReadOnly=@ReadOnly
 			Variation="@CurrentVariation"
 			EditableData="@EditableData"
 			/>
@@ -127,6 +133,9 @@
 
 	[Parameter]
 	public RunItem CurrentRun { get; set; } = new RunItem();
+
+	[Parameter]
+	public bool ReadOnly { get; set; } = false;
 
 	private bool SuperEditMode = false;
 	public RunVariation CurrentVariation { get; set; } = new RunVariation();
