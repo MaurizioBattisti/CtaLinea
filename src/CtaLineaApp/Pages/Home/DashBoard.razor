@@ -1,31 +1,8 @@
-﻿@using CtaLineaApp.Application.Services.Run;
-@inject IRunRepository _repo;
-
+﻿
 <h3>DashBoard</h3>
 
-<RadzenTextArea
-	@bind-Value=@Text
-	Style="height: 500px; width:100%"
-	/>
-
-<RadzenButton Text="Vai !"
-Click=@this.Vai_Click/>
-
 @code {
-	private string Text { get; set; } = string.Empty;
 
-	private async Task Vai_Click ()
-	{
-		try
-		{
-			var data = await  _repo.DecodeNodeAsync(this.Text);
-		}
-		catch (Exception  exc)
-		{
-			string s = exc.Message;
-		}
-		await Task.CompletedTask;
-	}
 }
 
 

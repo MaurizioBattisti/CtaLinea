@@ -13,13 +13,20 @@ using System;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using ZzSoft.CtaLinea.Dal.Repositories;
+using ZzSoft.CtaLinea.Dal.Model;
 
 namespace CtaLineaWebApi.Auth.Services
 {
     public class UserService
         : IUserService
     {
-        private readonly JwtOptions _appSettings;
+        private const string SysteUser_Name = "System";
+		private const string SysteUser_Desciption = "Utente di sistema";
+		private const string SysteUser_Email = "maurizio.battisti@zzsoft.it";
+		private const string SysteUser_Role = "SYSTEM";
+
+
+		private readonly JwtOptions _appSettings;
         private readonly IJwtService _jwtService;
         private readonly ILogger _logger;
         private readonly MD5 _md5;
@@ -52,11 +59,11 @@ namespace CtaLineaWebApi.Auth.Services
             _Digits = this.GetCharSet('0', 10).ToArray();
         }
 
-        public async Task<AuthenticateResponse?> AuthenticateAsync(
+        public async Task<AuthenticateResponse> AuthenticateAsync(
             AuthenticateRequest model
             )
         {
-            AuthenticateResponse? result = null;
+            AuthenticateResponse result = null;
 
             var user = await  this._userRepository.GetUserAsync(model.Username)
                 .ConfigureAwait (false);
@@ -96,7 +103,40 @@ namespace CtaLineaWebApi.Auth.Services
             return result;
         }
 
-        public async Task<ChangePasswordResult> ChangePasswordASync(
+		public async Task<AuthenticateResponse>  AuthentifateSystemUserAsync()
+        {
+            var pwdHash = this.GetPasswordHash(Guid.NewGuid().ToString());
+            var user = new UserEntity()
+            {
+                UserName = SysteUser_Name,
+                PasswordHash = pwdHash ,
+				Description = SysteUser_Desciption,
+                Email = SysteUser_Email,
+                MustChangePassword = false,
+                AssociateId = null,
+
+                Roles = new string[] { SysteUser_Role }
+    		};
+
+			// authentication successful so generate jwt token
+			var jwtResult = _jwtService.GenTokenkey(
+				user.UserName,
+				user.Description,
+				user.Email,
+				user.AssociateId,
+				user.Roles,
+				user.MustChangePassword
+				);
+
+			var result = new AuthenticateResponse(
+				user,
+				jwtResult.Token,
+				jwtResult.Expiration);
+
+			return await Task.FromResult (result);
+		}
+
+		public async Task<ChangePasswordResult> ChangePasswordASync(
             string userName,
             string oldPAssword,
             string newPAssowrd)

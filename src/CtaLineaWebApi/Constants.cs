@@ -20,5 +20,8 @@ namespace CtaLineaWebApi
 
         // importazioni
         internal const string ImportDescr_TT = "TT Service";
+
+        // nomi delle attività
+        internal const string Activity_ReloadScheduler = "reloadscheduler";
     }
 }

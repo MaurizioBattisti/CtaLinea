@@ -19,6 +19,7 @@ using CtaLineaWebApi.Auth;
 using CtaLinea.Model.ModelServices;
 using CtaLineaWebApi.Application.Services;
 using ZzSoft.CtaLinea.Dal.Services;
+using CtaLineaWebApi.Application.Scheduler;
 
 namespace CtaLineaWebApi
 {
@@ -91,7 +92,6 @@ namespace CtaLineaWebApi
                 System.Reflection.Assembly.GetAssembly(typeof(ICalendaQueries))
                 );
 
-
             // Gestione dei servizi in backgrouond
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
@@ -103,6 +103,13 @@ namespace CtaLineaWebApi
             services.AddJWTTokenServices(this.Configuration);
             // aggiunge le policy di autorizzaizone
             services.AddAuthorizationPolicies();
+
+            // servizio di interazione con lo scheduler di attivi5tà
+            services.AddScoped<ISchedulerService, SchedulerService>()
+                ;
+
+            // per ultimo aggiunge lo scheduler
+            services.AddSingleton<TaskScheduler, TaskScheduler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -136,6 +143,9 @@ namespace CtaLineaWebApi
                 c.RoutePrefix = string.Empty;
                 c.SwaggerEndpoint("/api-docs/v1/swagger.json", "Cta Linea API V1");
             });
+
+            // recupera il servizio dello scheduler per avviarlo
+            var scheduler = app.ApplicationServices.GetService<TaskScheduler>();
         }
 
         private void AddSwagger(IServiceCollection services)
@@ -206,7 +216,6 @@ namespace CtaLineaWebApi
                 .AddScoped<ICompleteRunCheckerService, CompleteRunCheckerService>()
                 .AddScoped<IContractChecker, ContractChecker> ()
                 ;
-
 
             return services;
         }
