@@ -159,3 +159,33 @@ MERGE dbo.Meta_Roles AS t
 	;	
 
 */
+
+-- aggiugne i dati dello scheduelr
+SET IDENTITY_INSERT [dbo].[SchedulerTasks] ON;  
+MERGE [dbo].[SchedulerTasks] AS t
+	USING (SELECT * FROM  (VALUES
+		(1, 'reloadscheduler', 0, 0, '8:00:00', '20:00:00', '1:00:00', NULL, 1, NULL, NULL),
+		(2, 'calcdays', 0, 0, '8:00:00', '20:00:00', '0:05:00', '{ "MaxRuns": 50 }', 1, NULL, NULL)
+
+		) AS src(Id, ActivityId, Frequency, RrequencyMask, StartTime, EndTime, Interval, Arguments, Active, LastStart, LastEnd)
+	) AS s
+	ON  t.Id = s.Id
+	WHEN NOT MATCHED  THEN
+		INSERT (Id, ActivityId, Frequency, RrequencyMask, StartTime, EndTime, Interval, Arguments, Active, LastStart, LastEnd)
+		VALUES (s.Id, s.ActivityId, s.Frequency, s.RrequencyMask, s.StartTime, s.EndTime, s.Interval, s.Arguments, s.Active, s.LastStart, s.LastEnd)
+	WHEN MATCHED THEN 
+		UPDATE 
+			SET ActivityId = s.ActivityId,
+			Frequency = s.Frequency,
+			RrequencyMask = s.RrequencyMask,
+
+			StartTime = s.StartTime,
+			EndTime = s.EndTime,
+			Interval = s.Interval,
+
+			Arguments = s.Arguments,
+			Active = s.Active,
+			LastStart = s.LastStart,
+			LastEnd = s.LastEnd
+	;
+SET IDENTITY_INSERT [dbo].[SchedulerTasks]OFF;

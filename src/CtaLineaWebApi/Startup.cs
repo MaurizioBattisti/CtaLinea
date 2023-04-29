@@ -106,6 +106,7 @@ namespace CtaLineaWebApi
 
             // servizio di interazione con lo scheduler di attivi5tà
             services.AddScoped<ISchedulerService, SchedulerService>()
+                .AddScoped<ISchedulerTaskLogger, SchedulerTaskLogger>()
                 ;
 
             // per ultimo aggiunge lo scheduler

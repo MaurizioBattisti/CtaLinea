@@ -79,6 +79,7 @@
     <Folder Include="Views\Base" />
     <Folder Include="StoredProc\Checks" />
     <Folder Include="StoredProc\Actions" />
+    <Folder Include="Tables\TaskScheduler" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post_Deploy.sql" />
@@ -149,5 +150,7 @@
     <Build Include="StoredProc\Checks\up_Check_CarOverlappings.sql" />
     <Build Include="StoredProc\Actions\up_ChangeCarsFromDate.sql" />
     <Build Include="StoredProc\Actions\up_GetCarForDiscontinuation.sql" />
+    <Build Include="Tables\TaskScheduler\SchedulerTasks.sql" />
+    <Build Include="Tables\TaskScheduler\SchedulerTaskLog.sql" />
   </ItemGroup>
 </Project>

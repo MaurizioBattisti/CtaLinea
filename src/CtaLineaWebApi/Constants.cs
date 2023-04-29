@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,5 +24,7 @@ namespace CtaLineaWebApi
 
         // nomi delle attività
         internal const string Activity_ReloadScheduler = "reloadscheduler";
-    }
+        internal const string Activity_RecalcRunDays = "calcdays";
+
+	}
 }

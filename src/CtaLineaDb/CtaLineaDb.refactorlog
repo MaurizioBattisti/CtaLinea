@@ -728,4 +728,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="MustChangePassword" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="74c2ab4d-47c3-4f55-85ab-c1c0476535c6" ChangeDateTime="04/29/2023 15:15:08">
+    <Property Name="ElementName" Value="[dbo].[SchedulerTaskLog].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[SchedulerTaskLog]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="LogId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="44f5548e-2371-4a62-958e-933070592deb" ChangeDateTime="04/29/2023 15:43:48">
+    <Property Name="ElementName" Value="[dbo].[SchedulerTasks].[TimeSpan]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[SchedulerTasks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="EndTime" />
+  </Operation>
 </Operations>

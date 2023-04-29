@@ -99,7 +99,8 @@ namespace CtaLineaWebApi.Application.Scheduler
 			AllTasks.Add(
 				new ScheduledTaskItem()
 				{
-					Id = -1,
+					// L'id del  task m,emorizzato nel db per il reload dello scheduler
+					Id = 1,
 					ActivityId = Constants.Activity_ReloadScheduler,
 					Frequency = ScheduleFrequency.Daily,
 					RrequencyMask = 0,
@@ -168,6 +169,8 @@ namespace CtaLineaWebApi.Application.Scheduler
 				if (arguments != null)
 				{
 					request.Content = new StringContent(arguments);
+					MediaTypeHeaderValue mediaType = MediaTypeHeaderValue.Parse("application/json");
+					request.Content.Headers.ContentType = mediaType;
 				}
 
 				await http.SendAsync(request)

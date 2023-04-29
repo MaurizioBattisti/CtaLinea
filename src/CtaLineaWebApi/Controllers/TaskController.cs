@@ -24,15 +24,18 @@ namespace CtaLineaWebApi.Controllers
 	{
 		private readonly ISender _mediator;
 		private readonly ISchedulerService _scheduler;
+		private readonly ISchedulerTaskLogger _schedulerLogger;
 		private readonly ILogger _logger;
 
 
 		public TaskController(
 			ISender mediator,
 			ISchedulerService scheduler,
+			ISchedulerTaskLogger schedulerLogger,
 			ILogger<TaskController> logger)
 		{
 			_scheduler = scheduler;
+			_schedulerLogger = schedulerLogger;
 			_mediator = mediator;
 			_logger = logger;
 		}
@@ -60,6 +63,7 @@ namespace CtaLineaWebApi.Controllers
 		public async Task<IActionResult> DoSomethingAsync(
 			[FromRoute] int id)
 		{
+			_schedulerLogger.TaskId = id;
 			await _scheduler.StartActivityAsync(Constants.Activity_ReloadScheduler, id);
 
 			var request = new ReloadSChdulerRequest()
@@ -83,5 +87,37 @@ namespace CtaLineaWebApi.Controllers
 			await _scheduler.EndActivityAsycn(Constants.Activity_ReloadScheduler, id);
 			return this.NoContent();
 		}
+
+		[SwaggerOperation("ricarica lo scheduler")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[HttpPost]
+		[Route(Constants.Activity_RecalcRunDays + "/{id}")]
+		public async Task<IActionResult> RecalcRunDaysAsync(
+			[FromRoute] int id,
+			[FromBody] CalcDaysRequest request)
+		{
+			_schedulerLogger.TaskId = id;
+			await _scheduler.StartActivityAsync(Constants.Activity_RecalcRunDays, id);
+
+			try
+			{
+				var result = await this._mediator.Send(request)
+					.ConfigureAwait(false);
+				if (result == false)
+				{
+					return this.BadRequest("Operazione fallita senza messaggio");
+				}
+			}
+			catch (Exception ex)
+			{
+				return this.BadRequest(ex);
+			}
+
+			await _scheduler.EndActivityAsycn(Constants.Activity_RecalcRunDays, id);
+			return this.NoContent();
+		}
+
+
+		
 	}
 }
