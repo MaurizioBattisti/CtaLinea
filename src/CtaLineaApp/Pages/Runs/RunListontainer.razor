@@ -507,7 +507,13 @@
                 }
             }
             this.notificationService.Notify(NotificationSeverity.Info, "File pronto per il donwload");
-
+        }
+        catch (Exception ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Errori esportando i dati",
+                ex.Message);
         }
         finally
         {
