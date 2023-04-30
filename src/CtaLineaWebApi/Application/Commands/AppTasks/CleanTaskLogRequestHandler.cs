@@ -9,17 +9,17 @@ using ZzSoft.CtaLinea.Dal.Context;
 
 namespace CtaLineaWebApi.Application.Commands.AppTasks
 {
-	public class CalcDaysRequestHandler
-		: IRequestHandler<CalcDaysRequest, bool>
+	public class CleanTaskLogRequestHandler
+		: IRequestHandler<CleanTaskLogRequest, bool>
 	{
 		private readonly CtaDbContext _context;
 		private readonly ISchedulerTaskLogger _schedulerLogger;
 		private readonly ILogger _logger;
 
-		public CalcDaysRequestHandler(
+		public CleanTaskLogRequestHandler(
 			CtaDbContext context,
 			ISchedulerTaskLogger schedulerLogger,
-			ILogger<CalcDaysRequestHandler> logger
+			ILogger<CleanTaskLogRequestHandler> logger
 			)
 		{
 			_schedulerLogger = schedulerLogger;
@@ -28,33 +28,35 @@ namespace CtaLineaWebApi.Application.Commands.AppTasks
 		}
 
 		public async Task<bool> Handle(
-			CalcDaysRequest request, 
+			CleanTaskLogRequest request, 
 			CancellationToken cancellationToken)
 		{
-			var title = string.Format("Ricalcolo giorni Corse nr: {0}",
-				request.MaxRuns
+
+			var title = string.Format("Pulizia dati log con le retention gironalier: {0} , settimanale {1}, mensile {2}",
+				request.DailyRetention ?? 0,
+				request.WeeklyRetention ?? 0,
+				request.MonthlyRetention ?? 0
 				);
 
 			try
-			{ 
+			{
 				using var conn = _context.GetNewConnection();
 				conn.Open();
 				await conn.ExecuteAsync(
-					"[dbo].[uo_RecalcRunDays_Massive]",
+					"[dbo].[up_CleanTaskLog]",
 					new
 					{
-						ProcessCount = request.MaxRuns,
-						RunId = (Guid?) null
 					},
 					commandType: System.Data.CommandType.StoredProcedure,
 					commandTimeout: request.Timeout);
+
 				await _schedulerLogger.LogAsync(title);
 			}
 			catch (Exception ex)
 			{
 				await _schedulerLogger.LogAsync(title + " " + ex.Message, "ERROR");
 			}
-
+			
 			return true;
 		}
 	}

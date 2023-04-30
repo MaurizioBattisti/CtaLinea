@@ -61,8 +61,19 @@ namespace CtaLineaWebApi.Application.Scheduler
 		{
 			_autoEvent.Reset();
 
+			// salva da una parte  l'elemento dello scheduler loader
+			var loadSchedulerItem = AllTasks.Where(x => x.ActivityId == Constants.Activity_ReloadScheduler).FirstOrDefault();
+
 			this.AllTasks.Clear();
 			this.AllTasks.AddRange(newTasks);
+
+			var newLoadSchedulerItem = AllTasks.Where(x => x.ActivityId == Constants.Activity_ReloadScheduler).FirstOrDefault();
+			if (loadSchedulerItem != null
+				&& newLoadSchedulerItem != null)
+			{
+				newLoadSchedulerItem.LastStart = loadSchedulerItem.LastStart;
+				newLoadSchedulerItem.LastEnd = loadSchedulerItem.LastEnd;
+			}
 
 			_autoEvent.Set();
 			await Task.CompletedTask;
@@ -152,7 +163,8 @@ namespace CtaLineaWebApi.Application.Scheduler
 		private async Task CallTAskAction (
 			string activityId,
 			int id, 
-			string arguments)
+			string arguments,
+			int timeout = 0)
 		{
 			try
 			{
@@ -164,6 +176,12 @@ namespace CtaLineaWebApi.Application.Scheduler
 
 				var request = new HttpRequestMessage(HttpMethod.Post, url);
 				request.Headers.Authorization = new AuthenticationHeaderValue("BEARER", token);
+
+				if (timeout > 0)
+				{
+					http.Timeout = TimeSpan.FromSeconds(timeout);
+					url += string.Format("?timeout={0}", timeout);
+				}
 
 				// crea il contenuto della richiesta http
 				if (arguments != null)
@@ -195,7 +213,8 @@ namespace CtaLineaWebApi.Application.Scheduler
 					var t = self.CallTAskAction(
 						taskToRun.ActivityId,
 						taskToRun.Id,
-						taskToRun.Arguments);
+						taskToRun.Arguments,
+						taskToRun.Timeout);
 					t.Wait();
 
 					taskToRun.LastEnd = DateTime.Now;

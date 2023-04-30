@@ -21,5 +21,7 @@ namespace CtaLineaWebApi.Application.Scheduler
 
 		public DateTime? LastStart { get; set; }
 		public DateTime? LastEnd { get; set; }
+
+		public int Timeout { get; set; } = 0;
 	}
 }

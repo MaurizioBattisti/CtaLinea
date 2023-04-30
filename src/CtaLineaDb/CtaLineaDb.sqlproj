@@ -152,5 +152,6 @@
     <Build Include="StoredProc\Actions\up_GetCarForDiscontinuation.sql" />
     <Build Include="Tables\TaskScheduler\SchedulerTasks.sql" />
     <Build Include="Tables\TaskScheduler\SchedulerTaskLog.sql" />
+    <Build Include="StoredProc\Utility\up_CleanTaskLog.sql" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
-﻿using CtaLineaWebApi.Application.Commands.AppTasks;
+﻿using CtaLinea.Model.TaskRequest;
+using CtaLineaWebApi.Application.Commands.AppTasks;
 using CtaLineaWebApi.Application.Scheduler;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -61,13 +62,15 @@ namespace CtaLineaWebApi.Controllers
 		[HttpPost]
 		[Route(Constants.Activity_ReloadScheduler + "/{id}" )]
 		public async Task<IActionResult> DoSomethingAsync(
-			[FromRoute] int id)
+			[FromRoute] int id,
+			[FromQuery] int? timeout)
 		{
 			_schedulerLogger.TaskId = id;
-			await _scheduler.StartActivityAsync(Constants.Activity_ReloadScheduler, id);
+			// await _scheduler.StartActivityAsync(Constants.Activity_ReloadScheduler, id);
 
 			var request = new ReloadSChdulerRequest()
 			{
+				Timeout = timeout ?? 100
 			};
 
 			try
@@ -84,7 +87,7 @@ namespace CtaLineaWebApi.Controllers
 				return this.BadRequest(ex);
 			}
 
-			await _scheduler.EndActivityAsycn(Constants.Activity_ReloadScheduler, id);
+			// await _scheduler.EndActivityAsycn(Constants.Activity_ReloadScheduler, id);
 			return this.NoContent();
 		}
 
@@ -94,11 +97,18 @@ namespace CtaLineaWebApi.Controllers
 		[Route(Constants.Activity_RecalcRunDays + "/{id}")]
 		public async Task<IActionResult> RecalcRunDaysAsync(
 			[FromRoute] int id,
-			[FromBody] CalcDaysRequest request)
+			[FromQuery] int? timeout,
+			[FromBody] RecalcRunDaysTaskRequest taskRequest)
 		{
 			_schedulerLogger.TaskId = id;
 			await _scheduler.StartActivityAsync(Constants.Activity_RecalcRunDays, id);
 
+			var request = new CalcDaysRequest()
+			{
+				Timeout = timeout ?? 100,
+				MaxRuns = taskRequest.MaxRuns ?? 0
+			};
+			
 			try
 			{
 				var result = await this._mediator.Send(request)
@@ -117,7 +127,42 @@ namespace CtaLineaWebApi.Controllers
 			return this.NoContent();
 		}
 
+		[SwaggerOperation("Esegue una pulizia del log delle attività")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[HttpPost]
+		[Route(Constants.Activity_CleanLog + "/{id}")]
+		public async Task<IActionResult> CleanTaskLogAsync(
+			[FromRoute] int id,
+			[FromQuery] int? timeout,
+			[FromBody] CleanTaskLogTaskRequest taskRequest)
+		{
+			_schedulerLogger.TaskId = id;
+			await _scheduler.StartActivityAsync(Constants.Activity_CleanLog, id);
 
-		
+			var request = new CleanTaskLogRequest()
+			{
+				Timeout = timeout ?? 100,
+				DailyRetention = taskRequest.DailyRetention,
+				WeeklyRetention = taskRequest.WeeklyRetention,
+				MonthlyRetention = taskRequest.MonthlyRetention
+			};
+
+			try
+			{
+				var result = await this._mediator.Send(request)
+					.ConfigureAwait(false);
+				if (result == false)
+				{
+					return this.BadRequest("Operazione fallita senza messaggio");
+				}
+			}
+			catch (Exception ex)
+			{
+				return this.BadRequest(ex);
+			}
+
+			await _scheduler.EndActivityAsycn(Constants.Activity_CleanLog, id);
+			return this.NoContent();
+		}
 	}
 }

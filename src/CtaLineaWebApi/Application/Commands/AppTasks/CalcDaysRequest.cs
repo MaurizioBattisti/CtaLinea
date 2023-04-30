@@ -3,7 +3,7 @@
 namespace CtaLineaWebApi.Application.Commands.AppTasks
 {
 	public class CalcDaysRequest
-		: IRequest<bool>
+		: BaseTaskRequest
 	{
 		public int MaxRuns { get; set; }
 	}

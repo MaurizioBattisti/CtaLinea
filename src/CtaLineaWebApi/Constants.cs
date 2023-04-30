@@ -25,6 +25,6 @@ namespace CtaLineaWebApi
         // nomi delle attività
         internal const string Activity_ReloadScheduler = "reloadscheduler";
         internal const string Activity_RecalcRunDays = "calcdays";
-
+		internal const string Activity_CleanLog = "cleanlog";
 	}
 }

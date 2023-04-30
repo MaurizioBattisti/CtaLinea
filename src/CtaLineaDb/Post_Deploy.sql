@@ -164,15 +164,16 @@ MERGE dbo.Meta_Roles AS t
 SET IDENTITY_INSERT [dbo].[SchedulerTasks] ON;  
 MERGE [dbo].[SchedulerTasks] AS t
 	USING (SELECT * FROM  (VALUES
-		(1, 'reloadscheduler', 0, 0, '8:00:00', '20:00:00', '1:00:00', NULL, 1, NULL, NULL),
-		(2, 'calcdays', 0, 0, '8:00:00', '20:00:00', '0:05:00', '{ "MaxRuns": 50 }', 1, NULL, NULL)
+		(1, 'reloadscheduler', 0, 0, '8:00:00', '20:00:00', '1:00:00', NULL, 1, NULL, NULL,  0),
+		(2, 'calcdays', 0, 0, '8:00:00', '20:00:00', '0:05:00', '{ "MaxRuns": 50 }', 1, NULL, NULL, 100),
+		(3, 'cleanlog', 0, 0, '20:00:00', '00:00:00', '0:00:00', '{ "DailyRetention": 5, "WeeklyRetention": 4, "MonthlyRetention": 4 }', 1, NULL, NULL, 200)
 
-		) AS src(Id, ActivityId, Frequency, RrequencyMask, StartTime, EndTime, Interval, Arguments, Active, LastStart, LastEnd)
+		) AS src(Id, ActivityId, Frequency, RrequencyMask, StartTime, EndTime, Interval, Arguments, Active, LastStart, LastEnd, [Timeout])
 	) AS s
 	ON  t.Id = s.Id
 	WHEN NOT MATCHED  THEN
-		INSERT (Id, ActivityId, Frequency, RrequencyMask, StartTime, EndTime, Interval, Arguments, Active, LastStart, LastEnd)
-		VALUES (s.Id, s.ActivityId, s.Frequency, s.RrequencyMask, s.StartTime, s.EndTime, s.Interval, s.Arguments, s.Active, s.LastStart, s.LastEnd)
+		INSERT (Id, ActivityId, Frequency, RrequencyMask, StartTime, EndTime, Interval, Arguments, Active, LastStart, LastEnd, [Timeout])
+		VALUES (s.Id, s.ActivityId, s.Frequency, s.RrequencyMask, s.StartTime, s.EndTime, s.Interval, s.Arguments, s.Active, s.LastStart, s.LastEnd, s.[Timeout])
 	WHEN MATCHED THEN 
 		UPDATE 
 			SET ActivityId = s.ActivityId,
@@ -186,6 +187,7 @@ MERGE [dbo].[SchedulerTasks] AS t
 			Arguments = s.Arguments,
 			Active = s.Active,
 			LastStart = s.LastStart,
-			LastEnd = s.LastEnd
+			LastEnd = s.LastEnd,
+			[Timeout] = s.[Timeout]
 	;
 SET IDENTITY_INSERT [dbo].[SchedulerTasks]OFF;

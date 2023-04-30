@@ -10,5 +10,6 @@
     [Arguments] VARCHAR(MAX) NULL, 
     [Active] BIT NOT NULL DEFAULT 1, 
     [LastStart] DATETIME NULL, 
-    [LastEnd] DATETIME NULL
+    [LastEnd] DATETIME NULL, 
+    [Timeout] INT NOT NULL DEFAULT 0
 )
