@@ -12,6 +12,8 @@ namespace CtaLineaApp.Application.Services.Utility
         void StartLoading();
         void EndLoading();
 
+        Task<IEnumerable<TItem>?> GetAllAsync();
+
         void Initilize(
             string endpoint,
             bool usePost = false,

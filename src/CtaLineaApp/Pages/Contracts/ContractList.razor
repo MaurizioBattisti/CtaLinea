@@ -45,9 +45,7 @@
                     ButtonStyle="ButtonStyle.Dark"
                     Icon="file_download" Click=@DownloadData_Click >
                 <ChildContent>
-                    <!--
                     <RadzenSplitButtonItem Text="Excel" Value="X" Icon="grid_on" />
-                    -->
                     <RadzenSplitButtonItem Text="CSV" Value="C" Icon="wrap_text" />
                 </ChildContent>
             </RadzenSplitButton>
@@ -214,7 +212,7 @@
 
             result = false;
             await this.DialogService.Alert(checkResult?.ToString() ?? "sconosciuto"
-            , checkResult.Title);
+            , checkResult?.Title);
         }
 
         return await Task.FromResult(result);
@@ -424,13 +422,14 @@
             string title = "Elenco Appalti";
             if (item == null)
             {
-                await this.ExcelService.ExportCsv(title, this.Data, columninfo);
+                await this.ExcelService.Export(title, this.Data, columninfo);
             }
             else
             {
                 switch (item.Value)
                 {
                     case "X":
+                        await this.ExcelService.ExportExcel(title, this.Data, columninfo);
                         break;
                     case "C":
                         await this.ExcelService.ExportCsv(title, this.Data, columninfo);

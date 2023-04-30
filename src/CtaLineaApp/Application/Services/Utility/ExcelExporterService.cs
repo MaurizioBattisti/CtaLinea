@@ -33,7 +33,32 @@ namespace CtaLineaApp.Application.Services.Utility
 			_appSettings = appSettings;
 		}
 
-		public async Task ExportCsv<TEntity>(
+        public async Task Export<TEntity>(
+            string title,
+            IEnumerable<TEntity> items,
+            IEnumerable<ExcelExporterColumnInfo<TEntity>>? columns = null,
+            string? sheetTitle = null
+            )
+            where TEntity : class
+        {
+			// per default esegue l'esportazione in excel
+            await this.ExportExcel(title, items, columns, sheetTitle);
+        }
+        public async Task ExportExcel<TEntity>(
+            string title,
+            IEnumerable<TEntity> items,
+            IEnumerable<ExcelExporterColumnInfo<TEntity>>? columns = null,
+            string? sheetTitle = null
+            )
+            where TEntity : class
+        {
+			// TODO: implementare la esprotazione in excel vero
+
+
+            await this.ExportCsv(title, items, columns, sheetTitle);
+        }
+
+        public async Task ExportCsv<TEntity>(
 			string title,
 			IEnumerable<TEntity> items,
 			IEnumerable<ExcelExporterColumnInfo<TEntity>>? columns = null,

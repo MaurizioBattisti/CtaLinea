@@ -55,6 +55,27 @@ namespace CtaLineaApp.Application.Services.Utility
                 || this._postPayload != null);
         }
 
+        public async Task<IEnumerable<TItem>?> GetAllAsync ()
+        {
+            var oldPage = _QueryDef.Page;
+            var oldPageSize = _QueryDef.PageSize;
+            try
+            {
+                _QueryDef.Page = 0;
+                _QueryDef.PageSize = 1000000;
+
+                var result = await _queryService.GetListAsync<TItem>(
+                    _QueryDef, this.UsePost(), _postPayload);
+
+                return result?.Items;
+            }
+            finally
+            {
+                _QueryDef.Page = oldPage;
+                _QueryDef.PageSize = oldPageSize;
+            }
+        }
+
         public async Task LoadData(
             LoadDataArgs args)
         {
