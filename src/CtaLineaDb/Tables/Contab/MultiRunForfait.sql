@@ -7,7 +7,7 @@
     -- D -> giornaliero
     -- M -> Mensile
     -- Y -> Annuale
-    [ForfaitTrpe] CHAR(10) NOT NULL DEFAULT 'D', 
+    [ForfaitTrpe] CHAR(1) NOT NULL DEFAULT 'D', 
     [Amount] MONEY NOT NULL DEFAULT 0, 
     
     CONSTRAINT [chk_MultiRunForfaitTypes] 

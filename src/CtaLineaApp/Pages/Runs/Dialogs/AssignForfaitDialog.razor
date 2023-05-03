@@ -1,0 +1,43 @@
+﻿@using CtaLinea.Model.External;
+@inject IAutoLoadDataList<CollectionPointQueryItem> AutoLoad;
+
+<RadzenStack Orientation="Orientation.Vertical">
+	<RadzenText TextStyle="TextStyle.Overline" Text="Forfait" />
+	<MultiRunForfaitSelector AllowClear=true
+								@bind-ForfaitId=@ForfaitId
+								ContractId=@ContractId />
+
+	<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
+		<RadzenButton Click="@(() => this.SetForfait(ds))"
+					  Disabled=@(this.ForfaitId == null)
+					  ButtonStyle="ButtonStyle.Primary"
+					  Text="Imposta" />
+		<RadzenButton Click="@(() => ds.Close())"
+					  ButtonStyle="ButtonStyle.Secondary"
+					  Text="Annulla" />
+	</RadzenStack>
+</RadzenStack>
+
+@code {
+	private int? ContractId;
+
+	[CascadingParameter]
+	CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
+
+	[Parameter]
+	public DialogService? ds { get; set; }
+
+	[Parameter]
+	public int? ForfaitId { get; set; }
+
+	protected override void OnInitialized()
+	{
+		this.ContractId = GlobalFilters?.Contract?.Id;
+		base.OnInitialized();
+	}
+
+	private void SetForfait (DialogService ds)
+	{
+		ds.Close(this.ForfaitId);
+	}
+}

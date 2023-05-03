@@ -130,6 +130,8 @@ namespace CtaLinea.Model.QueryModel
         [SqlField(FullText = true)]
         public string? RunStatusDesvr { get; set; }
 
+        [ColumnDescription(Header = "Id Forfait")]
+        public int? ForfaitId { get; set; }
         [ColumnDescription(Header = "Forfait")]
         public string? ForfaitName { get; set; }
         [ColumnDescription(Header = "Tipo Forfait")]

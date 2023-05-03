@@ -11,6 +11,7 @@ using CEC.Routing;
 using CtaLinea.Model.ModelServices;
 using CtaLineaApp.Application.Services.Costs;
 using CtaLineaApp.Application.Services.Utilities;
+using CtaLineaApp.Application.Services.Contab;
 
 namespace CtaLineaApp
 {
@@ -40,9 +41,9 @@ namespace CtaLineaApp
 
                 // My
                 .AddScoped(typeof(IAutoLoadDataList<>), typeof(AutoLoadDataList<>))
-                
+
                 // servizio di esportaizone in excel
-                .AddScoped<IExcelExporterService, ExcelExporterService> ()
+                .AddScoped<IExcelExporterService, ExcelExporterService>()
 
                 .AddScoped<IApplicationSettings, ApplicationSettings>()
                 .AddScoped<ICurrentUserService, CurrentUserService>()
@@ -51,19 +52,20 @@ namespace CtaLineaApp
                 .AddScoped<IHttpService, HttpService>()
                 .AddScoped<ILocalStorageService, LocalStorageService>()
                 .AddScoped<IQueryUtilityService, QueryUtilityService>()
-                .AddScoped<ICostService, CostServic> ()
-                .AddScoped<IUtilityService, UtilityService> ()
-                .AddScoped<ITagsService, TagsService> ()
-                
+                .AddScoped<ICostService, CostServic>()
+                .AddScoped<IUtilityService, UtilityService>()
+                .AddScoped<ITagsService, TagsService>()
+
                 // servizio per la gestion dei contratti
-                .AddScoped<IContractService, ContractService> ()
+                .AddScoped<IContractService, ContractService>()
                 // Serivizo per la gestiondei calendari
                 .AddScoped<ICalendarService, CalendarService>()
                 // serivi per gestire le corse
-                .AddScoped<IRunModelService, RunModelService> ()
+                .AddScoped<IRunModelService, RunModelService>()
 
                 // repository dei dati
-                .AddScoped<IRunRepository, RunRepository> ()
+                .AddScoped<IRunRepository, RunRepository>()
+                .AddScoped<IForfaitService, ForfaitService>()
 
                 // servizio di controllo delle corse
                 .AddScoped<IRunChecker, RunChecker> ()

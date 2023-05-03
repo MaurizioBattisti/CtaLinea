@@ -70,6 +70,7 @@ SELECT  r.RunId,
 			WHEN r.StartDate IS NOT NULL AND r.StartDate > GETDATE()  THEN 'Non ancora attivata'
 			ELSE NULL
 		END) AS RunStatusDesvr,
+		mrf.ForfaitId,
 		mrf.ForfaitName,
 		mrf.ForfaitTrpe
 	FROM dbo.Runs r

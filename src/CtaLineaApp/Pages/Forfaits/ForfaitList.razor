@@ -1,5 +1,13 @@
 ﻿@page "/forfaits"
+@inject IExcelExporterService ExcelService
 
+@inject IApplicationSettings AppSettings;
+@inject IForfaitService Repo;
+@inject IContractChecker Checker
+@inject ContextMenuService ContextMenuService
+@inject IQueryUtilityService QueryService
+@inject DialogService DialogService
+@inject NotificationService notificationService
 
 @inherits EditorComponentBase
 @attribute [Authorize]
@@ -15,12 +23,455 @@
 </LayoutSetter>
 <CtaLineaSttingsNotifier Changed=@StateHasChanged />
 
-<h1> Forfait </h1>
+<RadzenDataGrid @ref="@grdData"
+                FilterMode="FilterMode.Simple"
+                IsLoading=@IsLoading
+                Data="@this.Data" TItem="ForfaitQueryItem"
+                AllowSorting="true"
+                AllowFiltering="true"
+                AllowColumnResize="true"
+                LogicalFilterOperator="LogicalFilterOperator.And"
+                AllowVirtualization=true
+                VirtualizationOverscanCount="10"
+                Style="height:100%"
+                EditMode="DataGridEditMode.Single"
+                Culture=@AppSettings.CurrentCulture
+                RowUpdate="@OnUpdateRow"
+                RowCreate="@OnCreateRow"
+                Sort="@Reset"
+                Page="@Reset"
+                Filter="@Reset"
+                Density=@Settings.Density>
+    <HeaderTemplate>
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="4px">
+            <RadzenSplitButton ButtonStyle="ButtonStyle.Dark"
+                               Icon="file_download" Click=@DownloadData_Click>
+                <ChildContent>
+                    <RadzenSplitButtonItem Text="Excel" Value="X" Icon="grid_on" />
+                    <RadzenSplitButtonItem Text="CSV" Value="C" Icon="wrap_text" />
+                </ChildContent>
+            </RadzenSplitButton>
 
+            <RadzenButton ButtonStyle="ButtonStyle.Light"
+                          IsBusy=@IsLoading
+                          Icon="filter_alt_off"
+                          Click="@ClearFilters_Click" />
+            <RadzenTextBox @bind-Value=@this.FullTextSearch Placeholder="Cerca..." Change=@FullText_OnChange Style="width: 200px" Class="w-100" />
+            <RadzenButton ButtonStyle="ButtonStyle.Success"
+                          IsBusy=@IsLoading
+                          Icon="refresh"
+                          Click="@ReloadData" />
+
+            <RadzenButton ButtonStyle="ButtonStyle.Primary"
+                          Icon="domain_add"
+                          Click="@AddLine_Click" />
+        </RadzenStack>
+    </HeaderTemplate>
+    <EmptyTemplate>
+        <RadzenCard Visible=@(!IsLoading)>
+            <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun Forfait trovato !</p>
+        </RadzenCard>
+    </EmptyTemplate>
+    <Columns>
+        <RadzenDataGridColumn TItem="ForfaitQueryItem" Property="@(nameof(ForfaitQueryItem.Id))" Title="Id" Visible=false />
+        <RadzenDataGridColumn TItem="ForfaitQueryItem" Property="@(nameof(ForfaitQueryItem.ForfaitName))" Title="Nome" Width="300px">
+            <EditTemplate Context="data">
+                <RadzenTextBox @bind-Value="@data.ForfaitName" MaxLength="200" class="w-100" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="ForfaitQueryItem" Property="@(nameof(ForfaitQueryItem.ContractName))" Title="Appalto" Width="300px">
+            <EditTemplate Context="data">
+                <ContractDropDown AllowClear=false @bind-ContractId=@ContractId />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="ForfaitQueryItem" Property="@(nameof(ForfaitQueryItem.ForfaitTrpeDescr))" Title="Tipo forfait" Width="180px">
+            <EditTemplate Context="data">
+                <RadzenDropDown @bind-Value="data.ForfaitTrpe" Data=@ForfaitTypes TextProperty="Item2" ValueProperty="Item1" TValue="string" Class="w-100" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+
+        <RadzenDataGridColumn TItem="ForfaitQueryItem" Property="@(nameof(ForfaitQueryItem.Amount))" Title="Importo" FormatString="{0:C}" Width="120px">
+            <EditTemplate Context="data">
+                <RadzenNumeric TValue="decimal"
+                               @bind-Value="@data.Amount"
+                               Culture=@AppSettings.CurrentCulture
+                               Format="0.00"
+                               Class="w-100" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="ForfaitQueryItem" Property="@(nameof(ForfaitQueryItem.RunCount))" Title="Nr Corse"  Width="120px"/>
+
+        <RadzenDataGridColumn TItem="ForfaitQueryItem" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="90px">
+            <Template Context="data">
+                <RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
+                              Icon="edit"
+                              Size="ButtonSize.Medium"
+                              Click=@(() => EditRow_Click(data)) Text="" />
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
+                              Icon="delete"
+                              Size="ButtonSize.Medium"
+                              Click=@(() => DeleteRow_Click(data)) Text="" />
+            </Template>
+            <EditTemplate Context="data">
+                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@((args) => SaveRow_Click(data))">
+                </RadzenButton>
+                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@((args) => CancelEdit_Click(data))">
+                </RadzenButton>
+            </EditTemplate>
+        </RadzenDataGridColumn>
+
+    </Columns>
+</RadzenDataGrid>
 
 @code {
-	[CascadingParameter]
-	CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+    private IList<Tuple<string, string>> ForfaitTypes = new List<Tuple<string, string>>()
+    {
+        new Tuple<string, string> ("D", "Giornaliero" ),
+        new Tuple<string, string> ("M", "Mensile" ),
+        new Tuple<string, string> ("Y", "Annuale" )
+    };
+
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+    [CascadingParameter]
+    CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
+
+    RadzenDataGrid<ForfaitQueryItem>? grdData;
+    private bool IsLoading = false;
+    private IList<ForfaitQueryItem> Data = new List<ForfaitQueryItem>();
+    private string? FullTextSearch { get; set; } = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataASync();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task LoadDataASync()
+    {
+        if (await this.CanProcedeAsync() == false) return;
+
+        var queryDef = new QueryDefinition();
+        queryDef.EndPoint = Constants.Endpoint_Forfaits;
+
+        this.IsLoading = true;
+        queryDef.FullText = this.FullTextSearch; ;
+
+        queryDef.Page = 1;
+        queryDef.PageSize = 100000;
+        queryDef.Count = false;
+        try
+        {
+            var result = await QueryService.GetListAsync<ForfaitQueryItem>(
+                queryDef);
+
+            if (result != null)
+            {
+                Data = result.Items.ToList();
+            }
+        }
+        finally
+        {
+            this.IsLoading = false;
+        }
+    }
+
+    private async Task FullText_OnChange(string value)
+    {
+        await this.LoadDataASync();
+    }
+    private async Task ReloadData()
+    {
+        await this.LoadDataASync();
+        // this.grdData?.Reload();
+    }
+
+    private async Task<bool> CanProcedeAsync()
+    {
+        if (this.IsClean == false)
+        {
+            var result = await this.AskForExitAsync();
+            if (result == true)
+            {
+                this.IsClean = true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private int? ContractId;
+    private ForfaitQueryItem? DataToInsert;
+    private ForfaitQueryItem? DataToUpdate;
+
+    private MultiRunForfait GetContractFromQueryItem(ForfaitQueryItem item)
+    {
+        return new MultiRunForfait()
+        {
+            ForfaitId = item.Id,
+            ContractId = this.ContractId ?? 0,
+            ForfaitName = item.ForfaitName,
+            ForfaitTrpe = item.ForfaitTrpe,
+            Amount = item.Amount
+        };
+    }
+
+    private async Task<bool> CheckCostAsync(MultiRunForfait forfait)
+    {
+        bool result = true;
+
+        if (this.ContractId == null)
+        {
+            result = false;
+            await this.DialogService.Alert(
+                "Dati errati",
+                "Deve essere indicato l'appalto");
+        }
+
+        return await Task.FromResult(result);
+    }
+
+    private void Reset()
+    {
+        DataToInsert = null;
+        DataToUpdate = null;
+    }
+
+    private async Task AddLine_Click()
+    {
+        if (await this.CanProcedeAsync() == false) return;
+
+        DataToInsert = new ForfaitQueryItem()
+        {
+            ForfaitName = "nuovo Forfait",
+            ForfaitTrpe = "D",
+            ContractId = this.GlobalFilters?.Contract?.Id ?? 0,
+            Amount = 0
+        };
+        this.ContractId = this.GlobalFilters?.Contract?.Id;
+
+        if (this.grdData != null)
+        {
+            this.SetDirty();
+            await grdData.InsertRow(DataToInsert);
+        }
+    }
+
+    async Task EditRow_Click(ForfaitQueryItem data)
+    {
+        if (await this.CanProcedeAsync() == false) return;
+
+        var item = new ForfaitQueryItem();
+        item.CopyFrom(data);
+        DataToUpdate = item;
+        this.ContractId = DataToUpdate.ContractId;
+
+        if (grdData != null)
+        {
+            this.SetDirty();
+            await grdData.EditRow(data);
+        }
+    }
+
+    private async Task SaveRow_Click(ForfaitQueryItem data)
+    {
+        var forfait = this.GetContractFromQueryItem(data);
+
+        // controla i dati se ok procede
+        if (await this.CheckCostAsync(forfait) != true) return;
+
+        try
+        {
+            this.IsLoading = true;
+            int? newId;
+            // tenta il salvatagio sul DB
+            if (data == this.DataToInsert)
+            {
+                newId = await this.Repo.InsertOneAsync( forfait);
+            }
+            else
+            {
+                newId = forfait.ForfaitId;
+                await this.Repo.UpdateOneAsync(forfait.ForfaitId, forfait);
+            }
+            if (newId != null)
+            {
+                var newDAta = await this.Repo.GetOneAsync(newId.Value);
+
+                // aggiorna data con i valori ritornati dal dB
+                if (newDAta != null)
+                {
+                    data.CopyFrom(newDAta);
+                }
+                this.notificationService.Notify(
+                    NotificationSeverity.Success,
+                    "Salvataggio OK"
+                );
+            }
+
+        }
+        catch (BadRequestException<CheckResult> ex)
+        {
+            // se ci sono errorei mostra un messaggio ed esce
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Dati non corretti",
+                ex.Payload?.ToString() ?? "sconosciuto"
+            );
+
+            return;
+        }
+        catch (Exception ex)
+        {
+            this.notificationService.Notify(
+            NotificationSeverity.Error,
+            "Salvataggio Fallito !",
+            ex.Message
+        );
+            return;
+        }
+        finally
+        {
+            this.IsLoading = false;
+            this.StateHasChanged();
+        }
+
+        if (grdData != null)
+        {
+            await grdData.UpdateRow(data);
+        }
+    }
+    private async Task CancelEdit_Click(ForfaitQueryItem data)
+    {
+        await Task.CompletedTask;
+
+        if (data == DataToInsert)
+        {
+            DataToInsert = null;
+        }
+        else
+        {
+            if (DataToUpdate != null)
+            {
+                data.CopyFrom(DataToUpdate);
+            }
+        }
+        DataToUpdate = null;
+        this.IsClean = true;
+
+        grdData?.CancelEditRow(data);
+    }
+
+    private async Task DeleteRow_Click(ForfaitQueryItem data)
+    {
+        // TODO: chiede conferma per la cancelazione
 
 
+
+
+        try
+        {
+            this.IsLoading = true;
+            // tenta di canclelare il contratto
+            await this.Repo.DeleteOneAsync(data.Id);
+
+            // se tutto OK aggiorna la lista degli elementi e ricarica la griglia
+            this.Data.Remove(data);
+            if (grdData != null)
+            {
+                await grdData.Reload();
+            }
+        }
+        catch (Exception ex)
+        {
+            // se fallisce mostra un messaggio ed esce dalla funzione
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Eliminazione Fallita !",
+                ex.Message
+            );
+            return;
+        }
+        finally
+        {
+            this.IsLoading = false;
+            this.StateHasChanged();
+        }
+    }
+
+    private async Task OnUpdateRow(ForfaitQueryItem data)
+    {
+        await Task.CompletedTask;
+
+        // aggiorn i dati della lista
+        var item = (from d in this.Data
+                    where d.Id == data.Id
+                    select d).SingleOrDefault();
+        item?.CopyFrom(data);
+
+        this.IsClean = true;
+    }
+
+    private async Task OnCreateRow(ForfaitQueryItem data)
+    {
+        await Task.CompletedTask;
+
+        this.Data.Add(data);
+        this.IsClean = true;
+        DataToInsert = null;
+    }
+
+    private async Task DownloadData_Click(RadzenSplitButtonItem item)
+    {
+        this.IsLoading = true;
+        // var columninfo = this.grdData?.GetExportColumnInfo();
+        var columninfo = this.Data.GetExportColumnInfo();
+
+        try
+        {
+            string title = "Elenco Forfait";
+            if (item == null)
+            {
+                await this.ExcelService.Export(title, this.Data, columninfo);
+            }
+            else
+            {
+                switch (item.Value)
+                {
+                    case "X":
+                        await this.ExcelService.ExportExcel(title, this.Data, columninfo);
+                        break;
+                    case "C":
+                        await this.ExcelService.ExportCsv(title, this.Data, columninfo);
+                        break;
+                }
+            }
+            this.notificationService.Notify(NotificationSeverity.Info, "File pronto per il donwload");
+
+        }
+        finally
+        {
+            this.IsLoading = false;
+        }
+    }
+
+    private async Task ClearFilters_Click()
+    {
+        this.FullTextSearch = null;
+
+        if (this.grdData != null)
+        {
+            foreach (var col in this.grdData.ColumnsCollection)
+            {
+                col.ClearFilters();
+            }
+        }
+
+        // this.StateHasChanged();
+        await this.ReloadData();
+    }
 }

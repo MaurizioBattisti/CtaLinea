@@ -1,6 +1,7 @@
 ﻿@page "/runs"
 @using CtaLinea.Model.Filters;
 @using CtaLinea.Model.QueryModel;
+@using CtaLineaApp.Application.Services.Contab;
 
 @inject ContextMenuService ContextMenuService
 @inject IQueryUtilityService QueryService
@@ -9,6 +10,7 @@
 @inject NotificationService notificationService
 @inject IRunRepository RunRepo
 @inject IExcelExporterService ExcelService
+@inject IForfaitService ForfaitService
 
 @inherits EditorComponentBase
 @attribute [Authorize]
@@ -376,6 +378,7 @@
     private enum RunMenuItems
     {
         Tags,
+        Forfait,
 
         Delete
     };
@@ -684,9 +687,10 @@
         ContextMenuService.Open(args, ds =>
             @<RadzenMenu Click=@((e)=>OnMenuItemClick(args, e))>
                 <RadzenMenuItem Text="Etichette..." Value=@RunMenuItems.Tags />
+                <RadzenMenuItem Text="Forfait..." Value="@RunMenuItems.Forfait" />
                 <hr class="separator">
                 <RadzenMenuItem Text="Elimina..." Value=@RunMenuItems.Delete />
-            </RadzenMenu>
+        </RadzenMenu>
     );
     }
 
@@ -707,6 +711,9 @@
                 break;
             case RunMenuItems.Tags:
                 await this.ShowTagsEditor(args.Data.Id);
+                break;
+            case RunMenuItems.Forfait:
+                await this.SetForfaitAsync(args.Data.Id);
                 break;
 
             default:
@@ -820,22 +827,42 @@
 
         if (done == true)
         {
-            try
+            await this.RealodOneRowAsync (runId);
+        }
+    }
+
+    private async Task SetForfaitAsync (Guid runId)
+    {
+        // recupera il forfait attuale dalla lista
+        var run = this.Data.Where(x => x.Id == runId).SingleOrDefault();
+        if (run != null)
+        {
+            int? oldForfaitId = run.ForfaitId;
+            var forfaitId = await DialogService.OpenAsync<AssignForfaitDialog>($"Assegnazione Forfait",
+                new Dictionary<string, object>() { { "ForfaitId", oldForfaitId }, { "ds", this.DialogService } },
+                options: new DialogOptions()
+                    {
+                        CloseDialogOnOverlayClick = false,
+                        Width = "300px"
+                    });
+
+            if (forfaitId != null)
             {
-                this.IsLoading = true;
-                // ricarica la riga della griglia e  la rimette nel posto giusto
-                var newItem = await this.RunRepo.GetOneDetailAsync(runId);
-                var oldItem = this.Data?.Where(x => x.Id == newItem.Id).SingleOrDefault();
-                if (newItem != null
-                    && oldItem != null)
+                // assegna il forfait
+                try
                 {
-                    oldItem.CopyFrom(newItem);
-                    this.grdData?.UpdateRow(oldItem);
+                    await ForfaitService.SetDetails(
+                        forfaitId, new List<Guid>() { runId }
+                        );
+
+                    // ricarica al riga attuale
+                    await this.RealodOneRowAsync (runId);
                 }
-            }
-            finally
-            {
-                this.IsLoading = false;
+                catch (Exception exc)
+                {
+                    this.notificationService.Notify(NotificationSeverity.Error, "Errore durante l'assegnaizoen del forfait. ", exc.Message);
+
+                }
             }
         }
     }
@@ -870,49 +897,54 @@
             var runId = EditArgs.RunId;
             this.EditArgs.IsAdding = false;
 
-            try
+            await this.RealodOneRowAsync (runId);
+        }
+    }
+
+    private async Task RealodOneRowAsync (Guid runId)
+    {
+        try
+        {
+            this.IsLoading = true;
+
+            // ricarica la riga della griglia e  la rimette nel posto giusto
+            var newItem = await this.RunRepo.GetOneDetailAsync(runId);
+            var oldItem = this.Data?.Where(x => x.Id == runId).SingleOrDefault();
+            if (newItem != null
+                && oldItem != null)
             {
-                this.IsLoading = true;
-
-                // ricarica la riga della griglia e  la rimette nel posto giusto
-                var newItem = await this.RunRepo.GetOneDetailAsync(runId);
-                var oldItem = this.Data?.Where(x => x.Id == runId).SingleOrDefault();
-                if (newItem != null
-                    && oldItem != null)
+                // aggiorna i dati
+                oldItem.CopyFrom(newItem);
+                this.grdData?.UpdateRow(oldItem);
+                // aggiorna il reiferimento della nuova riga
+                newItem = oldItem;
+            }
+            else if (newItem != null)
+            {
+                // se la riga nuova non è presente  nela lista la ggige
+                if (this.Data == null) this.Data = new List<RunItemQueryModel>() { newItem };
+                else
                 {
-                    // aggiorna i dati
-                    oldItem.CopyFrom(newItem);
-                    this.grdData?.UpdateRow(oldItem);
-                    // aggiorna il reiferimento della nuova riga
-                    newItem = oldItem;
-                }
-                else if (newItem != null)
-                {
-                    // se la riga nuova non è presente  nela lista la ggige
-                    if (this.Data == null) this.Data = new List<RunItemQueryModel>() { newItem };
-                    else
-                    {
-                        this.Data.Add(newItem);
-                    }
-                }
-
-                if (newItem != null
-                    && this.grdData != null)
-                {
-                    await this.grdData.Reload();
-                    await this.grdData.SelectRow(newItem);
+                    this.Data.Add(newItem);
                 }
             }
-            catch (Exception exc)
-            {
-                this.notificationService.Notify(NotificationSeverity.Warning, "errore durante l'aggiornamento della lista", exc.Message);
 
-            }
-            finally
+            if (newItem != null
+                && this.grdData != null)
             {
-                this.IsLoading = false;
+                await this.grdData.Reload();
+                await this.grdData.SelectRow(newItem);
             }
         }
+        catch (Exception exc)
+        {
+            this.notificationService.Notify(NotificationSeverity.Warning, "errore durante l'aggiornamento della lista", exc.Message);
+
+        }
+        finally
+        {
+            this.IsLoading = false;
+        }        
     }
 
 

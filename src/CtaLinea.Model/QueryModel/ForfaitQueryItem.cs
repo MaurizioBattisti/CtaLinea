@@ -42,6 +42,7 @@ namespace CtaLinea.Model.QueryModel
             this.ContractName = item.ContractName;
             this.ForfaitName = item.ForfaitName;
             this.ForfaitTrpe = item.ForfaitTrpe;
+            this.ForfaitTrpeDescr = item.ForfaitTrpeDescr;
             this.Amount = item.Amount;
             this.RunCount = item.RunCount;
         }

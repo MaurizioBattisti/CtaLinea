@@ -1,0 +1,8 @@
+Mail SQLServer@ctatn.it
+Password: sqlse7755
+Posta in arrivo : mail.ctatn.it
+Smtp: mail.ctatn.it Porta uscita (SMTP) 25 protocollo Crittografia Starttls
+
+Lascia sul server copia ci pensa il mio outlook a cancellare dopo 5 giorni.
+
+
