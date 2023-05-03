@@ -37,7 +37,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 			await this.InsertTableAsync(
 				SQL_TagsTable,
 				conn, null,
-				this.GetTagData(model));
+				this.GetData(model));
 			return await this.GetIdentityAsync(conn);
 		}
 		public async Task UpdateASync(
@@ -49,8 +49,8 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 			await this.UpdateTableAsync(
 				SQL_TagsTable,
 				conn, null,
-				this.GetTagKey(model.ContractId),
-				this.GetTagData(model)
+				this.GetKey(model.ContractId),
+				this.GetData(model)
 				);
 		}
 		public async Task DeleteASync(
@@ -62,11 +62,11 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 			await this.DeleteTableAsync(
 				SQL_TagsTable,
 				conn, null,
-				this.GetTagKey(tagId)
+				this.GetKey(tagId)
 				);
 		}
 
-		private object GetTagData(
+		private object GetData(
 			Contract model)
 		{
 			return new
@@ -77,7 +77,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 				model.EndDate
 			};
 		}
-		private object GetTagKey(int id)
+		private object GetKey(int id)
 		{
 			return new
 			{

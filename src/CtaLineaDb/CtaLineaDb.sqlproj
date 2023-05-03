@@ -80,6 +80,7 @@
     <Folder Include="StoredProc\Checks" />
     <Folder Include="StoredProc\Actions" />
     <Folder Include="Tables\TaskScheduler" />
+    <Folder Include="Views\Contab" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post_Deploy.sql" />
@@ -153,5 +154,8 @@
     <Build Include="Tables\TaskScheduler\SchedulerTasks.sql" />
     <Build Include="Tables\TaskScheduler\SchedulerTaskLog.sql" />
     <Build Include="StoredProc\Utility\up_CleanTaskLog.sql" />
+    <Build Include="Tables\Contab\MultiRunForfait.sql" />
+    <Build Include="Tables\Contab\MultiRunForfaitDetails.sql" />
+    <Build Include="Views\Contab\vw_MultiRunForfaits.sql" />
   </ItemGroup>
 </Project>

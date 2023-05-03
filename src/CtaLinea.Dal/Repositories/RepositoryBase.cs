@@ -129,7 +129,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             return string.Join(
                 ",",
                 this.GetPropertiesList(value, "[", "]", exclude)
-                ); ;
+				); ;
         }
         protected string GetArgsListString(
             object value,
@@ -168,6 +168,41 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 }
             }
             return newData;
+        }
+
+
+		protected string GetArgumetnNameListString(
+			int count,
+			string prefix = null)
+        {
+            return string.Join(",",
+                this.GetArgumetnNameList(count, prefix)
+                );
+        }
+		protected IEnumerable<string> GetArgumetnNameList (
+            int count, 
+            string prefix = null,
+            string format = null)
+        {
+            for (int index = 0; index < count; index++)
+            {
+                var txt = this.GetArgumetnName(index, prefix);
+				if (format != null)
+                {
+                    txt = string.Format(format, txt);
+
+				}
+                yield return txt;
+			}
+        }
+		protected string GetArgumetnName (
+            int index, 
+            string prefix = null)
+        {
+            return string.Format("@{0}{1}",
+                prefix?.Trim() ?? string.Empty,
+                index
+                );
         }
 
         #endregion

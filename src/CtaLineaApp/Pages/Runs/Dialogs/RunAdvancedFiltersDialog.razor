@@ -36,22 +36,24 @@
 			<RadzenTextBox @bind-Value="Filters.RunNumber"
 							Class="w-100" />
 		</RadzenColumn>
-
 	</RadzenRow>
 	<RadzenRow>
-		<RadzenColumn Size="4">
+		<RadzenColumn Size="5">
 			<RadzenText TextStyle="TextStyle.Overline" Text="Fermata (codice o testo)" />
 			<RadzenTextBox @bind-Value="Filters.Node"
 				Class="w-100" />
 		</RadzenColumn>
-		<RadzenColumn Size="4">
+		<RadzenColumn Size="1">
+			<CollectionPointSelector @bind-Id="Filters.CollectionPointId" />
+		</RadzenColumn>
+		<RadzenColumn Size="3">
 			<DateRangeSelector 
 				@bind-StartDate="Filters.StartDate"
 				@bind-EndDate="Filters.EndDate"
 				AllowClear=true
 				Inline=true/>
 		</RadzenColumn>
-		<RadzenColumn Size="4">
+		<RadzenColumn Size="3">
 			<TimeRangeSelector 
 				@bind-StartTime="Filters.StartTime"
 				@bind-EndTime="Filters.EndTime"
@@ -103,7 +105,13 @@
 			<DateSelector AllowClear=true
 							@bind-Value="Filters.DateRef" />
 		</RadzenColumn>
-		<RadzenColumn Size="6">
+		<RadzenColumn Size="3">
+			<RadzenText TextStyle="TextStyle.Overline" Text="Forfait" />
+			<MultiRunForfaitSelector AllowClear=true
+									 @bind-ForfaitId="Filters.ForfaitId"
+									 ContractId=@ContractId />
+		</RadzenColumn>
+		<RadzenColumn Size="3">
 			<RadzenText TextStyle="TextStyle.Overline" Text="Etichette (una qualsiasi)" />
 			<TagMultiSelector AllowClear=true
 				@bind-TagIds="Filters.TabIds"/>
@@ -115,9 +123,23 @@
 	</RadzenRow>
 </RadzenStack>
 
+<CtaLineaGlobalFiltersManager 
+	Changed="@GlobalFilterChanged" />
+
 @code {
+	private int? ContractId;
+
+	[CascadingParameter]
+	CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
+
 	[Parameter]
 	public RunAdvancedFilters Filters { get; set; } = new RunAdvancedFilters();
+
+	protected override void OnInitialized()
+	{
+		this.ContractId = GlobalFilters?.Contract?.Id;
+		base.OnInitialized();
+	}
 
 	private IEnumerable<KeyValuePair<int, string>> InContractList = new List<KeyValuePair<int, string>>() 
 	{
@@ -138,5 +160,37 @@
 	private void Filter_Click ()
 	{
 		this.DialogService.CloseSide(true);
+	}
+
+	private async Task GlobalFilterChanged()
+	{
+		this.ContractId = GlobalFilters?.Contract?.Id;
+		this.StateHasChanged();
+
+		await Task.CompletedTask;
+	}
+
+	private async Task SelectNodeFromList_Click ()
+	{
+		this.DialogService.CloseSide(false);
+
+		var data =await this.DialogService.OpenAsync(
+			"Seleziona Fermata",
+			ds => @<NodeSelectDialog ds=@ds />
+			, new DialogOptions()
+			{
+				ShowClose = true,
+				CloseDialogOnEsc = true,
+				CloseDialogOnOverlayClick = true,
+
+				Width = "1000px",
+				Draggable = false
+			}
+		);
+
+		if (data != null)
+		{
+			this.Filters.CollectionPointId = (string)data;
+		}
 	}
 }

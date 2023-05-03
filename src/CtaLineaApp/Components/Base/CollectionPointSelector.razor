@@ -1,0 +1,159 @@
+﻿@using CtaLinea.Model.External;
+@inject IAutoLoadDataList<CollectionPointQueryItem> AutoLoad;
+
+<RadzenSplitButton Text=@GetText()
+                   ButtonStyle="ButtonStyle.Light" 
+                    Click="@pen_Click"
+    >
+    <ChildContent>
+        <RadzenCard Style="width: 1000px">
+            <RadzenRow>
+                <RadzenText TextStyle="TextStyle.Overline" Text="Cod. Fermata" />
+                <RadzenTextBox MaxLength="20" Value=@Id Style="width: 200px" Change=@OnChange  />
+            </RadzenRow>
+            <RadzenRow >
+				<RadzenDataGrid @ref="@grdData"
+								FilterMode="FilterMode.Simple"
+								IsLoading=@AutoLoad.isLoading
+								Count="@AutoLoad.RowCount"
+								LoadData="@LoadData"
+								Data="@this.AutoLoad.Data"
+								TItem="CollectionPointQueryItem"
+								AllowFiltering="true"
+								AllowColumnResize="true"
+								AllowSorting="true"
+								LogicalFilterOperator="LogicalFilterOperator.And"
+								Style="height:600px; width: 980px"
+								AllowPaging="true"
+								PagerHorizontalAlign="HorizontalAlign.Left"
+								ShowPagingSummary="true"
+								Density=@Settings.Density
+								SelectionMode="DataGridSelectionMode.Single"
+								ValueChanged="@SelectionChanged"
+								PageSize=@(Settings?.PageSize ?? 5)>
+					<HeaderTemplate>
+						<RadzenStack Orientation="Orientation.Horizontal">
+							<RadzenTextBox @bind-Value=@this.AutoLoad.FullTextSearch Placeholder="Cerca..." Style="width: 200px" Change="@FullText_OnChange" Class="w-100" />
+							<RadzenButton ButtonStyle="ButtonStyle.Success"
+										  IsBusy=@AutoLoad.isLoading
+										  Icon="refresh"
+										  Click="@(()=>ReloadData())" />
+						</RadzenStack>
+					</HeaderTemplate>
+					<EmptyTemplate>
+						<p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessuna fermata trovata !</p>
+					</EmptyTemplate>
+					<Columns>
+						<RadzenDataGridColumn TItem="CollectionPointQueryItem" Property="Id" Title="cod. nodo" Width="100px" />
+
+						<RadzenDataGridColumn TItem="CollectionPointQueryItem" Property="Description" Title="Descrizione" Width="250px" />
+						<RadzenDataGridColumn TItem="CollectionPointQueryItem" Property="Address" Title="Indirizzo" Width="250px" />
+						<RadzenDataGridColumn TItem="CollectionPointQueryItem" Property="City" Title="Comune" Width="250px" />
+						<RadzenDataGridColumn TItem="CollectionPointQueryItem" Property="ZipCode" Title="CAP" Width="120px" />
+
+						<RadzenDataGridColumn TItem="CollectionPointQueryItem" Property="CollectionPointType" Title="Tipo punto" Width="120px" />
+					</Columns>
+				</RadzenDataGrid>
+            </RadzenRow>
+        </RadzenCard>
+    </ChildContent>
+</RadzenSplitButton>
+
+@code {
+	RadzenDataGrid<CollectionPointQueryItem>? grdData;
+
+	[CascadingParameter]
+	CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+	[Parameter]
+	public string? Id { get; set; }
+	[Parameter]
+	public EventCallback<string?> IdChanged { get; set; }
+
+	private IList<CollectionPointQueryItem> SelectedRows = new List<CollectionPointQueryItem>();
+
+	private string GetText ()
+	{
+		return string.IsNullOrEmpty(this.Id) ? "<Nessuno>" : this.Id;
+	}
+
+	private async Task pen_Click ()
+	{
+		await this.OnChange(null);
+	}
+
+	private async Task OnChange (string text )
+	{
+		this.Id = text;
+		await this.IdChanged.InvokeAsync(this.Id);
+	}
+
+	protected override Task OnParametersSetAsync()
+	{
+		this.AutoLoad.FullTextSearch = string.Empty;
+		if (this.grdData != null)
+		{
+			foreach (var col in this.grdData.ColumnsCollection)
+			{
+				col.ClearFilters();
+			}
+		}
+
+		return base.OnParametersSetAsync();
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		AutoLoad.Initilize(
+			Constants.Endpoint_CollectionPoints
+			);
+
+		await Task.CompletedTask;
+	}
+
+	private async Task FullText_OnChange(string value)
+	{
+		await this.ReloadData();
+	}
+	private async Task ReloadData()
+	{
+		if (grdData != null)
+		{
+			await this.grdData.Reload();
+		}
+	}
+
+	private async Task SelectionChanged(IList<CollectionPointQueryItem> list)
+	{
+		await Task.CompletedTask;
+
+		this.SelectedRows = list;
+		var id = this.SelectedRows.FirstOrDefault()?.Id;
+		await this.OnChange(id);
+
+		this.StateHasChanged();
+	}
+	private async Task LoadData(LoadDataArgs args)
+	{
+		await this.AutoLoad.LoadData(args);
+		this.SelectedRows.Clear();
+		this.StateHasChanged();
+	}
+
+	private async Task CleanFilters()
+	{
+		this.AutoLoad.FullTextSearch = string.Empty;
+
+		if (this.grdData != null)
+		{
+			foreach (var col in this.grdData.ColumnsCollection)
+			{
+				col.ClearFilters();
+			}
+
+			await this.grdData.GoToPage(0);
+			await this.grdData.Reload();
+		}
+	}
+
+}

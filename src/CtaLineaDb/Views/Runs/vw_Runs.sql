@@ -69,7 +69,9 @@ SELECT  r.RunId,
 			WHEN r.Extra = 1 AND r.EndDate IS NOT  NULL AND r.EndDate < GETDATE() THEN 'Terminata'
 			WHEN r.StartDate IS NOT NULL AND r.StartDate > GETDATE()  THEN 'Non ancora attivata'
 			ELSE NULL
-		END) AS RunStatusDesvr
+		END) AS RunStatusDesvr,
+		mrf.ForfaitName,
+		mrf.ForfaitTrpe
 	FROM dbo.Runs r
 	INNER JOIN CTE_Variants v
 		ON R.RunId = v.RunId
@@ -89,4 +91,8 @@ SELECT  r.RunId,
 		ON r.RunId = rPath.RunId
 	LEFT JOIN dbo.vw_RunFirstTags tag
 		ON r.RunId = tag.RunId
+	LEFT JOIN dbo.MultiRunForfaitDetails mrfd
+		ON mrfd.RunId = r.RunId
+	LEFT JOIN dbo.MultiRunForfait mrf
+		ON mrf.ForfaitId = mrfd.ForfaitId
 	;

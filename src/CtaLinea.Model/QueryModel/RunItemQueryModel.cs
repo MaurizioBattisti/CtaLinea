@@ -128,7 +128,12 @@ namespace CtaLinea.Model.QueryModel
         public int RunStatus { get; set; }
         [ColumnDescription(Header = "Status")]
         [SqlField(FullText = true)]
-        public string? RunStatusDesvr { get; set; } 
+        public string? RunStatusDesvr { get; set; }
+
+        [ColumnDescription(Header = "Forfait")]
+        public string? ForfaitName { get; set; }
+        [ColumnDescription(Header = "Tipo Forfait")]
+        public string? ForfaitTrpe { get; set; }
 
         public void CopyFrom (RunItemQueryModel source)
 		{
@@ -182,6 +187,9 @@ namespace CtaLinea.Model.QueryModel
 			BgColor = source.BgColor;
 			Color = source.Color;
             RunStatus = source.RunStatus;
+
+            ForfaitName = source.ForfaitName;
+            ForfaitTrpe = source.ForfaitTrpe;
         }
     }
 }

@@ -5,6 +5,9 @@
     private QueryDefinition _QueryDef = new QueryDefinition();
 
     [Parameter]
+    public bool DisableCache { get; set; } = false;
+
+    [Parameter]
     public bool IsBusy { get; set; } = false;
     [Parameter]
     public EventCallback<bool> IsBusyChanged { get; set; }

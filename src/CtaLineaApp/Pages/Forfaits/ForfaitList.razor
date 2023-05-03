@@ -1,0 +1,26 @@
+﻿@page "/forfaits"
+
+
+@inherits EditorComponentBase
+@attribute [Authorize]
+
+<PageTitle>@Constants.App_Title - Forfait</PageTitle>
+
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Forfait" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<h1> Forfait </h1>
+
+
+@code {
+	[CascadingParameter]
+	CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+
+}

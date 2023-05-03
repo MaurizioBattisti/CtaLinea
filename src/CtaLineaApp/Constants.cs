@@ -89,9 +89,14 @@ namespace CtaLineaApp
         internal const string Endpoint_Contracts = "/api/contracts";
 		internal const string Endpoint_ContractsOperationalPeriods = Endpoint_Contracts+ "/periods";
         internal const string Endpoint_OneContract_Fmt = Endpoint_Contracts + "/{0}";
-        
-        // ditte
-        internal const string Endpoint_Associates = "/api/associates";
+
+        // forfaits
+        internal const string Endpoint_Forfaits = "/api/forfaits";
+		internal const string Endpoint_Forfait_Single_Fmt = Endpoint_Forfaits + "/{0}";
+		internal const string Endpoint_Forfait_SetRuns = Endpoint_Forfaits + "/setruns";
+
+		// ditte
+		internal const string Endpoint_Associates = "/api/associates";
         internal const string Endpoint_Cars = "/api/cars";
 
 		// punti di raccolta

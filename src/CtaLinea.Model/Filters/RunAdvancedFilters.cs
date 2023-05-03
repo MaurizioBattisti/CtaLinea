@@ -33,6 +33,9 @@ namespace CtaLinea.Model.Filters
         public DateTime? DateRef { get; set; }
         public IEnumerable<int>? TabIds { get; set; }
 
+        public string? CollectionPointId { get; set; } 
+        public int? ForfaitId { get; set; }
+
 
         #region Azzera tutti i filtri
         public void ClearAll ()
@@ -56,7 +59,10 @@ namespace CtaLinea.Model.Filters
             this.ActiveRun = null;
             this.DateRef = null;
             this.TabIds = null;
-    }
+
+            this.CollectionPointId = null;
+            this.ForfaitId = null;
+        }
         #endregion
 
         #region assegna i valori a null dove non hanno impatto
@@ -65,6 +71,7 @@ namespace CtaLinea.Model.Filters
             if (this.AssociateId == Guid.Empty) this.AssociateId = null;
             if (this.CarId == Guid.Empty) this.CarId = null;
             if (string.IsNullOrWhiteSpace(this.Node)) this.Node = null;
+            if (string.IsNullOrWhiteSpace(this.CollectionPointId)) this.CollectionPointId = null;
 
             if (string.IsNullOrWhiteSpace(this.Frequency)) this.Frequency = null;
             
@@ -101,6 +108,9 @@ namespace CtaLinea.Model.Filters
                 && this.ActiveRun == null
                 && this.DateRef == null
                 && this.TabIds == null
+
+                && this.CollectionPointId == null
+                && this.ForfaitId == null
                 );
 
             return hasImpact;

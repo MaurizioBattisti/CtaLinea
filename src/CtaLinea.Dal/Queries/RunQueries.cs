@@ -23,7 +23,7 @@ namespace ZzSoft.CtaLinea.Dal.Queries
         private const string RunItemListSql_AdvandedFilters = @"
  INNER JOIN dbo.tvf_Runs_AdvancedFilter(@AssociateId, @CarId, @MinSittings
 , @MaxSittings, @LineNumber, @RunNumber, @Node, @StartDate, @EndDate, @StartTime, @EndTime, @Frequency, @CalendarIds
-, @WeekDays, @InContract, @ActiveRun, @DateRef, @TabIds) a ON a.RunId = r.RunId";
+, @WeekDays, @InContract, @ActiveRun, @DateRef, @TabIds, @ForfaitId, @CollectionPointId) a ON a.RunId = r.RunId";
         private const string RunVariationList_Table = "[dbo].[vw_RunVariations] v";
 
         private CtaDbContext _context;
@@ -112,7 +112,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 
                     ContractId = advancedFilter.ContractId,
                     StartPeriod = advancedFilter.StartPeriod,
-                    EndPeriod = advancedFilter.EndPeriod
+                    EndPeriod = advancedFilter.EndPeriod,
+                    ForfaitId = advancedFilter.ForfaitId,
+                    CollectionPointId = advancedFilter.CollectionPointId
                 };
             }
 

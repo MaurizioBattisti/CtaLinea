@@ -107,6 +107,7 @@
 
     private async Task LoadData(Guid? associateId)
     {
+        _AssociateId = associateId;
         if (_AssociateId == null)
         {
             this.Data = null;

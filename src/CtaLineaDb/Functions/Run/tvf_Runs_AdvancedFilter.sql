@@ -29,7 +29,9 @@ CREATE FUNCTION [dbo].[tvf_Runs_AdvancedFilter]
 							-- 2	terminata
 							-- 3	non ancora avviata
 	@DateRef			Date = NULL,
-	@TabIds				VARCHAR(MAX) = NULL
+	@TabIds				VARCHAR(MAX) = NULL,
+	@ForfaitId			int NULL,
+	@CollectionPointId	varchar(20) NULL
 )
 RETURNS @Tbl TABLE
 (
@@ -105,6 +107,8 @@ BEGIN
 			ON r.RunId = d.RunId
 		LEFT JOIN @Tbl_WeekDays wd
 			ON d.WeekDay = wd.WeekDay
+		LEFT JOIN dbo.MultiRunForfaitDetails mrfd
+			ON r.RunId = mrfd.RunId
 
 		WHERE (@AssociateId IS NULL
 				OR rc.AssociateId = @AssociateId)
@@ -123,6 +127,8 @@ BEGIN
 				OR cp.Description LIKE '%' + @Node +  '%'
 				OR cp.Address LIKE '%' + @Node +  '%'
 				)
+			AND (@CollectionPointId IS NULL
+				OR n.CollectionPointId = @CollectionPointId)
 			AND (@StartDate IS NULL
 				OR d.Day>= @StartDate)
 			AND (@EndDate IS NULL
@@ -151,6 +157,8 @@ BEGIN
 				)
 			AND (@TabIds IS NULL
 				OR tag.TagId IS NOT NULL)
+			AND (@ForfaitId IS NULL
+				OR mrfd.ForfaitId = @ForfaitId)
 			;
 
 	RETURN

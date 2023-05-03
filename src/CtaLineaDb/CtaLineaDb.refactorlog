@@ -742,4 +742,32 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="EndTime" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="4950c3c4-5e33-4419-9d20-12a634b1bc98" ChangeDateTime="05/02/2023 08:05:45">
+    <Property Name="ElementName" Value="[dbo].[MultiRunForfait].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[MultiRunForfait]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ForfaitId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="31e3d27a-ea0c-4104-9102-869f34acd5f9" ChangeDateTime="05/02/2023 08:20:59">
+    <Property Name="ElementName" Value="[dbo].[MultiRunForfaitDetails].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[MultiRunForfaitDetails]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ForfaitId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ee27d8e7-4f71-42d0-b352-0a780950ad01" ChangeDateTime="05/02/2023 08:22:06">
+    <Property Name="ElementName" Value="[dbo].[FK_Run_Forfait]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[MultiRunForfaitDetails]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_Run_Forfaits]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="81ee3756-2e87-4faa-ac1a-7ece03b0d5c3" ChangeDateTime="05/02/2023 09:51:05">
+    <Property Name="ElementName" Value="[dbo].[MultiRunForfaitDetails].[IDX_Unique]" />
+    <Property Name="ElementType" Value="SqlIndex" />
+    <Property Name="ParentElementName" Value="[dbo].[MultiRunForfaitDetails]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IDS_MultiRunForfaitDetails_Unique]" />
+  </Operation>
 </Operations>

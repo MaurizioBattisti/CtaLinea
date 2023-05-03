@@ -51,14 +51,17 @@ namespace CtaLineaWebApi.Application.Commands.Runs
 			foreach (var row in IterateRows (text))
             {
 				var cols = row.Split("\t");
-				if (cols.Length != 7) continue;
+				if (cols.Length != 10) continue;
 
                 // recupera l'id della femrata
-                string id = cols[1].Trim();
+                string id = cols[2].Trim();
                 // recupera l'orario
-                if (TimeSpan.TryParse(cols[3].Replace(".", ":"), out TimeSpan hour) == true)
+                if (TimeSpan.TryParse(cols[4].Replace(".", ":"), out TimeSpan hour) == true)
                 {
-                    yield return new Tuple<string, TimeSpan>(id, hour);
+                    if (hour.Days < 1)
+                    { 
+                        yield return new Tuple<string, TimeSpan>(id, hour);
+                    }
                 }
             }
         }

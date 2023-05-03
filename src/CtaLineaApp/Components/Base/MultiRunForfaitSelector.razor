@@ -1,0 +1,128 @@
+﻿@inject IApplicationSettings AppSettings;
+
+<QueryLoader @ref=@ForfaitQueryLoader
+             TItem="ForfaitQueryItem"
+             Endpoint="@(Constants.Endpoint_Forfaits)"
+              DisableCache=true
+             Filter="@Filter"
+             @bind-Data=@Data
+             DataLoaded=@DataLoaded
+             @bind-IsBusy=@isLoading />
+
+<RadzenDropDownDataGrid Data=@Data
+                        TValue="ForfaitQueryItem"
+                        @bind-Value="CurrentItem"
+                        Culture=@AppSettings.CurrentCulture
+                        AllowVirtualization="true"
+                        AllowFiltering="true"
+                        AllowSorting="true"
+                        Density=@Settings.Density
+                        AllowClear="@AllowClear"
+                        IsLoading=@isLoading
+                        TextProperty="@nameof(ForfaitQueryItem.ForfaitName)"
+                        Change=@OnChange
+                        Class="w-100">
+    <EmptyTemplate>
+        <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun Forfait trovato !</p>
+    </EmptyTemplate>
+    <Columns>
+        <RadzenDropDownDataGridColumn Property="@nameof(ForfaitQueryItem.Id)" Title="Id" Visible=false />
+
+        <RadzenDropDownDataGridColumn Property="@nameof(ForfaitQueryItem.ForfaitName)" Title="Nome forfait" Width="200px" />
+        <RadzenDropDownDataGridColumn Property="@nameof(ForfaitQueryItem.ForfaitTrpeDescr)" Title="Tipo forfait" Width="200px" />
+        <RadzenDropDownDataGridColumn Property="@nameof(ForfaitQueryItem.Amount)" Title="Importo" Width="100px" FormatString="{0:C}" />
+        <RadzenDropDownDataGridColumn Property="@nameof(ForfaitQueryItem.RunCount)" Title="Nr Corse" Width="120px" />
+
+        <RadzenDropDownDataGridColumn Property="@nameof(ForfaitQueryItem.ContractName)" Title="Nome Appalto" Width="200px" />
+    </Columns>
+</RadzenDropDownDataGrid>
+
+@code {
+    private QueryLoader<ForfaitQueryItem>? ForfaitQueryLoader;
+
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+    private int? _ContractId;
+    [Parameter]
+    public int? ContractId
+    {
+        get { return _ContractId; }
+        set
+        {
+            if (value != _ContractId)
+            {
+                this.LoadData(value);
+            }
+        }
+    }
+    public int? _ForfaitId;
+    [Parameter]
+    public int? ForfaitId
+    {
+        get { return this._ForfaitId; }
+        set
+        {
+            _ForfaitId = value;
+            this.SelectItem(this._ForfaitId);
+        }
+    }
+    [Parameter]
+    public EventCallback<int?> ForfaitIdChanged { get; set; }
+    [Parameter]
+    public bool AllowClear { get; set; } = false;
+    [Parameter]
+    public EventCallback<object> Changed { get; set; }
+
+    IList<ForfaitQueryItem>? Data = null;
+    bool isLoading = false;
+    ForfaitQueryItem? CurrentItem = null;
+    private string? Filter { get; set; }
+
+    private async Task LoadData(int? contractId)
+    {
+        _ContractId = contractId;
+        if (_ContractId == null)
+        {
+            this.Filter = null;
+        }
+        else
+        {
+            this.Filter = string.Format("$eq(contractId,'{0}')", _ContractId.Value);
+        }
+        
+        if (this.ForfaitQueryLoader != null)
+        {
+            await this.ForfaitQueryLoader.LoadDataAsync(this.Filter);
+        }
+    }
+    private void SelectItem(int? forfaitId)
+    {
+        if (forfaitId != null
+            && this.Data != null)
+        {
+            this.CurrentItem = (from d in this.Data
+                                where d.Id == forfaitId
+                                select d)
+                        .SingleOrDefault();
+        }
+        else
+        {
+            this.CurrentItem = null;
+        }
+    }
+
+    private async Task DataLoaded()
+    {
+        this.SelectItem(this.ForfaitId);
+        this.StateHasChanged();
+        await Task.CompletedTask;
+    }
+
+    private async Task OnChange(object value)
+    {
+        this._ForfaitId = (value as ForfaitQueryItem)?.Id;
+        await ForfaitIdChanged.InvokeAsync(this.ForfaitId);
+        await Changed.InvokeAsync(this);
+    }
+}

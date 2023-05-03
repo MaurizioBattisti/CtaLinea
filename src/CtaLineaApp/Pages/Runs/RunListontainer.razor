@@ -234,7 +234,9 @@
 
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedCapacity" Title="Capienza richiesta" Width="150px" FilterValue=@Filter_RequestedCapacity />
 
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Km" Title="Km" Width="100px" FilterValue=@Filter_Km />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Km" Title="Km" Width="100px" FilterValue=@Filter_Km FormatString="{0:0.00}" />
+
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="@nameof(RunItemQueryModel.ForfaitName)" Title="Forfait" Width="150px" />
 
                 <!--
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="ContractRowNumber" Title="Riga Appalto" Width="100px" FilterValue=@Filter_ContractRowNumber Frozen=true>

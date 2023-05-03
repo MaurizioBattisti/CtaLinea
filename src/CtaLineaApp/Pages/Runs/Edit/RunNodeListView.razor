@@ -9,8 +9,10 @@
 	<RadzenDataGrid 
 		@ref=@NodeGrid
 		AllowFiltering="false" AllowPaging="false" AllowSorting="false"
+		AllowVirtualization=true
 		AllowColumnResize=true
 		Data="@this.GetNodes()"
+		Style="height: 500px"
 		TItem="RunNode">
 		<HeaderTemplate>
 			@if (ReadOnly == false)

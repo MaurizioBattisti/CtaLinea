@@ -50,7 +50,7 @@ namespace CtaLineaApp.Application.Services.Utility
             where TEntity : class
         {
 			// per default esegue l'esportazione in excel
-            await this.ExportExcel(title, items, columns, sheetTitle);
+            await this.ExportCsv(title, items, columns, sheetTitle);
         }
         public async Task ExportExcel<TEntity>(
             string title,
@@ -273,7 +273,7 @@ namespace CtaLineaApp.Application.Services.Utility
 
             // TODO: trovare un modo per far funzionare il colore
             /*
-            rowStyle.FillBackgroundColor = 55;
+            rowStyle.FillBackgroundColor = IndexedColors;
             rowStyle.FillPattern = FillPattern.SolidForeground;
             */
 

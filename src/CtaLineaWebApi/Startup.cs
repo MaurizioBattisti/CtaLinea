@@ -198,6 +198,7 @@ namespace CtaLineaWebApi
                 .AddScoped<ICostQueries, CostQueries> ()
                 .AddScoped<IUtilityQueries, UtilityQueries> ()
                 .AddScoped<ICalendarRepository, CalendarRepository>()
+                .AddScoped<IForfaitQueries, ForfaitQueries> ()
                 ;
 
             // repository 
@@ -207,6 +208,7 @@ namespace CtaLineaWebApi
                 .AddScoped<ITagRepository, TagRepository>()
                 .AddScoped<IContractRepository, ContractRepository>()
                 .AddScoped<IUtilityREpository, UtilityREpository>()
+                .AddScoped<IForfaitRepository, ForfaitRepository>()
 
                 // altri servizi del DAL
                 .AddScoped<INodeMatchService, NodeMatchService>()
