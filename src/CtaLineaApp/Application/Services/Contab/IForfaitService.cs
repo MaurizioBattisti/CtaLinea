@@ -7,7 +7,7 @@ namespace CtaLineaApp.Application.Services.Contab
     {
         Task<ForfaitQueryItem?> GetOneAsync(int id);
         Task DeleteOneAsync(int forfaitOd);
-        Task<int> InsertOneAsync(MultiRunForfait model);
+        Task<int?> InsertOneAsync(MultiRunForfait model);
         Task SetDetails(int? forfait, IEnumerable<Guid>? runIds);
         Task UpdateOneAsync(int forfaitOd, MultiRunForfait model);
     }

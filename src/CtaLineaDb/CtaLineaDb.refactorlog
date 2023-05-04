@@ -770,4 +770,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[IDS_MultiRunForfaitDetails_Unique]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="8ee1cbec-e69e-4a8c-ad20-1329751137bb" ChangeDateTime="05/04/2023 08:13:13">
+    <Property Name="ElementName" Value="[dbo].[MultiRunForfait].[ForfaitTrpe]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[MultiRunForfait]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ForfaitType]" />
+  </Operation>
 </Operations>

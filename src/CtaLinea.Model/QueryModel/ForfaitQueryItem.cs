@@ -24,7 +24,7 @@ namespace CtaLinea.Model.QueryModel
         public string ForfaitName { get; set; } = string.Empty;
 
         [ColumnDescription(Header = "Tipo Forfait")]
-        public string ForfaitTrpe { get; set; } = string.Empty;
+        public string ForfaitType { get; set; } = string.Empty;
         [ColumnDescription(Header = "Descr. Tipo Forfait")]
         [SqlField(FullText = true)]
         public string ForfaitTrpeDescr { get; set; }= string.Empty;
@@ -41,7 +41,7 @@ namespace CtaLinea.Model.QueryModel
             this.ContractId = item.ContractId;
             this.ContractName = item.ContractName;
             this.ForfaitName = item.ForfaitName;
-            this.ForfaitTrpe = item.ForfaitTrpe;
+            this.ForfaitType = item.ForfaitType;
             this.ForfaitTrpeDescr = item.ForfaitTrpeDescr;
             this.Amount = item.Amount;
             this.RunCount = item.RunCount;

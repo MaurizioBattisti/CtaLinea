@@ -86,7 +86,7 @@
         </RadzenDataGridColumn>
         <RadzenDataGridColumn TItem="ForfaitQueryItem" Property="@(nameof(ForfaitQueryItem.ForfaitTrpeDescr))" Title="Tipo forfait" Width="180px">
             <EditTemplate Context="data">
-                <RadzenDropDown @bind-Value="data.ForfaitTrpe" Data=@ForfaitTypes TextProperty="Item2" ValueProperty="Item1" TValue="string" Class="w-100" />
+                <RadzenDropDown @bind-Value="data.ForfaitType" Data=@ForfaitTypes TextProperty="Item2" ValueProperty="Item1" TValue="string" Class="w-100" />
             </EditTemplate>
         </RadzenDataGridColumn>
 
@@ -215,7 +215,7 @@
             ForfaitId = item.Id,
             ContractId = this.ContractId ?? 0,
             ForfaitName = item.ForfaitName,
-            ForfaitTrpe = item.ForfaitTrpe,
+            ForfaitType = item.ForfaitType,
             Amount = item.Amount
         };
     }
@@ -241,6 +241,8 @@
         DataToUpdate = null;
     }
 
+    private ForfaitQueryItem? _dummyRow;
+    private Timer _timer;
     private async Task AddLine_Click()
     {
         if (await this.CanProcedeAsync() == false) return;
@@ -248,16 +250,48 @@
         DataToInsert = new ForfaitQueryItem()
         {
             ForfaitName = "nuovo Forfait",
-            ForfaitTrpe = "D",
+            ForfaitType = "D",
             ContractId = this.GlobalFilters?.Contract?.Id ?? 0,
             Amount = 0
         };
         this.ContractId = this.GlobalFilters?.Contract?.Id;
 
+        this._dummyRow = null;
         if (this.grdData != null)
         {
+            if (Data.Count() == 0)
+            {
+                this._dummyRow = new ForfaitQueryItem();
+                this.Data.Add(_dummyRow);
+                await this.grdData.Reload();
+                _timer = new Timer(ForfaitList.Tick, this, 10, 0); ;
+
+                return;
+            }
+
             this.SetDirty();
             await grdData.InsertRow(DataToInsert);
+        }
+    }
+    // ATTENZIONE questa funzione è statica 
+    // Questo giochino viene fatto perchè la grid ha dei problemi a fare l'addnew inline se la  grid è vuota
+    private static void Tick (object? stateInfo)
+    {
+        var self = stateInfo as ForfaitList;
+        if (self.grdData != null)
+        {
+            self.SetDirty();
+            self.grdData.InsertRow(self.DataToInsert);
+        }
+        self._timer.Dispose();
+        self._timer = null;
+    }
+    private void CleanDummy()
+    {
+        if (this._dummyRow != null)
+        {
+            this.Data.Remove(this._dummyRow);
+            this._dummyRow = null;
         }
     }
 
@@ -311,6 +345,7 @@
                     NotificationSeverity.Success,
                     "Salvataggio OK"
                 );
+                this.CleanDummy();
             }
 
         }
@@ -347,6 +382,7 @@
     }
     private async Task CancelEdit_Click(ForfaitQueryItem data)
     {
+        this.CleanDummy();
         await Task.CompletedTask;
 
         if (data == DataToInsert)

@@ -135,7 +135,7 @@ namespace CtaLinea.Model.QueryModel
         [ColumnDescription(Header = "Forfait")]
         public string? ForfaitName { get; set; }
         [ColumnDescription(Header = "Tipo Forfait")]
-        public string? ForfaitTrpe { get; set; }
+        public string? ForfaitType { get; set; }
 
         public void CopyFrom (RunItemQueryModel source)
 		{
@@ -191,7 +191,7 @@ namespace CtaLinea.Model.QueryModel
             RunStatus = source.RunStatus;
 
             ForfaitName = source.ForfaitName;
-            ForfaitTrpe = source.ForfaitTrpe;
+            ForfaitType = source.ForfaitType;
         }
     }
 }

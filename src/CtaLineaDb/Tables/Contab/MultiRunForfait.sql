@@ -7,11 +7,11 @@
     -- D -> giornaliero
     -- M -> Mensile
     -- Y -> Annuale
-    [ForfaitTrpe] CHAR(1) NOT NULL DEFAULT 'D', 
+    [ForfaitType] CHAR(1) NOT NULL DEFAULT 'D', 
     [Amount] MONEY NOT NULL DEFAULT 0, 
     
     CONSTRAINT [chk_MultiRunForfaitTypes] 
-        CHECK ([ForfaitTrpe] IN ('D', 'M', 'Y')), 
+        CHECK ([ForfaitType] IN ('D', 'M', 'Y')), 
 
     CONSTRAINT [FK_Contract_MultiRunForfaits] 
         FOREIGN KEY ([ContractId]) 

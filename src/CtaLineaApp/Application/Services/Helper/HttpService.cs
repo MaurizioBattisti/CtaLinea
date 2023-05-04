@@ -1,19 +1,12 @@
 ﻿using CtaLineaApp.Application.Model.Account;
 using CtaLineaApp.Application.Model.Utility;
-using CtaLineaApp.Application.Services.Helper;
 using CtaLineaApp.Helpers;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace CtaLineaApp.Application.Services.Helper
 {

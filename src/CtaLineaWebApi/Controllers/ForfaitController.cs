@@ -77,23 +77,19 @@ namespace CtaLineaWebApi.Controllers
 
 		[SwaggerOperation("Crea un nuovo forfait multi corsa")]
 		[Consumes(MediaTypeNames.Application.Json)]
-		[ProducesResponseType(StatusCodes.Status201Created, 
-            Type= typeof(int))]
+		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[HttpPost]
-		[Route("{id}")]
-		public async Task<IActionResult> AddNewAsync (
+		public async Task<ActionResult<int>> AddNewAsync (
             [FromBody] MultiRunForfait model)
         {
             var request = new InsertForfaitRequest()
             {
                 Model = model
             };
-            var id = this._mediator.Send(request)
+            var id = await  this._mediator.Send(request)
                 .ConfigureAwait (false);
-			string url = string.Format("api/forfaits/{0}", id);
-
-            return this.Created(url, id);
+            return this.Ok(id);
         }
 
 		[SwaggerOperation("modifica i dati di un nuovo forfait multi corsa")]

@@ -16,14 +16,14 @@ namespace CtaLinea.Model.Contab
         public int ForfaitId { get; set; }
         public int ContractId { get; set; }
         public string ForfaitName { get; set; } = string.Empty;
-        public string ForfaitTrpe { get; set; } = string.Empty;
+        public string ForfaitType { get; set; } = string.Empty;
         #region forfait type as enumeration
         public ForfaitTrpeEnum ForfaitType2 
         {
             get
             {
                 ForfaitTrpeEnum result = ForfaitTrpeEnum.Daily;
-                switch (this.ForfaitTrpe)
+                switch (this.ForfaitType)
                 {
                     case ForfaitTYpe_Day:
                         result = ForfaitTrpeEnum.Daily;
@@ -42,16 +42,16 @@ namespace CtaLinea.Model.Contab
                 switch (value)
                 {
                     case ForfaitTrpeEnum.Daily:
-                        this.ForfaitTrpe = ForfaitTYpe_Day;
+                        this.ForfaitType = ForfaitTYpe_Day;
                         break;
                     case ForfaitTrpeEnum.Monthly:
-                        this.ForfaitTrpe = ForfaitTYpe_Month;
+                        this.ForfaitType = ForfaitTYpe_Month;
                         break;
                     case ForfaitTrpeEnum.Yearly:
-                        this.ForfaitTrpe = ForfaitTYpe_Year;
+                        this.ForfaitType = ForfaitTYpe_Year;
                         break;
                     default:
-                        this.ForfaitTrpe = ForfaitTYpe_Day;
+                        this.ForfaitType = ForfaitTYpe_Day;
                         break;
                 }
             }
@@ -59,8 +59,6 @@ namespace CtaLinea.Model.Contab
         #endregion
 
         public decimal Amount { get; set; }
-
-        public IEnumerable<Guid>? RunIds { get; set; }
     }
 
     public enum ForfaitTrpeEnum

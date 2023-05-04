@@ -16,8 +16,8 @@ SELECT f.ForfaitId,
 		f.ContractId,
 
 		f.ForfaitName,
-		f.ForfaitTrpe,
-		CASE f.ForfaitTrpe
+		f.[ForfaitType],
+		CASE f.[ForfaitType]
 			WHEN 'D' THEN 'Giornaliero'
 			WHEN 'M' THEN 'Mensile'
 			WHEN 'Y' THEN 'Annuale'

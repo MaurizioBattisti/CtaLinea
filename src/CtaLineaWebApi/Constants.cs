@@ -13,6 +13,7 @@ namespace CtaLineaWebApi
         // configuration section
         internal const string ConfigSection_IdentityServer = "IdentityServer";
         internal const string ConfigSection_CtaLineaDb = "CtaLineaDb";
+        internal const string Configuration_MailSender = "MailSender";
 
         // claims type
 
@@ -26,5 +27,6 @@ namespace CtaLineaWebApi
         internal const string Activity_ReloadScheduler = "reloadscheduler";
         internal const string Activity_RecalcRunDays = "calcdays";
 		internal const string Activity_CleanLog = "cleanlog";
-	}
+        internal const string Activity_SendMail = "sendmail";
+    }
 }

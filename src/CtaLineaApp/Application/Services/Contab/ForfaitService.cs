@@ -25,7 +25,7 @@ namespace CtaLineaApp.Application.Services.Contab
             return data;
         }
 
-        public async Task<int> InsertOneAsync(MultiRunForfait model)
+        public async Task<int?> InsertOneAsync(MultiRunForfait model)
         {
             return await this._http.Post<int, CheckResult>(Constants.Endpoint_Forfaits, model);
         }

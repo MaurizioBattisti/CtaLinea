@@ -20,6 +20,7 @@ using CtaLinea.Model.ModelServices;
 using CtaLineaWebApi.Application.Services;
 using ZzSoft.CtaLinea.Dal.Services;
 using CtaLineaWebApi.Application.Scheduler;
+using NPOI.OpenXml4Net.OPC;
 
 namespace CtaLineaWebApi
 {
@@ -51,10 +52,15 @@ namespace CtaLineaWebApi
                 );
             });
 
+            var emailConfig = Configuration
+                .GetSection(Constants.Configuration_MailSender)
+                .Get<EmailConfiguration>();
+            services.AddSingleton(emailConfig);
             /*
             services.AddMvcCore()
                 .AddApiExplorer();
              */
+
             /*
             var oidcConfig = new IdentityServerConfiguration();
             this.Configuration.GetSection(Constants.ConfigSection_IdentityServer)
@@ -107,6 +113,10 @@ namespace CtaLineaWebApi
             // servizio di interazione con lo scheduler di attivi5tà
             services.AddScoped<ISchedulerService, SchedulerService>()
                 .AddScoped<ISchedulerTaskLogger, SchedulerTaskLogger>()
+                ;
+
+            // servizio di invio mail
+            services.AddScoped<IMailSender, MailSender>()
                 ;
 
             // per ultimo aggiunge lo scheduler

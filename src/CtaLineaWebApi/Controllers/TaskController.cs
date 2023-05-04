@@ -164,5 +164,45 @@ namespace CtaLineaWebApi.Controllers
 			await _scheduler.EndActivityAsycn(Constants.Activity_CleanLog, id);
 			return this.NoContent();
 		}
-	}
+
+        [SwaggerOperation("Invia mail con le attività della setimana ")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPost]
+        [Route(Constants.Activity_SendMail + "/{id}")]
+        public async Task<IActionResult> SendActivityMAilAsync(
+            [FromRoute] int id,
+            [FromQuery] int? timeout,
+            [FromBody] WeekActivityMailSendRequest taskRequest)
+        {
+            _schedulerLogger.TaskId = id;
+            await _scheduler.StartActivityAsync(Constants.Activity_SendMail, id);
+
+            var request = new SendMAilForWeekActivityRequest()
+            {
+                Timeout = timeout ?? 100,
+
+                ForseDestination = taskRequest.ForseDestination,
+                AssociateId = taskRequest.AssociateId,
+                ReferenceDate = taskRequest.ReferenceDate
+            };
+
+            try
+            {
+                var result = await this._mediator.Send(request)
+                    .ConfigureAwait(false);
+                if (result == false)
+                {
+                    return this.BadRequest("Operazione fallita senza messaggio");
+                }
+            }
+            catch (Exception ex)
+            {
+                return this.BadRequest(ex);
+            }
+
+            await _scheduler.EndActivityAsycn(Constants.Activity_SendMail, id);
+            return this.NoContent();
+        }
+
+    }
 }

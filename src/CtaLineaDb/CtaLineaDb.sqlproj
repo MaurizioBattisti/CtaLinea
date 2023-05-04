@@ -157,5 +157,6 @@
     <Build Include="Tables\Contab\MultiRunForfait.sql" />
     <Build Include="Tables\Contab\MultiRunForfaitDetails.sql" />
     <Build Include="Views\Contab\vw_MultiRunForfaits.sql" />
+    <Build Include="StoredProc\Utility\up_AssociateActivityWeeksForMail.sql" />
   </ItemGroup>
 </Project>

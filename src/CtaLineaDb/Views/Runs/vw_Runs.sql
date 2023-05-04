@@ -72,7 +72,7 @@ SELECT  r.RunId,
 		END) AS RunStatusDesvr,
 		mrf.ForfaitId,
 		mrf.ForfaitName,
-		mrf.ForfaitTrpe
+		mrf.[ForfaitType]
 	FROM dbo.Runs r
 	INNER JOIN CTE_Variants v
 		ON R.RunId = v.RunId

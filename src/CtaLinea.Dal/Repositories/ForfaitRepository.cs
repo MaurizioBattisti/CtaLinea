@@ -221,7 +221,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 			{
 				model.ContractId,
 				model.ForfaitName,
-				model.ForfaitTrpe,
+				model.ForfaitType,
 				model.Amount
 			};
 		}
