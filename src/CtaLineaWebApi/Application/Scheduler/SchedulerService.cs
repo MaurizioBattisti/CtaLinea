@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using CtaLinea.Model.ScheduledTasks;
+using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -26,7 +27,43 @@ namespace CtaLineaWebApi.Application.Scheduler
 			_logger = logger;
 		}
 
-		public async Task StartActivityAsync(string activityId, int id)
+		public IEnumerable<ScheduledTaskItem> GetCurrentSchedulerTasks ()
+		{
+			return _scheduler.GetActualScheduledTasks();
+        }
+
+		public async Task<IEnumerable<SchedulerTaskLogItem>> GetTaskLogAsync (
+			int id)
+		{
+			var sql = "SELECT l.* FROM [dbo].[SchedulerTaskLog] l WHERE l.TaskId = @TaskId";
+            // salva i dati nel db
+            using var conn = _context.GetNewConnection();
+            conn.Open();
+            return await conn.QueryAsync< SchedulerTaskLogItem>(
+                sql,
+                new
+                {
+                    TaskId = id,
+                });
+        }
+		public async Task CleanTaskLogAsync (
+			int id,
+			DateTime? refDate = null)
+		{
+            if (refDate == null) refDate = DateTime.Now;
+
+            using var conn = _context.GetNewConnection();
+            conn.Open();
+            await conn.ExecuteAsync(
+                "DELETE [dbo].[SchedulerTaskLog] WHERE TaskId = @TaskId AND Time <= @RefDAte",
+                new
+                {
+                    TaskId = id,
+                    RefDate = refDate
+                });
+        }
+
+        public async Task StartActivityAsync(string activityId, int id)
 		{
 			var dt = DateTime.Now;
 			// salva i dati nel db

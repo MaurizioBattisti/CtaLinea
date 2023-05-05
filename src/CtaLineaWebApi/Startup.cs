@@ -219,6 +219,7 @@ namespace CtaLineaWebApi
                 .AddScoped<IContractRepository, ContractRepository>()
                 .AddScoped<IUtilityREpository, UtilityREpository>()
                 .AddScoped<IForfaitRepository, ForfaitRepository>()
+                .AddScoped<ISchedulerTaskRepository, SchedulerTaskRepository> ()
 
                 // altri servizi del DAL
                 .AddScoped<INodeMatchService, NodeMatchService>()
@@ -228,6 +229,7 @@ namespace CtaLineaWebApi
             services.AddScoped<IRunChecker, RunChecker>()
                 .AddScoped<ICompleteRunCheckerService, CompleteRunCheckerService>()
                 .AddScoped<IContractChecker, ContractChecker> ()
+                .AddScoped<ISchedulerTaskChecker, SchedulerTaskChecker>()
                 ;
 
             return services;

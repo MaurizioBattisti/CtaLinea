@@ -28,7 +28,6 @@ namespace CtaLineaWebApi.Controllers
 		private readonly ISchedulerTaskLogger _schedulerLogger;
 		private readonly ILogger _logger;
 
-
 		public TaskController(
 			ISender mediator,
 			ISchedulerService scheduler,
@@ -39,22 +38,6 @@ namespace CtaLineaWebApi.Controllers
 			_schedulerLogger = schedulerLogger;
 			_mediator = mediator;
 			_logger = logger;
-		}
-
-		[SwaggerOperation("restituisce l'elenco di attività possibili")]
-		[ProducesResponseType(StatusCodes.Status200OK, 
-			Type = typeof(IEnumerable<string>))]
-		[HttpGet]
-		public async Task<IActionResult> GetTaskListAsync()
-		{
-			await Task.CompletedTask;
-
-			var result = new List<string>()
-			{
-				Constants.Activity_ReloadScheduler
-			};
-
-			return this.Ok(result);
 		}
 
 		[SwaggerOperation("ricarica lo scheduler")]

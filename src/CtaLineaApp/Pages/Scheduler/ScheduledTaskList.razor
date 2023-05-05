@@ -1,0 +1,493 @@
+﻿@page "/scheduledtasks"
+@inject IExcelExporterService ExcelService
+
+@inject IContractService Repo;
+@inject IContractChecker Checker
+@inject ContextMenuService ContextMenuService
+@inject IQueryUtilityService QueryService
+@inject DialogService DialogService
+@inject NotificationService notificationService
+@inherits EditorComponentBase
+@attribute [Authorize]
+
+<PageTitle>@Constants.App_Title - Gestione attività</PageTitle>
+
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Gestione attività" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<RadzenDataGrid @ref="@grdData"
+                FilterMode="FilterMode.Simple"
+                IsLoading=@IsLoading
+                Data="@this.Data" TItem="ContractQueryItem"
+                AllowSorting="true"
+                AllowFiltering="true"
+                AllowColumnResize="true"
+                LogicalFilterOperator="LogicalFilterOperator.And"
+                AllowVirtualization=true
+                VirtualizationOverscanCount="10"
+                Style="height:100%"
+                EditMode="DataGridEditMode.Single"
+                RowUpdate="@OnUpdateRow"
+                RowCreate="@OnCreateRow"
+                Sort="@Reset"
+                Page="@Reset"
+                Filter="@Reset"
+                Density=@Settings.Density>
+    <HeaderTemplate>
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="4px">
+            <RadzenSplitButton 
+                    ButtonStyle="ButtonStyle.Dark"
+                    Icon="file_download" Click=@DownloadData_Click >
+                <ChildContent>
+                    <RadzenSplitButtonItem Text="Excel" Value="X" Icon="grid_on" />
+                    <RadzenSplitButtonItem Text="CSV" Value="C" Icon="wrap_text" />
+                </ChildContent>
+            </RadzenSplitButton>
+
+            <RadzenButton ButtonStyle="ButtonStyle.Light"
+                            IsBusy=@IsLoading
+                            Icon="filter_alt_off"
+                            Click="@ClearFilters_Click" />
+            <RadzenTextBox @bind-Value=@this.FullTextSearch Placeholder="Cerca..." Change=@FullText_OnChange Style="width: 200px" Class="w-100" />
+            <RadzenButton ButtonStyle="ButtonStyle.Success"
+                            IsBusy=@IsLoading
+                            Icon="refresh"
+                            Click="@ReloadData" />
+
+            <RadzenButton ButtonStyle="ButtonStyle.Primary"
+                            Icon="domain_add"
+                            Click="@AddLine_Click" />
+        </RadzenStack>
+    </HeaderTemplate>
+    <EmptyTemplate>
+        <RadzenCard Visible=@(!IsLoading)>
+            <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun Appalto trovato !</p>
+        </RadzenCard>
+    </EmptyTemplate>
+    <Columns>
+        <RadzenDataGridColumn TItem="ContractQueryItem" Property="@(nameof(ContractQueryItem.Id))" Title="Id" Visible=false />
+        <RadzenDataGridColumn TItem="ContractQueryItem" Property="@(nameof(ContractQueryItem.ContractName))" Title="Nome" Width="300px" >
+            <EditTemplate Context="data">
+                <RadzenTextBox @bind-Value="@data.ContractName" MaxLength="200" class="w-100" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="ContractQueryItem" Property="@(nameof(ContractQueryItem.ContractDescription))" Title="Descrizione" Width="300px" >
+            <EditTemplate Context="data">
+                <RadzenTextBox @bind-Value="@data.ContractDescription" class="w-100" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="ContractQueryItem" Property="@(nameof(ContractQueryItem.StartDate))" Title="Inizio" FormatString="{0:dd/MM/yyyy}" Width="180px" >
+            <EditTemplate Context="data">
+                <DateSelectorNotNull @bind-Value="@data.StartDate" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="ContractQueryItem" Property="@(nameof(ContractQueryItem.EndDate))" Title="Fine" FormatString="{0:dd/MM/yyyy}" Width="180px" >
+            <EditTemplate Context="data">
+                <DateSelectorNotNull @bind-Value="@data.EndDate" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+
+        <RadzenDataGridColumn TItem="ContractQueryItem" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="90px">
+            <Template Context="data">
+                <RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
+                              Icon="edit"
+                              Size="ButtonSize.Medium"
+                              Click=@(() => EditRow_Click(data)) Text="" />
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
+                              Icon="delete"
+                              Size="ButtonSize.Medium"
+                              Click=@(() => DeleteRow_Click(data)) Text="" />
+            </Template>
+            <EditTemplate Context="data">
+                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@((args) => SaveRow_Click(data))">
+                </RadzenButton>
+                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@((args) => CancelEdit_Click(data))">
+                </RadzenButton>
+            </EditTemplate>
+        </RadzenDataGridColumn>
+
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+    RadzenDataGrid<ContractQueryItem>? grdData;
+    private bool IsLoading = false;
+    private IList<ContractQueryItem> Data = new List<ContractQueryItem>();
+    private string? FullTextSearch { get; set; } = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataASync();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task LoadDataASync()
+    {
+        if (await this.CanProcedeAsync() == false) return;
+
+        var queryDef = new QueryDefinition();
+        queryDef.EndPoint = Constants.Endpoint_Contracts;
+
+        this.IsLoading = true;
+        queryDef.FullText = this.FullTextSearch; ;
+
+        queryDef.Page = 1;
+        queryDef.PageSize = 100000;
+        queryDef.Count = false;
+        try
+        {
+            var result = await QueryService.GetListAsync<ContractQueryItem>(
+                queryDef);
+
+            if (result != null)
+            {
+                Data = result.Items.ToList();
+            }
+        }
+        finally
+        {
+            this.IsLoading = false;
+        }
+    }
+
+    private async Task FullText_OnChange(string value)
+    {
+        await this.LoadDataASync();
+    }
+    private async Task ReloadData()
+    {
+        await this.LoadDataASync();
+        // this.grdData?.Reload();
+    }
+
+    private async Task<bool> CanProcedeAsync ()
+    {
+        if (this.IsClean == false)
+        {
+            var result = await this.AskForExitAsync();
+            if (result == true)
+            {
+                this.IsClean = true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    private ContractQueryItem? DataToInsert;
+    private ContractQueryItem? DataToUpdate;
+
+    private Contract GetContractFromQueryItem (ContractQueryItem item)
+    {
+        return new Contract()
+        {
+            ContractId = item.Id,
+            ContractName = item.ContractName,
+            ContractDescription = item.ContractDescription,
+            StartDate = item.StartDate,
+            EndDate = item.EndDate
+        };
+    }
+
+    private async Task<bool> CheckCostAsync(Contract contr)
+    {
+        bool result = true;
+        var checkResult = await this.Checker.CheckContractAsync(contr);
+        if (checkResult.Status  == CheckStatus.Failed)
+        {
+
+            result = false;
+            await this.DialogService.Alert(checkResult?.ToString() ?? "sconosciuto"
+            , checkResult?.Title);
+        }
+
+        return await Task.FromResult(result);
+    }
+
+    private void Reset()
+    {
+        DataToInsert = null;
+        DataToUpdate = null;
+    }
+
+    private ContractQueryItem? _dummyRow;
+    private Timer _timer;
+    private async Task AddLine_Click()
+    {
+        if (await this.CanProcedeAsync() == false) return;
+
+        DataToInsert = new ContractQueryItem()
+        {
+            ContractName = "nuovo appalto",
+            StartDate = new DateTime(DateTime.Today.Year, 9, 1),
+            EndDate = new DateTime(DateTime.Today.Year + 3, 8, 31)
+        };
+
+        this._dummyRow = null;
+        if (this.grdData != null)
+        {
+            if (Data.Count() == 0)
+            {
+                this._dummyRow = new ContractQueryItem();
+                this.Data.Add(_dummyRow);
+                await this.grdData.Reload();
+                _timer = new Timer(ScheduledTaskList.Tick, this, 10, 0); ;
+
+                return;
+            }
+
+            this.SetDirty();
+            await grdData.InsertRow(DataToInsert);
+        }
+    }
+    // ATTENZIONE questa funzione è statica 
+    // Questo giochino viene fatto perchè la grid ha dei problemi a fare l'addnew inline se la  grid è vuota
+    private static void Tick(object? stateInfo)
+    {
+        var self = stateInfo as ScheduledTaskList;
+        if (self.grdData != null)
+        {
+            self.SetDirty();
+            self.grdData.InsertRow(self.DataToInsert);
+        }
+        self._timer.Dispose();
+        self._timer = null;
+    }
+    private void CleanDummy()
+    {
+        if (this._dummyRow != null)
+        {
+            this.Data.Remove(this._dummyRow);
+            this._dummyRow = null;
+        }
+    }
+
+    async Task EditRow_Click(ContractQueryItem data)
+    {
+        if (await this.CanProcedeAsync() == false) return;
+
+        var item = new ContractQueryItem();
+        item.CopyFrom(data);
+        DataToUpdate = item;
+
+        if (grdData != null)
+        {
+            this.SetDirty();
+            await grdData.EditRow(data);
+        }
+    }
+
+    private async Task SaveRow_Click(ContractQueryItem data)
+    {
+        var contract = this.GetContractFromQueryItem(data);
+
+        // controla i dati se ok procede
+        if (await this.CheckCostAsync(contract) != true) return;
+
+        try
+        {
+            this.IsLoading = true;
+            int? newId;
+            // tenta il salvatagio sul DB
+            if (data == this.DataToInsert)
+            {
+                newId = await this.Repo.InsertAsync(contract);
+            }
+            else
+            {
+                newId = await this.Repo.UpdateAsync(contract);
+            }
+            if (newId != null)
+            {
+                var newDAta = await this.Repo.GetOneAsync(newId.Value);
+
+                // aggiorna data con i valori ritornati dal dB
+                if (newDAta != null)
+                {
+                    data.CopyFrom(newDAta);
+                }
+                this.notificationService.Notify(
+                    NotificationSeverity.Success,
+                    "Salvataggio OK"
+                );
+                this.CleanDummy();
+            }
+
+        }
+        catch (BadRequestException<CheckResult> ex)
+        {
+            // se ci sono errorei mostra un messaggio ed esce
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Dati non corretti",
+                ex.Payload?.ToString() ?? "sconosciuto"
+            );
+
+            return;
+        }
+        catch (Exception ex)
+        {
+                this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Salvataggio Fallito !",
+                ex.Message
+            );
+            return;
+        }
+        finally
+        {
+            this.IsLoading = false;
+            this.StateHasChanged();
+        }
+
+        if (grdData != null)
+        {
+            await grdData.UpdateRow(data);
+        }
+    }
+    private async Task CancelEdit_Click(ContractQueryItem data)
+    {
+        this.CleanDummy();
+        await Task.CompletedTask;
+
+        if (data == DataToInsert)
+        {
+            DataToInsert = null;
+        }
+        else
+        {
+            if (DataToUpdate != null)
+            {
+                data.CopyFrom(DataToUpdate);
+            }
+        }
+        DataToUpdate = null;
+        this.IsClean = true;
+
+        grdData?.CancelEditRow(data);
+    }
+
+    private async Task DeleteRow_Click(ContractQueryItem data)
+    {
+        // TODO: chiede conferma per la cancelazione
+
+
+
+
+        try
+        {
+            this.IsLoading = true;
+            // tenta di canclelare il contratto
+            await this.Repo.DeleteAsync(data.Id);
+
+            // se tutto OK aggiorna la lista degli elementi e ricarica la griglia
+            this.Data.Remove(data);
+            if (grdData != null)
+            {
+                await grdData.Reload();
+            }
+        }
+        catch (Exception ex)
+        {
+            // se fallisce mostra un messaggio ed esce dalla funzione
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Eliminazione Fallita !",
+                ex.Message
+            );
+            return;
+        }
+        finally
+        {
+            this.IsLoading = false;
+            this.StateHasChanged();
+        }
+    }
+
+    private async Task OnUpdateRow(ContractQueryItem data)
+    {
+        await Task.CompletedTask;
+
+        // aggiorn i dati della lista
+        var item = (from d in this.Data
+                    where d.Id == data.Id
+                    select d).SingleOrDefault();
+        item?.CopyFrom(data);
+
+        this.IsClean = true;
+    }
+
+    private async Task OnCreateRow(ContractQueryItem data)
+    {
+        await Task.CompletedTask;
+
+        this.Data.Add(data);
+        this.IsClean = true;
+        DataToInsert = null;
+    }
+
+
+    private async Task DownloadData_Click(RadzenSplitButtonItem item)
+    {
+        this.IsLoading = true;
+        // var columninfo = this.grdData?.GetExportColumnInfo();
+        var columninfo = this.Data.GetExportColumnInfo();
+
+        try
+        {
+            string title = "Elenco Appalti";
+            if (item == null)
+            {
+                await this.ExcelService.Export(title, this.Data, columninfo);
+            }
+            else
+            {
+                switch (item.Value)
+                {
+                    case "X":
+                        await this.ExcelService.ExportExcel(title, this.Data, columninfo);
+                        break;
+                    case "C":
+                        await this.ExcelService.ExportCsv(title, this.Data, columninfo);
+                        break;
+                }
+            }
+            this.notificationService.Notify(NotificationSeverity.Info, "File pronto per il donwload");
+
+        }
+        finally
+        {
+            this.IsLoading = false;
+        }
+    }
+
+    private async Task ClearFilters_Click()
+    {
+        this.FullTextSearch = null;
+
+        if (this.grdData != null)
+        {
+            foreach (var col in this.grdData.ColumnsCollection)
+            {
+                col.ClearFilters();
+            }
+        }
+
+        // this.StateHasChanged();
+        await this.ReloadData();
+    }
+}

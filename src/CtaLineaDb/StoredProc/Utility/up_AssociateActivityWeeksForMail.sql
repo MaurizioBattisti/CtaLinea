@@ -45,7 +45,7 @@ bEGIN
 
 	WITH  CTE_DaysBase aS
 	(
-		SELECT d.RunId, d.RunVariationId, c.AssociateId, c.CarId, d.WeekDay, d.Day
+		SELECT DISTINCT d.RunId, d.RunVariationId, c.AssociateId, d.WeekDay, d.Day
 			FROM dbo.RunDays d
 			INNER JOIN dbo.RunCars rc
 				ON D.RunCarId = rc.RunCarId
@@ -57,15 +57,15 @@ bEGIN
 					OR c.AssociateId = @AssociateId)
 	), CTE_Curr AS
 	(
-		SELECT d.RunId, d.RunVariationId, d.ASsociateID, d.CArId , d.WeekDay, d.DAy
+		SELECT d.RunId, d.RunVariationId, d.ASsociateID, d.WeekDay, d.DAy
 			FROM CTE_DaysBase d
 			WHERE d.Day BETWEEN @Curr_Start AND @Curr_End
 	), CTE_Next AS
 	(
-		SELECT d.RunId, d.RunVariationId, d.ASsociateID, d.CArId , d.WeekDay, d.Day
+		SELECT d.RunId, d.RunVariationId, d.ASsociateID, d.WeekDay, d.Day
 			FROM CTE_DaysBase d
 			WHERE d.Day BETWEEN @Next_Start AND @NExt_End
-	) , CTGE_All AS
+	) , CTGE_ToNotify AS
 	(
 		SELECT c.*, 'OLD' AS Status
 			FROM CTE_Curr c
@@ -74,7 +74,6 @@ bEGIN
 				AND c.RunVariationId = n.RunVariationId
 				AND DATEADD(d, 7, c.Day) = n.Day
 				AND c.AssociateId = n.AssociateId
-				AND c.CarId = n.CarId
 				AND c.WeekDay = n.WeekDay
 			WHERE n.RunId IS NULL
 		UNION ALL
@@ -85,15 +84,30 @@ bEGIN
 				AND c.RunVariationId = n.RunVariationId
 				AND DATEADD(d, 7, c.Day) = n.Day
 				AND c.AssociateId = n.AssociateId
-				AND c.CarId = n.CarId
 				AND c.WeekDay = n.WeekDay
 			WHERE c.RunId IS NULL
 
+	), CTE_Associates AS
+	(
+		SELECT DISTINCT a.AssociateId
+			FROM CTGE_ToNotify a
+	), CTGE_All AS
+	(
+		(
+			SELECT n.*
+				FROM CTGE_ToNotify n
+		)
+		UNION
+		(
+			SELECT n.*, 'ALL' AS Status
+				FROM CTE_Associates a
+				INNER JOIN CTE_Next n
+				ON  a.AssociateId = n.AssociateId
+		)
 	)
 	SELECT a.AssociateId,
 			a.Description AS AssociateDescr,
 			COALESCE(@ForceDsetination, a.Email) AS Email,
-			c.Description AS CarDescr,
 			r.RunName,
 			ct.ContractName,
 			v.LineNumber,
@@ -116,8 +130,6 @@ bEGIN
 			ON d.RunVariationId = v.RunVariationId
 		INNER JOIN dbo.Associates a
 			ON d.AssociateId = a.AssociateId
-		INNER JOIN dbo.Cars c
-			ON d.CarId = c.CarId
 		ORDER BY a.Description, a.AssociateId, d.Status DESC, d.Day;
 
 	RETURN 0;

@@ -11,7 +11,6 @@ namespace CtaLinea.Model.Utilities
         public Guid AssociateId { get; set; }
         public string? AssociateDescr { get; set; }
         public string? Email { get; set; }
-        public string? CarDescr { get; set; }
 
         public string? RunName { get; set; }
         public string? ContractName { get; set; }

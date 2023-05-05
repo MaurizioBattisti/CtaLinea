@@ -6,6 +6,10 @@
         public string FromName { get; set; }
         public string Reply { get; set; }
         public string ReplyName { get; set; }
+
+        public string Bcc { get; set; }
+        public string BccName { get; set; }
+
         public string SmtpServer { get; set; }
         public int Port { get; set; }
         public string UserName { get; set; }

@@ -107,8 +107,12 @@ namespace CtaLineaApp
 		internal const string Endpoint_Utility_CarForDiscontinuation = Endpoint_Utility + "/carsfordiscontinuation";
 		internal const string Endpoint_Utility_ReplaceCars = Endpoint_Utility+ "/replacecars";
 
+        // scheduled tasks
+        internal const string Endpoint_ScheduledTasks = "/api/scheduledtasks";
+        internal const string Endpoint_ScheduledTasks_Single_Fmt = Endpoint_ScheduledTasks + "/{0}";
+        internal const string Endpoint_ScheduledTasks_Log_Fmt = Endpoint_ScheduledTasks + "/{0}/log";
 
-		internal const string Endpoint_Drivers = "/api/drivers";
+        internal const string Endpoint_Drivers = "/api/drivers";
         internal const string Endpoint_PendingImport = "/api/importlogs/pending/{0}";
         internal const string Endpoint_ImportLog = "/api/importlogs";
         internal const string Endpoint_ImportLog_Single = "/api/importlogs/{0}";

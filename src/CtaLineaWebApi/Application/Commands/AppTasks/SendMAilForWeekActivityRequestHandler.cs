@@ -144,6 +144,7 @@ namespace CtaLineaWebApi.Application.Commands.AppTasks
         {
             var notToDo = delta.Where(x => x.Status == "OLD");
             var newToDo = delta.Where(x => x.Status == "NEW");
+            var allToDo = delta.Where(x => x.Status == "ALL");
 
             var crLf = "\n";
             var sb = new StringBuilder(1024);
@@ -153,11 +154,12 @@ namespace CtaLineaWebApi.Application.Commands.AppTasks
             sb.Append(",");
             sb.Append(crLf);
             sb.Append(crLf);
-            sb.Append("Rispetto a questa settimana,la prossima settimana, ");
+            sb.Append("La prossima settimana abbiamo individuato differenze nel calendario, rispetto alla settimana in corso,.");
 
             if (notToDo.Count() > 0)
             {
-                sb.Append("non dovranno essere effettuati le seguenti corse di linea");
+                sb.Append(crLf);
+                sb.Append("Non dovranno essere effettuati le seguenti corse:");
                 sb.Append(crLf);
                 foreach (var run in notToDo)
                 {
@@ -169,9 +171,22 @@ namespace CtaLineaWebApi.Application.Commands.AppTasks
             if (newToDo.Count() > 0)
             {
                 sb.Append(crLf);
-                sb.Append("dpvranno essereeseguite in aggiunta le seguenti corse");
+                sb.Append("dpvranno essere eseguite in aggiunta le seguenti corse:");
                 sb.Append(crLf);
                 foreach (var run in newToDo)
+                {
+                    sb.Append(this.getRunDescr(run));
+                    sb.Append(crLf);
+                }
+            }
+
+            if (allToDo.Count() > 0)
+            {
+                sb.Append(crLf);
+                sb.Append(crLf);
+                sb.Append("Quindi dovranno essere eseguite le seguenti corse:");
+                sb.Append(crLf);
+                foreach (var run in allToDo)
                 {
                     sb.Append(this.getRunDescr(run));
                     sb.Append(crLf);

@@ -16,6 +16,8 @@ using CtaLineaWebApi.Auth.Services;
 using System.Net;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
+using CtaLinea.Model.ScheduledTasks;
+using Org.BouncyCastle.Asn1.Mozilla;
 
 namespace CtaLineaWebApi.Application.Scheduler
 {
@@ -55,6 +57,16 @@ namespace CtaLineaWebApi.Application.Scheduler
 			this.AddReloadSchedulerTask();
 			_autoEvent.Set();
 		}
+
+		public IEnumerable<ScheduledTaskItem> GetActualScheduledTasks ()
+		{
+			var list = new List<ScheduledTaskItem>();
+            if (this._autoEvent.WaitOne(500) == true)
+			{
+				list = this.AllTasks.ToList();
+			}
+			return list;
+        }
 
 		public async Task ReplaceAllTAsks (
 			IEnumerable <ScheduledTaskItem> newTasks)

@@ -18,6 +18,8 @@ namespace CtaLineaWebApi.Application.Services
             if (string.IsNullOrWhiteSpace(_emailConfig.FromName)) _emailConfig.FromName = _emailConfig.From;
             if (string.IsNullOrWhiteSpace(_emailConfig.Reply)) _emailConfig.Reply = _emailConfig.From;
             if (string.IsNullOrWhiteSpace(_emailConfig.ReplyName)) _emailConfig.ReplyName = _emailConfig.Reply;
+            
+            if (string.IsNullOrWhiteSpace(_emailConfig.BccName)) _emailConfig.FromName = _emailConfig.Bcc;
         }
 
         public async Task SendEmailAsync(
@@ -34,6 +36,10 @@ namespace CtaLineaWebApi.Application.Services
             emailMessage.From.Add(new MailboxAddress(_emailConfig.FromName, _emailConfig.From));
             emailMessage.ReplyTo.Add(new MailboxAddress(_emailConfig.ReplyName, _emailConfig.Reply));
             emailMessage.To.AddRange(message.To);
+            if (string.IsNullOrWhiteSpace(_emailConfig.Bcc) == false)
+            {
+                emailMessage.Bcc.Add(new MailboxAddress(_emailConfig.BccName, _emailConfig.Bcc));
+            }
             emailMessage.Subject = message.Subject;
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Text) { Text = message.Content };
             return emailMessage;
