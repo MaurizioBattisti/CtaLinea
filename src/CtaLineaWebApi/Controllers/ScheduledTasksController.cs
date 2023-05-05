@@ -271,7 +271,7 @@ namespace CtaLineaWebApi.Controllers
             var item = list.Where(x => x.Id == id).SingleOrDefault();
             return (item != null);
         }
-        public async Task<CheckResult> CheckForDeleteAsync(
+        private async Task<CheckResult> CheckForDeleteAsync(
             int id)
         {
             var errors = new List<CheckResultItem>();

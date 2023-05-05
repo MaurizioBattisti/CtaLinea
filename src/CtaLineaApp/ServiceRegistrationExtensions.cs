@@ -62,6 +62,8 @@ namespace CtaLineaApp
                 .AddScoped<ICalendarService, CalendarService>()
                 // serivi per gestire le corse
                 .AddScoped<IRunModelService, RunModelService>()
+                // servizi per la gestione dei task schedulati
+                .AddScoped<IScheduledTasksService, ScheduledTasksService>()
 
                 // repository dei dati
                 .AddScoped<IRunRepository, RunRepository>()

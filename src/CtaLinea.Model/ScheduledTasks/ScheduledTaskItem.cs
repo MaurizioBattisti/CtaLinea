@@ -26,5 +26,51 @@ namespace CtaLinea.Model.ScheduledTasks
         public DateTime? LastEnd { get; set; }
 
         public int Timeout { get; set; } = 0;
+
+        public string GetFrequencyDescription ()
+        {
+            var descr = string.Empty;
+            switch (this.Frequency)
+            {
+                case ScheduleFrequency.Daily:
+                    descr = "Quotidiana";
+                    break;
+                case ScheduleFrequency.Weekly:
+                    descr = "Settimanale";
+                    break;
+                    case ScheduleFrequency.Monthly:
+                    descr = "Mensile";
+                    break;
+            }
+            return descr;
+        }
+        public string GetFrequencyMaskDescription ()
+        {
+            var descr = string.Empty;
+            switch (this.Frequency)
+            {
+                case ScheduleFrequency.Weekly:
+                    descr = string.Format("Ogni {0} dek mese", this.RrequencyMask);
+                    break;
+                case ScheduleFrequency.Monthly:
+                    descr = string.Join(", ", this.EnumerateWeeklyFrequency());
+                    break;
+            }
+            return descr;
+        }
+
+        private IEnumerable<string> EnumerateWeeklyFrequency ()
+        {
+            if (this.Frequency == ScheduleFrequency.Weekly )
+            {
+                if ((this.RrequencyMask & 1) == 1) yield return "Lun";
+                if ((this.RrequencyMask & 2) == 2) yield return "Mar";
+                if ((this.RrequencyMask & 4) == 4) yield return "Mer";
+                if ((this.RrequencyMask & 8) == 8) yield return "Gio";
+                if ((this.RrequencyMask & 16) == 16) yield return "Ven";
+                if ((this.RrequencyMask & 32) == 32) yield return "Sab";
+                if ((this.RrequencyMask & 64) == 64) yield return "Dom";
+            }
+        }
     }
 }
