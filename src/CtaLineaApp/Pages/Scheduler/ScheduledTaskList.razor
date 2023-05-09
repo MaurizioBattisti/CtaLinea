@@ -43,11 +43,9 @@
                             Icon="refresh"
                             Click="@ReloadData" />
 
-            <!--
             <RadzenButton ButtonStyle="ButtonStyle.Primary"
                             Icon="domain_add"
-                            Click="@AddLine_Click" />
-            -->
+                            Click="@AddTask_Click" />
         </RadzenStack>
     </HeaderTemplate>
     <EmptyTemplate>
@@ -162,6 +160,10 @@
 
         return text;
     }
+    private async Task AddTask_Click ()
+    {
+        await this.ShowEditAddDialogAsync("nuova attività", new ScheduledTaskItem ());
+    }
 
     private void RowActionCellContextMenu(DataGridCellMouseEventArgs<ScheduledTaskItem> args)
     {
@@ -173,16 +175,16 @@
 
         ContextMenuService.Open(args, ds =>
             @<RadzenMenu Click=@((e)=>OnMenuItemClick(args, e))>
-                <RadzenMenuItem Icon=@(args.Data.Active == true ? "notifications_off" : "notifications") Text=@(args.Data.Active == true ? "Disabilita" : "Abilita") Value=@TasksMenuItem.TogleActive />
-                <RadzenMenuItem Icon="cabin" Text="Mostra Log ..." Value=@TasksMenuItem.ShowLog />
-                <hr class="separator">
-                <RadzenMenuItem Icon="newspaper" Text="Imposta Argomenti ..." Value=@TasksMenuItem.SetArguments />
-                <RadzenMenuItem Icon="play_circle" Text="Esegui Attività ..." Value=@TasksMenuItem.TryTask />
-                <RadzenMenuItem Icon="edit" Text="Modifica ..." Value=@TasksMenuItem.EditData />
-                <hr class="separator">
-                <RadzenMenuItem Icon="delete" Text="Elimina..." Value=@TasksMenuItem.Delete />
-            </RadzenMenu>
-            );
+                    <RadzenMenuItem Icon=@(args.Data.Active == true ? "notifications_off" : "notifications") Text=@(args.Data.Active == true ? "Disabilita" : "Abilita") Value=@TasksMenuItem.TogleActive />
+                    <RadzenMenuItem Icon="cabin" Text="Mostra Log ..." Value=@TasksMenuItem.ShowLog />
+                    <hr class="separator">
+                    <RadzenMenuItem Icon="newspaper" Text="Imposta Argomenti ..." Value=@TasksMenuItem.SetArguments />
+                    <RadzenMenuItem Icon="play_circle" Text="Esegui Attività ..." Value=@TasksMenuItem.TryTask />
+                    <RadzenMenuItem Icon="edit" Text="Modifica ..." Value=@TasksMenuItem.EditData />
+                    <hr class="separator">
+                    <RadzenMenuItem Icon="delete" Text="Elimina..." Value=@TasksMenuItem.Delete />
+        </RadzenMenu>
+    );
     }
     private async Task OnMenuItemClick(
         DataGridCellMouseEventArgs<ScheduledTaskItem> args,
@@ -197,19 +199,25 @@
         switch ((TasksMenuItem)e.Value)
         {
             case TasksMenuItem.TogleActive:
+                await this.TobleActive(args.Data.Id);
                 break;
             case TasksMenuItem.ShowLog:
+                await this.ShowTAskLogASync(args.Data.Id);
                 break;
 
             case TasksMenuItem.EditData:
+                await this.ShowEditAddDialogAsync("Modifica attività", args.Data);
                 break;
-            
+
             case TasksMenuItem.TryTask:
+                await this.ShowARgumentsAsync("Esegui attività", false, args.Data);
                 break;
             case TasksMenuItem.SetArguments:
+                await this.ShowARgumentsAsync("imposta argomenti", true, args.Data);
                 break;
 
             case TasksMenuItem.Delete:
+                await this.DeleteTaskAsync(args.Data.Id);
                 break;
 
             default:
@@ -217,6 +225,165 @@
         };
     }
 
+    private async Task ShowEditAddDialogAsync (
+        string title,
+        ScheduledTaskItem item
+        )
+    {
+        var data = new ScheduledTaskItem();
+        data.CopyFrom(item);
+
+        var result = await DialogService.OpenAsync(
+            title,
+            ds => @<EditScheduledTaskDialog ds=@ds ScheduledTask="@data" />
+            , new DialogOptions()
+                    {
+                        ShowClose = true,
+                        CloseDialogOnEsc = true,
+                        CloseDialogOnOverlayClick = false ,
+
+                        Width = "1000px",
+                        Draggable = false
+                    }
+                );
+        
+        if (result == true)
+        {
+            // ricarica i dati
+            await this.LoadDataASync();
+        }
+    }
+    private async Task ShowARgumentsAsync(
+        string title,
+        bool edit,
+        ScheduledTaskItem item
+        )
+    {
+        var data = new ScheduledTaskItem();
+        data.CopyFrom(item);
+
+        var result = await DialogService.OpenAsync(
+            title,
+            ds => @<SetScheduledTaskARgumentDialog ds=@ds ScheduledTask="@data" SetAndSave=@edit />
+            , new DialogOptions()
+            {
+                ShowClose = true,
+                CloseDialogOnEsc = true,
+                CloseDialogOnOverlayClick = false,
+
+                Width = "1000px",
+                Draggable = false
+            }
+        );
+
+        if (result == true)
+        {
+            // ricarica i dati
+            await this.LoadDataASync();
+        }
+    }
+    private async Task ShowTAskLogASync(
+        int taskId
+        )
+    {
+        var result = await DialogService.OpenAsync(
+            "Log dell'attività",
+            ds => @<ScheduledTaskLogDialog ds=@ds TaskId="@taskId"  />
+            , new DialogOptions()
+            {
+                ShowClose = true,
+                CloseDialogOnEsc = true,
+                CloseDialogOnOverlayClick = false,
+
+                Width = "1000px",
+                Draggable = false
+            }
+        );
+    }
+    public async Task TobleActive (int taskId)
+    {
+        bool reload = false;
+        try
+        {
+            this.IsLoading = true;
+            var taskItem = await this._repo.GetOneAsync(taskId);
+            if (taskItem != null)
+            {
+                taskItem.Active = !taskItem.Active;
+                await this._repo.UpdateAsync(taskItem);
+
+                reload = true;
+            }
+        }
+        catch (BadRequestException<CheckResult> ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                ex.Payload?.Title ?? "problemi",
+                ex.Payload?.Description ?? string.Empty
+            );
+        }
+        catch (Exception ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "errore durante ils alvataggio della attività",
+                ex.Message);
+        }
+        finally
+        {
+            this.IsLoading = false;
+        }
+        if (reload == true)
+        {
+            await this.LoadDataASync();
+        }
+    }
+
+    private async Task DeleteTaskAsync(
+        int taskId
+        )
+    {
+        bool reload = false;
+        if ( await this.DialogService.Confirm (
+            "Cancellare l'attività selezionata, verà eliminato tutto il log",
+            "Conferma Eliminaizone",
+            new ConfirmOptions()
+            {
+                OkButtonText ="Elimina",
+                CancelButtonText = "Annulla"
+            }) == true)
+        {
+            // esegue la cancellazioen dei dati
+            this.IsLoading = true;
+            try
+            {
+                await _repo.DeleteAsync(taskId);
+
+                this.notificationService.Notify(
+                    NotificationSeverity.Error,
+                    "attività eliminata");
+                reload = true;
+            }
+            catch (Exception ex)
+            {
+                this.notificationService.Notify(
+                    NotificationSeverity.Error,
+                    "Errore eliminado l'attività",
+                    ex.Message);
+            }
+            finally
+            {
+                this.IsLoading = false;
+            }
+
+            if (reload == true)
+            {
+                // ricarica i dati
+                await this.LoadDataASync();
+            }
+        }
+    }
     /*
     private async Task ClearFilters_Click()
     {

@@ -1,0 +1,155 @@
+﻿@inject NotificationService _notificationService
+@inject DialogService DialogService
+@inject IScheduledTasksService _schedulers
+@inject ISchedulerTaskChecker _checker
+
+<RadzenStack Orientation="Orientation.Vertical">
+	<RadzenTabs>
+		<Tabs>
+			<RadzenTabsItem Selected=true Text="Parametri">
+				@if (this.ScheduledTask.ActivityId == Constants.Activity_ReloadScheduler)
+				{
+					<h2>Non sono previsti argometni aggiuntivi per l'attività di caricamento dello scheduler</h2>
+				}
+				else if (this.ScheduledTask.ActivityId == Constants.Activity_RecalcRunDays)
+				{
+					<CalcDaysARguments @ref=@_collector @bind-Arguments="ScheduledTask.Arguments" />
+				}
+				else if (this.ScheduledTask.ActivityId == Constants.Activity_CleanLog)
+				{
+					<CleanLogArguments @ref=@_collector @bind-Arguments="ScheduledTask.Arguments" />
+				}
+				else if (this.ScheduledTask.ActivityId == Constants.Activity_SendMail)
+				{
+					<SendMailArguments @ref=@_collector @bind-Arguments="ScheduledTask.Arguments" />
+				}
+				else
+				{
+					<h2>Nessun interfaccia prevista per questo tipod i attività</h2>
+				}
+			</RadzenTabsItem>
+			<RadzenTabsItem Text="formato Testo">
+				<RadzenTextArea 
+					Value=@ScheduledTask.Arguments
+					ReadOnly=true
+					Style="height: 400px; width: 100%" />
+			</RadzenTabsItem>
+		</Tabs>
+	</RadzenTabs>
+
+	<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
+		@if (this.SetAndSave == true)
+		{
+			<RadzenButton Click="@(() => this.SetArgumentClick(ds))"
+					  IsBusy=@IsBusy
+					  ButtonStyle="ButtonStyle.Primary"
+					  Text="Salva" />
+		}
+		else
+		{
+			<RadzenButton Click="@(() => this.ExecTaskAsync(ds))"
+					  IsBusy=@IsBusy
+					  ButtonStyle="ButtonStyle.Primary"
+					  Text="Esegui" />
+		}
+		<RadzenButton Click="@(() => ds.Close())"
+					  ButtonStyle="ButtonStyle.Secondary"
+					  Text="Annulla" />
+	</RadzenStack>
+</RadzenStack>
+
+@code {
+	private IArgumentCollector? _collector;
+
+	[Parameter]
+	public DialogService? ds { get; set; }
+
+	[Parameter]
+	public ScheduledTaskItem ScheduledTask { get; set; } = new ScheduledTaskItem();
+
+	[Parameter]
+	public bool SetAndSave { get; set; } = false;
+
+	private bool IsBusy = false;
+
+	protected override void OnParametersSet()
+	{
+		base.OnParametersSet();
+	}
+
+	private async Task SetArgumentClick(DialogService ds)
+	{
+		this.IsBusy = true;
+
+		try
+		{
+			await this._schedulers.UpdateAsync(this.ScheduledTask);
+
+			ds.Close(true);
+
+			// notiivca che
+			this._notificationService.Notify(
+				NotificationSeverity.Success,
+				"dati salvati con scucesso");
+		}
+		catch (BadRequestException<CheckResult> ex)
+		{
+			this._notificationService.Notify(
+				NotificationSeverity.Error,
+				ex.Payload?.Title ?? "problemi",
+				ex.Payload?.Description ?? string.Empty
+			);
+		}
+		catch (Exception ex)
+		{
+			this._notificationService.Notify(
+				NotificationSeverity.Error,
+				"errore durante ils alvataggio della attività",
+				ex.Message);
+		}
+		finally
+		{
+			this.IsBusy = false;
+		}
+	}
+	private async Task ExecTaskAsync(DialogService ds)
+	{
+		this.IsBusy = true;
+		object? argumentData = _collector?.GetArgs();
+
+		try
+		{
+			await this._schedulers.InvokeTaskASync(
+				this.ScheduledTask.ActivityId,
+				this.ScheduledTask.Id,
+				argumentData,
+				this.ScheduledTask.Timeout <= 100 ? 100 : this.ScheduledTask.Timeout);
+
+			ds.Close();
+
+			// notiivca che 
+			this._notificationService.Notify(
+				NotificationSeverity.Success,
+				"Attività eseguita");
+		}
+		catch (BadRequestException<CheckResult> ex)
+		{
+			this._notificationService.Notify(
+				NotificationSeverity.Error,
+				ex.Payload?.Title ?? "problemi",
+				ex.Payload?.Description ?? string.Empty
+			);
+		}
+		catch (Exception ex)
+		{
+			this._notificationService.Notify(
+				NotificationSeverity.Error,
+				"errore durante ils alvataggio della attività",
+				ex.Message);
+		}
+		finally
+		{
+			this.IsBusy = false;
+		}
+	}
+}

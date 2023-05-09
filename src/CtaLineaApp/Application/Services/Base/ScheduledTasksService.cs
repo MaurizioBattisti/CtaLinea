@@ -1,7 +1,13 @@
 ﻿using CtaLinea.Model.Helpers;
 using CtaLinea.Model.QueryModel;
 using CtaLinea.Model.ScheduledTasks;
+using CtaLinea.Model.TaskRequest;
+using CtaLineaApp.Application.Model;
 using CtaLineaApp.Application.Services.Helper;
+using Radzen.Blazor;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace CtaLineaApp.Application.Services.Base
 {
@@ -13,10 +19,13 @@ namespace CtaLineaApp.Application.Services.Base
         public ScheduledTasksService(
             IHttpService htto)
         {
-            _http = htto;
+            this.TaskDescriptions = this.GetTaskDescriptions().ToList();
+			_http = htto;
         }
 
-        public async Task<IEnumerable<ScheduledTaskItem>?> GetListAsync()
+        public IEnumerable<AppTaskDescription> TaskDescriptions { get; private set; }
+
+		public async Task<IEnumerable<ScheduledTaskItem>?> GetListAsync()
         {
             var data = await this._http.Get<IEnumerable<ScheduledTaskItem>>(Constants.Endpoint_ScheduledTasks);
             return data;
@@ -57,5 +66,67 @@ namespace CtaLineaApp.Application.Services.Base
             }
             await this._http.Delete(url);
         }
-    }
+
+        public async Task InvokeTaskASync (
+            string activityId,
+            int taskId,
+            object? data = null,
+            int timeout = 100)
+        {
+            var url = string.Format (Constants.Endpoint_Task_Invoke_Fmt ,
+				activityId,
+				taskId,
+                timeout);
+			await this._http.Post<CheckResult>(url, data);
+		}
+
+        private IEnumerable<AppTaskDescription> GetTaskDescriptions ()
+        {
+			var optins = new JsonSerializerOptions()
+			{
+				DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+			};
+
+			yield return new AppTaskDescription()
+			{
+				TaskId = Constants.Activity_ReloadScheduler,
+				TaskName = "caricamento sceduler dal Db",
+				DefaultArguments = null
+			};
+			yield return new AppTaskDescription()
+            {
+                TaskId = Constants.Activity_RecalcRunDays,
+                TaskName = "Ricalcolo dei giorni delle corse che hanno necessità",
+                DefaultArguments = JsonSerializer.Serialize(
+				    new RecalcRunDaysTaskRequest()
+				    {
+					    MaxRuns = 50
+				    }, optins)
+			};
+			yield return new AppTaskDescription()
+			{
+				TaskId = Constants.Activity_CleanLog,
+				TaskName = "Esegue la pulizia del log delle attività",
+				DefaultArguments = JsonSerializer.Serialize(
+					new CleanTaskLogTaskRequest()
+					{
+						DailyRetention = 5,
+						WeeklyRetention = 4,
+						MonthlyRetention = 3
+					}, optins)
+			};
+			yield return new AppTaskDescription()
+			{
+				TaskId = Constants.Activity_SendMail,
+				TaskName = "Manda le mail ai consorziati",
+				DefaultArguments = JsonSerializer.Serialize(
+					new WeekActivityMailSendRequest()
+					{
+                        AssociateId = null,
+                        ForseDestination = null,
+                        ReferenceDate = null,
+					}, optins)
+			};
+		}
+	}
 }

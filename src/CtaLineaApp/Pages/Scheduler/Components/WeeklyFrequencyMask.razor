@@ -1,0 +1,64 @@
+﻿<WeekDaysSelector
+	AllowClear=false
+	@bind-WeekDays=@WeekDays
+	Changed="Changed"
+	/>
+
+@code {
+	[Parameter]
+	public string? Name { get; set; }
+
+	private int _FrequencyMask = 0;
+	[Parameter]
+	public int FrequencyMask
+	{
+		get { return _FrequencyMask; }
+		set
+		{
+			_FrequencyMask = (int)(value & 127);
+			this.SetWeekDays();
+		}
+	}
+	[Parameter]
+	public EventCallback<int> FrequencyMaskChanged { get; set; }
+
+	private int DayOfMonth = 1;
+
+	private IEnumerable<int> WeekDays = new List<int>();
+
+	protected override Task OnInitializedAsync()
+	{
+
+		return base.OnInitializedAsync();	
+	}
+
+	private void SetWeekDays ()
+	{
+		var list = new List<int>();
+		if ((_FrequencyMask & 1) == 1) list.Add(1);
+		if ((_FrequencyMask & 2) == 2) list.Add(2);
+		if ((_FrequencyMask & 4) == 4) list.Add(3);
+		if ((_FrequencyMask & 8) == 8) list.Add(4);
+		if ((_FrequencyMask & 16) == 16) list.Add(5);
+		if ((_FrequencyMask & 32) == 32) list.Add(6);
+		if ((_FrequencyMask & 64) == 64) list.Add(7);
+		this.WeekDays = list;
+	}
+	private int GetMAskVAlue ()
+	{
+		int result = 0;
+		short two = 2;
+		foreach (var d in this.WeekDays)
+		{
+			short exp = (short)(d - 1);
+			result += (int)Math.Pow(two, exp);
+		}
+		return result;
+	}
+
+	private async Task Changed ()
+	{
+		this._FrequencyMask = this.GetMAskVAlue();
+		await FrequencyMaskChanged.InvokeAsync(this.FrequencyMask);
+	}
+}

@@ -1,0 +1,92 @@
+﻿@inject NotificationService _notificationService
+@implements IArgumentCollector
+
+<h3>Pulizia del log delle attività</h3>
+
+<RadzenRow AlignItems="AlignItems.Center">
+	<RadzenColumn Size="4">
+		<RadzenLabel Component="@nameof(CleanTaskLogTaskRequest.DailyRetention)">Retention log attività quotidiana (gg)</RadzenLabel>
+	</RadzenColumn>
+	<RadzenColumn Size="8">
+			<RadzenNumeric Name="@nameof(CleanTaskLogTaskRequest.DailyRetention)"
+					   TValue="int?"
+					   Change=@((x) => this.DataChanged())
+						   @bind-Value=@Args.DailyRetention />
+	</RadzenColumn>
+</RadzenRow>
+<RadzenRow AlignItems="AlignItems.Center">
+	<RadzenColumn Size="4">
+		<RadzenLabel Component="@nameof(CleanTaskLogTaskRequest.WeeklyRetention)">Retention log attività settimanale (sett)</RadzenLabel>
+	</RadzenColumn>
+	<RadzenColumn Size="8">
+		<RadzenNumeric Name="@nameof(CleanTaskLogTaskRequest.WeeklyRetention)"
+						TValue="int?"
+						Change=@((x) => this.DataChanged())
+						@bind-Value=@Args.WeeklyRetention />
+	</RadzenColumn>
+</RadzenRow>
+<RadzenRow AlignItems="AlignItems.Center">
+	<RadzenColumn Size="4">
+		<RadzenLabel Component="@nameof(CleanTaskLogTaskRequest.MonthlyRetention)">Retention log attivitl mensile (mesi)</RadzenLabel>
+	</RadzenColumn>
+	<RadzenColumn Size="8">
+		<RadzenNumeric Name="@nameof(CleanTaskLogTaskRequest.MonthlyRetention)"
+					   TValue="int?"
+					   Change=@((x) => this.DataChanged())
+					   @bind-Value=@Args.MonthlyRetention />
+	</RadzenColumn>
+</RadzenRow>
+
+@code {
+	[Parameter]
+	public string? Arguments { get; set; }
+	[Parameter]
+	public EventCallback<string?> ArgumentsChanged { get; set; }
+
+	JsonSerializerOptions JsonOptions = new JsonSerializerOptions()
+	{
+		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+	};
+
+	private CleanTaskLogTaskRequest Args = new CleanTaskLogTaskRequest();
+
+	public object? GetArgs()
+	{
+		return this.Args;
+	}
+
+	protected override Task OnParametersSetAsync()
+	{
+		this.DeserializeArgs();
+		return base.OnParametersSetAsync();
+	}
+
+	private void DeserializeArgs()
+	{
+		try
+		{
+			var obje = JsonSerializer.Deserialize<CleanTaskLogTaskRequest>(this.Arguments, this.JsonOptions);
+			if (obje != null)
+			{
+				this.Args = obje;
+			}
+		}
+		catch (Exception ex)
+		{
+			this._notificationService.Notify(NotificationSeverity.Error,
+				"Errore recuperando i valori",
+				ex.Message);
+		}
+	}
+
+	private string? SerializeArgs ()
+	{
+		return JsonSerializer.Serialize(this.Args, JsonOptions);
+	}
+
+	private void DataChanged ()
+	{
+		this.Arguments = this.SerializeArgs();
+		this.ArgumentsChanged.InvokeAsync(this.Arguments);
+	}
+}

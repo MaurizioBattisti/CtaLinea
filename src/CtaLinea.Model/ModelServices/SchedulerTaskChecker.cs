@@ -36,7 +36,7 @@ namespace CtaLinea.Model.ModelServices
                 });
             }
             if (item.EndTime != TimeSpan.Zero
-                && item.EndTime != TimeSpan.Zero)
+                && item.Interval == TimeSpan.Zero)
             {
                 errors.Add(new CheckResultItem()
                 {
@@ -123,7 +123,7 @@ namespace CtaLinea.Model.ModelServices
             if (errors.Count > 0)
             {
                 result.Title = "Errori";
-                result.Description = "Errori nella definizione dell'appalto";
+                result.Description = "Errori nella definizione dell'attività schedulata";
             }
 
             return await Task.FromResult(result);

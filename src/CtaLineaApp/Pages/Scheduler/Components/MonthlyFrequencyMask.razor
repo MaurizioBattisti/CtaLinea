@@ -1,0 +1,50 @@
+﻿<RadzenDropDown 
+	Data="@this.Days"
+	TValue="int"
+	Placeholder="scegli il giorno"
+	Name=@Name
+	Value=@this.DayOfMonth
+	ValueChanged=@ValueChanged
+	class="w-100" />
+
+@code {
+	[Parameter]
+	public string? Name { get; set; }
+
+	private int _FrequencyMask = 1;
+	[Parameter]
+	public int FrequencyMask 
+	{
+		get { return _FrequencyMask; }
+		set
+		{
+			if (value < 1) _FrequencyMask = 1;
+			else if (value > 31) _FrequencyMask = 31;
+			else _FrequencyMask = value;
+			DayOfMonth = _FrequencyMask;
+		}
+	}	
+	[Parameter]
+	public EventCallback<int> FrequencyMaskChanged { get; set; }
+
+	private IList<int> Days = new List<int>();
+	private int DayOfMonth = 1;
+
+	protected override Task OnInitializedAsync()
+	{
+		for (int index = 1; index <= 31; index++)
+		{
+			Days.Add(index);
+		}
+
+		return base.OnInitializedAsync();	
+	}
+
+	private async Task ValueChanged (int value)
+	{
+		this.DayOfMonth = value;
+		this.FrequencyMask = value;
+		await FrequencyMaskChanged.InvokeAsync(this.FrequencyMask);
+		this.StateHasChanged();
+	}
+}

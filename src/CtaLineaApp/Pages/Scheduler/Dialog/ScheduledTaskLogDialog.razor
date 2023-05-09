@@ -1,0 +1,155 @@
+﻿@inject NotificationService _notificationService
+@inject DialogService DialogService
+@inject IScheduledTasksService _schedulers
+@inject ISchedulerTaskChecker _checker
+
+<RadzenStack Orientation="Orientation.Vertical">
+	<RadzenTabs RenderMode="TabRenderMode.Server">
+		<Tabs>
+			<RadzenTabsItem Selected=true Text="Log">
+				<RadzenDataGrid 
+								FilterMode="FilterMode.Simple"
+								IsLoading=@IsBusy
+								Data="@this.Data" TItem="SchedulerTaskLogItem"
+								AllowSorting="true"
+								AllowFiltering="true"
+								AllowColumnResize="true"
+								AllowGrouping=true
+								LogicalFilterOperator="LogicalFilterOperator.And"
+								AllowVirtualization=true
+								VirtualizationOverscanCount="10"
+								SelectionMode="DataGridSelectionMode.Single"
+								@bind-Value=@SelectedItems
+								Style="height:600px"
+								EditMode="DataGridEditMode.Single"
+								Density=@Settings.Density>
+					<HeaderTemplate>
+						<RadzenStack Orientation="Orientation.Horizontal" Gap="4px">
+							<RadzenButton ButtonStyle="ButtonStyle.Success"
+										  IsBusy=@IsBusy
+										  Icon="refresh"
+										  Click="@this.LoadDataASync" />
+							<DateSelector AllowClear=true
+								@bind-Value="@this.ReferenceDate"
+								ShowSetTodayButton=true
+								/>
+							
+							<RadzenButton ButtonStyle="ButtonStyle.Danger"
+										  IsBusy=@IsBusy
+										  Icon="delete"
+										  Click="@this.DeleteLogAsync" />
+						</RadzenStack>
+					</HeaderTemplate>
+					<EmptyTemplate>
+						<RadzenCard Visible=@(!IsBusy)>
+							<p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessua attività nello scheudler !</p>
+						</RadzenCard>
+					</EmptyTemplate>
+					<Columns>
+						<RadzenDataGridColumn TItem="SchedulerTaskLogItem" Property="@(nameof(SchedulerTaskLogItem.LogId))" Title="Id" Width="80px" />
+						<RadzenDataGridColumn TItem="SchedulerTaskLogItem" Property="@(nameof(SchedulerTaskLogItem.TaskId))" Title="Id Attività" Width="150px" Visible=false />
+						<RadzenDataGridColumn TItem="SchedulerTaskLogItem" Property="@(nameof(SchedulerTaskLogItem.Tag))" Title="Tag" Width="150px" />
+						<RadzenDataGridColumn TItem="SchedulerTaskLogItem" Property="@(nameof(SchedulerTaskLogItem.Time))" Title="Data e Ora" Width="150px" FormatString="{0:dd/MM/yyyy hh:mm:ss}" />
+
+						<RadzenDataGridColumn TItem="SchedulerTaskLogItem" Property="@(nameof(SchedulerTaskLogItem.Code))" Title="codice" Width="100px" />
+						<RadzenDataGridColumn TItem="SchedulerTaskLogItem" Property="@(nameof(SchedulerTaskLogItem.Message))" Title="Messaggio" Width="300px" />
+
+					</Columns>
+				</RadzenDataGrid>
+			</RadzenTabsItem>
+			<RadzenTabsItem  Text="Messaggio">
+				<RadzenTextArea Value=@CurrentItem()?.Message
+								ReadOnly=true
+								Style="height: 600px; width: 100%" />
+			</RadzenTabsItem>
+		</Tabs>
+	</RadzenTabs>
+
+	<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
+		<RadzenButton Click="@(() => ds.Close())"
+					  ButtonStyle="ButtonStyle.Secondary"
+					  Text="Chiudi" />
+	</RadzenStack>
+</RadzenStack>
+
+@code {
+	[CascadingParameter]
+	CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+	[Parameter]
+	public DialogService? ds { get; set; }
+
+	[Parameter]
+	public int TaskId { get; set; } = 0;
+
+	private bool IsBusy { get; set; } = false;
+	private IEnumerable<SchedulerTaskLogItem> Data { get; set; } = new List<SchedulerTaskLogItem>();
+	private IList<SchedulerTaskLogItem> SelectedItems { get; set; } = new List<SchedulerTaskLogItem>();
+
+	private DateTime? ReferenceDate { get; set; }
+
+	private SchedulerTaskLogItem? CurrentItem()
+	{
+		return this.SelectedItems?.FirstOrDefault();
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		await this.LoadDataASync();
+		await base.OnParametersSetAsync();
+	}
+
+	private async Task LoadDataASync ()
+	{
+		this.IsBusy = true;
+		try
+		{
+			var data = await _schedulers.GetLogListAsync(this.TaskId);
+			if (data != null)
+			{
+				this.Data = data;
+			}
+		}
+		catch (Exception ex)
+		{
+			this._notificationService.Notify(
+				NotificationSeverity.Error,
+				"Errore caricando il log",
+				ex.Message);
+		}
+		finally
+		{
+			this.IsBusy = false;
+		}
+	}
+
+	private async Task DeleteLogAsync ()
+	{
+		bool reload = false;
+		this.IsBusy = true;
+		try
+		{
+			await _schedulers.DeleteLogAsync(this.TaskId, this.ReferenceDate);
+
+			this._notificationService.Notify(
+				NotificationSeverity.Error,
+				"Log canclelato");
+			reload = true;
+		}
+		catch (Exception ex)
+		{
+			this._notificationService.Notify(
+				NotificationSeverity.Error,
+				"Errore Cancellando il log",
+				ex.Message);
+		}
+		finally
+		{
+			this.IsBusy = false;
+		}
+		if (reload == true)
+		{
+			await this.LoadDataASync();
+		}
+	}
+}

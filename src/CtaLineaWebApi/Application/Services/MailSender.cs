@@ -53,7 +53,7 @@ namespace CtaLineaWebApi.Application.Services
                 try
                 {
                     client.Connect(
-                        _emailConfig.SmtpServer, 
+                        _emailConfig.SmtpServer,
                         _emailConfig.Port, 
                         MailKit.Security.SecureSocketOptions.StartTls);
                     client.AuthenticationMechanisms.Remove("XOAUTH2");

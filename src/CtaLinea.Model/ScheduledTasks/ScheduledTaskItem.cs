@@ -12,14 +12,14 @@ namespace CtaLinea.Model.ScheduledTasks
         public string ActivityId { get; set; } = string.Empty;
 
         public ScheduleFrequency Frequency { get; set; } = ScheduleFrequency.Daily;
-        public ushort RrequencyMask { get; set; } = 1;
+        public int RrequencyMask { get; set; } = 1;
 
         public TimeSpan StartTime { get; set; } = TimeSpan.FromHours(8);
         public TimeSpan EndTime { get; set; } = TimeSpan.FromHours(18);
         public TimeSpan Interval { get; set; } = TimeSpan.FromMinutes(30);
 
         // in formato JSON
-        public string Arguments { get; set; }
+        public string? Arguments { get; set; }
         public bool Active { get; set; } = true;
 
         public DateTime? LastStart { get; set; }
@@ -71,6 +71,27 @@ namespace CtaLinea.Model.ScheduledTasks
                 if ((this.RrequencyMask & 32) == 32) yield return "Sab";
                 if ((this.RrequencyMask & 64) == 64) yield return "Dom";
             }
+        }
+
+        public void CopyFrom (ScheduledTaskItem item)
+        {
+            this.Id = item.Id;
+            this.ActivityId = item.ActivityId;
+
+            this.Frequency = item.Frequency;
+            this.RrequencyMask = item.RrequencyMask;
+
+            this.StartTime = item.StartTime;
+            this.EndTime = item.EndTime;
+            this.Interval = item.Interval;
+
+            this.Arguments = item.Arguments;
+            this.Active = item.Active;
+
+            this.LastStart = item.LastStart;
+            this.LastEnd = item.LastEnd;
+
+            this.Timeout = item.Timeout;
         }
     }
 }

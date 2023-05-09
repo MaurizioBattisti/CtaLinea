@@ -1,0 +1,93 @@
+﻿@inject NotificationService _notificationService
+@implements IArgumentCollector
+
+<h3>Invia la mail col prospetto settimanale ai consorziati</h3>
+
+<RadzenRow AlignItems="AlignItems.Center">
+	<RadzenColumn Size="4">
+		<RadzenLabel Component="@nameof(WeekActivityMailSendRequest.ForseDestination)">Forza mail di destinazione</RadzenLabel>
+	</RadzenColumn>
+	<RadzenColumn Size="8">
+		<RadzenTextBox Name="@nameof(WeekActivityMailSendRequest.ForseDestination)"
+					   TValue="int?"
+					   Change=@((x) => this.DataChanged())
+					   @bind-Value=@Args.ForseDestination 
+					   class="w-100"/>
+	</RadzenColumn>
+</RadzenRow>
+<RadzenRow AlignItems="AlignItems.Center">
+	<RadzenColumn Size="4">
+		<RadzenLabel Component="@nameof(WeekActivityMailSendRequest.AssociateId)">Solo a questa ditta</RadzenLabel>
+	</RadzenColumn>
+	<RadzenColumn Size="8">
+		<AssociateDropDown Name="@nameof(WeekActivityMailSendRequest.AssociateId)"
+						   Changed=@((x) => this.DataChanged())
+						   AllowClear=true
+						   @bind-AssociateId=@Args.AssociateId />
+	</RadzenColumn>
+</RadzenRow>
+<RadzenRow AlignItems="AlignItems.Center">
+	<RadzenColumn Size="4">
+		<RadzenLabel Component="@nameof(WeekActivityMailSendRequest.ReferenceDate)">data di riferimento, vuoto = oggi</RadzenLabel>
+	</RadzenColumn>
+	<RadzenColumn Size="2">
+		<DateSelector Name="@nameof(WeekActivityMailSendRequest.ReferenceDate)"
+					   AllowClear=true
+					   Changed=@((x) => this.DataChanged())
+					   @bind-Value=@Args.ReferenceDate />
+	</RadzenColumn>
+</RadzenRow>
+
+@code {
+	[Parameter]
+	public string? Arguments { get; set; }
+	[Parameter]
+	public EventCallback<string?> ArgumentsChanged { get; set; }
+
+	JsonSerializerOptions JsonOptions = new JsonSerializerOptions()
+	{
+		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+	};
+
+	private WeekActivityMailSendRequest Args = new WeekActivityMailSendRequest();
+
+	public object? GetArgs()
+	{
+		return this.Args;
+	}
+
+	protected override Task OnParametersSetAsync()
+	{
+		this.DeserializeArgs();
+		return base.OnParametersSetAsync();
+	}
+
+	private void DeserializeArgs()
+	{
+		try
+		{
+			var obje = JsonSerializer.Deserialize<WeekActivityMailSendRequest>(this.Arguments, this.JsonOptions);
+			if (obje != null)
+			{
+				this.Args = obje;
+			}
+		}
+		catch (Exception ex)
+		{
+			this._notificationService.Notify(NotificationSeverity.Error,
+				"Errore recuperando i valori",
+				ex.Message);
+		}
+	}
+
+	private string? SerializeArgs ()
+	{
+		return JsonSerializer.Serialize(this.Args, JsonOptions);
+	}
+
+	private void DataChanged ()
+	{
+		this.Arguments = this.SerializeArgs();
+		this.ArgumentsChanged.InvokeAsync(this.Arguments);
+	}
+}

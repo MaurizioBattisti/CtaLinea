@@ -1,0 +1,70 @@
+﻿@inject NotificationService _notificationService
+@implements IArgumentCollector
+
+<h3>Ricalcolo giorni delle corse</h3>
+
+<RadzenRow AlignItems="AlignItems.Center">
+	<RadzenColumn Size="4">
+		<RadzenLabel Component="@nameof(RecalcRunDaysTaskRequest.MaxRuns)">Nr corse Massimo</RadzenLabel>
+	</RadzenColumn>
+	<RadzenColumn Size="8">
+		<RadzenNumeric Name="@nameof(RecalcRunDaysTaskRequest.MaxRuns)"
+					   TValue="int?"
+					   Change=@((x) => this.DataChanged())
+					   @bind-Value=@Args.MaxRuns />
+	</RadzenColumn>
+</RadzenRow>
+
+@code {
+	[Parameter]
+	public string? Arguments { get; set; }
+	[Parameter]
+	public EventCallback<string?> ArgumentsChanged { get; set; }
+
+	JsonSerializerOptions JsonOptions = new JsonSerializerOptions()
+	{
+		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+	};
+
+	private RecalcRunDaysTaskRequest Args = new RecalcRunDaysTaskRequest();
+
+	public object? GetArgs ()
+	{
+		return this.Args;
+	}
+
+	protected override Task OnParametersSetAsync()
+	{
+		this.DeserializeArgs();
+		return base.OnParametersSetAsync();
+	}
+
+	private void DeserializeArgs()
+	{
+		try
+		{
+			var obje = JsonSerializer.Deserialize<RecalcRunDaysTaskRequest>(this.Arguments, this.JsonOptions);
+			if (obje != null)
+			{
+				this.Args = obje;
+			}
+		}
+		catch (Exception ex)
+		{
+			this._notificationService.Notify(NotificationSeverity.Error,
+				"Errore recuperando i valori",
+				ex.Message);
+		}
+	}
+
+	private string? SerializeArgs ()
+	{
+		return JsonSerializer.Serialize(this.Args, JsonOptions);
+	}
+
+	private void DataChanged ()
+	{
+		this.Arguments = this.SerializeArgs();
+		this.ArgumentsChanged.InvokeAsync(this.Arguments);
+	}
+}

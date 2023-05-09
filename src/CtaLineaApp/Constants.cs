@@ -111,8 +111,10 @@ namespace CtaLineaApp
         internal const string Endpoint_ScheduledTasks = "/api/scheduledtasks";
         internal const string Endpoint_ScheduledTasks_Single_Fmt = Endpoint_ScheduledTasks + "/{0}";
         internal const string Endpoint_ScheduledTasks_Log_Fmt = Endpoint_ScheduledTasks + "/{0}/log";
+		// Task invocation
+		internal const string Endpoint_Task_Invoke_Fmt = "/api/tasks/{0}/{1}?timeout={2}";
 
-        internal const string Endpoint_Drivers = "/api/drivers";
+		internal const string Endpoint_Drivers = "/api/drivers";
         internal const string Endpoint_PendingImport = "/api/importlogs/pending/{0}";
         internal const string Endpoint_ImportLog = "/api/importlogs";
         internal const string Endpoint_ImportLog_Single = "/api/importlogs/{0}";
@@ -125,6 +127,14 @@ namespace CtaLineaApp
         internal const string Endpoint_Info = "/api/info";
         internal const string Endpoint_Info_Versions = Endpoint_Info +"/versions";
 
-        // internal const int Default_PageSize = 20;
-    }
+		// internal const int Default_PageSize = 20;
+
+
+		// nomi delle attività
+		internal const string Activity_ReloadScheduler = "reloadscheduler";
+		internal const string Activity_RecalcRunDays = "calcdays";
+		internal const string Activity_CleanLog = "cleanlog";
+		internal const string Activity_SendMail = "sendmail";
+
+	}
 }

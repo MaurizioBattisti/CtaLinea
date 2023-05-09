@@ -296,7 +296,7 @@ namespace CtaLineaWebApi.Application.Scheduler
 		}
 
 		private bool WeeklyNeedToExecute (
-			ushort mask,
+			int mask,
 			DateTime lastEnd)
 		{
 			bool needToExecute = false;

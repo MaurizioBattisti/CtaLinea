@@ -74,7 +74,7 @@ namespace CtaLineaWebApi.Controllers
             await this.ReloadSchedulerASync();
             var list = this._scheduler.GetCurrentSchedulerTasks();
             var item = list.Where(x => x.Id == id).SingleOrDefault();
-            if (item != null) 
+            if (item == null) 
             {
                 return this.NotFound();
             }
