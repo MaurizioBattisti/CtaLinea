@@ -8,6 +8,7 @@
     [MustChangePassword] BIT NOT NULL DEFAULT 1, 
     [AssociateId] UNIQUEIDENTIFIER NULL, 
 
+    [Interactive] BIT NOT NULL DEFAULT 1, 
     CONSTRAINT [FK_Associate_Users] 
         FOREIGN KEY (AssociateId) 
         REFERENCES [dbo].[Associates]([AssociateId])

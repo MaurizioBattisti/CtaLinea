@@ -12,8 +12,8 @@ using CtaLinea.Model.QueryModel;
 
 namespace CtaLineaWebApi.Controllers
 {
-    [Authorize]
-    [ApiController]
+	[Authorize]
+	[ApiController]
     [Route("api/associates")]
     public class AssociatesController
         : ZControllerBase
@@ -26,7 +26,8 @@ namespace CtaLineaWebApi.Controllers
             this._queries = queries;
         }
 
-        [Consumes(MediaTypeNames.Application.Json)]
+		[Authorize(Policy = Constants.Policy_ViewData)]
+		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AssociateQueryItem>>> GetAllAsync()
@@ -38,7 +39,8 @@ namespace CtaLineaWebApi.Controllers
             return await this.ModelOKAsync(result)
                 .ConfigureAwait(false);
         }
-        [Consumes(MediaTypeNames.Application.Json)]
+		[Authorize(Policy = Constants.Policy_ViewData)]
+		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
@@ -52,7 +54,8 @@ namespace CtaLineaWebApi.Controllers
             return await this.ModelOKAsync(result)
                 .ConfigureAwait(false);
         }
-        [Consumes(MediaTypeNames.Application.Json)]
+		[Authorize(Policy = Constants.Policy_ViewData)]
+		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
@@ -68,7 +71,8 @@ namespace CtaLineaWebApi.Controllers
             return await this.ModelOKAsync(result)
                 .ConfigureAwait(false);
         }
-        [Consumes(MediaTypeNames.Application.Json)]
+		[Authorize(Policy = Constants.Policy_ViewData)]
+		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]

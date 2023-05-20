@@ -47,7 +47,8 @@ namespace CtaLineaWebApi.Controllers
 			_queries = queries;
 		}
 
-        [SwaggerOperation("Elenco delle corse")]
+		[Authorize(Policy = Constants.Policy_RunView)]
+		[SwaggerOperation("Elenco delle corse")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<RunItemQueryModel>))]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
@@ -59,7 +60,8 @@ namespace CtaLineaWebApi.Controllers
             return await this.ModelOKAsync(result)
                 .ConfigureAwait(false);
         }
-        [SwaggerOperation("Elenco delle corse con filtri avanzati")]
+		[Authorize(Policy = Constants.Policy_RunView)]
+		[SwaggerOperation("Elenco delle corse con filtri avanzati")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<RunItemQueryModel>))]
         [HttpPost]
         [Route("advanced")]
@@ -74,7 +76,8 @@ namespace CtaLineaWebApi.Controllers
             return await this.ModelOKAsync(result)
                 .ConfigureAwait(false);
         }
-        [SwaggerOperation("Dati della singola corsa nel formato della lista")]
+		[Authorize(Policy = Constants.Policy_RunView)]
+		[SwaggerOperation("Dati della singola corsa nel formato della lista")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RunItemQueryModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
@@ -88,7 +91,8 @@ namespace CtaLineaWebApi.Controllers
             return await this.ModelOKAsync(result)
                 .ConfigureAwait(false);
         }
-        [SwaggerOperation("Dati della singola corsa nel formato dell'albero di tutti i dati della corsa")]
+		[Authorize(Policy = Constants.Policy_RunView)]
+		[SwaggerOperation("Dati della singola corsa nel formato dell'albero di tutti i dati della corsa")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RunItem))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
@@ -103,7 +107,9 @@ namespace CtaLineaWebApi.Controllers
             return await this.ModelOKAsync(result)
                 .ConfigureAwait(false);
         }
-        [SwaggerOperation("Cre3a una nuova corsa")]
+
+		[Authorize(Policy = Constants.Policy_RunEdit)]
+		[SwaggerOperation("Cre3a una nuova corsa")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -141,7 +147,8 @@ namespace CtaLineaWebApi.Controllers
                 string.Format ("/{0}", result.Data),
                 null);
         }
-        [SwaggerOperation("Aggiorna i dati di una corsa")]
+		[Authorize(Policy = Constants.Policy_RunEdit)]
+		[SwaggerOperation("Aggiorna i dati di una corsa")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -180,7 +187,8 @@ namespace CtaLineaWebApi.Controllers
 
             return Ok();
         }
-        [SwaggerOperation("Elimina una corsa")]
+		[Authorize(Policy = Constants.Policy_RunEdit)]
+		[SwaggerOperation("Elimina una corsa")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -209,7 +217,8 @@ namespace CtaLineaWebApi.Controllers
             return NoContent();
         }
 
-        [SwaggerOperation("Esegue un controllo su tutti i dati di una corsa")]
+		[Authorize(Policy = Constants.Policy_RunView)]
+		[SwaggerOperation("Esegue un controllo su tutti i dati di una corsa")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RunCheckResult))]
         [HttpPost]
         [Route("check")]
@@ -221,7 +230,8 @@ namespace CtaLineaWebApi.Controllers
             return this.Ok(checkResult);
         }
 
-        [SwaggerOperation("Decodifica i nodi")]
+		[Authorize(Policy = Constants.Policy_RunEdit)]
+		[SwaggerOperation("Decodifica i nodi")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<RunNode>))]
         [HttpPost]
         [Route("decodenodes")]
@@ -238,8 +248,9 @@ namespace CtaLineaWebApi.Controllers
             return this.Ok(result);
         }
 
-        #region dettagli
-        [SwaggerOperation("Elenco  delle varianti di una corsa")]
+		#region dettagli
+		[Authorize(Policy = Constants.Policy_RunView)]
+		[SwaggerOperation("Elenco  delle varianti di una corsa")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<RuntimeVariablesExpression>))]
         [HttpGet]
         [Route("{id}/variations")]
@@ -257,6 +268,7 @@ namespace CtaLineaWebApi.Controllers
 		#endregion
 
 		#region tags
+		[Authorize(Policy = Constants.Policy_RunView)]
 		[SwaggerOperation("restituisce l'elenco degli id di etichetta associati alla corsa")]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<int>))]
 		[HttpGet]
@@ -267,6 +279,7 @@ namespace CtaLineaWebApi.Controllers
             var list = await _repo.GetRunTagsAsync(id);
             return this.Ok(list);
 		}
+		[Authorize(Policy = Constants.Policy_RunEdit)]
 		[SwaggerOperation("aggiorna l'elenco delle etichetta associati alla corsa")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status409Conflict)]

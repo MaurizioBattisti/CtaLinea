@@ -4,6 +4,7 @@
 @inject NotificationService notificationService
 @attribute [Authorize]
 
+<CheckAuthorization Roles=@(new string[] { UserRoles.Role_Anagraohics }) />
 <PageTitle>@Constants.App_Title - Punti</PageTitle>
 
 <LayoutSetter>

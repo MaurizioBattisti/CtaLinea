@@ -2,6 +2,7 @@
 @inject ICostService _CostService;
 @attribute [Authorize]
 
+<CheckAuthorization Roles=@(new string[] { UserRoles.Role_Costs }) />
 <PageTitle>@Constants.App_Title - Costi per Ditta</PageTitle>
 
 <LayoutSetter>

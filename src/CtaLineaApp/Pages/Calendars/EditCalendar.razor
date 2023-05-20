@@ -3,6 +3,7 @@
 @inherits EditorComponentBase
 @attribute [Authorize]
 
+<CheckAuthorization Roles=@(new string[] { UserRoles.Role_Manage }) />
 <PageTitle>@Constants.App_Title - Modifica Calendario </PageTitle>
 <LayoutSetter>
     <PageTitle>

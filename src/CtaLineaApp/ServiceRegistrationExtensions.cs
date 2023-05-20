@@ -12,6 +12,8 @@ using CtaLinea.Model.ModelServices;
 using CtaLineaApp.Application.Services.Costs;
 using CtaLineaApp.Application.Services.Utilities;
 using CtaLineaApp.Application.Services.Contab;
+using CtaLinea.Model.Base;
+using System.Security.Claims;
 
 namespace CtaLineaApp
 {
@@ -24,8 +26,8 @@ namespace CtaLineaApp
             var config = new CtaLineaApiConfiguration();
             builder.Configuration.GetSection(Constants.Config_CtaLineaApi).Bind(config);
 
-            // configure http client
-            builder.Services.AddScoped(x => {
+			// configure http client
+			builder.Services.AddScoped(x => {
                 var apiUrl = new Uri(config.BaseAddress);
                 return new HttpClient() { BaseAddress = apiUrl };
             });
@@ -55,6 +57,7 @@ namespace CtaLineaApp
                 .AddScoped<ICostService, CostServic>()
                 .AddScoped<IUtilityService, UtilityService>()
                 .AddScoped<ITagsService, TagsService>()
+                .AddScoped<IUserService, UserService>()
 
                 // servizio per la gestion dei contratti
                 .AddScoped<IContractService, ContractService>()
@@ -86,7 +89,6 @@ namespace CtaLineaApp
                         );
                 });
             */
-
             builder.Services.AddScoped<Radzen.DialogService>();
 
             return builder;

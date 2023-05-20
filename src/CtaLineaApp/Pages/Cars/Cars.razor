@@ -3,6 +3,7 @@
 @inject IExcelExporterService ExcelService
 @attribute [Authorize]
 
+<CheckAuthorization Roles=@(new string[] { UserRoles.Role_Anagraohics }) />
 <PageTitle>@Constants.App_Title - Mezzi</PageTitle>
 
 <LayoutSetter>

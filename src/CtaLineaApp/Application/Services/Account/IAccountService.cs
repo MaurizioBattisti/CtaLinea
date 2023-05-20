@@ -16,6 +16,10 @@ namespace CtaLineaApp.Application.Services.Account
         Task Delete(string id);
         */
 
-        Action? UserStatusChanged { get; set; }
+        event EventHandler UserStatusChanged;
+        // Action? UserStatusChanged { get; set; }
+
+        bool IsUserInRole(string role);
+        bool IsUserInRoles(IEnumerable<string> roles);
     }
 }

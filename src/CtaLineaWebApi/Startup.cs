@@ -21,6 +21,7 @@ using CtaLineaWebApi.Application.Services;
 using ZzSoft.CtaLinea.Dal.Services;
 using CtaLineaWebApi.Application.Scheduler;
 using NPOI.OpenXml4Net.OPC;
+using Microsoft.AspNetCore.Identity;
 
 namespace CtaLineaWebApi
 {
@@ -56,30 +57,8 @@ namespace CtaLineaWebApi
                 .GetSection(Constants.Configuration_MailSender)
                 .Get<EmailConfiguration>();
             services.AddSingleton(emailConfig);
-            /*
-            services.AddMvcCore()
-                .AddApiExplorer();
-             */
 
-            /*
-            var oidcConfig = new IdentityServerConfiguration();
-            this.Configuration.GetSection(Constants.ConfigSection_IdentityServer)
-                .Bind(oidcConfig);
-            */
-            // Identity Service
-            /*
-            services.AddAuthentication(
-                JwtBearerDefaults.AuthenticationScheme)
-              .AddJwtBearer(options =>
-              {
-                  options.Authority = oidcConfig.Authority;
-                  options.Audience = oidcConfig.Audience;
-              });
-            */
-            /*
-            "CtaLinea_WebAPi"
-            "wi8wDyV0E95Xp99fQM7FQHkYx8MaY+1yrzoYv9aw8mk="
-            */
+
 
             // configura  le dimensioni  per  il sistema di upload dei fiel excel
             services.Configure<FormOptions>(o => {
@@ -119,8 +98,8 @@ namespace CtaLineaWebApi
             services.AddScoped<IMailSender, MailSender>()
                 ;
 
-            // per ultimo aggiunge lo scheduler
-            services.AddSingleton<TaskScheduler, TaskScheduler>();
+			// per ultimo aggiunge lo scheduler
+			services.AddSingleton<TaskScheduler, TaskScheduler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -209,6 +188,7 @@ namespace CtaLineaWebApi
                 .AddScoped<IUtilityQueries, UtilityQueries> ()
                 .AddScoped<ICalendarRepository, CalendarRepository>()
                 .AddScoped<IForfaitQueries, ForfaitQueries> ()
+                .AddScoped<IUsersQueries, UsersQueries> ()
                 ;
 
             // repository 

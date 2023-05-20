@@ -95,8 +95,13 @@ namespace CtaLineaApp
 		internal const string Endpoint_Forfait_Single_Fmt = Endpoint_Forfaits + "/{0}";
 		internal const string Endpoint_Forfait_SetRuns = Endpoint_Forfaits + "/setruns";
 
-		// ditte
-		internal const string Endpoint_Associates = "/api/associates";
+        // utenti
+        internal const string Endpoint_Users = "/api/users";
+        internal const string Endpoint_Users_One_Fmt = Endpoint_Users + "/{0}";
+        internal const string Endpoint_Users_ResetPwd_Fmt = Endpoint_Users_One_Fmt + "/resetpwd";
+
+        // ditte
+        internal const string Endpoint_Associates = "/api/associates";
         internal const string Endpoint_Cars = "/api/cars";
 
 		// punti di raccolta

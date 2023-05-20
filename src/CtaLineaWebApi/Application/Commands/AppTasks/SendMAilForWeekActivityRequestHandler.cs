@@ -9,6 +9,7 @@ using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
@@ -21,6 +22,18 @@ namespace CtaLineaWebApi.Application.Commands.AppTasks
 	public class SendMAilForWeekActivityRequestHandler
         : IRequestHandler<SendMAilForWeekActivityRequest, bool>
 	{
+        private class MailDetailData
+        {
+            public int? LineNumber { get; set; }
+            public string RunNumber { get; set; }
+            public TimeSpan? StartTime { get; set; }
+            public string Path { get; set; }
+
+            public string DayDescr { get; set; }
+            public string RunDescr { get; set; }
+
+        }
+
         private readonly IMailSender _mailSender;
         private readonly CtaDbContext _context;
         private readonly ISchedulerTaskLogger _schedulerLogger;
@@ -142,11 +155,17 @@ namespace CtaLineaWebApi.Application.Commands.AppTasks
             string email,
             IEnumerable<AssociateActivityWeeksForMail> delta)
         {
-            var notToDo = delta.Where(x => x.Status == "OLD");
-            var newToDo = delta.Where(x => x.Status == "NEW");
-            var allToDo = delta.Where(x => x.Status == "ALL");
+            var notToDo = this.GetAggregatedDetails(
+                delta.Where(x => x.Status == "OLD")
+                );
+            var newToDo = this.GetAggregatedDetails(
+                delta.Where(x => x.Status == "NEW")
+                );
+            var allToDo = this.GetAggregatedDetails(
+                delta.Where(x => x.Status == "ALL")
+                );
 
-            var crLf = "\n";
+            var crLf = "\r\n";
             var sb = new StringBuilder(1024);
 
             sb.Append("Buongiorno ");
@@ -163,7 +182,7 @@ namespace CtaLineaWebApi.Application.Commands.AppTasks
                 sb.Append(crLf);
                 foreach (var run in notToDo)
                 {
-                    sb.Append(this.getRunDescr(run));
+                    sb.Append(this.GetRunDescr(run));
                     sb.Append(crLf);
                 }
             }
@@ -175,7 +194,7 @@ namespace CtaLineaWebApi.Application.Commands.AppTasks
                 sb.Append(crLf);
                 foreach (var run in newToDo)
                 {
-                    sb.Append(this.getRunDescr(run));
+                    sb.Append(this.GetRunDescr(run));
                     sb.Append(crLf);
                 }
             }
@@ -188,7 +207,7 @@ namespace CtaLineaWebApi.Application.Commands.AppTasks
                 sb.Append(crLf);
                 foreach (var run in allToDo)
                 {
-                    sb.Append(this.getRunDescr(run));
+                    sb.Append(this.GetRunDescr(run));
                     sb.Append(crLf);
                 }
             }
@@ -200,28 +219,50 @@ namespace CtaLineaWebApi.Application.Commands.AppTasks
 
             return sb.ToString();
         }
-        private string getRunDescr (AssociateActivityWeeksForMail run)
+        private IEnumerable<MailDetailData> GetAggregatedDetails (
+            IEnumerable<AssociateActivityWeeksForMail> source
+            )
+        {
+            var qry = (from a in source
+                       group a by new { a.LineNumber, a.RunNumber, a.StartTime, a.Path, a.RunDataDescription } into d
+                       select new MailDetailData()
+                       {
+                           LineNumber = d.Key.LineNumber,
+                           RunNumber = d.Key.RunNumber ?? "<nr corsa non indicato>",
+                           StartTime = d.Key.StartTime,
+                           Path = d.Key.Path ?? "<percorso non indicato>",
+                           RunDescr = d.Key.RunDataDescription,
+                           DayDescr = string.Join(", ",
+                                    d.Select(a =>
+                                        string.Format(_culture, "{0:dddd}", a.Day)
+                                    )
+                            )
+                       });
+            return qry;
+        }
+
+        private string GetRunDescr (MailDetailData detail)
         {
             var hour = "<No orario>";
-            if (run.StartTime != null)
+            if (detail.StartTime != null)
             {
                 var tonly = new TimeOnly(
-                    run.StartTime.Value.Hours,
-                    run.StartTime.Value.Minutes,
-                    run.StartTime.Value.Seconds
+                    detail.StartTime.Value.Hours,
+                    detail.StartTime.Value.Minutes,
+                    detail.StartTime.Value.Seconds
                     );
                 hour = string.Format(_culture, "{0:hh:mm}", tonly);
             }
 
             return string.Format(
                 _culture,
-                "nr Linea: {0} corsa {1} delle {2} percorso {3} il girono: {4:dddd} {5} ",
-                run.LineNumber ?? 0,
-                run.RunNumber ?? "<nessun numero>",
+                "{0} - {1} {2} {3} {4} {5}",
+                detail.LineNumber ?? 0,
+                detail.RunNumber,
                 hour,
-                string.IsNullOrWhiteSpace( run.Path) == false ? run.Path : "<percorso non definito>",
-                run.Day,
-                run.RunDataDescription ?? string.Empty
+                string.IsNullOrWhiteSpace( detail.Path) == false ? detail.Path : "<percorso non definito>",
+                detail.DayDescr ?? string.Empty,
+                detail.RunDescr ?? string.Empty
                 );;
         }
 

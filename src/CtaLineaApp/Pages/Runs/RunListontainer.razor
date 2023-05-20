@@ -11,6 +11,7 @@
 @inject IRunRepository RunRepo
 @inject IExcelExporterService ExcelService
 @inject IForfaitService ForfaitService
+@inject IAccountService _accountService
 
 @inherits EditorComponentBase
 @attribute [Authorize]
@@ -83,12 +84,12 @@
                                   Icon="@(EditorVisible==false ? "visibility" : "visibility_off")"
                                   Click="@(() => EditorVisible = !EditorVisible)" />
 
-                    <RadzenButton ButtonStyle="ButtonStyle.Primary"
-                                  Icon="domain_add"
-                                  Click="@AddLine_Click" />
-
-
-
+                    @if(this.CanEdit())
+                    {
+                        <RadzenButton ButtonStyle="ButtonStyle.Primary"
+                                      Icon="domain_add"
+                                      Click="@AddLine_Click" />
+                    }
                 </RadzenStack>
             </HeaderTemplate>
             <EmptyTemplate>
@@ -474,6 +475,20 @@
     }
     #endregion
 
+    private bool CanEdit ()
+    {
+        return this._accountService?.IsUserInRoles(
+            new List<string>()
+                {
+                UserRoles.Role_Edit,
+                UserRoles.Role_Manage
+                }) ?? false;
+    }
+    private bool CanManage()
+    {
+        return this._accountService?.IsUserInRole( UserRoles.Role_Manage)?? false;
+    }
+
     private async Task GlobalFilterChanged ()
     {
         await LoadDataASync();
@@ -683,15 +698,19 @@
             this.grdData.SelectRow(args.Data);
         }
         if (this.IsClean == false) return ;
+        if (this.CanEdit() == false) return;
 
         ContextMenuService.Open(args, ds =>
             @<RadzenMenu Click=@((e)=>OnMenuItemClick(args, e))>
-                <RadzenMenuItem Text="Etichette..." Value=@RunMenuItems.Tags />
-                <RadzenMenuItem Text="Forfait..." Value="@RunMenuItems.Forfait" />
-                <hr class="separator">
+                @if (CanManage())
+                {
+                    <RadzenMenuItem Text="Etichette..." Value=@RunMenuItems.Tags />
+                    <RadzenMenuItem Text=@(args.Data.ForfaitId == null ? "Aggiungi Forfait..." : "Elimina forfait..." )  Value="@RunMenuItems.Forfait" />
+                    <hr class="separator">
+                }
                 <RadzenMenuItem Text="Elimina..." Value=@RunMenuItems.Delete />
-        </RadzenMenu>
-    );
+            </RadzenMenu>
+        );
     }
 
     private async Task OnMenuItemClick(
@@ -713,7 +732,14 @@
                 await this.ShowTagsEditor(args.Data.Id);
                 break;
             case RunMenuItems.Forfait:
-                await this.SetForfaitAsync(args.Data.Id);
+                if (args.Data.ForfaitId == null)
+                {
+                    await this.SetForfaitAsync(args.Data.Id);
+                }
+                else
+                {
+                    await this.RemoveForfaitAsync(args.Data.Id);
+                }
                 break;
 
             default:
@@ -863,6 +889,38 @@
                     this.notificationService.Notify(NotificationSeverity.Error, "Errore durante l'assegnaizoen del forfait. ", exc.Message);
 
                 }
+            }
+        }
+    }
+    private async Task RemoveForfaitAsync(Guid runId)
+    {
+        // chiede conferma per l'eliminaizone del forfait
+        var result = await this.DialogService.Confirm(
+            "Desideri verametne eliminare il forfait dalla corsa ?",
+            "eliminazione forfait",
+            new ConfirmOptions()
+                {
+                    OkButtonText = "Si, Elimina !",
+                    CancelButtonText = "No ! Annulla"
+                }
+        );
+
+        if (result == true)
+        {
+            // elimina il forfait
+            try
+            {
+                await ForfaitService.SetDetails(
+                    null, new List<Guid>() { runId }
+                    );
+
+                // ricarica al riga attuale
+                await this.RealodOneRowAsync(runId);
+            }
+            catch (Exception exc)
+            {
+                this.notificationService.Notify(NotificationSeverity.Error, "Errore durante l'assegnaizoen del forfait. ", exc.Message);
+
             }
         }
     }

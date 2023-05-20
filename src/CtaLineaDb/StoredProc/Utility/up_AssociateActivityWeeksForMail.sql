@@ -112,7 +112,8 @@ bEGIN
 			ct.ContractName,
 			v.LineNumber,
 			v.RunNumber,
-			v.StartTime,
+			COALESCE(nn.StartTime, v.StartTime) AS StartTime,
+			COALESCE(nn.Path, v.Path) AS Path,
 			v.Path,
 			'' AS RunDataDescription,
 
@@ -130,6 +131,8 @@ bEGIN
 			ON d.RunVariationId = v.RunVariationId
 		INNER JOIN dbo.Associates a
 			ON d.AssociateId = a.AssociateId
+		LEFT JOIN [dbo].[vw_PathByNodes] nn
+			ON v.RunVariationId = nn.RunVariationId
 		ORDER BY a.Description, a.AssociateId, d.Status DESC, d.Day;
 
 	RETURN 0;

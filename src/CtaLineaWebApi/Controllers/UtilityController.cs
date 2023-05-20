@@ -48,7 +48,8 @@ namespace CtaLineaWebApi.Controllers
             this._logger = logger;
         }
 
-        [Consumes(MediaTypeNames.Application.Json)]
+		[Authorize(Policy = Constants.Policy_Planning)]
+		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
@@ -68,6 +69,7 @@ namespace CtaLineaWebApi.Controllers
 
             return this.Ok(result);
         }
+		[Authorize(Policy = Constants.Policy_RunView)]
 		[Consumes(MediaTypeNames.Application.Json)]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -88,7 +90,8 @@ namespace CtaLineaWebApi.Controllers
 			return this.Ok(result);
 		}
 
-        [Consumes(MediaTypeNames.Application.Json)]
+		[Authorize(Policy = Constants.Policy_RunView)]
+		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
@@ -108,6 +111,7 @@ namespace CtaLineaWebApi.Controllers
             return this.Ok(result);
         }
 
+		[Authorize(Policy = Constants.Policy_ViewData)]
 		[Consumes(MediaTypeNames.Application.Json)]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -125,6 +129,7 @@ namespace CtaLineaWebApi.Controllers
 
 			return this.Ok(result);
 		}
+		[Authorize(Policy = Constants.Policy_ManageData)]
 		[Consumes(MediaTypeNames.Application.Json)]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -143,9 +148,7 @@ namespace CtaLineaWebApi.Controllers
             return this.NoContent();
 		}
 
-
-
-
+        /*
 		[ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("ttservices")]
@@ -167,5 +170,6 @@ namespace CtaLineaWebApi.Controllers
             }
             return this.Ok();
         }
+        */
     }
 }

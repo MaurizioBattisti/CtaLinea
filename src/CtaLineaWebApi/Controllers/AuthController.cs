@@ -66,8 +66,7 @@ namespace CtaLineaWebApi.Controllers
             )]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize]
-        // [Authorize(Policy = CtaLineaConstants.AuthPolicy_ChangePAssword)]
+        [Authorize(Policy = Constants.Policy_ChangePAssword)]
         public async Task<IActionResult> ChangePasswordAsync(
             [FromBody] ChangePasswordModel model)
         {
@@ -97,6 +96,5 @@ namespace CtaLineaWebApi.Controllers
             }
             return this.NoContent();
         }
-
     }
 }

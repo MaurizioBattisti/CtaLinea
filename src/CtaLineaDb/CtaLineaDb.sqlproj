@@ -81,6 +81,7 @@
     <Folder Include="StoredProc\Actions" />
     <Folder Include="Tables\TaskScheduler" />
     <Folder Include="Views\Contab" />
+    <Folder Include="StoredProc\Users" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post_Deploy.sql" />
@@ -158,5 +159,11 @@
     <Build Include="Tables\Contab\MultiRunForfaitDetails.sql" />
     <Build Include="Views\Contab\vw_MultiRunForfaits.sql" />
     <Build Include="StoredProc\Utility\up_AssociateActivityWeeksForMail.sql" />
+    <Build Include="Views\Runs\vw_PathByNodes.sql" />
+    <Build Include="Views\Base\vw_Users.sql" />
+    <Build Include="StoredProc\Users\up_User_New.sql" />
+    <Build Include="StoredProc\Users\up_User_Edit.sql" />
+    <Build Include="StoredProc\Users\up_User_Delete.sql" />
+    <Build Include="StoredProc\Users\up_User_ResetPassword.sql" />
   </ItemGroup>
 </Project>

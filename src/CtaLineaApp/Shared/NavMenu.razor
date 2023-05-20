@@ -1,59 +1,164 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
+﻿@inject IAccountService AccountService
+@implements IDisposable
+
+<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href=""><span style="color: #ffffff">@Constants.App_Title </span></a>
 </div>
 
 <RadzenPanelMenu>
     <RadzenPanelMenuItem Text="Home" Path="/" Icon="home"></RadzenPanelMenuItem>
 
-    <RadzenPanelMenuItem Text="Elenco Corse" Path="/runs" Icon="departure_board"></RadzenPanelMenuItem>
-    
-    <RadzenPanelMenuItem Text="Utility" Icon="bookmark">
-        <RadzenPanelMenuItem Text="Planning" Path="/planning" Icon="calendar_view_week"></RadzenPanelMenuItem>
-        <RadzenPanelMenuItem Text="Costi per Ditta" Path="/costbyassociate" Icon="point_of_sale"></RadzenPanelMenuItem>
-    </RadzenPanelMenuItem>
-    
-    <RadzenPanelMenuItem Text="Anagrafiche" Icon="folder">
-        <RadzenPanelMenuItem Text="Appalti" Path="/contracts" Icon="assignment"></RadzenPanelMenuItem>
+    @if (this.CanOperate() == true)
+    {
+        <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_RunList)) Text="Elenco Corse" Path="/runs" Icon="departure_board"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_Utility)) Text="Utility" Icon="bookmark">
+            <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_Planning)) Text="Planning" Path="/planning" Icon="calendar_view_week"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_AssociateCosts)) Text="Costi per Ditta" Path="/costbyassociate" Icon="point_of_sale"></RadzenPanelMenuItem>
+        </RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_ManageAnags)) Text="Anagrafiche Gestione" Icon="folder">
+            <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_ManageContracts)) Text="Appalti" Path="/contracts" Icon="assignment"></RadzenPanelMenuItem>
 
-        <RadzenPanelMenuItem Text="Calendari" Icon="calendar_month">
-            <RadzenPanelMenuItem Text="Lista Calendari" Path="/calendars" Icon="calendar_today"></RadzenPanelMenuItem>
-            <RadzenPanelMenuItem Text="Nuovo Calendario" Path="/calendar-new" Icon="edit_calendar"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_ManageCalendars)) Text="Calendari" Icon="calendar_month">
+                <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_CalendarList)) Text="Lista Calendari" Path="/calendars" Icon="calendar_today"></RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_NewCalednar)) Text="Nuovo Calendario" Path="/calendar-new" Icon="edit_calendar"></RadzenPanelMenuItem>
+            </RadzenPanelMenuItem>
+
+            <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_ManageSuspensionTypes)) Text="Gestione Tupi Sospensione" Path="/cars" Icon="block"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_ManageTags)) Text="Gestione Etichette" Path="/tags" Icon="local_offer"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_ManageForfaits)) Text="Gestione Forfait" Path="/forfaits" Icon="savings"></RadzenPanelMenuItem>
+
         </RadzenPanelMenuItem>
 
-        <RadzenPanelMenuItem Text="Gestione Tupi Sospensione" Path="/cars" Icon="block"></RadzenPanelMenuItem>
-        <RadzenPanelMenuItem Text="Gestione Etichette" Path="/tags" Icon="local_offer"></RadzenPanelMenuItem>
-        <RadzenPanelMenuItem Text="Gestione Forfait" Path="/forfaits" Icon="savings"></RadzenPanelMenuItem>
-        
-    </RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_Tools)) Text="Strumenti" Icon="construction">
+            <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_ManageTasks)) Text="Gestione attività" Path="/scheduledtasks" Icon="watch_later"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_ManageUSers)) Text="Utenti" Path="/users" Icon="people"></RadzenPanelMenuItem>
 
-    <RadzenPanelMenuItem Text="Strumenti" Icon="construction">
-        
-        <RadzenPanelMenuItem Text="Gestione attività" Path="/scheduledtasks" Icon="watch_later"></RadzenPanelMenuItem>
-        <RadzenPanelMenuItem Text="Rimpiazzo mezzo" Path="/cardiscontinuation" Icon="no_crash"></RadzenPanelMenuItem>
-    </RadzenPanelMenuItem>
-    
-    <RadzenPanelMenuItem Text="Dati" Icon="inventory">
-        <RadzenPanelMenuItem Text="Ditte" Path="/cars" Icon="business"></RadzenPanelMenuItem>
-        <RadzenPanelMenuItem Text="Mezzi" Path="/cars" Icon="directions_bus"></RadzenPanelMenuItem>
-        
-        <RadzenPanelMenuItem Text="Punti" Path="/points" Icon="place"></RadzenPanelMenuItem>
-    </RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_ManageCarReplace)) Text="Rimpiazzo mezzo" Path="/cardiscontinuation" Icon="no_crash"></RadzenPanelMenuItem>
+        </RadzenPanelMenuItem>
 
-    <!--
-    <hr class="separator">
-    <RadzenPanelMenuItem Text="Ricerche" Icon="saved_search">
-        <RadzenPanelMenuItem Text="Mezzi" Path="/cars" Icon="departure_board"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_ExternalAnags)) Text="Dati" Icon="inventory">
+            <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_AnagASsociates)) Text="Ditte" Path="/cars" Icon="business"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem  Visible=@(VisibleItems.Contains(Iten_AnagCars)) Text="Mezzi" Path="/cars" Icon="directions_bus"></RadzenPanelMenuItem>
 
-    </RadzenPanelMenuItem>
-        
-    <RadzenPanelMenuItem Text="Gestione" Icon="construction">
-        <RadzenPanelMenuItem Text="Importa TT" Path="/import_tt" Icon="train"></RadzenPanelMenuItem>
-        <RadzenPanelMenuItem Text="Importa CTA" Path="/import_cta" Icon="local_shipping"></RadzenPanelMenuItem>
-        <RadzenPanelMenuItem Text="Crea Schede V2" Path="/export_v2" Icon="local_shipping"></RadzenPanelMenuItem>
-
-        <RadzenPanelMenuItem Text="Importazioni" Path="/import_list" Icon="file_upload"></RadzenPanelMenuItem>
-    </RadzenPanelMenuItem>
-    -->
+            <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_AnagNodes)) Text="Punti" Path="/points" Icon="place"></RadzenPanelMenuItem>
+        </RadzenPanelMenuItem>
+    }
     <br />
     <RadzenPanelMenuItem Text="Informazioni" Path="/about" Icon="info"></RadzenPanelMenuItem>
 </RadzenPanelMenu>
+
+@code {
+    #region items
+    private const string Item_RunList = "runList";
+
+    private const string Item_Utility = "utiltiy";
+    private const string Item_Planning = "Planning";
+    private const string Item_AssociateCosts = "AssCosts";
+
+    private const string Item_ManageAnags = "ManageAnags";
+    private const string Item_ManageContracts = "Contracts";
+    private const string Item_ManageCalendars = "ManageCalednars";
+    private const string Item_CalendarList = "CalendarList";
+    private const string Item_NewCalednar = "CalendarNew";
+    private const string Item_ManageSuspensionTypes = "ManageSuspensionTypes";
+    private const string Item_ManageTags = "ManageTags";
+    private const string Item_ManageForfaits = "ManageForfaits";
+
+    private const string Item_Tools = "Tools";
+    private const string Item_ManageTasks = "ToolTasks";
+    private const string Item_ManageUSers = "ToolUsers";
+    private const string Item_ManageCarReplace = "Tool_CarREplace";
+
+    private const string Item_ExternalAnags = "extAnag";
+    private const string Item_AnagASsociates = "extAssociates";
+    private const string Iten_AnagCars = "extCars";
+    private const string Item_AnagNodes = "extCp";
+    #endregion
+
+    private IList<string> VisibleItems = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        AccountService.UserStatusChanged += this.UserChangedHangler;
+    }
+    private void UserChangedHangler (object sender,EventArgs e)
+    {
+        // cacola la lista degli item visibili
+        VisibleItems.Clear();
+
+
+        if (this.IsUserInRole(
+                UserRoles.Role_View,
+                UserRoles.Role_Edit,
+                UserRoles.Role_Manage
+            )) 
+            VisibleItems.Add(Item_RunList);
+
+        if (this.IsUserInRole(
+                UserRoles.Role_Planning,
+                UserRoles.Role_Costs
+            ))
+            VisibleItems.Add(Item_Utility);
+        if (this.IsUserInRole(UserRoles.Role_Planning)) VisibleItems.Add(Item_Planning);
+        if (this.IsUserInRole(UserRoles.Role_Costs)) VisibleItems.Add(Item_AssociateCosts);
+
+        if (this.IsUserInRole(
+                UserRoles.Role_Manage
+            ))
+            VisibleItems.Add(Item_ManageAnags);
+        if (this.IsUserInRole(UserRoles.Role_Manage)) VisibleItems.Add(Item_ManageContracts);
+        if (this.IsUserInRole(UserRoles.Role_Manage)) VisibleItems.Add(Item_ManageCalendars);
+        if (this.IsUserInRole(UserRoles.Role_Manage)) VisibleItems.Add(Item_CalendarList);
+        if (this.IsUserInRole(UserRoles.Role_Manage))VisibleItems.Add(Item_NewCalednar);
+        if (this.IsUserInRole(UserRoles.Role_Manage))VisibleItems.Add(Item_ManageSuspensionTypes);
+        if (this.IsUserInRole(UserRoles.Role_Manage)) VisibleItems.Add(Item_ManageTags);
+        if (this.IsUserInRole(UserRoles.Role_Manage)) VisibleItems.Add(Item_ManageForfaits);
+
+        if (this.IsUserInRole(
+                UserRoles.Role_Manage,
+                UserRoles.Role_Takss,
+                UserRoles.Role_Users
+            ))
+            VisibleItems.Add(Item_Tools);
+        if (this.IsUserInRole(UserRoles.Role_Takss)) VisibleItems.Add(Item_ManageTasks);
+        if (this.IsUserInRole(UserRoles.Role_Users)) VisibleItems.Add(Item_ManageUSers);
+        if (this.IsUserInRole(UserRoles.Role_Manage)) VisibleItems.Add(Item_ManageCarReplace);
+
+        if (this.IsUserInRole(
+            UserRoles.Role_Anagraohics)) 
+            VisibleItems.Add(Item_ExternalAnags);
+        if (this.IsUserInRole(UserRoles.Role_Anagraohics)) VisibleItems.Add(Item_AnagASsociates);
+        if (this.IsUserInRole(UserRoles.Role_Anagraohics)) VisibleItems.Add(Iten_AnagCars);
+        if (this.IsUserInRole(UserRoles.Role_Anagraohics)) VisibleItems.Add(Item_AnagNodes);
+
+        this.StateHasChanged();
+    }
+
+    private bool IsUserInRole (
+        params string[] roles)
+    {
+        var authorized = false;
+        if (this.AccountService != null)
+        {
+            authorized = this.AccountService.IsUserInRoles(roles);
+        }
+        return authorized;
+    }
+    private bool CanOperate ()
+    {
+        bool can = false;
+        if (this.AccountService.User  != null)
+        {
+            can = this.AccountService.User.MustChangePAssword == false;
+        }
+
+        return can;
+    }
+
+    void IDisposable.Dispose()
+    {
+        AccountService.UserStatusChanged -= this.UserChangedHangler;
+    }
+}

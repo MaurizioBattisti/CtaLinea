@@ -188,11 +188,15 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 			using IDbConnection conn = this._context.Database.GetDbConnection();
 			conn.Open();
 
-			// elimina tutit i dettagli dei forfait in cui la corsa è in lista
-			var sql = string.Format("DELETE FROM {0} WHERE RunId IN ( {1} )",
+            var deleteValues = string.Join(",",
+                this.GetArgumetnNameList(index, argsPrefis)
+                );
+
+            // elimina tutit i dettagli dei forfait in cui la corsa è in lista
+            var sql = string.Format("DELETE FROM {0} WHERE RunId IN ( {1} )",
 				SQl_ForfaitDetailTable,
-				runIds
-				);
+                deleteValues
+                );
 
 			// e li aggiunge
 			await conn.ExecuteAsync(

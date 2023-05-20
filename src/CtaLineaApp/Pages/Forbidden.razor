@@ -1,0 +1,18 @@
+﻿@page "/forbidden"
+@attribute [Authorize]
+
+<PageTitle>@Constants.App_Title - Non autorizzato</PageTitle>
+
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Non Autorizzato" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+    </TopLine>
+</LayoutSetter>
+
+<h1>Spiacente non hai i privilegi per poter accedere a questa pagina </h1>
+
+@code {
+
+}

@@ -16,7 +16,7 @@ using ZzSoft.Api.Utility.Base;
 
 namespace CtaLineaWebApi.Controllers
 {
-	[Authorize]
+	[Authorize(Policy = Constants.Policy_Tasks)]
 	[ApiController]
 	[Route("api/tasks")]
 	[Produces(MediaTypeNames.Application.Json)]

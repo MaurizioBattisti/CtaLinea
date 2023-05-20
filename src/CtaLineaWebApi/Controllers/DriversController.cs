@@ -12,9 +12,8 @@ using CtaLinea.QueryModel;
 
 namespace CtaLineaWebApi.Controllers
 {
-    [Authorize]
-    // [Authorize(Roles = "CtaLinea_admin")]
-    [ApiController]
+	[Authorize]
+	[ApiController]
     [Route("api/drivers")]
     public class DriversController
         : ZControllerBase
@@ -27,7 +26,8 @@ namespace CtaLineaWebApi.Controllers
             this._queries = queries;
         }
 
-        [Consumes(MediaTypeNames.Application.Json)]
+		[Authorize(Policy = Constants.Policy_ViewData)]
+		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
@@ -44,7 +44,8 @@ namespace CtaLineaWebApi.Controllers
             return await this.ModelOKAsync(result)
                 .ConfigureAwait(false);
         }
-        [Consumes(MediaTypeNames.Application.Json)]
+		[Authorize(Policy = Constants.Policy_ViewData)]
+		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]

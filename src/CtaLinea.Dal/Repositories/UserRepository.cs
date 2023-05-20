@@ -1,6 +1,8 @@
-﻿using Dapper;
+﻿using CtaLinea.Model.Base;
+using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -47,6 +49,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             return user;
         }
 
+        /*
         public async Task<UserEntity> UpdateUserAsync(
             UserEntity user
             )
@@ -54,7 +57,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
             var tran = conn.BeginTransaction();
-            string sql = "UPDATE dbo.Meta_Users SET PasswordHash = @PasswordHash, Description = @Description, Email = @Email, MustChangePassword = @MustChangePassword, Expiration = @Expiration, AssociateId = @AssociateId  WHERE UserName = @UserName";
+            string sql = "UPDATE dbo.Meta_Users SET PasswordHash = @PasswordHash, Description = @Description, Email = @Email, MustChangePassword = @MustChangePassword, Expiration = @Expiration, AssociateId = @AssociateId, Interactive = @Interactive  WHERE UserName = @UserName";
             var rows = await conn.ExecuteAsync(
                 sql,
                 user,
@@ -109,6 +112,105 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             tran.Commit();
 
             return await this.GetUserAsync(user.UserName); ;
+        }
+        */
+
+        public async Task<UserEntity> InsertUSerAsync (
+			UserEntity user)
+        {
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+
+            string rolesString = null;
+            if (user.Roles != null)
+            {
+                rolesString = string.Join(",", user.Roles);
+			}
+
+			await conn.ExecuteAsync(
+                "[dbo].[up_User_New]",
+                new
+                {
+					UserName = user.UserName,
+					PasswordHash = user.PasswordHash,
+					Description = user.Description,
+					Email = user.Email,
+					Expiration = user.Expiration,
+					MustChangePassword = user.MustChangePassword,
+					Interactive = user.Interactive,
+					AssociateId = user.AssociateId,
+					Roles = rolesString
+				},
+                commandType: CommandType.StoredProcedure)
+                .ConfigureAwait(false);
+
+            return await this.GetUserAsync(user.UserName); ;
+        }
+        public async Task<UserEntity> UpdateUserAsync(
+            UserEntity user)
+        {
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+
+			string rolesString = null;
+			if (user.Roles != null)
+			{
+				rolesString = string.Join(",", user.Roles);
+			}
+
+			await conn.ExecuteAsync(
+                "[dbo].[up_User_Edit]",
+				new
+				{
+					UserName = user.UserName,
+					Description = user.Description,
+					Email = user.Email,
+					Expiration = user.Expiration,
+					MustChangePassword = user.MustChangePassword,
+					AssociateId = user.AssociateId,
+					Roles = rolesString
+				},
+                commandType: CommandType.StoredProcedure)
+                .ConfigureAwait(false);
+
+            return await this.GetUserAsync(user.UserName); ;
+        }
+        public async Task DeleteUserAsync(
+            string userName)
+        {
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+
+            await conn.ExecuteAsync(
+                "[dbo].[up_User_Delete]",
+                new
+                {
+                    UserName = userName
+                },
+                commandType: CommandType.StoredProcedure)
+                .ConfigureAwait(false);
+            return;
+        }
+        public async Task<UserEntity> SetUserPasswordAsync(
+            string userName,
+            string passwordHash,
+            bool setMustChange = false)
+        {
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+
+            await conn.ExecuteAsync(
+                "[dbo].[up_User_ResetPassword]",
+                new
+                {
+                    UserName = userName,
+                    PasswordHash = passwordHash,
+                    SetMustChange = setMustChange
+                },
+                commandType: CommandType.StoredProcedure)
+                .ConfigureAwait(false);
+
+            return await this.GetUserAsync(userName); ;
         }
 
         private async Task<IEnumerable<string>> GetUserRolesAsync(

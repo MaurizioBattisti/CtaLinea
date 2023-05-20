@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using System.Linq;
 using ZzSoft.CtaLinea.Dal.Repositories;
 using ZzSoft.CtaLinea.Dal.Model;
+using CtaLinea.Model.Base;
 
 namespace CtaLineaWebApi.Auth.Services
 {
@@ -23,8 +24,6 @@ namespace CtaLineaWebApi.Auth.Services
         private const string SysteUser_Name = "System";
 		private const string SysteUser_Desciption = "Utente di sistema";
 		private const string SysteUser_Email = "maurizio.battisti@zzsoft.it";
-		private const string SysteUser_Role = "SYSTEM";
-
 
 		private readonly JwtOptions _appSettings;
         private readonly IJwtService _jwtService;
@@ -114,8 +113,9 @@ namespace CtaLineaWebApi.Auth.Services
                 Email = SysteUser_Email,
                 MustChangePassword = false,
                 AssociateId = null,
+                Interactive = false,
 
-                Roles = new string[] { SysteUser_Role }
+                Roles = new string[] { UserRoles.Role_Takss }
     		};
 
 			// authentication successful so generate jwt token
@@ -136,13 +136,75 @@ namespace CtaLineaWebApi.Auth.Services
 			return await Task.FromResult (result);
 		}
 
-		public async Task<ChangePasswordResult> ChangePasswordASync(
+        public async Task InsertNewUSerAsync (
+            NewUserModel model)
+        {
+            var user = new UserEntity()
+            {
+                UserName = model.UserName,
+                PasswordHash = this.GetPasswordHash(model.Password),
+                Description = model.Description,
+                Email = model.Email,
+                MustChangePassword = model.MustChangePassword,
+                AssociateId = model.AssociateId,
+                Interactive = model.Interactive,
+
+                Roles = model.Roles
+            };
+            
+            await this._userRepository.InsertUSerAsync(user)
+                .ConfigureAwait(false);
+        }
+        public async Task UpdateUSerAsync(
+            string userName,
+            EditUSerModel model)
+        {
+            var user = new UserEntity()
+            {
+                UserName = userName,
+                Description = model.Description,
+                Email = model.Email,
+                MustChangePassword = model.MustChangePassword,
+                AssociateId = model.AssociateId,
+
+                Roles = model.Roles
+            };
+            await this._userRepository.UpdateUserAsync(user)
+                .ConfigureAwait(false);
+        }
+        public async Task DeleteUserAsync(
+            string userName)
+        {
+            await this._userRepository.DeleteUserAsync(userName)
+                .ConfigureAwait(false);
+        }
+
+        public async Task SetUserPAsswordAsync(
+            string userName,
+            string newPAssowrd,
+            bool setMustChange = true)
+        {
+            var newPasswordHash = this.GetPasswordHash(newPAssowrd);
+
+            //  reimposta la password 
+            await this._userRepository.SetUserPasswordAsync(
+                userName,
+                newPasswordHash,
+                setMustChange)
+                .ConfigureAwait(false);
+
+            return;
+        }
+
+        public async Task<ChangePasswordResult> ChangePasswordASync(
             string userName,
             string oldPAssword,
             string newPAssowrd)
         {
             try
             {
+                var newPasswordHash = this.GetPasswordHash(newPAssowrd);
+
                 var user = await this._userRepository.GetUserAsync(userName)
                     .ConfigureAwait(false);
 
@@ -167,12 +229,11 @@ namespace CtaLineaWebApi.Auth.Services
                         false, "La vecchia password non è valida");
                 }
 
-                // aggiorna i dati 
-                user.PasswordHash = this.GetPasswordHash(newPAssowrd);
-                user.MustChangePassword = false;
-
                 //  aggiorna la password 
-                await this._userRepository.UpdateUserAsync(user)
+                await this._userRepository.SetUserPasswordAsync(
+                    userName,
+                    newPasswordHash,
+                    false)
                     .ConfigureAwait(false);
 
                 var result = new ChangePasswordResult(

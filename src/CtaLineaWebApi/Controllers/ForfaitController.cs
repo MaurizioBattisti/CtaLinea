@@ -43,7 +43,8 @@ namespace CtaLineaWebApi.Controllers
             _logger = logger;
         }
 
-        [SwaggerOperation("Elenco dei forfait multi corsa")]
+		[Authorize(Policy = Constants.Policy_ViewData)]
+		[SwaggerOperation("Elenco dei forfait multi corsa")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -57,8 +58,9 @@ namespace CtaLineaWebApi.Controllers
             return await this.ModelOKAsync(result)
                 .ConfigureAwait(false);
         }
-        
-        [SwaggerOperation("dati di un singolo forfati multicorsa")]
+
+		[Authorize(Policy = Constants.Policy_ViewData)]
+		[SwaggerOperation("dati di un singolo forfati multicorsa")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -75,6 +77,7 @@ namespace CtaLineaWebApi.Controllers
         }
 
 
+		[Authorize(Policy = Constants.Policy_ManageData)]
 		[SwaggerOperation("Crea un nuovo forfait multi corsa")]
 		[Consumes(MediaTypeNames.Application.Json)]
 		[ProducesResponseType(StatusCodes.Status200OK)]
@@ -92,6 +95,7 @@ namespace CtaLineaWebApi.Controllers
             return this.Ok(id);
         }
 
+		[Authorize(Policy = Constants.Policy_ManageData)]
 		[SwaggerOperation("modifica i dati di un nuovo forfait multi corsa")]
 		[Consumes(MediaTypeNames.Application.Json)]
 		[ProducesResponseType(StatusCodes.Status200OK)]
@@ -114,6 +118,7 @@ namespace CtaLineaWebApi.Controllers
 			return this.Ok();
 		}
 
+		[Authorize(Policy = Constants.Policy_ManageData)]
 		[SwaggerOperation("modifica i dati di un nuovo forfait multi corsa")]
 		[Consumes(MediaTypeNames.Application.Json)]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -133,6 +138,7 @@ namespace CtaLineaWebApi.Controllers
 			return this.NoContent();
 		}
 
+		[Authorize(Policy = Constants.Policy_ManageData)]
 		[SwaggerOperation("Imposta il forfait sulle corse")]
 		[Consumes(MediaTypeNames.Application.Json)]
 		[ProducesResponseType(StatusCodes.Status204NoContent, 

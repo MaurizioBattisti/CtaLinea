@@ -5,6 +5,7 @@
 
 @inject IAccountService AccountService
 @inject NavigationManager NavigationManager
+@implements IDisposable
 
 <div style="padding-left: 20px;" >
 @if(AccountService.User == null)
@@ -33,10 +34,18 @@ else
     {
         await base.OnInitializedAsync();
 
-        AccountService.UserStatusChanged = () => { this.StateHasChanged(); };
+        AccountService.UserStatusChanged += this.UserChangedHangler;
+    }
+    private void UserChangedHangler(object sender, EventArgs e)
+    {
+        this.StateHasChanged();
+    }
+    void IDisposable.Dispose()
+    {
+        AccountService.UserStatusChanged -= this.UserChangedHangler;
     }
 
-    void Login ()
+    void Login()
     {
         var returnUrl = WebUtility.UrlEncode(new Uri(NavigationManager.Uri).PathAndQuery);
         NavigationManager.NavigateTo($"account/login?returnUrl={returnUrl}");

@@ -7,6 +7,7 @@
 @inject RouterSessionService RouterSessionService
 @inject IRunChecker runChecker
 @inherits EditorComponentBase
+@inject IAccountService _accountService
 
 <CtaLineaSttingsNotifier Changed=@StateHasChanged />
 
@@ -101,8 +102,23 @@ else if (this.NoData == true)
     [CascadingParameter]
     CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
 
+
+    private IList<string> EditRoes = new List<string>() { UserRoles.Role_Edit, UserRoles.Role_Manage };
+    private bool _ReadOnly = false;
     [Parameter]
-    public bool ReadOnly { get; set; } = false;
+    public bool ReadOnly 
+    {
+        get
+        {
+            if (_ReadOnly == false)
+            {
+                bool inRole = _accountService.IsUserInRoles(this.EditRoes);
+                _ReadOnly = !inRole;
+            }
+            return _ReadOnly;
+        }
+        set { _ReadOnly = value;  }
+    }
 
     private Guid RunId { get; set; } = Guid.Empty;
 

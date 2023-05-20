@@ -1,0 +1,324 @@
+﻿@page "/users"
+
+@inject ContextMenuService ContextMenuService
+@inject DialogService DialogService
+@inject NotificationService notificationService
+@inject IQueryUtilityService QueryService
+
+@inject IUserService _userService
+@inherits EditorComponentBase
+@attribute [Authorize]
+
+<CheckAuthorization Roles=@(new string[] { UserRoles.Role_Users }) />
+<PageTitle>@Constants.App_Title - Gestione Utenti</PageTitle>
+
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Gestione Utenti" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<RadzenDataGrid @ref="@grdData"
+                FilterMode="FilterMode.Simple"
+                IsLoading=@IsLoading
+                Data="@this.Data" TItem="UserQueryModel"
+                AllowSorting="true"
+                AllowFiltering="false"
+                AllowColumnResize="true"
+                LogicalFilterOperator="LogicalFilterOperator.And"
+                AllowVirtualization=true
+                VirtualizationOverscanCount="10"
+                SelectionMode="DataGridSelectionMode.Single"
+                @bind-Value=@SelectedItems
+                CellContextMenu="@RowActionCellContextMenu"
+                Style="height:100%"
+                EditMode="DataGridEditMode.Single"
+                Density=@Settings.Density>
+    <HeaderTemplate>
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="4px">
+            <RadzenButton ButtonStyle="ButtonStyle.Light"
+                          IsBusy=@IsLoading
+                          Icon="filter_alt_off"
+                          Click="@ClearFilters_Click" />
+            <RadzenTextBox @bind-Value=@this.FullTextSearch Placeholder="Cerca..." Change=@FullText_OnChange Style="width: 200px" Class="w-100" />
+            <RadzenButton ButtonStyle="ButtonStyle.Success"
+                            IsBusy=@IsLoading
+                            Icon="refresh"
+                            Click="@ReloadData" />
+
+            <RadzenButton ButtonStyle="ButtonStyle.Primary"
+                          Icon="person_add"
+                          Click="@AddUser_Click" />
+        </RadzenStack>
+    </HeaderTemplate>
+    <EmptyTemplate>
+        <RadzenCard Visible=@(!IsLoading)>
+            <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessu utente nello scheudler !</p>
+        </RadzenCard>
+    </EmptyTemplate>
+    <Columns>
+
+        <RadzenDataGridColumn TItem="UserQueryModel" Property="@(nameof(UserQueryModel.UserName))" Title="Nome utente" Width="150px" />
+        <RadzenDataGridColumn TItem="UserQueryModel" Property="@(nameof(UserQueryModel.Description))" Title="Descrizione utente" Width="200px" />
+        <RadzenDataGridColumn TItem="UserQueryModel" Property="@(nameof(UserQueryModel.Email))" Title="e-maile" Width="200px" />
+        
+        <RadzenDataGridColumn TItem="UserQueryModel" Property="@(nameof(UserQueryModel.Expiration))" Title="Scadenza" FormatString="{0:dd/MM/yyyy}" Width="120px" />
+
+        <RadzenDataGridColumn TItem="UserQueryModel" Property="@nameof(UserQueryModel.MustChangePassword)" Title="Cambia Pwd" Width="100px">
+            <Template Context="data">
+                @if (data.MustChangePassword)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="UserQueryModel" Property="@nameof(UserQueryModel.Interactive)" Title="umano" Width="100px">
+            <Template Context="data">
+                @if (data.Interactive)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+
+        
+        <RadzenDataGridColumn TItem="UserQueryModel" Property="@(nameof(UserQueryModel.AssociateDescription))" Title="Ditta" Width="200px" />
+        <RadzenDataGridColumn TItem="UserQueryModel" Property="@(nameof(UserQueryModel.Roles))" Title="Ruoli associati" Width="300px" />
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    private enum UserMenuItem
+    {
+        EditData,
+        ResetPwd,
+        Delete
+    }
+
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+    RadzenDataGrid<UserQueryModel>? grdData;
+    private bool IsLoading = false;
+    private IEnumerable<UserQueryModel> Data = new List<UserQueryModel>();
+    private string? FullTextSearch { get; set; } = null;
+
+    private IList<UserQueryModel> SelectedItems = new List<UserQueryModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataASync();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task LoadDataASync()
+    {
+        var queryDef = new QueryDefinition();
+        queryDef.EndPoint = Constants.Endpoint_Users;
+
+        this.IsLoading = true;
+        queryDef.FullText = this.FullTextSearch; ;
+
+        queryDef.Page = 1;
+        queryDef.PageSize = 100000;
+        queryDef.Count = false;
+        try
+        {
+            var result = await QueryService.GetListAsync<UserQueryModel>(
+            queryDef);
+
+            if (result != null)
+            {
+                Data = result.Items.ToList();
+            }
+        }
+        finally
+        {
+            this.IsLoading = false;
+        }
+    }
+
+    private async Task FullText_OnChange(string value)
+    {
+        await this.LoadDataASync();
+    }
+    private async Task ReloadData()
+    {
+        await this.LoadDataASync();
+    }
+
+    private void RowActionCellContextMenu(DataGridCellMouseEventArgs<UserQueryModel> args)
+    {
+        if (grdData != null)
+        {
+            this.grdData.SelectRow(args.Data);
+        }
+        if (this.IsClean == false) return;
+
+        ContextMenuService.Open(args, ds =>
+            @<RadzenMenu Click=@((e)=>OnMenuItemClick(args, e))>
+                <RadzenMenuItem Icon="manage_accounts" Text="Modifica ..." Value=@UserMenuItem.EditData />
+                <RadzenMenuItem Icon="password" Text="Reimposta Password ..." Value=@UserMenuItem.ResetPwd />
+                <hr class="separator">
+                <RadzenMenuItem Icon="person_remove" Text="Elimina..." Value=@UserMenuItem.Delete />
+        </RadzenMenu>
+    );
+    }
+
+    private async Task AddUser_Click ()
+    {
+        await this.ShowEditAddDialogAsync("Nuovo utente", null);
+    }
+
+    private async Task OnMenuItemClick(
+        DataGridCellMouseEventArgs<UserQueryModel> args,
+        MenuItemEventArgs e
+        )
+    {
+        await Task.CompletedTask;
+        ContextMenuService.Close();
+
+        if (this.IsClean == false) return;
+
+        switch ((UserMenuItem)e.Value)
+        {
+            case UserMenuItem.EditData:
+                await this.ShowEditAddDialogAsync("Modifica Utente", args.Data);
+                break;
+
+            case UserMenuItem.ResetPwd:
+                await this.ShowResetPasswordDialogASync(args.Data);
+                break;
+
+            case UserMenuItem.Delete:
+                await this.DeleteTaskAsync(args.Data.UserName);
+                break;
+
+            default:
+                break;
+        };
+    }
+
+    private async Task ShowEditAddDialogAsync (
+        string title,
+        UserQueryModel? item
+        )
+    {
+        var model = new UserQueryModel();
+        bool isADding = (item == null);
+        if (item!= null)
+        {
+            model.CopyFrom(item);
+        }
+
+        var result = await DialogService.OpenAsync(
+            title,
+            ds => @<EditUserDialog ds=@ds Model="@model" IsNEw=@isADding />
+            , new DialogOptions()
+            {
+                ShowClose = true,
+                CloseDialogOnEsc = true,
+                CloseDialogOnOverlayClick = false,
+
+                Width = "1000px",
+                Draggable = false
+            }
+        );
+
+        if (result == true)
+        {
+            // ricarica i dati
+            await this.LoadDataASync();
+        }
+    }
+
+    private async Task ShowResetPasswordDialogASync(
+        UserQueryModel item
+        )
+    {
+        var result = await DialogService.OpenAsync(
+            "Reset PAssword",
+            ds => @<ResetPasswordDialog ds=@ds UserName="@item.UserName" />
+            , new DialogOptions()
+            {
+                ShowClose = true,
+                CloseDialogOnEsc = true,
+                CloseDialogOnOverlayClick = false,
+
+                Width = "500px",
+                Draggable = false
+            }
+        );
+
+        if (result == true)
+        {
+            // ricarica i dati
+            await this.LoadDataASync();
+        }
+    }
+
+
+    private async Task DeleteTaskAsync(
+        string userName
+        )
+    {
+        bool reload = false;
+        if ( await this.DialogService.Confirm (
+            "Cancellare l'utente selezionata",
+            "Conferma Eliminaizone",
+            new ConfirmOptions()
+            {
+                OkButtonText ="Elimina",
+                CancelButtonText = "Annulla"
+            }) == true)
+        {
+            // esegue la cancellazioen dei dati
+            this.IsLoading = true;
+            try
+            {
+                await _userService.DeleteAsync(userName);
+
+                this.notificationService.Notify(
+                    NotificationSeverity.Error,
+                    "Utente eliminato");
+                reload = true;
+            }
+            catch (Exception ex)
+            {
+                this.notificationService.Notify(
+                    NotificationSeverity.Error,
+                    "Errore eliminado l'utente",
+                    ex.Message);
+            }
+            finally
+            {
+                this.IsLoading = false;
+            }
+
+            if (reload == true)
+            {
+                // ricarica i dati
+                await this.LoadDataASync();
+            }
+        }
+    }
+    private async Task ClearFilters_Click()
+    {
+        this.FullTextSearch = null;
+
+        if (this.grdData != null)
+        {
+            foreach (var col in this.grdData.ColumnsCollection)
+            {
+                col.ClearFilters();
+            }
+        }
+
+        // this.StateHasChanged();
+        await this.ReloadData();
+    }
+}

@@ -28,5 +28,18 @@ namespace CtaLineaWebApi
         internal const string Activity_RecalcRunDays = "calcdays";
 		internal const string Activity_CleanLog = "cleanlog";
         internal const string Activity_SendMail = "sendmail";
-    }
+
+		// Policy
+		internal const string Policy_ChangePAssword = "ChangePAssword";
+		
+        internal const string Policy_Tasks = "Tasks";
+		internal const string Policy_Users = "Users";
+
+		internal const string Policy_ViewData = "viewData";
+        internal const string Policy_ManageData = "ManageData";
+		internal const string Policy_Planning= "Planning";
+		internal const string Policy_Costs = "Costs";
+		internal const string Policy_RunView = "RunView";
+		internal const string Policy_RunEdit = "RunEdit";
+	}
 }

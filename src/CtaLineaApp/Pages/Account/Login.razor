@@ -77,6 +77,17 @@
         try
         {
             await AccountService.Login(login);
+
+            
+            // controlla se deve cambiare la apssword
+            if (AccountService.User != null)
+            {
+                if (AccountService.User.MustChangePAssword == true)
+                {
+                    NavigationManager.NavigateTo("/account/password");
+                    return;
+                }
+            }
             var returnUrl = NavigationManager.QueryString("returnUrl") ?? "";
             NavigationManager.NavigateTo(returnUrl);
         }

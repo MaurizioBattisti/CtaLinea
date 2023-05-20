@@ -190,6 +190,7 @@ namespace CtaLinea.Model.QueryModel
 			Color = source.Color;
             RunStatus = source.RunStatus;
 
+            ForfaitId = source.ForfaitId;
             ForfaitName = source.ForfaitName;
             ForfaitType = source.ForfaitType;
         }

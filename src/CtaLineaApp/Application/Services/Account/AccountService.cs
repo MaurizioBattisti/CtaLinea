@@ -14,7 +14,15 @@ namespace CtaLineaApp.Application.Services.Account
         private ICurrentUserService _currentUserSvc;
 
         public UserModel? User => _currentUserSvc.User;
-        public Action? UserStatusChanged { get => this._currentUserSvc.UserStatusChanged; set => this._currentUserSvc.UserStatusChanged = value; }
+        
+        // public Action? UserStatusChanged { get => this._currentUserSvc.UserStatusChanged; set => this._currentUserSvc.UserStatusChanged = value; }
+        public event EventHandler UserStatusChanged;
+
+        protected virtual void OnThresholdReached(EventArgs e)
+        {
+            EventHandler handler = UserStatusChanged;
+            handler?.Invoke(this, e);
+        }
 
         public AccountService(
             IHttpService httpService,
@@ -25,6 +33,7 @@ namespace CtaLineaApp.Application.Services.Account
             _httpService = httpService;
             _navigationManager = navigationManager;
             _currentUserSvc = currentUserSvc;
+            _currentUserSvc.UserStatusChanged = () => this.OnThresholdReached(new EventArgs());
         }
 
         public async Task Login(LoginModel model)
@@ -47,6 +56,28 @@ namespace CtaLineaApp.Application.Services.Account
         public async Task Initialize()
         {
             await _currentUserSvc.Initialize();
+        }
+
+        public bool IsUserInRole (string role)
+        {
+            bool inRole = false;
+            if (this.User != null)
+            {
+                inRole = this.User.Roles.Contains(role);
+            }
+
+            return inRole;
+        }
+        public bool IsUserInRoles(IEnumerable<string> roles)
+        {
+            bool inRole = false;
+            if (this.User != null)
+            {
+                var count = this.User.Roles.Where(r => roles.Contains(r)).Count();
+                inRole = count > 0;
+            }
+
+            return inRole;
         }
     }
 }

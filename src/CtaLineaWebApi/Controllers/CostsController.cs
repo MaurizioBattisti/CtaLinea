@@ -26,7 +26,8 @@ namespace CtaLineaWebApi.Controllers
             this._queries = queries;
         }
 
-        [Consumes(MediaTypeNames.Application.Json)]
+        [Authorize(Policy =Constants.Policy_Costs)]
+		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]

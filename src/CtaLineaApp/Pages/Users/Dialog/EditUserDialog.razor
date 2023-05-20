@@ -1,0 +1,275 @@
+﻿@inject NotificationService _notificationService
+@inject DialogService DialogService
+@inject IUserService _userService
+
+<RadzenStack Orientation="Orientation.Vertical">
+	<RadzenTemplateForm Data=@Model
+						Submit="@((UserQueryModel args) => { ; })">
+		<RadzenFieldset Text="Dati generali" >
+			<RadzenRow AlignItems="AlignItems.Center">
+				<RadzenColumn Size="3">
+					<RadzenLabel Component="New_UserName">Nome utente</RadzenLabel>
+				</RadzenColumn>
+				<RadzenColumn Size="3">
+					<RadzenTextBox Name="New_UserName"
+								   @bind-Value="Model.UserName"
+								   ReadOnly=@(!this.IsNEw)
+								   MaxLength="128"
+								   class="w-100" />
+				</RadzenColumn>
+			</RadzenRow>
+			@if (this.IsNEw)
+			{
+				<RadzenRow AlignItems="AlignItems.Center">
+					<RadzenColumn Size="3">
+						<RadzenLabel Component="New_Password">Password</RadzenLabel>
+					</RadzenColumn>
+					<RadzenColumn Size="9">
+						<RadzenPassword Name="New_Password"
+								   @bind-Value=@Password
+								   MaxLength="128"
+								   class="w-100" />
+					</RadzenColumn>
+				</RadzenRow>
+			}
+			<RadzenRow AlignItems="AlignItems.Center">
+				<RadzenColumn Size="3">
+					<RadzenLabel Component="@nameof(UserQueryModel.Description)">Descrizione utente</RadzenLabel>
+				</RadzenColumn>
+				<RadzenColumn Size="9">
+					<RadzenTextBox Name="@nameof(UserQueryModel.Description)"
+								   @bind-Value="Model.Description"
+									class="w-100" />
+				</RadzenColumn>
+			</RadzenRow>
+			<RadzenRow AlignItems="AlignItems.Center">
+				<RadzenColumn Size="3">
+					<RadzenLabel Component="@nameof(UserQueryModel.Email)">e-mail</RadzenLabel>
+				</RadzenColumn>
+				<RadzenColumn Size="9">
+					<RadzenTextBox Name="@nameof(UserQueryModel.Email)"
+								   @bind-Value="Model.Email"
+									class="w-100" />
+				</RadzenColumn>
+			</RadzenRow>
+			<RadzenRow AlignItems="AlignItems.Center">
+				<RadzenColumn Size="3">
+					<RadzenLabel Component="@nameof(UserQueryModel.MustChangePassword)">Deve Cambiare password</RadzenLabel>
+				</RadzenColumn>
+				<RadzenColumn Size="3">
+					<RadzenCheckBox @bind-Value="Model.MustChangePassword"
+									TValue="bool"
+									Name="@nameof(UserQueryModel.MustChangePassword)"
+									/>
+				</RadzenColumn>
+				<RadzenColumn Size="3">
+					<RadzenLabel Component="@nameof(UserQueryModel.Interactive)">Utente interattivo</RadzenLabel>
+				</RadzenColumn>
+				<RadzenColumn Size="3">
+					<RadzenCheckBox @bind-Value="Model.Interactive"
+									TValue="bool"
+									Disabled=@(!IsNEw)
+									Name="@nameof(UserQueryModel.Interactive)" />
+				</RadzenColumn>
+			</RadzenRow>
+			<RadzenRow AlignItems="AlignItems.Center">
+				<RadzenColumn Size="3">
+					<RadzenLabel Component="@nameof(UserQueryModel.Expiration)">Scadenza utente</RadzenLabel>
+				</RadzenColumn>
+				<RadzenColumn Size="3">
+					<DateSelector AllowClear=true
+								  @bind-Value="Model.Expiration"
+								  Name="@nameof(UserQueryModel.Expiration)"
+								  />
+				</RadzenColumn>
+			</RadzenRow>
+			<RadzenRow AlignItems="AlignItems.Center">
+				<RadzenColumn Size="3">
+					<RadzenLabel Component="@nameof(UserQueryModel.AssociateId)">Ditta</RadzenLabel>
+				</RadzenColumn>
+				<RadzenColumn Size="9">
+					<AssociateDropDown AllowClear=true
+									   Name="@nameof(UserQueryModel.AssociateId)"
+									   @bind-AssociateId="Model.AssociateId"
+									   />
+				</RadzenColumn>
+			</RadzenRow>
+			<RadzenRow AlignItems="AlignItems.Center">
+				<RadzenLabel Component="@nameof(UserQueryModel.Roles)">Ruoli</RadzenLabel>
+			</RadzenRow>
+			<RadzenRow AlignItems="AlignItems.Center">
+				<RadzenDropDown Data=@RoleList
+								TValue="IList<string>"
+								@bind-Value=@_Roles
+								Multiple="true"
+								Chips="true"
+								MaxSelectedLabels="20"
+								AllowClear=true
+								ValueProperty="Item1"
+								TextProperty="Item2"
+								AllowFiltering=true
+								FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+								FilterOperator="StringFilterOperator.Contains"
+								class="w-100">
+				</RadzenDropDown>
+			</RadzenRow>
+
+		</RadzenFieldset>
+	</RadzenTemplateForm>
+
+	<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
+		@if(this.IsNEw == true)
+		{
+		<RadzenButton Click="@(() => this.CreateUSerAsync(ds))"
+					  ButtonStyle="ButtonStyle.Primary"
+					  Text="Crea Utente" />
+		}
+		else
+		{
+		<RadzenButton Click="@(() => this.UpdateUSerAsync(ds))"
+					  ButtonStyle="ButtonStyle.Primary"
+					  Text="Aggiorna" />
+		}
+		<RadzenButton Click="@(() => ds.Close())"
+					  ButtonStyle="ButtonStyle.Secondary"
+					  Text="Annulla" />
+	</RadzenStack>
+</RadzenStack>
+
+@code {
+	[Parameter]
+	public DialogService? ds { get; set; }
+
+	[Parameter]
+	public UserQueryModel Model { get; set; } = new UserQueryModel();
+	[Parameter]
+	public bool IsNEw { get; set; } = false;
+
+	private string Password { get; set; } = string.Empty;
+
+	private IList<Tuple<string,string>> RoleList = new List<Tuple<string, string>> ()
+	{
+		new Tuple<string, string>(UserRoles.Role_View, "Visualizza corse"),
+		new Tuple<string,string>(UserRoles.Role_Edit, "Modifica corse"),
+		new Tuple<string,string>(UserRoles.Role_Manage, "Gestione"),
+
+		new Tuple<string, string>(UserRoles.Role_Planning, "Planning"),
+		new Tuple<string, string>(UserRoles.Role_DashBoards, "Dashboards"),
+		new Tuple<string, string>(UserRoles.Role_Anagraohics, "Anagrafiche"),
+		new Tuple<string, string>(UserRoles.Role_Costs, "Costi"),
+
+		new Tuple<string, string>(UserRoles.Role_Users, "Utenti"),
+		new Tuple<string,string>(UserRoles.Role_Takss, "Attività schedulate")
+
+	};
+	private IList<string> _Roles = new List<string>();
+
+	protected override Task OnInitializedAsync()
+	{
+
+
+		return base.OnInitializedAsync();
+	}
+
+	protected override void OnParametersSet()
+	{
+		base.OnParametersSet();
+
+		if (this.Model != null
+			&& string.IsNullOrEmpty( this.Model.Roles) == false)
+		{
+			_Roles = this.Model.Roles.Split(",").ToList();
+		}
+	}
+
+	private async Task SaveASyunc(
+		Func<Task<CheckResult>> checkFunc,
+		Func<Task> saveFunc,
+		DialogService ds)
+	{
+		// per prima cosa esegue un controllo dei dati
+		var chechREsult = await checkFunc();
+		if (chechREsult.Status == CheckStatus.Failed)
+		{
+			// mostra un messaggio di errore
+			await DialogService.Alert(
+			chechREsult.ToString()
+			);
+			return;
+		}
+		try
+		{
+			// esegue il salvataggio
+			await saveFunc();
+
+			// se tutto OK chiude la finestra
+			ds.Close(true);
+
+			// notiivca che
+			this._notificationService.Notify(
+				NotificationSeverity.Success,
+				"dati salvati con scucesso");
+		}
+		catch (BadRequestException<CheckResult> ex)
+		{
+			this._notificationService.Notify(
+				NotificationSeverity.Error,
+				ex.Payload?.Title ?? "problemi",
+				ex.Payload?.Description ?? string.Empty
+		);
+		}
+		catch (Exception ex)
+		{
+			this._notificationService.Notify(
+				NotificationSeverity.Error,
+				"errore durante ils alvataggio dell'utente",
+				ex.Message);
+		}
+	}
+
+	private async Task CreateUSerAsync (DialogService ds)
+	{
+		var model = new NewUserModel()
+		{
+			UserName = this.Model.UserName,
+			Password = this.Password,
+			Description = this.Model.Description ?? string.Empty,
+			Email = this.Model.Email,
+			Expiration = this.Model.Expiration,
+
+			MustChangePassword = this.Model.MustChangePassword,
+			Interactive = this.Model.Interactive,
+			AssociateId = this.Model.AssociateId,
+
+			Roles = this._Roles
+		};
+
+		// TODO: manca la funzione di check
+
+		await this.SaveASyunc(
+			async () => await Task.FromResult(new CheckResult() { Status = CheckStatus.Success }),
+			async () => await this._userService.InsertAsync(model),
+			ds);
+	}
+	private async Task UpdateUSerAsync(DialogService ds)
+	{
+		var model = new EditUSerModel()
+		{
+			Description = this.Model.Description ?? string.Empty,
+			Email = this.Model.Email,
+			Expiration = this.Model.Expiration,
+
+			MustChangePassword = this.Model.MustChangePassword,
+			AssociateId = this.Model.AssociateId,
+
+			Roles = this._Roles
+		};
+
+		// TODO: manca la funzione di check
+
+		await this.SaveASyunc(
+			async () => await Task.FromResult(new CheckResult() { Status = CheckStatus.Success }),
+			async () => await this._userService.UpdateAsync(this.Model.UserName, model),
+			ds);
+	}
+}

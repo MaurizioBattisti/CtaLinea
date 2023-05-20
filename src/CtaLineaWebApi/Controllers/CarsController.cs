@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 using ZzSoft.Api.Utility.Base;
 using ZzSoft.CtaLinea.Dal.Queries;
 using CtaLinea.Model.QueryModel;
+using CtaLinea.Model.Base;
+using NPOI.SS.Formula.Functions;
 
 namespace CtaLineaWebApi.Controllers
 {
-    [Authorize]
-    [ApiController]
+	[Authorize]
+	[ApiController]
     [Route("api/cars")]
     public class CarsController
         : ZControllerBase
@@ -25,7 +27,8 @@ namespace CtaLineaWebApi.Controllers
             this._queries = queries;
         }
 
-        [Consumes(MediaTypeNames.Application.Json)]
+		[Authorize(Policy = Constants.Policy_ViewData)]
+		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
@@ -38,7 +41,8 @@ namespace CtaLineaWebApi.Controllers
             return await this.ModelOKAsync(result)
                 .ConfigureAwait(false);
         }
-        [Consumes(MediaTypeNames.Application.Json)]
+		[Authorize(Policy = Constants.Policy_ViewData)]
+		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]

@@ -36,7 +36,8 @@ namespace CtaLineaWebApi.Controllers
             _repo = repo;
         }
 
-        [Consumes(MediaTypeNames.Application.Json)]
+		[Authorize(Policy = Constants.Policy_ViewData)]
+		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
@@ -49,7 +50,8 @@ namespace CtaLineaWebApi.Controllers
                 .ConfigureAwait(false);
         }
 
-        [SwaggerOperation("Crea una nuova etichetta per la corsa")]
+		[Authorize(Policy = Constants.Policy_ManageData)]
+		[SwaggerOperation("Crea una nuova etichetta per la corsa")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int) )]
         // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -78,7 +80,8 @@ namespace CtaLineaWebApi.Controllers
                 string.Format("/{0}", result.Data),
                 result.Data);
         }
-        [SwaggerOperation("Aggiorna i dati di una etichetta")]
+		[Authorize(Policy = Constants.Policy_ManageData)]
+		[SwaggerOperation("Aggiorna i dati di una etichetta")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -111,7 +114,8 @@ namespace CtaLineaWebApi.Controllers
             return Ok();
         }
 
-        [SwaggerOperation("Elimina una etichetta")]
+		[Authorize(Policy = Constants.Policy_ManageData)]
+		[SwaggerOperation("Elimina una etichetta")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

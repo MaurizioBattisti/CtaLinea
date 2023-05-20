@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using CtaLinea.Model.Base;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -16,19 +17,10 @@ namespace CtaLineaWebApi.Auth
            {
                options.InvokeHandlersAfterFailure = false;
 
-             /*
-            // aggiunge la policy per il cambio password
-            options.AddPolicy(Constants.AuthPolicy_ChangePAssword, builder =>
-                  {
-                      builder.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                      builder.RequireClaim(ClaimTypes.Name);
-                  });
-             */
-
-            // verifica la necessità di modificare la password
-            Func<AuthorizationHandlerContext, bool> handleMustChangePwd = (context) =>
-                  {
-                      bool valid = false;
+			   // verifica la necessità di modificare la password
+			   Func<AuthorizationHandlerContext, bool> handleMustChangePwd = (context) =>
+                {
+                    bool valid = false;
                    // controlla che l'utente non deva modificare la password
                    var identity = context.User.Identity as ClaimsIdentity;
                       if (identity != null)
@@ -43,18 +35,106 @@ namespace CtaLineaWebApi.Auth
                       return valid;
                   };
 
-               options.AddPolicy("PAT", builder =>
-                   {
-                       builder.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+			   // aggiunge la policy per il cambio password
+			   options.AddPolicy(Constants.Policy_ChangePAssword, builder =>
+			   {
+				   builder.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+				   builder.RequireClaim(ClaimTypes.Name);
+			   });
 
-                       builder.RequireClaim(ClaimTypes.Name);
-                       builder.RequireAssertion(
-                           handleMustChangePwd);
-                       builder.RequireRole("PAT_Users");
-                   });
+			   // Tasks
+			   options.AddPolicy(Constants.Policy_Tasks, builder =>
+                {
+                    builder.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+
+                    builder.RequireClaim(ClaimTypes.Name);
+                    builder.RequireAssertion(
+                        handleMustChangePwd);
+                    builder.RequireRole(UserRoles.Role_Takss);
+                });
+			   // utenti
+			   options.AddPolicy(Constants.Policy_Users, builder =>
+			   {
+				   builder.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+
+				   builder.RequireClaim(ClaimTypes.Name);
+				   builder.RequireAssertion(
+					   handleMustChangePwd);
+				   builder.RequireRole(UserRoles.Role_Users);
+			   });
+
+			   // Visaulizzazione dei dati
+			   // bastga essere autenticati e avere uno dei ruoli indicati
+			   options.AddPolicy(Constants.Policy_ViewData, builder =>
+			   {
+				   builder.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+
+				   builder.RequireClaim(ClaimTypes.Name);
+				   builder.RequireAssertion(
+					   handleMustChangePwd);
+				   builder.RequireRole(UserRoles.All);
+			   });
+			   // gestione dei dati
+			   options.AddPolicy(Constants.Policy_ManageData, builder =>
+			   {
+				   builder.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+
+				   builder.RequireClaim(ClaimTypes.Name);
+				   builder.RequireAssertion(
+					   handleMustChangePwd);
+				   builder.RequireRole(UserRoles.Role_Manage);
+			   });
+
+			   // Planning
+			   options.AddPolicy(Constants.Policy_Planning, builder =>
+			   {
+				   builder.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+
+				   builder.RequireClaim(ClaimTypes.Name);
+				   builder.RequireAssertion(
+					   handleMustChangePwd);
+				   builder.RequireRole(UserRoles.Role_Planning);
+			   });
+			   // visualizzaizone corse
+			   options.AddPolicy(Constants.Policy_RunView, builder =>
+			   {
+				   builder.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+
+				   builder.RequireClaim(ClaimTypes.Name);
+				   builder.RequireAssertion(
+					   handleMustChangePwd);
+				   builder.RequireRole(
+					   UserRoles.Role_View,
+					   UserRoles.Role_Edit,
+					   UserRoles.Role_Manage);
+			   });
+			   // visualizzaizone corse
+			   options.AddPolicy(Constants.Policy_RunEdit, builder =>
+			   {
+				   builder.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+
+				   builder.RequireClaim(ClaimTypes.Name);
+				   builder.RequireAssertion(
+					   handleMustChangePwd);
+				   builder.RequireRole(
+					   UserRoles.Role_Edit,
+					   UserRoles.Role_Manage);
+			   });
+			   // costi
+			   options.AddPolicy(Constants.Policy_Costs, builder =>
+			   {
+				   builder.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+
+				   builder.RequireClaim(ClaimTypes.Name);
+				   builder.RequireAssertion(
+					   handleMustChangePwd);
+				   builder.RequireRole(UserRoles.Role_Costs);
+			   });
+
+			   
 
 
-           });
+		   });
 
             return services;
         }

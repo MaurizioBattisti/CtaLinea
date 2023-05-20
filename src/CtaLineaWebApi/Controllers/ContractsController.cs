@@ -36,7 +36,8 @@ namespace CtaLineaWebApi.Controllers
 			this._queries = queries;
         }
 
-        [Consumes(MediaTypeNames.Application.Json)]
+		[Authorize(Policy = Constants.Policy_ViewData)]
+		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
@@ -49,7 +50,8 @@ namespace CtaLineaWebApi.Controllers
             return await this.ModelOKAsync(result)
                 .ConfigureAwait(false);
         }
-        [Consumes(MediaTypeNames.Application.Json)]
+		[Authorize(Policy = Constants.Policy_ViewData)]
+		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
@@ -64,6 +66,7 @@ namespace CtaLineaWebApi.Controllers
                 .ConfigureAwait(false);
         }
 
+		[Authorize(Policy = Constants.Policy_ManageData)]
 		[Consumes(MediaTypeNames.Application.Json)]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -101,6 +104,7 @@ namespace CtaLineaWebApi.Controllers
 			}
 		}
 
+		[Authorize(Policy = Constants.Policy_ManageData)]
 		[Consumes(MediaTypeNames.Application.Json)]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -144,6 +148,7 @@ namespace CtaLineaWebApi.Controllers
 					});
 			}
 		}
+		[Authorize(Policy = Constants.Policy_ManageData)]
 		[Consumes(MediaTypeNames.Application.Json)]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -179,6 +184,7 @@ namespace CtaLineaWebApi.Controllers
 			}
 		}
 
+		[Authorize(Policy = Constants.Policy_ViewData)]
 		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]

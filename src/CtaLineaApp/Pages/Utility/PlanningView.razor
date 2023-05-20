@@ -6,6 +6,7 @@
 @inject DialogService DialogService
 @attribute [Authorize]
 
+<CheckAuthorization Roles=@(new string[] { UserRoles.Role_Planning }) />
 <PageTitle>@Constants.App_Title - Planning</PageTitle>
 <LayoutSetter>
     <PageTitle>

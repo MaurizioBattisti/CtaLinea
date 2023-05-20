@@ -37,7 +37,8 @@ namespace CtaLineaWebApi.Controllers
             _repo = repo;
         }
 
-        [Consumes(MediaTypeNames.Application.Json)]
+		[Authorize(Policy = Constants.Policy_ViewData)]
+		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
@@ -50,7 +51,8 @@ namespace CtaLineaWebApi.Controllers
             return await this.ModelOKAsync(result)
                 .ConfigureAwait(false);
         }
-        [Consumes(MediaTypeNames.Application.Json)]
+		[Authorize(Policy = Constants.Policy_ViewData)]
+		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
@@ -64,7 +66,8 @@ namespace CtaLineaWebApi.Controllers
             return await this.ModelOKAsync(result)
                 .ConfigureAwait(false);
         }
-        [SwaggerOperation("restituisce i dati semplici di un calendario, qeulli che poi andranno inviati nelle operaizoni di modifica e inserimetno calendario")]
+		[Authorize(Policy = Constants.Policy_ViewData)]
+		[SwaggerOperation("restituisce i dati semplici di un calendario, qeulli che poi andranno inviati nelle operaizoni di modifica e inserimetno calendario")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -78,7 +81,8 @@ namespace CtaLineaWebApi.Controllers
 
             return this.Ok(result);
         }
-        [SwaggerOperation("Crea un nuovo calendario")]
+		[Authorize(Policy = Constants.Policy_ManageData)]
+		[SwaggerOperation("Crea un nuovo calendario")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int) )]
         // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -108,7 +112,8 @@ namespace CtaLineaWebApi.Controllers
                 string.Format("/{0}", result.Data),
                 result.Data);
         }
-        [SwaggerOperation("Aggiorna i dati di un calendario")]
+		[Authorize(Policy = Constants.Policy_ManageData)]
+		[SwaggerOperation("Aggiorna i dati di un calendario")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -142,7 +147,8 @@ namespace CtaLineaWebApi.Controllers
             return Ok();
         }
 
-        [SwaggerOperation("Elimina un calendario")]
+		[Authorize(Policy = Constants.Policy_ManageData)]
+		[SwaggerOperation("Elimina un calendario")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -171,8 +177,9 @@ namespace CtaLineaWebApi.Controllers
             return NoContent();
         }
 
-        #region periodi dei calendari
-        [Consumes(MediaTypeNames.Application.Json)]
+		#region periodi dei calendari
+		[Authorize(Policy = Constants.Policy_ViewData)]
+		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
@@ -185,7 +192,8 @@ namespace CtaLineaWebApi.Controllers
 
             return this.Ok(result);
         }
-        [Consumes(MediaTypeNames.Application.Json)]
+		[Authorize(Policy = Constants.Policy_ViewData)]
+		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
@@ -199,7 +207,8 @@ namespace CtaLineaWebApi.Controllers
             return this.Ok(result);
         }
 
-        [SwaggerOperation("Crea un periodo di calendaraio")]
+		[Authorize(Policy = Constants.Policy_ManageData)]
+		[SwaggerOperation("Crea un periodo di calendaraio")]
         [ProducesResponseType(StatusCodes.Status201Created, Type=typeof(CalendarPeriod))]
         // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -229,7 +238,8 @@ namespace CtaLineaWebApi.Controllers
                 string.Format("/periods/{0}", result.Data.CalendarPeriodId),
                 result.Data);
         }
-        [SwaggerOperation("Aggiorna i dati di un periodo di calendario")]
+		[Authorize(Policy = Constants.Policy_ManageData)]
+		[SwaggerOperation("Aggiorna i dati di un periodo di calendario")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -262,7 +272,8 @@ namespace CtaLineaWebApi.Controllers
 
             return Ok();
         }
-        [SwaggerOperation("Elimina un periodo di calendario calendario")]
+		[Authorize(Policy = Constants.Policy_ManageData)]
+		[SwaggerOperation("Elimina un periodo di calendario calendario")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -291,10 +302,11 @@ namespace CtaLineaWebApi.Controllers
 
             return NoContent();
         }
-        #endregion
+		#endregion
 
-        #region giorni dei calendari
-        [Consumes(MediaTypeNames.Application.Json)]
+		#region giorni dei calendari
+		[Authorize(Policy = Constants.Policy_ViewData)]
+		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
@@ -308,7 +320,8 @@ namespace CtaLineaWebApi.Controllers
             return this.Ok(result);
         }
 
-        [SwaggerOperation("Crea un giorno del calendaraio")]
+		[Authorize(Policy = Constants.Policy_ManageData)]
+		[SwaggerOperation("Crea un giorno del calendaraio")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -342,7 +355,8 @@ namespace CtaLineaWebApi.Controllers
                 string.Format("/{0}/holidays/{1:yyy-MM-dd}", id, model.Holiday),
                 null);
         }
-        [SwaggerOperation("Aggiorna i dati di un giorno  del calendario")]
+		[Authorize(Policy = Constants.Policy_ManageData)]
+		[SwaggerOperation("Aggiorna i dati di un giorno  del calendario")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -376,7 +390,8 @@ namespace CtaLineaWebApi.Controllers
 
             return Ok();
         }
-        [SwaggerOperation("Elimina un giorno del calendario calendario")]
+		[Authorize(Policy = Constants.Policy_ManageData)]
+		[SwaggerOperation("Elimina un giorno del calendario calendario")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         // [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(RunCheckResult))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -407,10 +422,11 @@ namespace CtaLineaWebApi.Controllers
 
             return NoContent();
         }
-        #endregion
+		#endregion
 
-        #region utility dei calendari
-        [Consumes(MediaTypeNames.Application.Json)]
+		#region utility dei calendari
+		[Authorize(Policy = Constants.Policy_ViewData)]
+		[Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         [Route("{id:int}/days")]

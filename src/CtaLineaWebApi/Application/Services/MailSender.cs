@@ -54,8 +54,11 @@ namespace CtaLineaWebApi.Application.Services
                 {
                     client.Connect(
                         _emailConfig.SmtpServer,
-                        _emailConfig.Port, 
-                        MailKit.Security.SecureSocketOptions.StartTls);
+                        _emailConfig.Port,
+                        MailKit.Security.SecureSocketOptions.None
+                        // MailKit.Security.SecureSocketOptions.StartTls
+                        );
+
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
                     client.Authenticate(_emailConfig.UserName, _emailConfig.Password);
                     await client.SendAsync(mailMessage)

@@ -22,8 +22,8 @@ using ZzSoft.CtaLinea.Dal.Repositories;
 
 namespace CtaLineaWebApi.Controllers
 {
-    [Authorize]
-    [ApiController]
+	[Authorize(Policy = Constants.Policy_Tasks)]
+	[ApiController]
     [Route("api/scheduledtasks")]
     [Produces(MediaTypeNames.Application.Json)]
     public class ScheduledTasksController

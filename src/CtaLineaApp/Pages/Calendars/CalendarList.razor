@@ -10,6 +10,7 @@
 @inject DialogService DialogService
 @attribute [Authorize]
 
+<CheckAuthorization Roles=@(new string[] { UserRoles.Role_Manage }) />
 <PageTitle>@Constants.App_Title - Calendari</PageTitle>
 
 <LayoutSetter>
