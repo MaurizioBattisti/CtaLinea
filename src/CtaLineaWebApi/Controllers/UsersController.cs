@@ -35,17 +35,20 @@ namespace CtaLineaWebApi.Controllers
         private readonly ISender _mediator;
         private readonly IUsersQueries _queries;
         private readonly IUserService _userService;
+        private readonly IUserChecker _userChecker;
         private readonly ILogger _logger;
 
         public UsersController(
             ISender mediator,
             IUsersQueries queries,
             IUserService userService,
-            ILogger<UsersController> logger)
+			IUserChecker userChecker,
+			ILogger<UsersController> logger)
         {
             _mediator = mediator;
             _queries = queries;
             _userService = userService;
+            _userChecker = userChecker;
             _logger = logger;
         }
 
@@ -87,11 +90,16 @@ namespace CtaLineaWebApi.Controllers
         public async Task<IActionResult> InsertOneAsync(
             [FromBody] NewUserModel model)
         {
-            // TODO: esegue un contorllo dei dati dell'utente
+            var checkResult = await _userChecker.CheckAsync (model)
+                .ConfigureAwait(false);
+			// controll il sirultato del check
+			if (checkResult.Status == CheckStatus.Failed)
+			{
+				return this.BadRequest(checkResult);
+			}
 
-
-            try
-            {
+			try
+			{
                 await this._userService.InsertNewUSerAsync(model)
                     .ConfigureAwait(false);
             }
@@ -118,16 +126,23 @@ namespace CtaLineaWebApi.Controllers
             [FromRoute] string id,
             [FromBody] EditUSerModel model)
         {
-            // TODO: controlla che l'utente esista
-
-
-
-            // TODO: esegue un contorllo dei dati dell'utente
-
-
-
-            try
+			var user = await this._queries.GetOneASync(id)
+				.ConfigureAwait(false);
+            if (user == null)
             {
+                return this.NotFound();
+            }
+
+			var checkResult = await _userChecker.CheckAsync(model)
+				.ConfigureAwait(false);
+			// controll il sirultato del check
+			if (checkResult.Status == CheckStatus.Failed)
+			{
+				return this.BadRequest(checkResult);
+			}
+
+			try
+			{
                 await this._userService.UpdateUSerAsync(id, model)
                     .ConfigureAwait(false);
             }
@@ -193,7 +208,7 @@ namespace CtaLineaWebApi.Controllers
 
             try
             {
-                await this._userService.SetUserPAsswordAsync(id, model.Password, model.SetMustChange)
+                await this._userService.SetUserPasswordAsync(id, model.Password, model.SetMustChange)
                     .ConfigureAwait(false);
             }
             catch (Exception ex)

@@ -13,6 +13,7 @@ using ZzSoft.CtaLinea.Dal.Context;
 using ZzSoft.QueryHelper;
 using Dapper;
 using System.Globalization;
+using ZzSoft.CtaLinea.Dal.Services;
 
 namespace ZzSoft.CtaLinea.Dal.Queries
 {
@@ -26,12 +27,15 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 , @WeekDays, @InContract, @ActiveRun, @DateRef, @TabIds, @ForfaitId, @CollectionPointId) a ON a.RunId = r.RunId";
         private const string RunVariationList_Table = "[dbo].[vw_RunVariations] v";
 
-        private CtaDbContext _context;
+        private readonly CtaDbContext _context;
+        private readonly ICurrentUserService _userSvc;
 
 		public RunQueries(
-			CtaDbContext context)
+			CtaDbContext context,
+			ICurrentUserService userSvc)
 		{
 			this._context = context;
+            this._userSvc = userSvc;
 		}
 
 		public async Task<QueryItemList<RunItemQueryModel>> GetRunListAsycn(
@@ -42,7 +46,17 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 			object args = null;
 			string table = RunItemListSql_Table;
 
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            var assId = await this._userSvc.GetUserAssociateId().ConfigureAwait( false );
+            if (assId != null)
+            {
+                if (advancedFilter == null)
+                {
+					advancedFilter = new RunAdvancedFilters ();
+				}
+                advancedFilter.AssociateId = assId.Value;
+			}
+
+            using IDbConnection conn = this._context.GetNewConnection();
 
             // filtri standard
             string stdFilters = string.Empty;
@@ -134,13 +148,16 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 		public async Task<RunItemQueryModel> GetOneRunAsync(
 			Guid id)
 		{
+			var assId = await this._userSvc.GetUserAssociateId().ConfigureAwait(false);
+            // TODO; filtrare per consorziato
+
 			var queryDef = new QueryDefinition<RunItemQueryModel>(
 				RunItemListSql_Table,
 				null,
                 "r.RunId = @RunId",
 				new { RunId = id });
 
-			IDbConnection conn = this._context.Database.GetDbConnection();
+			IDbConnection conn = this._context.GetNewConnection();
 			return await conn.QueryOneAsync(
 				queryDef)
 				.ConfigureAwait(false);
@@ -150,13 +167,16 @@ namespace ZzSoft.CtaLinea.Dal.Queries
             Guid runId,
             IFilteringContext filterContext)
 		{
-            var queryDef = new QueryDefinition<RunVariationQueryModel>(
+			var assId = await this._userSvc.GetUserAssociateId().ConfigureAwait(false);
+			// TODO; filtrare per consorziato
+
+			var queryDef = new QueryDefinition<RunVariationQueryModel>(
                 RunVariationList_Table,
                 filterContext,
 				"v.RunId = @RunId",
 				new { RunId = runId });
 
-            IDbConnection conn = this._context.Database.GetDbConnection();
+            IDbConnection conn = this._context.GetNewConnection();
             return await conn.QueryListAsync(
                 queryDef)
                 .ConfigureAwait(false);
@@ -164,18 +184,20 @@ namespace ZzSoft.CtaLinea.Dal.Queries
         public async Task<RunVariationQueryModel> GetOneVariationAsync(
             Guid id)
 		{
-            var queryDef = new QueryDefinition<RunVariationQueryModel>(
+			var assId = await this._userSvc.GetUserAssociateId().ConfigureAwait(false);
+			// TODO; filtrare per consorziato
+
+			var queryDef = new QueryDefinition<RunVariationQueryModel>(
                 RunVariationList_Table,
                 null,
                 "v.RunVariationId = @RunVariationId",
                 new { RunVariationId = id });
 
-            IDbConnection conn = this._context.Database.GetDbConnection();
+            IDbConnection conn = this._context.GetNewConnection();
             return await conn.QueryOneAsync(
                 queryDef)
                 .ConfigureAwait(false);
 
         }
-
     }
 }

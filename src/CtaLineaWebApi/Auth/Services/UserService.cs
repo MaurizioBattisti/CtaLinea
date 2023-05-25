@@ -179,7 +179,7 @@ namespace CtaLineaWebApi.Auth.Services
                 .ConfigureAwait(false);
         }
 
-        public async Task SetUserPAsswordAsync(
+        public async Task SetUserPasswordAsync(
             string userName,
             string newPAssowrd,
             bool setMustChange = true)

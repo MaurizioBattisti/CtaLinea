@@ -1,6 +1,7 @@
 ﻿@inject NotificationService _notificationService
 @inject DialogService DialogService
 @inject IUserService _userService
+@inject IUserChecker _userChecker
 
 <RadzenStack Orientation="Orientation.Vertical">
 	<RadzenTemplateForm Data=@Model
@@ -244,10 +245,8 @@
 			Roles = this._Roles
 		};
 
-		// TODO: manca la funzione di check
-
 		await this.SaveASyunc(
-			async () => await Task.FromResult(new CheckResult() { Status = CheckStatus.Success }),
+			async () => await this._userChecker.CheckAsync(model),
 			async () => await this._userService.InsertAsync(model),
 			ds);
 	}
@@ -265,10 +264,8 @@
 			Roles = this._Roles
 		};
 
-		// TODO: manca la funzione di check
-
 		await this.SaveASyunc(
-			async () => await Task.FromResult(new CheckResult() { Status = CheckStatus.Success }),
+			async () => await this._userChecker.CheckAsync(model),
 			async () => await this._userService.UpdateAsync(this.Model.UserName, model),
 			ds);
 	}

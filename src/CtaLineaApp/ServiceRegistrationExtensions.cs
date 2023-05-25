@@ -76,6 +76,7 @@ namespace CtaLineaApp
                 .AddScoped<IRunChecker, RunChecker> ()
                 .AddScoped<IContractChecker, ContractChecker> ()
                 .AddScoped<ISchedulerTaskChecker, SchedulerTaskChecker> ()
+                .AddScoped<IUserChecker, UserChecker>()
                 ;
 
             /*

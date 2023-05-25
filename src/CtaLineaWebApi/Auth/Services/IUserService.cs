@@ -1,5 +1,6 @@
 ﻿using CtaLinea.Model.Base;
 using CtaLineaWebApi.Auth.Model;
+using System;
 using System.Threading.Tasks;
 using ZzSoft.CtaLinea.Dal.Model;
 
@@ -20,9 +21,9 @@ namespace CtaLineaWebApi.Auth.Services
         Task DeleteUserAsync(
            string userName);
 
-        Task SetUserPAsswordAsync(
+        Task SetUserPasswordAsync(
             string userName,
             string newPAssowrd,
             bool setMustChange = true);
-    }
+	}
 }

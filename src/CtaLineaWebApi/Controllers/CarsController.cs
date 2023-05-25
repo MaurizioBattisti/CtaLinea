@@ -50,6 +50,7 @@ namespace CtaLineaWebApi.Controllers
         public async Task<ActionResult<CarQueryItem>> GetOneAsync(
             Guid id)
         {
+            
             var result = await this._queries.GetOneCarAsync(id)
                 .ConfigureAwait(false);
 

@@ -22,6 +22,7 @@ using ZzSoft.CtaLinea.Dal.Services;
 using CtaLineaWebApi.Application.Scheduler;
 using NPOI.OpenXml4Net.OPC;
 using Microsoft.AspNetCore.Identity;
+using CtaLineaWebApi.Auth.Services;
 
 namespace CtaLineaWebApi
 {
@@ -175,7 +176,10 @@ namespace CtaLineaWebApi
             // registra il contesto di database
             services.AddScoped<CtaDbContext, CtaDbContext>();
 
-            
+
+			// aggiunge ils ervizio dell'utente corrente
+			services.AddHttpContextAccessor();
+			services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             // servizi di qeury al DB
             services.AddScoped<IAssociatesQueries,AssociatesQueries>()
@@ -210,6 +214,7 @@ namespace CtaLineaWebApi
                 .AddScoped<ICompleteRunCheckerService, CompleteRunCheckerService>()
                 .AddScoped<IContractChecker, ContractChecker> ()
                 .AddScoped<ISchedulerTaskChecker, SchedulerTaskChecker>()
+                .AddScoped<IUserChecker, UserChecker>()
                 ;
 
             return services;
