@@ -26,8 +26,10 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 , @MaxSittings, @LineNumber, @RunNumber, @Node, @StartDate, @EndDate, @StartTime, @EndTime, @Frequency, @CalendarIds
 , @WeekDays, @InContract, @ActiveRun, @DateRef, @TabIds, @ForfaitId, @CollectionPointId) a ON a.RunId = r.RunId";
         private const string RunVariationList_Table = "[dbo].[vw_RunVariations] v";
+        private const string RunItemçistSql_Coincidence = @" LEFT JOIN [dbo].[tvf_oincidenceNodes](NULL) AS n ON n.RunId = r.RunId";
+        private const string RunItemçistSql_Coincidence_adv = @" LEFT JOIN [dbo].[tvf_oincidenceNodes](@CollectionPointId) AS n ON n.RunId = r.RunId";
 
-        private readonly CtaDbContext _context;
+		private readonly CtaDbContext _context;
         private readonly ICurrentUserService _userSvc;
 
 		public RunQueries(
@@ -102,7 +104,7 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 						 );
 				}
 
-                table += RunItemListSql_AdvandedFilters;
+                table += RunItemListSql_AdvandedFilters + RunItemçistSql_Coincidence_adv;
 				args = new
 				{
                     AssociateId = advancedFilter.AssociateId,
@@ -131,6 +133,10 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                     CollectionPointId = advancedFilter.CollectionPointId
                 };
             }
+            else
+            {
+                table += RunItemçistSql_Coincidence;
+			}
 
             // se non sono stati aggiunti filtri ne aggiunge uno ininfluente
             if (string.IsNullOrEmpty(stdFilters) == true) stdFilters = "1 = 1";
@@ -140,27 +146,26 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 				filterContext,
                 stdFilters,
 				args);
-
 			return await conn.QueryListAsync(
 				queryDef)
 				.ConfigureAwait(false);
-		}
-		public async Task<RunItemQueryModel> GetOneRunAsync(
+        }
+        public async Task<RunItemQueryModel> GetOneRunAsync(
 			Guid id)
 		{
 			var assId = await this._userSvc.GetUserAssociateId().ConfigureAwait(false);
             // TODO; filtrare per consorziato
 
 			var queryDef = new QueryDefinition<RunItemQueryModel>(
-				RunItemListSql_Table,
+				RunItemListSql_Table + RunItemçistSql_Coincidence,
 				null,
                 "r.RunId = @RunId",
 				new { RunId = id });
 
 			IDbConnection conn = this._context.GetNewConnection();
-			return await conn.QueryOneAsync(
-				queryDef)
-				.ConfigureAwait(false);
+            return await conn.QueryOneAsync(
+                queryDef)
+                .ConfigureAwait(false);
 		}
 
         public async Task<QueryItemList<RunVariationQueryModel>> GetRunVariationsAsync(

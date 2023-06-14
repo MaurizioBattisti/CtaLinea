@@ -82,6 +82,7 @@
     <Folder Include="Tables\TaskScheduler" />
     <Folder Include="Views\Contab" />
     <Folder Include="StoredProc\Users" />
+    <Folder Include="Functions\Costs" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post_Deploy.sql" />
@@ -165,5 +166,17 @@
     <Build Include="StoredProc\Users\up_User_Edit.sql" />
     <Build Include="StoredProc\Users\up_User_Delete.sql" />
     <Build Include="StoredProc\Users\up_User_ResetPassword.sql" />
+    <Build Include="Functions\Run\tvf_oincidenceNodes.sql" />
+    <Build Include="Views\Base\vw_CollectionPoints.sql" />
+    <Build Include="StoredProc\Costs\up_GetCostsNew.sql" />
+    <Build Include="Tables\Contab\Budgets.sql" />
+    <Build Include="Tables\Contab\BudgetDetail.sql" />
+    <Build Include="Functions\Costs\tvf_DayForfaitWeight.sql" />
+    <Build Include="Functions\Costs\fn_GetMonthId.sql" />
+    <Build Include="Functions\Costs\fn_GetYearId.sql" />
+    <Build Include="Functions\Costs\tvf_MonthForfaitWeight.sql" />
+    <Build Include="Functions\Costs\tvf_YearForfaitWeight.sql" />
+    <Build Include="StoredProc\Costs\up_GetCostByRun.sql" />
+    <Build Include="StoredProc\Costs\up_GetCostByAssociate.sql" />
   </ItemGroup>
 </Project>

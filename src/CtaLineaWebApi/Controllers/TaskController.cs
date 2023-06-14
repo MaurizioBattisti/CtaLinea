@@ -1,5 +1,6 @@
 ﻿using CtaLinea.Model.TaskRequest;
 using CtaLineaWebApi.Application.Commands.AppTasks;
+using CtaLineaWebApi.Application.Commands.Budgets;
 using CtaLineaWebApi.Application.Scheduler;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -187,5 +188,38 @@ namespace CtaLineaWebApi.Controllers
             return this.NoContent();
         }
 
+        [SwaggerOperation("Ricalcola i dati dei costi")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPost]
+        [Route(Constants.Activity_RecalcCosts + "/{id}")]
+        public async Task<IActionResult> RecalcCostsAsync(
+            [FromRoute] int id,
+            [FromQuery] int? timeout)
+        {
+            _schedulerLogger.TaskId = id;
+            await _scheduler.StartActivityAsync(Constants.Activity_RecalcCosts, id);
+
+            var request = new UpdateBudgetDetailActivityRequest()
+            {
+                Timeout = timeout ?? 100
+            };
+
+            try
+            {
+                var result = await this._mediator.Send(request)
+                    .ConfigureAwait(false);
+                if (result == false)
+                {
+                    return this.BadRequest("Operazione fallita senza messaggio");
+                }
+            }
+            catch (Exception ex)
+            {
+                return this.BadRequest(ex);
+            }
+
+            await _scheduler.EndActivityAsycn(Constants.Activity_RecalcCosts, id);
+            return this.NoContent();
+        }
     }
 }

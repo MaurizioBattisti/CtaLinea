@@ -201,6 +201,7 @@ namespace CtaLineaWebApi
                 .AddScoped<ITtServiceRepository, TtServiceRepository>()
                 .AddScoped<ITagRepository, TagRepository>()
                 .AddScoped<IContractRepository, ContractRepository>()
+                .AddScoped<IBudgetRepository, BudgetRepository>()
                 .AddScoped<IUtilityREpository, UtilityREpository>()
                 .AddScoped<IForfaitRepository, ForfaitRepository>()
                 .AddScoped<ISchedulerTaskRepository, SchedulerTaskRepository> ()

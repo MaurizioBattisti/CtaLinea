@@ -11,7 +11,7 @@ namespace ZzSoft.CtaLinea.Dal.Queries
     public class CollectionPointsQueries 
         : ICollectionPointsQueries
     {
-        private const string CollectionPointSql_Table = "dbo.CollectionPoints cp";
+        private const string CollectionPointSql_Table = "[dbo].[vw_CollectionPoints] cp";
 
         private CtaDbContext _context;
 

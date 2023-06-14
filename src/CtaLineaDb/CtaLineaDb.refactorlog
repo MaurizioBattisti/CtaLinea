@@ -777,4 +777,32 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[ForfaitType]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="4f940aa3-6496-4cd9-b6ec-b8defad3b138" ChangeDateTime="05/26/2023 15:02:39">
+    <Property Name="ElementName" Value="[dbo].[RunNodes].[Coincidence]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[RunNodes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="CoincidenceDescr" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7482704f-2b09-4f08-9133-5e50934f0104" ChangeDateTime="06/02/2023 12:59:58">
+    <Property Name="ElementName" Value="[dbo].[Budgets].[col1]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Budgets]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="BudgetId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3b15d851-7684-4862-bb69-05b203ecef95" ChangeDateTime="06/02/2023 13:05:34">
+    <Property Name="ElementName" Value="[dbo].[BudgetDetail].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[BudgetDetail]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="BudgetId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="00ce85ba-77e1-449b-995d-60dae68346da" ChangeDateTime="06/02/2023 16:45:56">
+    <Property Name="ElementName" Value="[dbo].[BudgetDetail].[ForfaitName]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[BudgetDetail]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="MultiRunForfaitName" />
+  </Operation>
 </Operations>

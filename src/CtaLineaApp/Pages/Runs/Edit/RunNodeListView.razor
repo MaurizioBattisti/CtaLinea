@@ -35,6 +35,8 @@
 					@data.CollectionPointData?.Description
 				</Template>
 			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="RunNode" Property="@nameof(RunNode.CoincidenceDescr)" Title="Coincidenza" Width="200"  />
+			
 			@if (ReadOnly == false)
 			{
 				<RadzenDataGridColumn TItem="RunNode" Context="node" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">

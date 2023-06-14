@@ -137,7 +137,11 @@ namespace CtaLinea.Model.QueryModel
         [ColumnDescription(Header = "Tipo Forfait")]
         public string? ForfaitType { get; set; }
 
-        public void CopyFrom (RunItemQueryModel source)
+		[SqlAlias("n")]
+		[ColumnDescription(Header = "Coincidenza")]
+		public string? CoincidenceState { get; set; }
+
+		public void CopyFrom (RunItemQueryModel source)
 		{
             Id = source.Id;
             CtaRunId = source.CtaRunId;
@@ -193,6 +197,8 @@ namespace CtaLinea.Model.QueryModel
             ForfaitId = source.ForfaitId;
             ForfaitName = source.ForfaitName;
             ForfaitType = source.ForfaitType;
-        }
+
+            CoincidenceState = source.CoincidenceState;
+		}
     }
 }

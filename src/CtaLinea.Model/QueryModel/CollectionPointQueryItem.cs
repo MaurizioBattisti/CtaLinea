@@ -32,5 +32,8 @@ namespace CtaLinea.Model.QueryModel
         [ColumnDescription(Header = "Tuoi punto")]
         [SqlField(FullText = true)]
         public string? CollectionPointType { get; set; }
+
+        [ColumnDescription(Header = "nr nodi")]
+        public int? NodeCount { get; set; }
     }
 }

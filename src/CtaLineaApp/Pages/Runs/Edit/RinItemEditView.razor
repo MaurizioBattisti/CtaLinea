@@ -82,9 +82,19 @@ else if (this.NoData == false)
             
             @if (this.IsAdding == false)
             {
-                <RadzenTabsItem Text="Planning" Icon="calendar_month">
-                    <RunPlanningView @ref=@Planning RunId=@RunId />
-                </RadzenTabsItem>
+                @if (this.CanViewPlanning())
+                {
+                    <RadzenTabsItem Text="Planning" Icon="calendar_month">
+                        <RunPlanningView @ref=@Planning RunId=@RunId />
+                    </RadzenTabsItem>
+                }
+
+                @if (this.CanViewCosts())
+                {
+                    <RadzenTabsItem Text="Costi" Icon="point_of_sale">
+                        <RunCostsView @ref=@CostsView RunId=@RunId />
+                    </RadzenTabsItem>
+                }
             }
         </Tabs>
     </RadzenTabs>
@@ -101,7 +111,6 @@ else if (this.NoData == true)
 
     [CascadingParameter]
     CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
-
 
     private IList<string> EditRoes = new List<string>() { UserRoles.Role_Edit, UserRoles.Role_Manage };
     private bool _ReadOnly = false;
@@ -131,6 +140,7 @@ else if (this.NoData == true)
 
     private RunCheckResult? CheckResult { get; set; }
     private RunPlanningView? Planning;
+    private RunCostsView? CostsView;
 
     protected override async Task OnInitializedAsync()
     {
@@ -148,6 +158,15 @@ else if (this.NoData == true)
         {
             await Task.CompletedTask;
         }
+    }
+
+    private bool CanViewPlanning ()
+    {
+        return _accountService.IsUserInRole(UserRoles.Role_Planning);
+    }
+    private bool CanViewCosts()
+    {
+        return _accountService.IsUserInRole(UserRoles.Role_Costs);
     }
 
     public async Task LoadDataAsync (
@@ -253,6 +272,10 @@ else if (this.NoData == true)
             if (this.Planning != null)
             {
                 await this.Planning.ReloadDataAsync();
+            }
+            if (this.CostsView != null)
+            {
+                await this.CostsView.ReloadDataAsync();
             }
             
             await this.RaiseSavedEvent();

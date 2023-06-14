@@ -61,6 +61,7 @@
         <RadzenDataGridColumn TItem="CollectionPointQueryItem" Property="ZipCode" Title="CAP" Width="120px" />
 
         <RadzenDataGridColumn TItem="CollectionPointQueryItem" Property="CollectionPointType" Title="Tipo punto" Width="120px" />
+        <RadzenDataGridColumn TItem="CollectionPointQueryItem" Property="NodeCount" Title="Nr Nodi" Width="80px" />
     </Columns>
 </RadzenDataGrid>
 
@@ -142,6 +143,5 @@
         {
             await this.grdData.Reload();
         }
-
     }
 }

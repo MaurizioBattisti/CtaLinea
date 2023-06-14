@@ -13,6 +13,7 @@
         <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_RunList)) Text="Elenco Corse" Path="/runs" Icon="departure_board"></RadzenPanelMenuItem>
         <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_Utility)) Text="Utility" Icon="bookmark">
             <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_Planning)) Text="Planning" Path="/planning" Icon="calendar_view_week"></RadzenPanelMenuItem>
+            
             <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_AssociateCosts)) Text="Costi per Ditta" Path="/costbyassociate" Icon="point_of_sale"></RadzenPanelMenuItem>
         </RadzenPanelMenuItem>
         <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_ManageAnags)) Text="Anagrafiche Gestione" Icon="folder">
@@ -37,7 +38,7 @@
         </RadzenPanelMenuItem>
 
         <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_ExternalAnags)) Text="Dati" Icon="inventory">
-            <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_AnagASsociates)) Text="Ditte" Path="/cars" Icon="business"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_AnagASsociates)) Text="Ditte" Path="/associates" Icon="business"></RadzenPanelMenuItem>
             <RadzenPanelMenuItem  Visible=@(VisibleItems.Contains(Iten_AnagCars)) Text="Mezzi" Path="/cars" Icon="directions_bus"></RadzenPanelMenuItem>
 
             <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_AnagNodes)) Text="Punti" Path="/points" Icon="place"></RadzenPanelMenuItem>

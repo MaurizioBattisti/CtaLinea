@@ -190,7 +190,7 @@ namespace CtaLineaWebApi.Application.Commands.AppTasks
             if (newToDo.Count() > 0)
             {
                 sb.Append(crLf);
-                sb.Append("dpvranno essere eseguite in aggiunta le seguenti corse:");
+                sb.Append("dovranno essere eseguite in aggiunta le seguenti corse:");
                 sb.Append(crLf);
                 foreach (var run in newToDo)
                 {

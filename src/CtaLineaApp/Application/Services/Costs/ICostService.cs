@@ -9,5 +9,11 @@ namespace CtaLineaApp.Application.Services.Costs
             DateTime? startDate = null, DateTime? endDate = null, 
             Guid? associateId = null, Guid? carId = null, 
             Guid? runId = null);
+
+        Task<IEnumerable<CostByAssociateItem>?> GetCostsByAssociateASync(
+            CalcCostsRequest request);
+        
+        Task<IEnumerable<CostByRunItem>?> GetCostsByRunASync(
+            CalcCostsRequest request);
     }
 }

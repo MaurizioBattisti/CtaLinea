@@ -579,7 +579,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                                         Hour = n.Hour,
                                         ProgrNumber= n.ProgrNumber,
                                         CollectionPointId= n.CollectionPointId,
-                                        CollectionPointData = new CollectionPointSimple ()
+										CoincidenceDescr = n.CoincidenceDescr,
+
+										CollectionPointData = new CollectionPointSimple ()
                                         {
                                             CollectionPointId = n.CollectionPointId,
                                             Description = n.CollectionPointDescription
@@ -857,8 +859,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             {
                 node.ProgrNumber,
                 Hour = this.NormalizeTimeSpanValue( node.Hour),
-                node.CollectionPointId
-            };
+                node.CollectionPointId,
+				CoincidenceDescr = string.IsNullOrWhiteSpace (node.CoincidenceDescr) ? null : node.CoincidenceDescr
+			};
         }
         private object GetNodeKey(
             Guid runVariationId,

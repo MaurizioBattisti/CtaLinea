@@ -9,6 +9,8 @@ using ZzSoft.Api.Utility.Base;
 using ZzSoft.CtaLinea.Dal.Queries;
 using CtaLinea.Model.QueryModel;
 using CtaLinea.Model.Costs;
+using CtaLineaWebApi.Application.Commands.Budgets;
+using MediatR;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -18,11 +20,14 @@ namespace CtaLineaWebApi.Controllers
     public class CostsController
         : ZControllerBase
     {
+        private readonly ISender _mediator;
         private readonly ICostQueries _queries;
 
         public CostsController(
+            ISender mediator,
             ICostQueries queries)
         {
+            this._mediator = mediator;
             this._queries = queries;
         }
 
@@ -46,6 +51,47 @@ namespace CtaLineaWebApi.Controllers
                 startDate, endDate,
                 associateId, carId,
                 runId)
+                .ConfigureAwait(false);
+
+            return this.Ok(result);
+        }
+
+        [Authorize(Policy = Constants.Policy_Costs)]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpPost]
+        [Route("byrun")]
+        public async Task<ActionResult<IEnumerable<CostByRunItem>>> GetCostByRunIdAsync (
+            [FromBody] CalcCostsRequest request
+            )
+        {
+            var myRequest = new GetCostsByRunRequest()
+            {
+                RawRwquest = request
+            };
+            var result = await this._mediator.Send(myRequest)
+                .ConfigureAwait(false);
+
+            return this.Ok(result);
+        }
+
+        [Authorize(Policy = Constants.Policy_Costs)]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpPost]
+        [Route("byassociate")]
+        public async Task<ActionResult<IEnumerable<CostByAssociateItem>>> GetCostByAssociateASync(
+            [FromBody] CalcCostsRequest request
+            )
+        {
+            var myRequest = new GetCorstByAssociateRequest()
+            {
+                BudgetId = null,
+                RawRwquest = request
+            };
+            var result = await this._mediator.Send(myRequest)
                 .ConfigureAwait(false);
 
             return this.Ok(result);

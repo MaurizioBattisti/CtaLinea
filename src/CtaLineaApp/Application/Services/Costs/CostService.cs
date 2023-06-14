@@ -1,6 +1,7 @@
 ﻿using CtaLinea.Model.Costs;
 using CtaLinea.Model.Runs;
 using CtaLineaApp.Application.Services.Helper;
+using System;
 using System.Text;
 using static System.Net.WebRequestMethods;
 
@@ -26,7 +27,7 @@ namespace CtaLineaApp.Application.Services.Costs
             Guid? runId = null
             )
         {
-            var url = Constants.EndPoint_CostsByAssociate;
+            var url = Constants.EndPoint_CostsByAssociate_GET;
             // crea gli arggomenti opzionali
             var args = new List<string>();
             if (contractId != null) args.Add(string.Format("{0}={1}", Constants.EndPoint_CostsByAssociate_ContractId, contractId));
@@ -41,6 +42,21 @@ namespace CtaLineaApp.Application.Services.Costs
 
             // esegue la chiamata al server
             var items = await _http.Get<IEnumerable<CostsByAssociate>>(url);
+            return items;
+        }
+
+        public async Task<IEnumerable<CostByAssociateItem>?> GetCostsByAssociateASync(
+            CalcCostsRequest request)
+        {
+            var url = Constants.EndPoint_CostsByAssociate;
+            var items = await _http.Post<IEnumerable<CostByAssociateItem>, string>(url, request);
+            return items;
+        }
+        public async Task<IEnumerable<CostByRunItem>?> GetCostsByRunASync(
+            CalcCostsRequest request)
+        {
+            var url = Constants.EndPoint_CostsByRun;
+            var items = await _http.Post<IEnumerable<CostByRunItem>, string>(url, request);
             return items;
         }
     }

@@ -6,6 +6,7 @@
     [Hour] TIME NOT NULL, 
     [ProgrNumber] INT NOT NULL DEFAULT 0, 
 
+    [CoincidenceDescr] VARCHAR(MAX) NULL, 
     CONSTRAINT [FK_Nodes_Variation] 
         FOREIGN KEY ([RunVariationId]) 
         REFERENCES [dbo].[RunVariations]([RunVariationId])

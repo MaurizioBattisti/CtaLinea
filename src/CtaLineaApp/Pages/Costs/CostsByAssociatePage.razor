@@ -1,4 +1,7 @@
 ﻿@page "/costbyassociate"
+
+@inject IExcelExporterService ExcelService
+@inject NotificationService _notificationService
 @inject ICostService _CostService;
 @attribute [Authorize]
 
@@ -20,21 +23,67 @@
                      AlignItems="AlignItems.Stretch">
             <div class="d-flex flex-row p-1">
                 <div class="col-md-11">
-                    <div class="d-flex flex-row p-1">
-                        <div class="col-md-6">
+                    <div class="d-flex flex-row">
+                        <div class="col-md-4">
                             <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Riferimento appalto</RadzenText>
-                            <ContractDropDown @bind-ContractId="ContractId" AllowClear=false Changed=@(() => this.StateHasChanged()) />
+                            <ContractDropDown @bind-ContractId="Request.ContractId" AllowClear=false Changed=@(() => this.StateHasChanged()) />
                         </div>
-                        <div class="col-md-6">
-                            <DateRangeSelector @bind-StartDate=@StartDate @bind-EndDate=@EndDate Inline=true AllowClear=true />
+                        <div class="col-md-8">
+                            <AssociateAndCarDropDown @bind-AssociateId="Request.ASsociateId" @bind-CarId="Request.CarId" Inline=true AllowClear=true />
                         </div>
                     </div>
-                    <div class="d-flex flex-row p-1">
-                        <div class="col-md-12">
-                            <AssociateAndCarDropDown @bind-AssociateId=@AssociateId @bind-CarId=@CarId Inline=true AllowClear=true />
+                    <div class="d-flex flex-row">
+                        <div class="col-md-4">
+                            <DateRangeSelector @bind-StartDate="Request.StartDate" @bind-EndDate="Request.EndDate" Inline=true AllowClear=true />
+                        </div>
+                        <div class="col-md-8">
+                            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" Gap="2" Wrap="FlexWrap.Wrap">
+                                <div class="rrz-text-align-center">
+                                    <RadzenCheckBox TValue="bool" @bind-Value=@Request.IncludeOutOfPeriod Name="IncludeOutOfPeriod" />
+                                    <RadzenLabel Text="Includi giorni fuori periodo" Component="IncludeOutOfPeriod" Style="margin-left: 8px; vertical-align: middle;" />
+                                </div>
+                                <div class="rz-text-align-center">
+                                    <RadzenCheckBox TValue="bool" @bind-Value=@Request.IncludeSuspended Name="IncludeSuspended" />
+                                    <RadzenLabel Text="Includi giorni do sospensioni" Component="IncludeSuspended" Style="margin-left: 8px; vertical-align: middle;" />
+                                </div>
+                                <div class="rz-text-align-center">
+                                    <RadzenCheckBox TValue="bool" @bind-Value=@Request.UseReplacedCars Name="UseReplacedCars" />
+                                    <RadzenLabel Text="Attribuisce i costi ai mezzi che realmente hanno effettuato il servizio" Component="UseReplacedCars" Style="margin-left: 8px; vertical-align: middle;" />
+                                </div>
+                                <div class="rz-text-align-center">
+                                    <RadzenCheckBox TValue="bool" @bind-Value=@Request.ForceFreshData Name="ForceFreshData" />
+                                    <RadzenLabel Text="Forza calcolo con dati nuovi" Component="ForceFreshData" Style="margin-left: 8px; vertical-align: middle;" />
+                                </div>
+
+                            </RadzenStack>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-row">
+                        <div class="col-md-2">
+                            <div class="rz-text-align-left">
+                                <RadzenCheckBox TValue="bool" @bind-Value=@SaveBudget Name="SaveBudget" />
+                                <RadzenLabel Text="Salva il preventivo" Component="SaveBudget" Style="margin-left: 8px; vertical-align: middle;" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Nome da dare al preventivo</RadzenText>
+                            <RadzenTextBox Disabled=@(!this.SaveBudget) @bind-Value=@Request.BudgetName class="w-100" />
+                        </div>
+                        <div class="col-md-4">
+                            <RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Tipo di preventivo</RadzenText>
+                            <RadzenDropDown Data="@BudgetTypes"
+                                            AllowClear=true
+                                            Placeholder="seleziona il tipo di preventivo"
+                                            Disabled=@(!this.SaveBudget)
+                                            Name="@nameof(CalcCostsRequest.BudgetType)"
+                                            @bind-Value=@this.Request.BudgetType
+                                            ValueProperty="@nameof(BudgetType.Id)"
+                                            TextProperty="@nameof(BudgetType.Description)"
+                                            class="w-100" />
                         </div>
                     </div>
                 </div>
+                
                 <div class="col-md-1">
                     <RadzenButton Text="Carica..."
                         IsBusy=@isLoading
@@ -45,141 +94,183 @@
             </div>
         </RadzenStack>
     </RadzenHeader>
+
     <RadzenBody>
         <RadzenDataGrid @ref="@grdData"
                         FilterMode="FilterMode.Simple"
                         IsLoading=@isLoading
-                        Data="@this.Data" TItem="CostsByAssociate_Master"
+                        Data="@this.Data" TItem="CostByAssociateItem"
                         AllowFiltering="true"
                         AllowSorting="true"
                         AllowColumnResize="true"
+                        AllowVirtualization=true
                         LogicalFilterOperator="LogicalFilterOperator.And"
                         FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                         Density=@Settings.Density
-                        ExpandMode="DataGridExpandMode.Multiple"
                         Style="height:100%; width:100%">
+            <HeaderTemplate>
+                <RadzenStack Orientation="Orientation.Horizontal">
+                    <RadzenSplitButton ButtonStyle="ButtonStyle.Dark"
+                                       Icon="file_download" Click=@DownloadData_Click>
+                        <ChildContent>
+                            <RadzenSplitButtonItem Text="Excel" Value="X" Icon="grid_on" />
+                            <RadzenSplitButtonItem Text="CSV" Value="C" Icon="wrap_text" />
+                        </ChildContent>
+                    </RadzenSplitButton>
+                </RadzenStack>
+            </HeaderTemplate>
             <EmptyTemplate>
                 <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun dato da visaulizzare !</p>
             </EmptyTemplate>
-            <Template Context="master">
-                <RadzenDataGrid Data="@master.CarCosts"
-                                TItem="CostsByAssociate"
-                                AllowSorting="true"
-                                AllowColumnResize="true"
-                                Density=@Settings.Density>
-                    <Columns>
-                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="CarDescr" Title="Mezzo" Width="470px" />
-
-                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_KmContract" Title="Tot. Km Cap." Width="100px" />
-                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_KmExtra" Title="Tot. Km Extra" Width="100px" />
-                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_Km" Title="Tot. Km" Width="100px" />
-
-                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_KmContract" Title="Tot. Costo Km Cap." Width="150px" />
-                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_KmExtra" Title="Tot. Costo Km Extra" Width="150px" />
-                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_KmCost" Title="Tot. Costo Km" Width="150px" />
-
-                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_DayPrice" Title="Tot. Costo Giorno" Width="150px" />
-                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_DayForfait" Title="Tot. Forfait" Width="150px" />
-                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot_DayIntegration" Title="Tot. Integrazione" Width="150px" />
-                        <RadzenDataGridColumn TItem="CostsByAssociate" Property="Tot" Title="Totale" Width="150px" />
-                    </Columns>
-                </RadzenDataGrid>
-            </Template>
             <Columns>
-                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="ContractName" Title="Appalto" Width="200px" />
-                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="AssociateDescr" Title="Ditta" Width="200px" />
-                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="CarCount" Title="Mezzi" Width="70px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.ContractName)" Title="Appalto" Width="200px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.AssociateName)" Title="Ditta" Width="200px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.CarDescription)" Title="Mezzo" Width="70px" />
 
-                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_KmContract" Title="Tot. Km Cap." Width="100px" />
-                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_KmExtra" Title="Tot. Km Extra" Width="100px" />
-                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_Km" Title="Tot. Km" Width="100px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.Month)" Title="Mese" Width="100px" />
 
-                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_KmContract" Title="Tot. Costo Km Cap." Width="150px" />
-                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_KmExtra" Title="Tot. Costo Km Extra" Width="150px" />
-                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_KmCost" Title="Tot. Costo Km" Width="150px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.Km)" Title="Km" Width="100px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.KmExtra)" Title="Km Extra" Width="100px" />
 
-                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_DayPrice" Title="Tot. Costo Giorno" Width="150px" />
-                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_DayForfait" Title="Tot. Forfait" Width="150px" />
-                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot_DayIntegration" Title="Tot. Integrazione" Width="150px" />
-                <RadzenDataGridColumn TItem="CostsByAssociate_Master" Property="Tot" Title="Totale" Width="150px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayCost)" Title="Costo al GG" Width="150px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.CostKm)" Title="Costo Km GG" Width="150px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.CostKmExtra)" Title="Costo Km GG Extra" Width="150px" />
+
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayIntegration)" Title="Integrazione GG" Width="150px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayForfait)" Title="Forfait GG" Width="150px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayMultiRunForfait)" Title="Forfait Multiplo GG" Width="150px" />
             </Columns>
         </RadzenDataGrid>
     </RadzenBody>    
 </RadzenLayout>
 
 @code {
-    private class CostsByAssociate_Master
-    : CostsByAssociate
-    {
-        public int CarCount { get; set; }
-        public IEnumerable<CostsByAssociate> CarCosts { get; set; }
-    }
+    RadzenDataGrid<CostByAssociateItem>? grdData;
 
     [CascadingParameter]
     CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
-    RadzenDataGrid<CostsByAssociate_Master>? grdData;
+    [CascadingParameter]
+    CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
+
+    private CalcCostsRequest Request { get; set; } = new CalcCostsRequest();
+    private bool _SaveBudget = false;
+    private bool SaveBudget
+    {
+        get { return _SaveBudget; }
+        set 
+        {
+            _SaveBudget = value;
+            if (this.SaveBudget == false)
+            {
+                this.Request.BudgetName = null;
+                this.Request.BudgetType = null;
+            }
+        }
+    }
+
+    private class BudgetType
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+    }
+    private IList<BudgetType> BudgetTypes = new  List<BudgetType> ()
+    {
+        new BudgetType { Id = Constants.BudgetTYpe_SchoolYearStart, Description = "Preventivo a inizio anno scolastico"},
+        new BudgetType { Id = Constants.BudgetTYpe_SolarYearStart, Description = "Preventivo a inizio anno Solare"},
+        new BudgetType { Id = Constants.BudgetTYpe_Other, Description = "Altro"}
+    };
 
     private bool isLoading = false;
-    private IEnumerable<CostsByAssociate_Master>? Data = null;
-
-    // argomenti
-    private int? ContractId { get; set; } = null;
-    private DateTime? StartDate { get; set; } = null;
-    private DateTime? EndDate { get; set; } = null;
-    private Guid? AssociateId { get; set; } = null;
-    private Guid? CarId { get; set; } = null;
+    private IEnumerable<CostByAssociateItem>? Data = null;
 
     protected override async Task OnInitializedAsync()
     {
-
+        this.Request.ContractId = GlobalFilters.Contract?.Id;
+        this.Request.StartDate = GlobalFilters.Period?.StartDate;
+        this.Request.EndDate = GlobalFilters.Period?.EndDate;
 
         await base.OnInitializedAsync();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            // await this.LoadDataAsync();
-        }
-    }
     private async Task LoadDataAsync ()
     {
+        this.isLoading = true;
         try
         {
-            this.isLoading = true;
-            var data = await this._CostService.GetCostsByAssociateAsync(
-                this.ContractId,
-                this.StartDate, this.EndDate,
-                this.AssociateId, this.CarId,
-                null);
+            var data = await this._CostService.GetCostsByAssociateASync(
+                this.Request);
 
-            this.Data= (from c in data
-                         group c by new { c.ContractName, c.ContractId, c.AssociateDescr, c.AssociateId } into d
-                         select new CostsByAssociate_Master()
-                             {
-                                 ContractName = d.Key.ContractName,
-                                 AssociateDescr = d.Key.AssociateDescr,
-                                 ContractId = d.Key.ContractId,
-                                 AssociateId = d.Key.AssociateId,
-                                 CarCount = d.Count(),
-                                 Tot_KmContract = d.Sum(c => c.Tot_KmContract),
-                                 Tot_KmExtra = d.Sum(c => c.Tot_KmExtra),
-                                 Tot_KmCostContract = d.Sum(c => c.Tot_KmCostContract),
-                                 Tot_KmCostExtra = d.Sum(c => c.Tot_KmCostExtra),
-
-                                 Tot_DayPrice = d.Sum(c => c.Tot_DayPrice),
-                                 Tot_DayForfait = d.Sum(c => c.Tot_DayForfait),
-                                 Tot_DayIntegration = d.Sum(c => c.Tot_DayIntegration),
-                                 Tot = d.Sum(c => c.Tot),
-
-                                 CarCosts = d
-                            });
+            this.Data = data;
+        }
+        catch (BadRequestException<CheckResult> ex)
+        {
+            this._notificationService.Notify(
+                NotificationSeverity.Error,
+                ex.Payload?.Title ?? "problemi",
+                ex.Payload?.Description ?? string.Empty
+            );
+        }
+        catch (Exception ex)
+        {
+            this._notificationService.Notify(
+                NotificationSeverity.Error,
+                "Errore caricando i dati o generando il preventivo",
+                ex.Message);
         }
         finally
         {
             this.isLoading = false;
-            this.StateHasChanged();
+        }
+    }
+    private async Task DownloadData_Click(RadzenSplitButtonItem item)
+    {
+        try
+        {
+            this.isLoading = true;
+            var data = this.Data;
+            if (data != null)
+            {
+                // var columninfo = this.grdData?.GetExportColumnInfo();
+                var columninfo = data.GetExportColumnInfo();
+
+                string title = "Mezzi";
+                if (item == null)
+                {
+                    await this.ExcelService.Export(title, data, columninfo);
+                }
+                else
+                {
+                    switch (item.Value)
+                    {
+                        case "X":
+                            await this.ExcelService.ExportExcel(title, data, columninfo);
+                            break;
+                        case "C":
+                            await this.ExcelService.ExportCsv(title, data, columninfo);
+                            break;
+                    }
+                }
+                this._notificationService.Notify(NotificationSeverity.Info, "File pronto per il donwload");
+            }
+            else
+            {
+                this._notificationService.Notify(
+                    NotificationSeverity.Warning,
+                    "Nessun dato da esportare"
+                    );
+            }
+        }
+        catch (Exception ex)
+        {
+            this._notificationService.Notify(
+                NotificationSeverity.Error,
+                "ERrore recuperando i dati",
+                ex.Message
+                );
+        }
+        finally
+        {
+            this.isLoading = false;
         }
     }
 }

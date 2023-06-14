@@ -10,14 +10,16 @@ namespace CtaLinea.Model.Runs
 
         public TimeSpan Hour { get; set; }
         public int ProgrNumber { get; set; }
+		public string? CoincidenceDescr { get; set; }
 
-        public void copyFrom (RunNode item)
+		public void copyFrom (RunNode item)
         {
 			this.RunNodeId = item.RunNodeId;
 			this.CollectionPointId = item.CollectionPointId;
 			this.CollectionPointData = item.CollectionPointData; ;
 			this.Hour = item.Hour;
 			this.ProgrNumber = item.ProgrNumber;
+			this.CoincidenceDescr = item.CoincidenceDescr;
 		}
 
 		public RunNode GetClone ()
@@ -28,8 +30,9 @@ namespace CtaLinea.Model.Runs
 				CollectionPointId = this.CollectionPointId,
 				CollectionPointData = this.CollectionPointData,
 				Hour = this.Hour,
-				ProgrNumber = this.ProgrNumber
-        	};
+				ProgrNumber = this.ProgrNumber,
+				CoincidenceDescr = this.CoincidenceDescr
+			};
 		}
 	}
 }

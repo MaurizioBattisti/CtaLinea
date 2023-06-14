@@ -23,6 +23,10 @@
 				{
 					<SendMailArguments @ref=@_collector @bind-Arguments="ScheduledTask.Arguments" />
 				}
+				else if (this.ScheduledTask.ActivityId == Constants.Activity_RecalcCosts)
+				{
+					<h2>Non sono previsti argometni aggiuntivi per l'attività di ricalcolo dei costi</h2>
+				}
 				else
 				{
 					<h2>Nessun interfaccia prevista per questo tipod i attività</h2>

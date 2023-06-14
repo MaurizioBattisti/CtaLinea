@@ -9,8 +9,8 @@ WITH CTE_CarCosts_base AS
 (
 	SELECT cc.RunCarCostId,
 			cc.RunCarId,
-			COALESCE(cc.STartDate, '20000101') AS StartDate,
-			ROW_NUMBER() OVER (PARTITION BY cc.RunCarCostId ORDER BY COALESCE(cc.STartDate, '20000101') ) AS Num,
+			COALESCE(cc.StartDate, '20000101') AS StartDate,
+			ROW_NUMBER() OVER (PARTITION BY cc.RunCarId ORDER BY COALESCE(cc.STartDate, '20000101') ) AS Num,
 			cc.KmPrice,
 			cc.KmPriceExtra,
 			cc.DayPrice,
@@ -30,7 +30,8 @@ WITH CTE_CarCosts_base AS
 			cc.DayIntegration
 		FROM CTE_CarCosts_base cc
 		LEFT JOIN CTE_CarCosts_base cc2
-			ON cc.num +1 = cc2.num
+			ON cc.RunCarId = cc2.RunCarId
+			AND cc.num + 1 = cc2.num
 ), CTE_Km AS
 (
 	SELECT v.RunVariationId,

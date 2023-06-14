@@ -50,9 +50,12 @@ namespace CtaLineaApp
 
         // costi
         internal const string EndPoint_Costs = "api/costs";
-        internal const string EndPoint_CostsByAssociate = EndPoint_Costs + "/byassociate";
-        // utility
-        internal const string EndPoint_Utilitys = "api/utility";
+        internal const string EndPoint_CostsByAssociate_GET = EndPoint_Costs + "/byassociate";
+		internal const string EndPoint_CostsByRun = EndPoint_Costs + "/byrun";
+		internal const string EndPoint_CostsByAssociate = EndPoint_Costs + "/byassociate";
+
+		// utility
+		internal const string EndPoint_Utilitys = "api/utility";
         internal const string EndPoint_CarPlanning = EndPoint_Utilitys + "/carplanning";
 		internal const string EndPoint_RunPlanning = EndPoint_Utilitys + "/runplanning";
         internal const string EndPoint_OverlappingCars = EndPoint_Utilitys + "/overlappingcars";
@@ -140,6 +143,13 @@ namespace CtaLineaApp
 		internal const string Activity_RecalcRunDays = "calcdays";
 		internal const string Activity_CleanLog = "cleanlog";
 		internal const string Activity_SendMail = "sendmail";
+        internal const string Activity_RecalcCosts = "recalcosts";
 
-	}
+
+        // budget types
+        internal const string BudgetTYpe_Last_Calc = "LAST CALC";
+        internal const string BudgetTYpe_SchoolYearStart = "SCOOLSTART";
+        internal const string BudgetTYpe_SolarYearStart = "YEARSTART";
+        internal const string BudgetTYpe_Other = "OTHER";
+    }
 }

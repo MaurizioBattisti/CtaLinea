@@ -115,18 +115,24 @@ namespace CtaLineaApp.Application.Services.Base
 						MonthlyRetention = 3
 					}, optins)
 			};
-			yield return new AppTaskDescription()
-			{
-				TaskId = Constants.Activity_SendMail,
-				TaskName = "Manda le mail ai consorziati",
-				DefaultArguments = JsonSerializer.Serialize(
-					new WeekActivityMailSendRequest()
-					{
+            yield return new AppTaskDescription()
+            {
+                TaskId = Constants.Activity_SendMail,
+                TaskName = "Manda le mail ai consorziati",
+                DefaultArguments = JsonSerializer.Serialize(
+                    new WeekActivityMailSendRequest()
+                    {
                         AssociateId = null,
                         ForseDestination = null,
                         ReferenceDate = null,
-					}, optins)
-			};
-		}
+                    }, optins)
+            };
+            yield return new AppTaskDescription()
+            {
+                TaskId = Constants.Activity_RecalcCosts,
+                TaskName = "Ricalcola i costi correnti",
+                DefaultArguments  =null
+            };
+        }
 	}
 }

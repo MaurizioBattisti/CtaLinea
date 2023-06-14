@@ -1,6 +1,7 @@
 ﻿@page "/cars"
 @inject IAutoLoadDataList<Car> AutoLoad;
 @inject IExcelExporterService ExcelService
+@inject NotificationService notificationService
 @attribute [Authorize]
 
 <CheckAuthorization Roles=@(new string[] { UserRoles.Role_Anagraohics }) />
@@ -11,7 +12,6 @@
         <RadzenLabel Text="Mezzi" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
     </PageTitle>
     <TopLine>
-        <RadzenTextBox @bind-Value="AutoLoad.FullTextSearch" Placeholder="Cerca..." Change=@(args => FullText_OnChange(args)) Class="w-100" />
     </TopLine>
 </LayoutSetter>
 <CtaLineaSttingsNotifier Changed=@StateHasChanged />
@@ -34,12 +34,23 @@
         PageSize=@(Settings?.PageSize ?? 5)
         >
     <HeaderTemplate>
-        <RadzenStack Orientation="Orientation.Horizontal" Gap="4px">
-            <RadzenButton ButtonStyle="ButtonStyle.Light"
-                          Icon="file_download"
-                          Click="@ExportToExcel" />
+        <RadzenStack Orientation="Orientation.Horizontal">
+            <RadzenSplitButton ButtonStyle="ButtonStyle.Dark"
+                               Icon="file_download" Click=@DownloadData_Click>
+                <ChildContent>
+                    <RadzenSplitButtonItem Text="Excel" Value="X" Icon="grid_on" />
+                    <RadzenSplitButtonItem Text="CSV" Value="C" Icon="wrap_text" />
+                </ChildContent>
+            </RadzenSplitButton>
+
+            <RadzenTextBox @bind-Value=@this.AutoLoad.FullTextSearch Placeholder="Cerca..." Style="width: 200px" Change="@FullText_OnChange" Class="w-100" />
+            <RadzenButton ButtonStyle="ButtonStyle.Success"
+                          IsBusy=@AutoLoad.isLoading
+                          Icon="refresh"
+                          Click="@(()=>ReloadData())" />
         </RadzenStack>
-    </HeaderTemplate>    <EmptyTemplate>
+    </HeaderTemplate>
+    <EmptyTemplate>
         <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun mezzo trovato !</p>
     </EmptyTemplate>
     <Columns>
@@ -51,16 +62,44 @@
         <RadzenDataGridColumn TItem="Car" Property="NrSittings" Title="Posti" Width="100px"/>
         <RadzenDataGridColumn TItem="Car" Property="AssociateDescription" Title="Ditta" Width="200px"/>
 
-        <RadzenDataGridColumn TItem="Car" Property="PrimaryCar" Title="Titolare" Width="100px"/>
-        <RadzenDataGridColumn TItem="Car" Property="SpareCar" Title="Scorta" Width="100px"/>
+        <RadzenDataGridColumn TItem="Car" Property="PrimaryCar" Title="Titolare" Width="100px">
+            <Template Context="data">
+                @if (data.PrimaryCar)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Car" Property="SpareCar" Title="Scorta" Width="100px">
+            <Template Context="data">
+                @if (data.SpareCar)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
 
         <RadzenDataGridColumn TItem="Car" Property="FirstRegistration" Title="Prima imm." FormatString="{0:dd/MM/yyyy}" Width="150px" />
         <RadzenDataGridColumn TItem="Car" Property="DiscontinuationDate" Title="Vendita " FormatString="{0:dd/MM/yyyy}" Width="150px" />
 
         <RadzenDataGridColumn TItem="Car" Property="ChassisNumber" Title="Nr. Telaio" Width="150px"/>
 
-        <RadzenDataGridColumn TItem="Car" Property="Active" Title="Attivo" Width="100px"/>
-        <RadzenDataGridColumn TItem="Car" Property="AssociateActive" Title="Ditta Att." Width="150px"/>
+        <RadzenDataGridColumn TItem="Car" Property="Active" Title="Attivo" Width="100px">
+            <Template Context="data">
+                @if (data.Active)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Car" Property="AssociateActive" Title="Ditta Att." Width="150px">
+            <Template Context="data">
+                @if (data.AssociateActive)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
     </Columns>
 </RadzenDataGrid>
 
@@ -69,12 +108,56 @@
     CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
     RadzenDataGrid<Car>? grdData;
 
-    private async Task ExportToExcel()
+    private async Task DownloadData_Click(RadzenSplitButtonItem item)
     {
-        if (this.AutoLoad?.Data != null)
+        this.AutoLoad.StartLoading();
+
+        try
         {
-            var columninfo = this.grdData?.GetExportColumnInfo();
-            await this.ExcelService.Export("Elenco Mezzi parziale", this.AutoLoad.Data, columninfo);
+            var data = await this.AutoLoad.GetAllAsync();
+            if (data != null)
+            {
+                // var columninfo = this.grdData?.GetExportColumnInfo();
+                var columninfo = data.GetExportColumnInfo();
+
+                string title = "Mezzi";
+                if (item == null)
+                {
+                    await this.ExcelService.Export(title, data, columninfo);
+                }
+                else
+                {
+                    switch (item.Value)
+                    {
+                        case "X":
+                            await this.ExcelService.ExportExcel(title, data, columninfo);
+                            break;
+                        case "C":
+                            await this.ExcelService.ExportCsv(title, data, columninfo);
+                            break;
+                    }
+                }
+                this.notificationService.Notify(NotificationSeverity.Info, "File pronto per il donwload");
+            }
+            else
+            {
+                this.notificationService.Notify(
+                    NotificationSeverity.Warning,
+                    "Nessun dato da esportare"
+                    );
+            }
+        }
+        catch (Exception ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "ERrore recuperando i dati",
+                ex.Message
+                );
+        }
+        finally
+        {
+            this.AutoLoad.EndLoading();
         }
     }
 
@@ -91,5 +174,13 @@
     void FullText_OnChange(string value)
     {
         this.grdData?.Reload();
+    }
+
+    private async Task ReloadData()
+    {
+        if (this.grdData != null)
+        {
+            await this.grdData.Reload();
+        }
     }
 }

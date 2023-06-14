@@ -1,0 +1,262 @@
+﻿@using CtaLinea.Model.Costs;
+@using CtaLineaApp.Application.Services.Costs;
+
+@inject IExcelExporterService ExcelService
+@inject NotificationService _notificationService
+@inject ICostService _CostService
+
+<RadzenDataGrid AllowFiltering="false" 
+                AllowSorting="false" 
+                AllowVirtualization=true
+                GridLines="DataGridGridLines.Both"
+                FilterPopupRenderMode="PopupRenderMode.OnDemand" 
+                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                Data="@RunCosts" TItem="CostByRunItem"
+                ColumnWidth="100px" 
+                RowRender="@RowRender" 
+                CellRender="@CellRender" 
+                >
+    <HeaderTemplate>
+        <RadzenRow>
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" Gap="6px">
+                <RadzenStack Orientation="Orientation.Horizontal" Gap="4px" JustifyContent="JustifyContent.Left">
+                    <RadzenButton ButtonStyle="ButtonStyle.Secondary"
+                                  Icon="navigate_before"
+                                  Click="@Prev_Click" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Secondary"
+                                  Icon="navigate_next"
+                                  Click="@Next_Click" />
+                </RadzenStack>
+                
+                <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" Gap="4px" >
+                    <RadzenText>@string.Format("{0:dd/MM/yyyy}",Request.StartDate)</RadzenText>
+                    <DateSelectorNotNull Value=@this.Current ValueChanged="@Date_Changed" ShowSetTodayButton=true />
+                    <RadzenText>@string.Format("{0:dd/MM/yyyy}",Request.EndDate)</RadzenText>
+                </RadzenStack>
+
+                <RadzenStack Orientation="Orientation.Horizontal" Gap="4px" JustifyContent="JustifyContent.Right">
+                    <RadzenSelectBar Value=@PeriodType ValueChanged=@PeriodType_Changed TValue="PeriodTypeEnum">
+                        <Items>
+                            <RadzenSelectBarItem Text="Sett." Icon="view_week" Value="PeriodTypeEnum.Week" />
+                            <RadzenSelectBarItem Text="Mese" Icon="calendar_month" Value="PeriodTypeEnum.Month" />
+                        </Items>
+                    </RadzenSelectBar>
+                </RadzenStack>
+            </RadzenStack>
+        </RadzenRow>
+    </HeaderTemplate>
+    <Columns>
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.Day)" Title="Giorno" FormatString="{0:dd/MM/yyyy}" />
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.AssociateName)" Title="Ditta" Width="200px" />
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.CarDescription)" Title="Mezzo" Width="200px" />
+
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.Km)" Title="Km" Width="100px" />
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.KmExtra)" Title="Km Extra" Width="100px" />
+
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.DayCost)" Title="Costo al GG" Width="150px" />
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.CostKm)" Title="Costo Km GG" Width="150px" />
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.CostKmExtra)" Title="Costo Km GG Extra" Width="150px" />
+
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.DayIntegration)" Title="Integrazione GG" Width="150px" />
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.DayForfait)" Title="Forfait GG" Width="150px" />
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.DayMultiRunForfait)" Title="Forfait Multiplo GG" Width="150px" />
+
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.MultiRunForfaitName)" Title="Forfait" Width="200px" />
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.MultirunForfaitType)" Title="Tipo Forfait" Width="100px" >
+            <Template Context="data">
+                @FormatForfaitType(data.MultirunForfaitType)
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.MultiRunForfaitAmount)" Title="Importo Forfait" Width="150px" />
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    private enum PeriodTypeEnum
+    {
+        Week,
+        Month
+    }
+
+    [CascadingParameter]
+    public CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+    [Parameter]
+    public Guid RunId { get; set; }
+
+    private DateTime Current { get; set; } = DateTime.Today;
+    private PeriodTypeEnum PeriodType { get; set; } = PeriodTypeEnum.Week;
+
+    private CalcCostsRequest Request { get; set; } = new CalcCostsRequest();
+    private bool IsLoading { get; set; } = false;
+    private IEnumerable<CostByRunItem> RunCosts { get; set; } = new List<CostByRunItem>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        await this.ReloadDataAsync();
+    }
+
+    private string FormatForfaitType (string? type)
+    {
+        var descr = string.Empty;
+        if (string.IsNullOrWhiteSpace(type)) return descr;
+        switch(type)
+        {
+            case "D":
+                descr = "Giornaliero";
+                break;
+            case "M":
+                descr = "Mensile";
+                break;
+            case "Y":
+                descr = "Annulae";
+                break;
+            default:
+                descr = "N/D";
+                break;
+        }
+
+        return descr;
+    }
+
+    private DateTime GetStartDate ()
+    {
+        var dt = this.Current;
+        switch (this.PeriodType )
+        {
+            case PeriodTypeEnum.Month:
+                dt = new DateTime(dt.Year, dt.Month, 1);
+                break;
+            default:
+                var wd = dt.DayOfWeek;
+                var delta = wd - DayOfWeek.Monday;
+                if (delta < 0) dt = dt.AddDays(-6);
+                if (delta >= 1) dt = dt.AddDays(-1 * delta);
+                break;
+        }
+        return dt;
+    }
+    private DateTime GetEndDate()
+    {
+        var dt = this.GetStartDate();
+        switch (this.PeriodType)
+        {
+            case PeriodTypeEnum.Month:
+                dt =dt.AddMonths(1);
+                dt =dt.AddDays(-1);
+                break;
+            default:
+                dt = dt.AddDays(6);
+                break;
+        }
+        return dt;
+    }
+
+    private async Task Prev_Click ()
+    {
+        await this.MoveCurrent(-1);
+    }
+    private async Task Next_Click()
+    {
+        await this.MoveCurrent(1);
+    }
+
+    private async Task MoveCurrent (int amunt)
+    {
+        switch (this.PeriodType)
+        {
+            case PeriodTypeEnum.Month:
+                this.Current = this.Current.AddMonths(amunt);
+                break;
+            default:
+                this.Current = this.Current.AddDays(amunt * 7);
+                break;
+        }
+        await this.ReloadDataAsync();
+    }
+    private async Task Date_Changed (DateTime dt)
+    {
+        this.Current = dt;
+        await this.ReloadDataAsync();
+    }
+    private async Task PeriodType_Changed(PeriodTypeEnum value)
+    {
+        this.PeriodType = value;
+        this.StateHasChanged();
+        await this.ReloadDataAsync();
+    }
+
+    public async Task ReloadDataAsync()
+    {
+        this.Request.StartDate = this.GetStartDate();
+        this.Request.EndDate = this.GetEndDate();
+        this.Request.RunId = this.RunId;
+
+        this.IsLoading = true;
+        try
+        {
+            var data = await this._CostService.GetCostsByRunASync(
+                this.Request);
+
+            this.RunCosts = data ?? new List<CostByRunItem>(); ;
+        }
+        catch (BadRequestException<CheckResult> ex)
+        {
+            this._notificationService.Notify(
+                NotificationSeverity.Error,
+                ex.Payload?.Title ?? "problemi",
+                ex.Payload?.Description ?? string.Empty
+            );
+        }
+        catch (Exception ex)
+        {
+            this._notificationService.Notify(
+                NotificationSeverity.Error,
+                "Errore caricando i dati",
+                ex.Message);
+        }
+        finally
+        {
+            this.IsLoading = false;
+        }
+        await Task.CompletedTask;
+    }
+
+    void RowRender(RowRenderEventArgs<CostByRunItem> args)
+    {
+        // args.Attributes.Add("style", $"font-weight: {(args.Data.Quantity > 20 ? "bold" : "normal")};");
+    }
+
+    void CellRender(DataGridCellRenderEventArgs<CostByRunItem> args)
+    {
+        if (args.Column.Property == nameof(CostByRunItem.Day))
+        {
+            var coun = this.RunCosts.Where(d => d.Day == args.Data.Day).Count();
+            if (coun> 1)
+            {
+                args.Attributes.Add("rowspan", coun);
+            }
+        }
+        if (args.Column.Property == nameof(CostByRunItem.AssociateName))
+        {
+            var coun = this.RunCosts.Where(d => d.Day == args.Data.Day 
+            && d.AssociateId == args.Data.AssociateId).Count();
+            if (coun > 1)
+            {
+                args.Attributes.Add("rowspan", coun);
+            }
+        }
+
+        if (args.Column.Property == nameof(CostByRunItem.MultiRunForfaitName)
+            || args.Column.Property == nameof(CostByRunItem.MultirunForfaitType)
+            || args.Column.Property == nameof(CostByRunItem.MultiRunForfaitAmount))
+        {
+            var coun = this.RunCosts.Where(d => d.MultiRunForfaitAmount == args.Data.MultiRunForfaitAmount).Count();
+            if (coun > 1)
+            {
+                args.Attributes.Add("rowspan", coun);
+            }
+        }
+    }
+}

@@ -39,6 +39,14 @@
 				</RadzenColumn>
 			</RadzenRow>
 			<RadzenRow>
+				<RadzenLabel Component="coincidence" Text="Coincidenza" />
+			</RadzenRow>
+			<RadzenRow>
+				<RadzenTextBox Name="coincidence"
+					@bind-Value=@Node.CoincidenceDescr
+					class="w-100" />
+			</RadzenRow>
+			<RadzenRow>
 				<p> map </p>
 			</RadzenRow>
 		</RadzenStack>
