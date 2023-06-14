@@ -20,6 +20,7 @@ using CtaLinea.Model.Helpers;
 using ZzSoft.CtaLinea.Dal.Repositories;
 using CtaLineaWebApi.Application.Commands.Tags;
 using CtaLinea.Model.Filters;
+using ZzSoft.CtaLinea.Dal.Services;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -33,17 +34,20 @@ namespace CtaLineaWebApi.Controllers
         private readonly IRunQueries _queries;
         private readonly ISender _mediator;
         private readonly IRunRepository _repo;
-		private readonly ICompleteRunCheckerService _Checker;
+        private readonly ICurrentUserService _currentUser;
+        private readonly ICompleteRunCheckerService _Checker;
 
         public RunsController(
             ISender mediator,
             IRunRepository repo,
             ICompleteRunCheckerService checker,
+            ICurrentUserService currentUSer,
             IRunQueries queries)
         {
             _mediator = mediator;
             _repo = repo;
             _Checker = checker;
+            _currentUser = currentUSer;
 			_queries = queries;
 		}
 
@@ -225,6 +229,14 @@ namespace CtaLineaWebApi.Controllers
         public async Task<IActionResult> CheckOneAsync(
             [FromBody] RunItem model)
         {
+            // contorlla se può lavorarci sopra
+            var userRun = await _currentUser.IsAssociateRun(model.RunId)
+                .ConfigureAwait (false);
+            if (userRun == false)
+            {
+                return NotFound();
+            }
+
             // per prima cosa contorlli dati in ingresso
             var checkResult = await _Checker.CheckRunAsync(model);
             return this.Ok(checkResult);
@@ -276,6 +288,14 @@ namespace CtaLineaWebApi.Controllers
 		public async Task<IActionResult> GetRunTagsAsync(
 			Guid id)
 		{
+            // contorlla se può lavorarci sopra
+            var userRun = await _currentUser.IsAssociateRun(id)
+                .ConfigureAwait(false);
+            if (userRun == false)
+            {
+                return NotFound();
+            }
+
             var list = await _repo.GetRunTagsAsync(id);
             return this.Ok(list);
 		}
@@ -289,7 +309,15 @@ namespace CtaLineaWebApi.Controllers
 			Guid id,
             [FromBody] IEnumerable<int> tags)
 		{
-			var request = new SaveRunTagsRequest()
+            // contorlla se può lavorarci sopra
+            var userRun = await _currentUser.IsAssociateRun(id)
+                .ConfigureAwait(false);
+            if (userRun == false)
+            {
+                return NotFound();
+            }
+
+            var request = new SaveRunTagsRequest()
 			{
                 RunId = id,
 				TagIds = tags

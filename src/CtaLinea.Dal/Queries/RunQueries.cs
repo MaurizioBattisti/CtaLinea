@@ -153,10 +153,14 @@ namespace ZzSoft.CtaLinea.Dal.Queries
         public async Task<RunItemQueryModel> GetOneRunAsync(
 			Guid id)
 		{
-			var assId = await this._userSvc.GetUserAssociateId().ConfigureAwait(false);
-            // TODO; filtrare per consorziato
+            bool userRun = await this._userSvc.IsAssociateRun(id)
+                .ConfigureAwait(false);
+            if (userRun == false)
+            {
+                return null;
+            }
 
-			var queryDef = new QueryDefinition<RunItemQueryModel>(
+            var queryDef = new QueryDefinition<RunItemQueryModel>(
 				RunItemListSql_Table + RunItemçistSql_Coincidence,
 				null,
                 "r.RunId = @RunId",
@@ -172,10 +176,14 @@ namespace ZzSoft.CtaLinea.Dal.Queries
             Guid runId,
             IFilteringContext filterContext)
 		{
-			var assId = await this._userSvc.GetUserAssociateId().ConfigureAwait(false);
-			// TODO; filtrare per consorziato
+            bool userRun = await this._userSvc.IsAssociateRun(runId)
+                .ConfigureAwait(false);
+            if (userRun == false)
+            {
+                return new QueryItemList<RunVariationQueryModel>(null);
+            }
 
-			var queryDef = new QueryDefinition<RunVariationQueryModel>(
+            var queryDef = new QueryDefinition<RunVariationQueryModel>(
                 RunVariationList_Table,
                 filterContext,
 				"v.RunId = @RunId",
@@ -189,10 +197,16 @@ namespace ZzSoft.CtaLinea.Dal.Queries
         public async Task<RunVariationQueryModel> GetOneVariationAsync(
             Guid id)
 		{
-			var assId = await this._userSvc.GetUserAssociateId().ConfigureAwait(false);
-			// TODO; filtrare per consorziato
+            // TODO: bloccare l'accesso ai consorziati
+            /*
+            bool userRun = await this._userSvc.IsAssociateRun(runId)
+                .ConfigureAwait(false);
+            if (userRun == false)
+            {
+                return null;
+            }*/
 
-			var queryDef = new QueryDefinition<RunVariationQueryModel>(
+            var queryDef = new QueryDefinition<RunVariationQueryModel>(
                 RunVariationList_Table,
                 null,
                 "v.RunVariationId = @RunVariationId",
@@ -202,7 +216,6 @@ namespace ZzSoft.CtaLinea.Dal.Queries
             return await conn.QueryOneAsync(
                 queryDef)
                 .ConfigureAwait(false);
-
         }
     }
 }

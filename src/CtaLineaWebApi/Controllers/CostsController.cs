@@ -11,6 +11,7 @@ using CtaLinea.Model.QueryModel;
 using CtaLinea.Model.Costs;
 using CtaLineaWebApi.Application.Commands.Budgets;
 using MediatR;
+using ZzSoft.CtaLinea.Dal.Services;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -22,12 +23,15 @@ namespace CtaLineaWebApi.Controllers
     {
         private readonly ISender _mediator;
         private readonly ICostQueries _queries;
+        private readonly ICurrentUserService _currentUSer;
 
         public CostsController(
             ISender mediator,
+            ICurrentUserService currentUser,
             ICostQueries queries)
         {
             this._mediator = mediator;
+            this._currentUSer = currentUser;
             this._queries = queries;
         }
 
@@ -46,6 +50,13 @@ namespace CtaLineaWebApi.Controllers
             [FromQuery] Guid? runId = null
             )
         {
+            var assId = await this._currentUSer.GetUserAssociateId()
+                .ConfigureAwait(false);
+            if (assId != null)
+            {
+                associateId = assId;
+            }
+
             var result = await this._queries.GetCostByAssociateAsync(
                 contractId,
                 startDate, endDate,
@@ -66,6 +77,14 @@ namespace CtaLineaWebApi.Controllers
             [FromBody] CalcCostsRequest request
             )
         {
+            var assId = await this._currentUSer.GetUserAssociateId()
+                .ConfigureAwait(false);
+            if (assId != null)
+            {
+                request.ASsociateId = assId;
+                request.BudgetName = null;
+            }
+
             var myRequest = new GetCostsByRunRequest()
             {
                 RawRwquest = request
@@ -86,6 +105,14 @@ namespace CtaLineaWebApi.Controllers
             [FromBody] CalcCostsRequest request
             )
         {
+            var assId = await this._currentUSer.GetUserAssociateId()
+                .ConfigureAwait(false);
+            if (assId != null)
+            {
+                request.ASsociateId = assId;
+                request.BudgetName = null;
+            }
+
             var myRequest = new GetCorstByAssociateRequest()
             {
                 BudgetId = null,

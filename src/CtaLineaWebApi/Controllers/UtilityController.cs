@@ -21,6 +21,7 @@ using CtaLinea.Model.Utilities;
 using CtaLinea.Model.Checks;
 using NPOI.HSSF.Record.Chart;
 using ZzSoft.CtaLinea.Dal.Repositories;
+using ZzSoft.CtaLinea.Dal.Services;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -34,17 +35,20 @@ namespace CtaLineaWebApi.Controllers
         private readonly IMediator _mediator;
 
         private readonly IUtilityQueries _queries;
+        private readonly ICurrentUserService _currentUSer;
         private readonly IUtilityREpository _utilityRepo; 
 
         public UtilityController(
             IMediator mediator,
             IUtilityQueries queries,
 			IUtilityREpository utilityRepo,
-			ILogger<UtilityController> logger)
+            ICurrentUserService currentUser,
+            ILogger<UtilityController> logger)
         {
             this._mediator = mediator;
             this._queries = queries;
             this._utilityRepo = utilityRepo;
+            this._currentUSer = currentUser;
             this._logger = logger;
         }
 
@@ -61,6 +65,13 @@ namespace CtaLineaWebApi.Controllers
             [FromQuery] DateTime? endDate = null
             )
         {
+            var assId = await this._currentUSer.GetUserAssociateId()
+                .ConfigureAwait(false);
+            if (assId != null)
+            {
+                associateId = assId;
+            }
+
             var result = await this._queries.GetCarPlanningAsync(
                 associateId, carId,
                 startDate, endDate
@@ -81,7 +92,14 @@ namespace CtaLineaWebApi.Controllers
 			[FromQuery] DateTime? endDate = null
 			)
 		{
-			var result = await this._queries.GetRunPlanningAsync(
+            var userRun = await this._currentUSer.IsAssociateRun(runId)
+                .ConfigureAwait(false);
+            if (userRun == false)
+            {
+                return this.Ok(new List<RunPlanningItem>());
+            }
+
+            var result = await this._queries.GetRunPlanningAsync(
 				runId,
 				startDate, endDate
 				)
@@ -102,6 +120,8 @@ namespace CtaLineaWebApi.Controllers
             [FromQuery] DateTime endDate
             )
         {
+            // TODO: filtrare per ditta se l'utente lo prevede
+
             var result = await this._queries.GetOverlappingRunCarAsync(
                 runCarId,
                 startDate, endDate
@@ -122,7 +142,14 @@ namespace CtaLineaWebApi.Controllers
 			[FromQuery] DateTime? refDate = null
 			)
 		{
-			var result = await this._utilityRepo.GetCarForDiscontinuationAsync(
+            var assId = await this._currentUSer.GetUserAssociateId()
+                .ConfigureAwait(false);
+            if (assId != null)
+            {
+                associateId = assId.Value;
+            }
+
+            var result = await this._utilityRepo.GetCarForDiscontinuationAsync(
 				associateId, refDate 
 				)
 				.ConfigureAwait(false);
@@ -147,29 +174,5 @@ namespace CtaLineaWebApi.Controllers
 
             return this.NoContent();
 		}
-
-        /*
-		[ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Route("ttservices")]
-        [HttpPost, DisableRequestSizeLimit]
-        public async Task<ActionResult> UploadTtFileAsync(
-            IFormFile file)
-        {
-            try
-            {
-                var request = new TtServiceImportRequest(
-                    file);
-                await this._mediator.Send(request);
-            }
-            catch (Exception exc)
-            {
-                var msg = "errore durante il caricamento del file dei servizi TT";
-                this._logger.LogError(exc, msg);
-                return this.Conflict(msg + "\n" + exc.Message);
-            }
-            return this.Ok();
-        }
-        */
     }
 }

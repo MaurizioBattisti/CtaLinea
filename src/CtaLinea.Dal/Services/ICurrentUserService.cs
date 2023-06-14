@@ -9,5 +9,7 @@ namespace ZzSoft.CtaLinea.Dal.Services
 	public interface ICurrentUserService
 	{
 		Task<Guid?> GetUserAssociateId();
-	}
+        Task<bool> IsAssociateRun(
+            Guid runId);
+    }
 }

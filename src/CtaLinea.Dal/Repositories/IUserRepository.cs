@@ -1,4 +1,5 @@
 ﻿using CtaLinea.Model.Base;
+using System;
 using System.Threading.Tasks;
 using ZzSoft.CtaLinea.Dal.Model;
 
@@ -17,5 +18,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             string userName,
             string passwordHash,
             bool setMustChange = false);
+
+        Task<bool> IsUserAssociateRun(
+            string userName,
+            Guid runId);
     }
 }

@@ -1,8 +1,6 @@
 ﻿using CtaLinea.Model.Runs;
 using MediatR;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.Extensions.Logging;
-using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using ZzSoft.CtaLinea.Dal.Repositories;

@@ -3,15 +3,18 @@ using CtaLinea.Model.External;
 using CtaLinea.Model.Runs;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using ZzSoft.CtaLinea.Dal.Context;
 using ZzSoft.CtaLinea.Dal.Model.Runs;
+using ZzSoft.CtaLinea.Dal.Services;
 
 namespace ZzSoft.CtaLinea.Dal.Repositories
 {
@@ -36,20 +39,31 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         private const string SQL_Table_RunTags = "[dbo].[RunTags]";
 
 		private readonly CtaDbContext _context;
+        private readonly ICurrentUserService _currentUser;
         private readonly ILogger _logger;
 
         public RunRepository(
             CtaDbContext context,
+            ICurrentUserService currentUser,
             ILogger<RunRepository> logger
             )
         {
             _context = context;
+            _currentUser = currentUser;
             _logger = logger;
         }
 
         public async Task<RunItem> GetOneRunItemAsync(
             Guid runId)
         {
+            // controlla l'utente
+            var userRun = await this._currentUser.IsAssociateRun(runId)
+                .ConfigureAwait (false);
+            if (userRun == false)
+            {
+                throw new DllNotFoundException();
+            }
+
             using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
 
@@ -62,6 +76,14 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task DeleteRunAsync (
             Guid runId)
         {
+            // controlla l'utente
+            var userRun = await this._currentUser.IsAssociateRun(runId)
+                .ConfigureAwait(false);
+            if (userRun == false)
+            {
+                throw new DllNotFoundException();
+            }
+
             using IDbConnection conn = this._context.Database.GetDbConnection();
             conn.Open();
             var tran = conn.BeginTransaction();
@@ -89,6 +111,14 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task SaveRuAsync(
             RunItem runItem)
         {
+            // controlla l'utente
+            var userRun = await this._currentUser.IsAssociateRun(runItem.RunId)
+                .ConfigureAwait(false);
+            if (userRun == false)
+            {
+                throw new DllNotFoundException();
+            }
+
             using IDbConnection conn = this._context.Database.GetDbConnection();
             conn.Open();
             var tran = conn.BeginTransaction();

@@ -42,5 +42,19 @@ namespace CtaLineaWebApi.Auth.Services
 			_associateSet = true;
 			return _AssociateId;
 		}
-	}
+
+        public async Task<bool> IsAssociateRun(
+			Guid runId)
+        {
+			bool userRun = false;
+            var userId = _http.HttpContext.User.Identity.Name;
+
+            if (string.IsNullOrEmpty(userId) == false)
+            {
+                userRun = await this._userRepository.IsUserAssociateRun(userId, runId)
+                   .ConfigureAwait(false);
+            }
+            return userRun;
+        }
+    }
 }

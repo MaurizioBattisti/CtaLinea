@@ -178,5 +178,6 @@
     <Build Include="Functions\Costs\tvf_YearForfaitWeight.sql" />
     <Build Include="StoredProc\Costs\up_GetCostByRun.sql" />
     <Build Include="StoredProc\Costs\up_GetCostByAssociate.sql" />
+    <Build Include="Functions\Run\fn_IsAssociateUserRun.sql" />
   </ItemGroup>
 </Project>

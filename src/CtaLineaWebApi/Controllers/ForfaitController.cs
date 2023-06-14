@@ -119,7 +119,7 @@ namespace CtaLineaWebApi.Controllers
 		}
 
 		[Authorize(Policy = Constants.Policy_ManageData)]
-		[SwaggerOperation("modifica i dati di un nuovo forfait multi corsa")]
+		[SwaggerOperation("Elimina i dati di un nuovo forfait multi corsa")]
 		[Consumes(MediaTypeNames.Application.Json)]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]

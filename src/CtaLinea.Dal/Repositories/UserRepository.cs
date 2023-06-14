@@ -225,5 +225,24 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 tran);
             return roles;
         }
+
+        public async Task<bool> IsUserAssociateRun(
+            string userName,
+            Guid runId)
+        {
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+
+            var data = await conn.ExecuteScalarAsync<bool>(
+                "SELECT [dbo].[fn_IsAssociateUserRun](@UserName, @RunId)",
+                new
+                {
+                    UserName = userName,
+                    RunId = runId
+                },
+                commandType: CommandType.Text)
+                .ConfigureAwait(false);
+            return data;
+        }
     }
 }
