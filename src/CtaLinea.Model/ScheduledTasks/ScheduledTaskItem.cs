@@ -50,10 +50,10 @@ namespace CtaLinea.Model.ScheduledTasks
             switch (this.Frequency)
             {
                 case ScheduleFrequency.Weekly:
-                    descr = string.Format("Ogni {0} dek mese", this.RrequencyMask);
-                    break;
+					descr = string.Join(", ", this.EnumerateWeeklyFrequency());
+					break;
                 case ScheduleFrequency.Monthly:
-                    descr = string.Join(", ", this.EnumerateWeeklyFrequency());
+					descr = string.Format("Ogni {0} dek mese", this.RrequencyMask);
                     break;
             }
             return descr;
