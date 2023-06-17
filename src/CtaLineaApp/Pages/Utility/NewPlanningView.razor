@@ -1,4 +1,4 @@
-﻿@page "/old_planning"
+﻿@page "/planning"
 @inject IApplicationSettings AppSettings;
 @using CtaLinea.Model.Utilities
 @using CtaLineaApp.Pages.Runs;
@@ -35,9 +35,6 @@
                                       IsBusy=@isLoading
                                       BusyText="Ricerca..."
                                       Click=@ReloadDataAsync />
-                        <RadzenButton ButtonStyle="ButtonStyle.Light"
-                                      Icon="@(EditorVisible==false ? "visibility" : "visibility_off")"
-                                      Click="@(() => EditorVisible = !EditorVisible)" />
                     </RadzenStack>
                 </RadzenColumn>
             </RadzenRow>
@@ -63,8 +60,10 @@
             <RadzenMonthView />
         </RadzenScheduler>
     </RadzenBody>
-    <RadzenSidebar @bind-Expanded="@EditorVisible" Style="width: 1000px; grid-area: rz-right-sidebar">
+    <RadzenSidebar Expanded="@EditorVisible" Style=@GetEditorStyle() >
         <RinItemEditView @ref=@RunEditDetail
+                         ShowCloseButton=true
+                         Closed="@Editor_Closed"
                          ReadOnly=true />
     </RadzenSidebar>
 </RadzenLayout>
@@ -110,16 +109,38 @@
     private Guid? CarId { get; set; } = null;
 
     private bool EditorVisible = false;
-    /*
-    private async Task RunSaved ()
-        {
-        await this.ReloadDataAsync ();
-    }
+		/*
+		private async Task RunSaved ()
+			{
+			await this.ReloadDataAsync ();
+		}
     */
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender == true)
+        {
+            EditorVisible = false;
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private string GetEditorStyle ()
+    {
+        if (this.EditorVisible == true)
+        {
+            return Constants.OpenedEditorStype;
+        }
+        return Constants.ClosedEditorStype;
+    }
+    private async Task Editor_Closed ()
+    {
+        await Task.CompletedTask;
+        this.EditorVisible = false;
+    }
 
     private async Task ReloadDataAsync()
     {
-        await Task.CompletedTask;
         if (this.scheduler != null)
         {
             await this.scheduler.Reload();
@@ -129,6 +150,14 @@
     private async Task LoadDataAsync(
         SchedulerLoadDataEventArgs args)
     {
+        if (this.RunEditDetail != null)
+        {
+            if (await this.RunEditDetail.CloseEditorAsync() == false)
+            {
+                return;
+            }
+        }
+
         if (this.AssociateId == null)
         {
             this.Planning = new List<CarPlanningItem>();
@@ -143,12 +172,13 @@
                 this.CarId,
                 args.Start, args.End
                 );
-            this.Planning = data;
 
             // slava la lista dei mezzi per assegnargli un colore
             this.CarIds= (from d in data.OrderBy(x => x.CarDescr)
                            group d by d.CarId into c
                            select c.Key).ToList();
+
+            this.Planning = data;
         }
         finally
         {
@@ -180,24 +210,33 @@
     {
         if (RunEditDetail != null)
         {
+            this.EditorVisible = true;
             await this.RunEditDetail.LoadDataAsync(args.Data.RunId);
         }
+        else
+        {
+            this.EditorVisible = false;
+        }
 
-       /*
+        /*
         await DialogService.OpenSideAsync<RunItemDetail>($"Dettaglio della Corsa",
             new Dictionary<string, object>() { { "Id", args.Data.RunId } },
             options: new SideDialogOptions() { CloseDialogOnOverlayClick = true, Width = "88%" }
-            );
-        */
+    );
+    */
     }
 
     private void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<CarPlanningItem> args)
     {
         // Never call StateHasChanged in AppointmentRender - would lead to infinite loop
-        var index = CarIds?.IndexOf(args.Data.CarId);
+        var carId = args.Data.CarId;
+        var index = CarIds?.IndexOf(carId);
         if (index != null)
         {
-            args.Attributes["style"] = this.Colors[index.Value % this.Colors.Length];
+            if (index >= 0)
+            {
+                args.Attributes["style"] = this.Colors[index.Value % this.Colors.Length];
+            }
         }
     }
  }

@@ -24,13 +24,19 @@ else if (this.NoData == false)
                 <h3>@(this.IsAdding ? "Nuova corsa" : "Modifica Corsa")</h3>
             </div>
             <div class="col-7 d-flex align-items-center justify-content-end">
+                <RadzenStack Orientation="Orientation.Horizontal" Gao="4px" >
                     <RadzenButton Click=@Save_Click IsBusy=@IsSaving Text="Salva Corsa" BusyText="Salvataggio...." ButtonStyle="ButtonStyle.Primary" />
+                    <RadzenButton Visible=@ShowCloseButton Click=@CloseEditorAsync ButtonStyle="ButtonStyle.Light" Icon="close" />
+                </RadzenStack>
             </div>
         }
         else
         {
             <div class="col-5 d-flex align-items-center">
                 <h3>Dati Corsa</h3>
+            </div>
+            <div class="col-7 d-flex align-items-center justify-content-end">
+                <RadzenButton Visible=@ShowCloseButton Click=@CloseEditorAsync ButtonStyle="ButtonStyle.Light" Icon="close" />
             </div>
         }
     </div>
@@ -101,6 +107,11 @@ else if (this.NoData == false)
 }
 else if (this.NoData == true)
 {
+    <div class="row justify-content-start align-items-center">
+        <div class="col-7 d-flex align-items-center justify-content-end">
+            <RadzenButton Visible=@ShowCloseButton Click=@CloseEditorAsync ButtonStyle="ButtonStyle.Light" Icon="close" />
+        </div>
+    </div>
     <RadzenAlert Variant="Variant.Filled" AlertStyle="AlertStyle.Info" Size="AlertSize.Large" Shade="Shade.Darker" AllowClose=false>
         Nessun dato da visualizzare
     </RadzenAlert>
@@ -128,6 +139,8 @@ else if (this.NoData == true)
         }
         set { _ReadOnly = value;  }
     }
+    [Parameter]
+    public bool ShowCloseButton { get; set; } = false;
 
     private Guid RunId { get; set; } = Guid.Empty;
 
@@ -245,7 +258,6 @@ else if (this.NoData == true)
 
     private async Task Save_Click()
     {
-        await Task.CompletedTask;
         IsSaving = true;
 
         try

@@ -3,6 +3,8 @@ using CEC.Routing.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Radzen;
+using System.Xml;
+using System.Xml.Schema;
 
 namespace CtaLineaApp.Components
 {
@@ -108,13 +110,38 @@ namespace CtaLineaApp.Components
             this.IsClean = false;
         }
 
-        protected async Task RaiseSavedEvent ()
+        protected async Task RaiseSavedEvent()
         {
             await this.Saved.InvokeAsync();
-		}
+        }
+        public async Task<bool> CloseEditorAsync()
+        {
+            var closed = false;
+            if (this.IsClean == false)
+            {
+                this.ExitAttempt = true;
+                var result = await this.AskForExitAsync();
+                this.StateHasChanged();
+
+                if (result == true)
+                {
+                    this.IsClean = true;
+                    this.ExitAttempt = false;
+                }
+            }
+            if (IsClean == true)
+            {
+                await this.Closed.InvokeAsync();
+                closed = true;
+            }
+            return closed;
+        }
 
         // solleva l'evento alla fine del salvataggio se tutto è andato OK
         [Parameter]
         public EventCallback Saved { get; set; }
+        // evento di chiusura della finestra se implementata
+        [Parameter]
+        public EventCallback Closed { get; set; }
     }
 }

@@ -79,11 +79,11 @@
                                   IsBusy=@IsLoading
                                   Icon="refresh"
                                   Click="@ReloadData" />
-
+                    <!--
                     <RadzenButton ButtonStyle="ButtonStyle.Light"
                                   Icon="@(EditorVisible==false ? "visibility" : "visibility_off")"
                                   Click="@(() => EditorVisible = !EditorVisible)" />
-
+                    -->
                     @if(this.CanEdit())
                     {
                         <RadzenButton ButtonStyle="ButtonStyle.Primary"
@@ -363,10 +363,12 @@
             </Columns>
         </RadzenDataGrid>
     </RadzenBody>
-    <RadzenSidebar @bind-Expanded="@EditorVisible" Style="width: 1000px; grid-area: rz-right-sidebar">
+    <RadzenSidebar Expanded="@EditorVisible" Style=@GetEditorStyle()>
         <RinItemEditView @ref=@RunEditDetail
-            Saved=@RunSaved
-            />
+                        ShowCloseButton=true
+                        Saved=@RunSaved
+                        Closed=@Editor_Closed
+                        />
     </RadzenSidebar>
 </RadzenLayout>
 
@@ -476,6 +478,20 @@
     }
     #endregion
 
+    private string GetEditorStyle()
+    {
+        if (this.EditorVisible == true)
+        {
+            return Constants.OpenedEditorStype;
+        }
+        return Constants.ClosedEditorStype;
+    }
+    private async Task Editor_Closed()
+    {
+        await Task.CompletedTask;
+        this.EditorVisible = false;
+    }
+
     private bool CanEdit ()
     {
         return this._accountService?.IsUserInRoles(
@@ -546,6 +562,14 @@
     {
         if (this.GlobalFilters.IsFilterSet() == false) return;
 
+        if (this.RunEditDetail != null)
+        {
+            if (await this.RunEditDetail.CloseEditorAsync() == false)
+            {
+                return;
+            }
+        }
+
         // aggiorna il filtro avanzato con i filtri generali
         this.AdvancedFilter4s.ContractId = this.GlobalFilters.Contract?.Id;
         this.AdvancedFilter4s.StartPeriod = this.GlobalFilters.Period?.StartDate;
@@ -560,6 +584,7 @@
         queryDef.Page = 1;
         queryDef.PageSize = 100000;
         queryDef.Count = false;
+
         try
         {
             var result = await QueryService.GetListAsync<RunItemQueryModel>(
@@ -678,6 +703,7 @@
                 }
                 if (RunEditDetail != null)
                 {
+                    this.EditorVisible = false;
                     await this.RunEditDetail.LoadDataAsync(Guid.Empty);
                 }
             }
@@ -711,7 +737,7 @@
                 }
                 <RadzenMenuItem Text="Elimina..." Value=@RunMenuItems.Delete />
             </RadzenMenu>
-        );
+    );
     }
 
     private async Task OnMenuItemClick(
@@ -753,16 +779,18 @@
     List<RunItemQueryModel> SelectedRuns = new List<RunItemQueryModel>();
     private RunEditArguments? EditArgs = null;
 
-    private bool _EditorVisible  = true;
-    public bool EditorVisible 
-    {
-        get 
-        {
+    private bool EditorVisible { get; set; }  = false;
+            /*
+            public bool EditorVisible 
+            {
+            get 
+            {
             return (this.IsClean == false
                 || this._EditorVisible);
         }
         set { this._EditorVisible = value;}
     }
+    */
 
     private async Task SelectionChanged(IList<RunItemQueryModel> list)
     {
@@ -791,6 +819,7 @@
             };
             if (this.RunEditDetail != null)
             {
+                EditorVisible = true;
                 await this.RunEditDetail.LoadDataAsync(this.EditArgs.RunId, this.EditArgs.IsAdding);
             }
         }
@@ -823,6 +852,7 @@
         };
         if (this.RunEditDetail != null)
         {
+            this.EditorVisible = true;
             await this.RunEditDetail.LoadDataAsync(this.EditArgs.RunId, this.EditArgs.IsAdding);
         }
     }
