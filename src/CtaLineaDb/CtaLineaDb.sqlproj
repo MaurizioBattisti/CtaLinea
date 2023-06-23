@@ -83,6 +83,8 @@
     <Folder Include="Views\Contab" />
     <Folder Include="StoredProc\Users" />
     <Folder Include="Functions\Costs" />
+    <Folder Include="Functions\Incongruence" />
+    <Folder Include="StoredProc\Incongruence" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post_Deploy.sql" />
@@ -179,5 +181,7 @@
     <Build Include="StoredProc\Costs\up_GetCostByRun.sql" />
     <Build Include="StoredProc\Costs\up_GetCostByAssociate.sql" />
     <Build Include="Functions\Run\fn_IsAssociateUserRun.sql" />
+    <Build Include="Functions\Incongruence\tvf_RunIncongruence.sql" />
+    <Build Include="StoredProc\Incongruence\up_GetRunIncongruence.sql" />
   </ItemGroup>
 </Project>

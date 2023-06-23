@@ -1,4 +1,5 @@
-﻿using CtaLinea.Model.Utilities;
+﻿using CtaLinea.Model.QueryModel;
+using CtaLinea.Model.Utilities;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -76,5 +77,37 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 
 			return;
 		}
+
+		public async Task<IEnumerable<RunIncongruenceModel>> GetRunIncongruenceASync (
+			Guid? runId = null,
+			DateTime? startDate = null,
+			DateTime? endDAte = null,
+			IEnumerable<int> whatIncongruence = null
+            )
+		{
+            using IDbConnection conn = this._context.Database.GetDbConnection();
+            conn.Open();
+
+			string whatToCheck = null;
+			if (whatIncongruence != null
+				&& whatIncongruence.Count() > 0)
+			{
+				whatToCheck = string.Join(",", whatIncongruence);
+            }
+
+            var items = await conn.QueryAsync<RunIncongruenceModel>(
+                "[dbo].[up_GetRunIncongruence]",
+                param: new
+                {
+                    RunId = runId,
+                    StartDate = startDate,
+                    EndDAte = endDAte,
+                    WhatToCheck = whatToCheck
+                },
+                commandType: CommandType.StoredProcedure,
+                commandTimeout: 600);
+
+            return await Task.FromResult(items);
+        }
 	}
 }

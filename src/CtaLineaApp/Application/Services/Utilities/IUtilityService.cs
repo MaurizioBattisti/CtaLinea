@@ -1,4 +1,5 @@
 ﻿using CtaLinea.Model.Checks;
+using CtaLinea.Model.QueryModel;
 using CtaLinea.Model.Utilities;
 
 namespace CtaLineaApp.Application.Services.Utilities
@@ -22,5 +23,8 @@ namespace CtaLineaApp.Application.Services.Utilities
 		Task ReplaceCarsAsync(
 			IDictionary<Guid, Guid> carMap,
 			DateTime? refDate);
+
+		Task<IEnumerable<RunIncongruenceModel>?> GetRunIncongruenceAsync(
+			RinIncongruenceRequest request);
     }
 }

@@ -15,6 +15,8 @@
             <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_Planning)) Text="Planning" Path="/planning" Icon="calendar_view_week"></RadzenPanelMenuItem>
             
             <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_AssociateCosts)) Text="Costi per Ditta" Path="/costbyassociate" Icon="point_of_sale"></RadzenPanelMenuItem>
+
+            <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_RunIncongreunce)) Text="Incongruenze" Path="/runincongruence" Icon="bus_alert"></RadzenPanelMenuItem>
         </RadzenPanelMenuItem>
         <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_ManageAnags)) Text="Anagrafiche Gestione" Icon="folder">
             <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_ManageContracts)) Text="Appalti" Path="/contracts" Icon="assignment"></RadzenPanelMenuItem>
@@ -55,6 +57,7 @@
     private const string Item_Utility = "utiltiy";
     private const string Item_Planning = "Planning";
     private const string Item_AssociateCosts = "AssCosts";
+    private const string Item_RunIncongreunce = "Incongruence";
 
     private const string Item_ManageAnags = "ManageAnags";
     private const string Item_ManageContracts = "Contracts";
@@ -104,6 +107,7 @@
             VisibleItems.Add(Item_Utility);
         if (this.IsUserInRole(UserRoles.Role_Planning)) VisibleItems.Add(Item_Planning);
         if (this.IsUserInRole(UserRoles.Role_Costs)) VisibleItems.Add(Item_AssociateCosts);
+        if (this.IsUserInRole(UserRoles.Role_Manage)) VisibleItems.Add(Item_RunIncongreunce);
 
         if (this.IsUserInRole(
                 UserRoles.Role_Manage

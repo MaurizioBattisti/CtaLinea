@@ -22,6 +22,7 @@ using CtaLinea.Model.Checks;
 using NPOI.HSSF.Record.Chart;
 using ZzSoft.CtaLinea.Dal.Repositories;
 using ZzSoft.CtaLinea.Dal.Services;
+using CtaLinea.Model.QueryModel;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -174,5 +175,38 @@ namespace CtaLineaWebApi.Controllers
 
             return this.NoContent();
 		}
+
+        [Authorize(Policy = Constants.Policy_ManageData)]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[HttpPost]
+        [Route("runincongruence")]
+        public async Task<ActionResult<IEnumerable<RunIncongruenceModel>>> GetRunIncongruenceAsync(
+            [FromBody] RinIncongruenceRequest request
+            )
+        {
+            try
+            {
+                var model = await this._utilityRepo.GetRunIncongruenceASync(
+                   request.RunId,
+                   request.StartDate,
+                   request.EndDate,
+                   request.WhatIncongruence
+                   )
+                   .ConfigureAwait(false);
+
+                return this.Ok(model);
+            }
+            catch (Exception ex)
+            {
+				return BadRequest(
+					new ValidationProblemDetails(new Dictionary<string, string[]>())
+					{
+						Title = "errore caricando i dati delle incongruenze",
+						Detail = ex.Message
+					});
+            }
+        }
     }
 }

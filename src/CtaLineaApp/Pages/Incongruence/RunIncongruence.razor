@@ -1,0 +1,516 @@
+﻿@page "/runincongruence"
+
+@inject IUtilityService _UtilityService;
+@inject DialogService DialogService
+@inject NavigationManager NavigationManager
+@inject NotificationService notificationService
+@inject IRunRepository RunRepo
+@inject IExcelExporterService ExcelService
+@inject IForfaitService ForfaitService
+@inject IAccountService _accountService
+
+@inherits EditorComponentBase
+@attribute [Authorize]
+
+<CheckAuthorization Roles=@(new string[] { UserRoles.Role_Planning }) />
+<PageTitle>@Constants.App_Title - Incongruenze</PageTitle>
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Incongruenze" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<RadzenLayout Style="height: 100%; grid-template-columns: auto 1fr auto; grid-template-areas: 'rz-header rz-header rz-header' 'rz-sidebar rz-body rz-right-sidebar'">
+    <RadzenBody>
+        <RadzenDataGrid @ref="@grdData"
+                        FilterMode="FilterMode.Simple"
+                        Count="@ItemCount"
+                        IsLoading=@IsLoading
+                        Data="@this.Data" TItem="RunIncongruenceModel"
+                        AllowSorting="true"
+                        AllowFiltering="true"
+                        AllowColumnResize="true"
+                        LogicalFilterOperator="LogicalFilterOperator.And"
+                        SelectionMode="DataGridSelectionMode.Single"
+                        Value=@SelectedRuns
+                        ValueChanged="@SelectionChanged"
+                        ExpandMode="DataGridExpandMode.Single"
+                        AllowVirtualization=true
+                        VirtualizationOverscanCount="10"
+                        Style="height:100%"                        
+                        Density=@Settings.Density>
+            <HeaderTemplate>
+                <RadzenStack Orientation="Orientation.Horizontal" Gap="4px">
+                    <RadzenSplitButton ButtonStyle="ButtonStyle.Dark"
+                                       Icon="file_download" Click=@DownloadData_Click>
+                        <ChildContent>
+                            <RadzenSplitButtonItem Text="Excel" Value="X" Icon="grid_on" />
+                            <RadzenSplitButtonItem Text="CSV" Value="C" Icon="wrap_text" />
+                        </ChildContent>
+                    </RadzenSplitButton>
+                    <RadzenButton ButtonStyle="ButtonStyle.Light"
+                                  IsBusy=@IsLoading
+                                  Icon="filter_alt_off"
+                                  Click="@ClearFilters_Click" />
+
+                    <RadzenDropDown Data=@IncongruenceList
+                                    TValue="IEnumerable<int>"
+                                    @bind-Value=@this.IncongruenceRequest.WhatIncongruence
+                                    Multiple="true"
+                                    Chips="true"
+                                    MaxSelectedLabels="20"
+                                    AllowClear=true
+                                    ValueProperty="Key"
+                                    TextProperty="Value"
+                                    AllowFiltering=true
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    FilterOperator="StringFilterOperator.Contains"
+                                    Style="width=300px">
+                    </RadzenDropDown>
+                    <RadzenButton ButtonStyle="ButtonStyle.Success"
+                                  IsBusy=@IsLoading
+                                  Icon="refresh"
+                                  Click="@ReloadData" />
+                </RadzenStack>
+            </HeaderTemplate>
+            <EmptyTemplate>
+                <RadzenCard Visible=@(!IsLoading)>
+                    <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessuna corsa incongruente trovata !</p>
+                </RadzenCard>
+            </EmptyTemplate>
+
+            <Columns>
+                <RadzenDataGridColumn TItem="RunIncongruenceModel" Property="Id" Title="Id Servizio" Visible=false />
+                <RadzenDataGridColumn TItem="RunIncongruenceModel" Property="CtaRunId" Title="Id CTA" Width="100px" Frozen=true>
+                    <Template Context="item">
+                        @if (item.Color != null)
+                        {
+                            <div style="width: 100%; background-color: @item.BgColor">
+                                <span style="color: @item.Color">@item.CtaRunId</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <span>@item.CtaRunId</span>
+                        }
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="RunIncongruenceModel" Property="@nameof(RunIncongruenceModel.RunStatusDesvr)" Title="Stato" Width="180px" Frozen=true>
+                    <Template Context="item">
+                        <div style="width: 100%;" class="@GetRunStatusStyleClass(item.RunStatus)">
+                            @item.RunStatusDesvr
+                        </div>
+                    </Template>
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="RunIncongruenceModel" Property="@nameof(RunIncongruenceModel.IncongreunceDescr)" Title="Incongreunze" Width="300px" />
+
+                <RadzenDataGridColumn TItem="RunIncongruenceModel" Property="AssociatesDescr" Title="Ditte" Width="200px"  />
+                <RadzenDataGridColumn TItem="RunIncongruenceModel" Property="StartTime" Title="Ora inizio" Width="120px" FilterOperator="FilterOperator.Equals" >
+                    <Template Context="data">
+                        @FormatTime(data?.StartTime)
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="RunIncongruenceModel" Property="PathsDescr" Title="Percorso (Nodi)" Width="200px" />
+                <RadzenDataGridColumn TItem="RunIncongruenceModel" Property="Path" Title="Percorso" Width="200px" />
+                <RadzenDataGridColumn TItem="RunIncongruenceModel" Property="RequestedFrequency" Title="Frequenza richiesta" Width="200px" />
+
+                <RadzenDataGridColumn TItem="RunIncongruenceModel" Property="RunName" Title="Nome Corsa" Width="250px" />
+                <RadzenDataGridColumn TItem="RunIncongruenceModel" Property="LineNumber" Title="Nr. Linea" Width="100px" />
+                <RadzenDataGridColumn TItem="RunIncongruenceModel" Property="RunNumber" Title="Nr. Corsa" Width="100px" />
+
+                <RadzenDataGridColumn TItem="RunIncongruenceModel" Property="RequestedCapacity" Title="Capienza richiesta" Width="150px" />
+
+                <RadzenDataGridColumn TItem="RunIncongruenceModel" Property="Km" Title="Km" Width="100px" FormatString="{0:0.00}" />
+
+            </Columns>
+        </RadzenDataGrid>
+    </RadzenBody>
+    <RadzenSidebar Expanded="@EditorVisible" Style=@GetEditorStyle()>
+        <RinItemEditView @ref=@RunEditDetail
+                         ShowCloseButton=true
+                         Saved=@RunSaved
+                         Closed=@Editor_Closed />
+    </RadzenSidebar>
+</RadzenLayout>
+
+@code {
+    [CascadingParameter]
+    CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
+
+    RadzenDataGrid<RunIncongruenceModel>? grdData;
+    private RinItemEditView? RunEditDetail;
+
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+    // filtro per i tipi di  incongruenza
+    private IList<KeyValuePair<int, string>> IncongruenceList = new List<KeyValuePair<int, string>>()
+    {
+        new KeyValuePair<int, string> (1, "senza nessun mezzo titolare"),
+        new KeyValuePair<int, string> (2, "con giorni senza mezzo titolare"),
+        new KeyValuePair<int, string> (3, "con mezzi senza nessun costo"),
+        new KeyValuePair<int, string> (4, "con giorni senza costi"),
+        new KeyValuePair<int, string> (5, "con mezzo con uso scorretto"),
+        new KeyValuePair<int, string> (6, "con mezzo non più attivo (venduto)"),
+        new KeyValuePair<int, string> (7, "con mezzo  di scorta mancante"),
+        new KeyValuePair<int, string> (8, "senza calendario "),
+        new KeyValuePair<int, string> (9, "corsa senza giorni della settimana"),
+        new KeyValuePair<int, string> (10, "senza alcun giorno"),
+        new KeyValuePair<int, string> (11, "con Km non indicati sulal corsa  o su una variante"),
+        new KeyValuePair<int, string> (12, "con meno di 2 fermate"),
+        new KeyValuePair<int, string> (13, "con capienza richiesta non indicata"),
+        new KeyValuePair<int, string> (14, "con capienza del mi mezzi inferiroe alla richiesta")
+    };
+
+    // caricametno di tutti i dati e virtualizzazioen lato client
+    private int ItemCount = -1;
+    private bool IsLoading = false;
+    private IList<RunIncongruenceModel> Data = new List<RunIncongruenceModel>();
+    private string? FullTextSearch { get; set; } = null;
+
+    private RinIncongruenceRequest IncongruenceRequest = new RinIncongruenceRequest();
+
+    private string GetEditorStyle()
+    {
+        if (this.EditorVisible == true)
+        {
+            return Constants.OpenedEditorStype;
+        }
+        return Constants.ClosedEditorStype;
+    }
+    private async Task Editor_Closed()
+    {
+        await Task.CompletedTask;
+        this.EditorVisible = false;
+    }
+
+    private bool CanEdit()
+    {
+        return this._accountService?.IsUserInRoles(
+        new List<string>()
+        {
+                UserRoles.Role_Edit,
+                UserRoles.Role_Manage
+        }) ?? false;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // IncongruenceRequest.WhatIncongruence = new List<int>() { 1, 3, 5 };
+        await base.OnInitializedAsync();
+    }
+
+    private async Task DownloadData_Click(RadzenSplitButtonItem item)
+    {
+        this.IsLoading = true;
+        // var columninfo = this.grdData?.GetExportColumnInfo();
+        var columninfo = this.Data.GetExportColumnInfo();
+
+        try
+        {
+            string title = "Elenco incongreunze Corse";
+            if (item == null)
+            {
+                await this.ExcelService.Export(title, this.Data, columninfo);
+            }
+            else
+            {
+                switch (item.Value)
+                {
+                    case "X":
+                        await this.ExcelService.ExportExcel(title, this.Data, columninfo);
+                        break;
+                    case "C":
+                        await this.ExcelService.ExportCsv(title, this.Data, columninfo);
+                        break;
+                }
+            }
+            this.notificationService.Notify(NotificationSeverity.Info, "File pronto per il donwload");
+        }
+        catch (Exception ex)
+        {
+            this.notificationService.Notify(
+            NotificationSeverity.Error,
+            "Errori esportando i dati",
+            ex.Message);
+        }
+        finally
+        {
+            this.IsLoading = false;
+        }
+    }
+
+    private async Task LoadDataASync()
+    {
+        if (this.GlobalFilters.IsFilterSet() == false) return;
+
+        if (this.RunEditDetail != null)
+        {
+            if (await this.RunEditDetail.CloseEditorAsync() == false)
+            {
+                return;
+            }
+        }
+
+        this.IsLoading = true;
+        this.IncongruenceRequest.RunId = null;
+        this. IncongruenceRequest.StartDate = this.GlobalFilters?.Period?.StartDate;
+        this.IncongruenceRequest.EndDate = this.GlobalFilters?.Period?.EndDate;
+
+        try
+        {
+            var result = await _UtilityService.GetRunIncongruenceAsync(
+                this.IncongruenceRequest
+                );
+
+            if (result != null)
+            {
+                Data = result.ToList();
+                ItemCount = Data.Count();
+            }
+        }
+        catch (BadRequestException<CheckResult> ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Caricamento incongruenze fallito",
+                "Errore caricando i dati" 
+            );
+        }
+        catch (Exception ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Caricamento incongruenze fallito !",
+                ex.Message
+            );
+        }
+        finally
+        {
+            this.IsLoading = false;
+        }
+    }
+
+    private async Task ReloadData()
+    {
+        await this.LoadDataASync();
+        // this.grdData?.Reload();
+    }
+
+    private string GetRunStatusStyleClass(int runStatus)
+    {
+        switch (runStatus)
+        {
+            case 1:
+                return "rz-background-color-danger-darker";
+            case 2:
+                return "rz-background-color-warning-darker";
+            case 100:
+                return "rz-background-color-info-darker";
+            default:
+                return string.Empty;
+        }
+    }
+
+    private string FormatTime(
+        TimeSpan? time)
+    {
+        if (time == null) return string.Empty;
+        var to = new TimeOnly(time.Value.Hours, time.Value.Minutes, time.Value.Minutes);
+        return string.Format("{0:HH:mm}", to);
+    }
+
+    #region gestione Editor e selezione corrente
+
+    List<RunIncongruenceModel> SelectedRuns = new List<RunIncongruenceModel>();
+    private RunEditArguments? EditArgs = null;
+    private bool EditorVisible { get; set; } = false;
+
+    private async Task SelectionChanged(IList<RunIncongruenceModel> list)
+    {
+        if (list is null)
+        {
+            throw new ArgumentNullException(nameof(list));
+        }
+
+        if (this.IsClean == false)
+        {
+            var result = await this.AskForExitAsync();
+            if (result == true)
+            {
+                this.IsClean = true;
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        // seleziona la riga se può
+        this.SelectedRuns = new List<RunIncongruenceModel>(list);
+
+        // imposta il valore dell'id da modoificare
+        if (this.SelectedRuns.Count > 0)
+        {
+            this.EditArgs = new RunEditArguments()
+                {
+                    RunId = this.SelectedRuns.Select(x => x.RunId).First()
+                };
+            if (this.RunEditDetail != null)
+            {
+                EditorVisible = true;
+                await this.RunEditDetail.LoadDataAsync(this.EditArgs.RunId, this.EditArgs.IsAdding);
+            }
+        }
+        else
+        {
+            this.EditArgs = null;
+        }
+    }
+
+    protected override bool GetIsClean()
+    {
+        return (this.RunEditDetail as EditorComponentBase)?.IsClean ?? true;
+    }
+    protected override void SetIsClean(bool value)
+    {
+        var editor = this.RunEditDetail as EditorComponentBase;
+        if (editor != null)
+        {
+            editor.IsClean = value;
+        }
+    }
+    #endregion
+
+    private async Task RunSaved()
+    {
+        if (this.EditArgs != null
+            && this.grdData != null)
+        {
+            // recupera l'id della riga salvata
+            var runId = EditArgs.RunId;
+            this.EditArgs.IsAdding = false;
+
+            await this.RealodOneRowAsync(runId);
+        }
+    }
+
+    private async Task RealodOneRowAsync(Guid runId)
+    {
+        this.IsLoading = true;
+
+        var request = new RinIncongruenceRequest()
+            {
+                RunId = runId,
+                StartDate = this.IncongruenceRequest.StartDate,
+                EndDate = this.IncongruenceRequest.EndDate,
+                WhatIncongruence = this.IncongruenceRequest.WhatIncongruence
+            };
+
+        try
+        {
+            var result = await _UtilityService.GetRunIncongruenceAsync(request);
+
+            if (result != null)
+            {
+                var oldItem = this.Data?.Where(x => x.RunId == runId).SingleOrDefault();
+                var newItem = result.FirstOrDefault();
+                if (newItem == null)
+                {
+                    // elimina la riga  tutte le incongruenze risolte
+                    if (oldItem != null)
+                    {
+                        this.Data?.Remove(oldItem);
+                    }
+                }
+                else if (oldItem != null
+                    && newItem != null)
+                {
+                    // aggiorna la riga
+                    oldItem.CopyFrom(newItem);
+                    this.grdData?.UpdateRow(oldItem);
+                    // aggiorna il reiferimento della nuova riga
+                    newItem = oldItem;
+                }
+
+                if (this.grdData != null)
+                {
+                    await this.grdData.Reload();
+                    if (newItem != null)
+                    {
+                        await this.grdData.SelectRow(newItem);
+                    }
+                    else
+                    {
+                        this.SelectedRuns.Clear();
+                    }
+                }
+
+                if (newItem == null
+                    && this.RunEditDetail != null)
+                {
+                    // chiude l'editor
+                    await this.RunEditDetail.CloseEditorAsync();
+                }
+            }
+        }
+        catch (BadRequestException<CheckResult> ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Caricamento incongruenze fallito",
+                "Errore caricando i dati"
+            );
+        }
+        catch (Exception ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Caricamento incongruenze fallito !",
+                ex.Message
+            );
+        }
+        finally
+        {
+            this.IsLoading = false;
+        }
+    }
+
+    private async Task ClearFilters_Click()
+    {
+        if (this.grdData != null)
+        {
+            foreach (var col in this.grdData.ColumnsCollection)
+            {
+                col.ClearFilters();
+            }
+        }
+        await Task.CompletedTask;
+    }
+    private void CellRender(DataGridCellRenderEventArgs<RunItemQueryModel> args)
+    {
+        if (args.Column.Property == nameof(RunItemQueryModel.RunStatus))
+        {
+            switch (args.Data.RunStatus)
+            {
+                case 1:
+                    args.Attributes.Add("class",
+                        "--rz-danger-darker");
+                    break;
+                case 2:
+                    args.Attributes.Add("class",
+                        "--rz-warning-darker");
+                    break;
+                case 100:
+                    break;
+                default:
+                    break;
+            }
+
+        }
+    }
+}

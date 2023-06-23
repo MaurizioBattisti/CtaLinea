@@ -1,5 +1,6 @@
 ﻿using CtaLinea.Model.Checks;
 using CtaLinea.Model.Costs;
+using CtaLinea.Model.QueryModel;
 using CtaLinea.Model.Runs;
 using CtaLinea.Model.Utilities;
 using CtaLineaApp.Application.Services.Helper;
@@ -106,6 +107,14 @@ namespace CtaLineaApp.Application.Services.Utilities
                 url += "?" + Constants.EndPoint_Args_RefDate + string.Format("=" + Constants.DateArgs_Format, refDate.Value);
             }
             await _http.Post(url, carMap);
+        }
+
+		public async Task<IEnumerable<RunIncongruenceModel>?> GetRunIncongruenceAsync (
+            RinIncongruenceRequest request)
+		{
+            var url = Constants.EndPoint_RunIncongruence;
+            var items = await _http.Post<IEnumerable<RunIncongruenceModel>, string>(url, request);
+            return items;
         }
     }
 }

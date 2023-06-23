@@ -52,6 +52,14 @@
 				</RadzenRow>
 				<RadzenRow AlignItems="AlignItems.Center" Gap="5px">
 					<RadzenColumn Size="4">
+						<RadzenLabel Component="RequestedCapacity" Text="Capienza Richiesta" />
+					</RadzenColumn>
+					<RadzenColumn Size="4">
+						<RadzenNumeric TValue="int" Disabled=@ReadOnly Name="RequestedCapacity" @bind-Value="Variation.RequestedCapacity" Change=@(a=> this.EditableData?.SetDirty()) />
+					</RadzenColumn>
+				</RadzenRow>
+				<RadzenRow AlignItems="AlignItems.Center" Gap="5px">
+					<RadzenColumn Size="4">
 						<RadzenLabel Component="RequestedFrequency" Text="Frequenza" />
 					</RadzenColumn>
 					<RadzenColumn Size="8">

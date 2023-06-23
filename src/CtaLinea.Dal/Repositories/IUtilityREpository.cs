@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CtaLinea.Model.QueryModel;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -8,5 +9,12 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 	{
 		Task ChangeRunCarDataAsync(IDictionary<Guid, Guid> replacementMap, DateTime? refDate = null);
 		Task<IEnumerable<Guid>> GetCarForDiscontinuationAsync(Guid associateId, DateTime? refDate = null);
-	}
+
+        Task<IEnumerable<RunIncongruenceModel>> GetRunIncongruenceASync(
+            Guid? runId = null,
+            DateTime? startDate = null,
+            DateTime? endDAte = null,
+            IEnumerable<int> whatIncongruence = null
+            );
+    }
 }
