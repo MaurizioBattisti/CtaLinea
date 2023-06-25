@@ -52,7 +52,8 @@ namespace CtaLineaApp
 		internal const string Endpoint_RunVariationList_Fmt = Endpoint_OneRun_Frm  + "/variations";
 		internal const string Endpoint_Run_Tags_Fmt = Endpoint_OneRun_Frm + "/tags";
         internal const string Endpoint_Run_NodeDecode = Endpoint_Runs + "/decodenodes";
-        
+        internal const string Endpoint_Run_SetSuspensions = Endpoint_Runs + "/suspensions";
+
 
         // costi
         internal const string EndPoint_Costs = "api/costs";

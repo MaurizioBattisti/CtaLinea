@@ -1,5 +1,7 @@
 ﻿using CtaLinea.Model.Base;
 using CtaLinea.Model.External;
+using CtaLinea.Model.Request;
+using CtaLinea.Model.Response;
 using CtaLinea.Model.Runs;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
@@ -520,7 +522,69 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             }
 		}
 
-		private async Task AddToRecalcNeededAsync (
+        public async Task<IDictionary<Guid, OperationResponse>> MultiRunAddSuspensionsAsync (
+            IEnumerable<Guid> runIds,
+            SetSuspensionRequest suspnesion
+            )
+        {
+            var result = new Dictionary<Guid, OperationResponse>();
+
+            using IDbConnection conn = this._context.Database.GetDbConnection();
+            conn.Open();
+            var tran = conn.BeginTransaction();
+
+            try
+            {
+                foreach (var runId in runIds)
+                {
+                    var opResult = new OperationResponse();
+                    result.Add(runId, opResult);
+
+                    try
+                    {
+                        await this.InsertSuspensionAsync(
+                            runId,
+                            new RunSuspension()
+                            {
+                                RunSuspensionId = Guid.NewGuid(),
+                                StartDate = suspnesion.StartDate,
+                                EndDate = suspnesion.EndDate,
+                                SuspensionTypeId = suspnesion.SuspensionTypeId,
+                                SuspensionTypeData = suspnesion.SuspensionTypeData,
+                                SuspensionNote = suspnesion.SuspensionNote
+                            },
+                            conn, tran)
+                            .ConfigureAwait(false);
+
+                        // indica che il ricalcolo dei gironi è necessario
+                        await this.AddToRecalcNeededAsync(
+                            conn, tran,
+                            runId)
+                            .ConfigureAwait(false);
+
+                        opResult.Success = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        opResult.Success = false;
+                        opResult.Message = ex.Message;
+                    }
+                }
+
+                tran.Commit();
+                tran = null;
+            }
+            finally
+            {
+                if (tran != null)
+                {
+                    tran.Rollback();
+                }
+            }
+            return result;
+        }
+
+        private async Task AddToRecalcNeededAsync (
             IDbConnection conn,
             IDbTransaction tran,
             Guid? runId = null,

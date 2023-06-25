@@ -1,0 +1,102 @@
+﻿@using CtaLinea.Model.Request;
+
+@inject NotificationService notificationService
+@inject IRunRepository _repo;
+
+<RadzenStack Orientation="Orientation.Vertical">
+	<DateRangeSelectorNotNull StartName="StartDate"
+								EndName="EndDate"
+								@bind-StartDate="@Request.StartDate"
+								@bind-EndDate="@Request.EndDate"
+								Inline=true />
+	<RadzenRow>
+		<RadzenColumn Size="3">
+			<RadzenLabel Component="Note sostituzione" Text="Note" />
+		</RadzenColumn>
+		<RadzenColumn Size="9">
+			<RadzenTextArea Name="Note" @bind-Value="Request.SuspensionNote" Class="w-100 h-100" Style="height: 60px" />
+		</RadzenColumn>
+	</RadzenRow>
+
+	<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
+		<RadzenButton Click="@(() => this.SetSuspensionAsync(ds))"
+					  ButtonStyle="ButtonStyle.Primary"
+					  IsBusy=@IsBusy
+					  Text="Sostituisci" />
+		<RadzenButton Click="@(() => ds.Close())"
+					  ButtonStyle="ButtonStyle.Secondary"
+					  Text="Annulla" />
+	</RadzenStack>
+</RadzenStack>
+
+@code {
+	[Parameter]
+	public DialogService ds { get; set; }
+
+	[Parameter]
+	public IEnumerable<Guid> Ids { get; set; } = new List<Guid>();
+
+	private bool IsBusy { get; set; } = false;
+	private SetSuspensionRequest Request = new SetSuspensionRequest();
+
+	protected override void OnInitialized()
+	{
+		this.Request.StartDate = DateTime.Today;
+		this.Request.EndDate = DateTime.Today;
+		base.OnInitialized();
+	}
+
+	private async Task SetSuspensionAsync(DialogService ds)
+	{
+		this.IsBusy = true;
+		try
+		{
+			var setSuspnesionRequest = new MultiRunSetSuspensionRequest()
+			{
+				Arguments = this.Request,
+				RunIds = this.Ids
+			};
+			var result = await this._repo.SetRunsSuspensionsAsync(
+				setSuspnesionRequest);
+
+			if (result != null
+				&& result.Success == false)
+			{
+				this.notificationService.Notify(
+					NotificationSeverity.Error,
+					"Operazione fallita",
+					result.Message
+				);
+			}
+			else
+			{
+				ds.Close(true);
+
+				this.notificationService.Notify(
+					NotificationSeverity.Warning,
+					"Sospensini impostate con successo"
+					);
+			}
+		}
+		catch (BadRequestException<CheckResult> ex)
+		{
+			this.notificationService.Notify(
+				NotificationSeverity.Error,
+				ex.Payload?.Title ?? "problemi",
+				ex.Payload?.Description ?? string.Empty
+			);
+		}
+		catch (Exception ex)
+		{
+			this.notificationService.Notify(
+				NotificationSeverity.Error,
+				"ERrore assegnando le sospensioni",
+				ex.Message
+				);
+		}
+		finally
+		{
+			this.IsBusy = false;
+		}
+	}
+}

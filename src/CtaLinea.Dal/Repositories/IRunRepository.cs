@@ -1,4 +1,6 @@
-﻿using CtaLinea.Model.Runs;
+﻿using CtaLinea.Model.Request;
+using CtaLinea.Model.Response;
+using CtaLinea.Model.Runs;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -20,5 +22,11 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         Task SaveRunTagsAsync(
             Guid runId,
             IEnumerable<int> tags);
-	}
+
+        Task<IDictionary<Guid, OperationResponse>> MultiRunAddSuspensionsAsync(
+            IEnumerable<Guid> runIds,
+            SetSuspensionRequest suspnesion
+            );
+
+    }
 }

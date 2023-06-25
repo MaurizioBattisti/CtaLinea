@@ -21,6 +21,8 @@ using ZzSoft.CtaLinea.Dal.Repositories;
 using CtaLineaWebApi.Application.Commands.Tags;
 using CtaLinea.Model.Filters;
 using ZzSoft.CtaLinea.Dal.Services;
+using CtaLinea.Model.Request;
+using CtaLinea.Model.Response;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -337,6 +339,32 @@ namespace CtaLineaWebApi.Controllers
 
 			return Ok();
 		}
-		#endregion
-	}
+        #endregion
+
+        #region aggiungi sospensioni su più corse
+        [Authorize(Policy = Constants.Policy_RunEdit)]
+        [SwaggerOperation("Aggiunge una sospensione a più corse")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [HttpPost]
+        [Route("suspensions")]
+        public async Task<ActionResult<MultiRunOperationResponse>> SetSuspensionOnRunsAsync (
+            [FromBody] MultiRunSetSuspensionRequest request
+            )
+        {
+            // TODO: contorlla i dati in ingresso e se necessario restituisce un badrequest
+
+            var myRequest = new AddSuspensionToRunsRequest()
+            {
+                Data = request
+            };
+
+            var result = await this._mediator.Send(myRequest)
+                .ConfigureAwait(false);
+
+            return this.Ok(result);
+        }
+        #endregion
+    }
 }

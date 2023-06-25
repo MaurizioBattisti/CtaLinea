@@ -196,6 +196,20 @@
             -->
             <Columns>
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Id" Title="Id Servizio" Visible=false />
+
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Width="60px" Sortable="false" Filterable="false" Frozen=true>
+                    <HeaderTemplate>
+                        <RadzenCheckBox TriState="false" TValue="bool" Value="@(Data.Any(i => MultiSelectedRuns != null && MultiSelectedRuns.Contains(i)))"
+                                        Change="@SelectAllAsync" />
+                    </HeaderTemplate>
+                    <FooterTemplate>
+                        <RadzenText Text="@(MultiSelectedRuns?.Count().ToString())"/>
+                    </FooterTemplate>
+                    <Template Context="data">
+                        <RadzenCheckBox TriState="false" Value="@(MultiSelectedRuns != null && MultiSelectedRuns.Contains(data))"
+                                        TValue="bool" Change=@(args => this.MultiSelectionChangedAsync(args, data)) />
+                    </Template>
+                </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="CtaRunId" Title="Id CTA" Width="100px" FilterValue=@Filter_CtaRunId Frozen=true>
                     <Template Context="item">
                         @if (item.Color != null)
@@ -384,7 +398,10 @@
         Tags,
         Forfait,
 
-        Delete
+        Delete,
+
+        MultiRun_SetSuspension,
+        MultiRun_SetForfait
     };
 
     [CascadingParameter]
@@ -637,7 +654,7 @@
 
     private void RowRender(RowRenderEventArgs<RunItemQueryModel> args)
     {
-        args.Expandable = args.Data.VariationCount > 1;
+        // args.Expandable = args.Data.VariationCount > 1;
     }
     private async Task RowExpand(RunItemQueryModel runItem)
     {
@@ -727,15 +744,25 @@
         if (this.IsClean == false) return ;
         if (this.CanEdit() == false) return;
 
+        // controlla se ci sono selezioni multiple
+        var multiSel = this.MultiSelectedRuns.Count > 0;
+
         ContextMenuService.Open(args, ds =>
             @<RadzenMenu Click=@((e)=>OnMenuItemClick(args, e))>
                 @if (CanManage())
                 {
-                    <RadzenMenuItem Text="Etichette..." Value=@RunMenuItems.Tags />
-                    <RadzenMenuItem Text=@(args.Data.ForfaitId == null ? "Aggiungi Forfait..." : "Elimina forfait..." )  Value="@RunMenuItems.Forfait" />
+                    <RadzenMenuItem Icon="local_offer" Text="Etichette..." Value=@RunMenuItems.Tags />
+                    <RadzenMenuItem Icon="savings" Text=@(args.Data.ForfaitId == null ? "Aggiungi Forfait..." : "Elimina forfait..." ) Value="@RunMenuItems.Forfait" />
                     <hr class="separator">
                 }
-                <RadzenMenuItem Text="Elimina..." Value=@RunMenuItems.Delete />
+                @if(CanEdit()
+                    && multiSel == true)
+                {
+                    <RadzenMenuItem Icon="block" Text="Sospensione Multi corsa..." Value=@RunMenuItems.MultiRun_SetSuspension />
+                    <RadzenMenuItem Icon="savings" Text="Forfait Multi corsa..." Value=@RunMenuItems.MultiRun_SetForfait />
+                    <hr class="separator">
+                }
+                <RadzenMenuItem Icon="delete" Text="Elimina..." Value=@RunMenuItems.Delete />
             </RadzenMenu>
     );
     }
@@ -769,28 +796,114 @@
                 }
                 break;
 
+            case RunMenuItems.MultiRun_SetSuspension:
+                await this.MultiRunSetSuspensionAsync();
+                break;
+            case RunMenuItems.MultiRun_SetForfait:
+                await this.MultiRunSetForfaitAsync();
+                break;
             default:
                 break;
         };
     }
 
+    private async Task MultiRunSetSuspensionAsync ()
+    {
+        // usa il miultirun seleciont come sorgente
+        var ids = this.MultiSelectedRuns.Select(r => r.Id);
+
+        // chiede le informazioni per le sospensioni
+		var result = await DialogService.OpenAsync(
+			"Aggiungi Sospensioni",
+            ds => @<MultiRunSetSuspensionDialog ds=@ds Ids="@ids" />
+			, new DialogOptions()
+			{
+				ShowClose = true,
+				CloseDialogOnEsc = true,
+				CloseDialogOnOverlayClick = true,
+
+				Width = "600px",
+				Draggable = false
+			}
+		);
+
+        if (result == true)
+        {
+            // se la dialog viene confermata ricaricat i dati
+            await this.LoadDataASync();
+            this.MultiSelectedRuns = this.Data.Where(d => ids.Contains(d.Id)).ToList();
+        }
+    }
+    private async Task MultiRunSetForfaitAsync()
+    {
+        //  usa il miultirun seleciont come sorgente
+        var ids = this.MultiSelectedRuns.Select(r => r.Id);
+
+        // mostra la dialog per richiedere un forfait
+        var forfaitId = await DialogService.OpenAsync<AssignForfaitDialog>($"Assegnazione Forfait",
+            new Dictionary<string, object>() { { "ds", this.DialogService } },
+            options: new DialogOptions()
+                {
+                    CloseDialogOnOverlayClick = false,
+                    Width = "300px"
+                });
+
+        if (forfaitId != null)
+        {
+            // assegna il forfait
+            try
+            {
+                await ForfaitService.SetDetails(
+                    forfaitId, ids
+                    );
+
+                // se la dialog viene confermata ricaricat i dati
+                await this.LoadDataASync();
+                this.MultiSelectedRuns = this.Data.Where(d => ids.Contains(d.Id)).ToList();
+            }
+            catch (Exception exc)
+            {
+                this.notificationService.Notify(NotificationSeverity.Error, "Errore durante l'assegnaizoen del forfait. ", exc.Message);
+            }
+        }
+    }
+
     #region gestione Editor e selezione corrente
 
     List<RunItemQueryModel> SelectedRuns = new List<RunItemQueryModel>();
+    List<RunItemQueryModel> MultiSelectedRuns = new List<RunItemQueryModel>();
     private RunEditArguments? EditArgs = null;
 
     private bool EditorVisible { get; set; }  = false;
-            /*
-            public bool EditorVisible 
-            {
-            get 
-            {
-            return (this.IsClean == false
-                || this._EditorVisible);
+    /*
+    public bool EditorVisible 
+    {
+    get 
+    {
+    return (this.IsClean == false
+        || this._EditorVisible);
         }
         set { this._EditorVisible = value;}
     }
     */
+
+    private async Task SelectAllAsync(bool all)
+    {
+        this.MultiSelectedRuns = all ? this.Data.ToList() : new List<RunItemQueryModel>();
+        await Task.CompletedTask;
+    }
+    private async Task MultiSelectionChangedAsync(bool value, RunItemQueryModel item)
+    {
+        await Task.CompletedTask;
+        if (value == true)
+        {
+            this.MultiSelectedRuns.Add(item);
+        }
+        else
+        {
+            this.MultiSelectedRuns.Remove(item);
+        }
+    }
 
     private async Task SelectionChanged(IList<RunItemQueryModel> list)
     {
@@ -871,6 +984,7 @@
     }
     #endregion
 
+
     private async Task ShowTagsEditor(
         Guid runId)
     {
@@ -918,7 +1032,6 @@
                 catch (Exception exc)
                 {
                     this.notificationService.Notify(NotificationSeverity.Error, "Errore durante l'assegnaizoen del forfait. ", exc.Message);
-
                 }
             }
         }
@@ -1036,7 +1149,6 @@
         }        
     }
 
-
     private async Task ClearFilters_Click()
     {
         this.AdvancedFilter4s.ClearAll();
@@ -1115,17 +1227,16 @@
                 default:
                     break;
             }
-
         }
         /*
-        if (args.Column.Property == "CtaRunId"
+            if (args.Column.Property == "CtaRunId"
             || args.Column.Property == "ContractRowNumber")
-        {
-            if (args.Data.BgColor != null)
             {
+            if (args.Data.BgColor != null)
+                {
                 args.Attributes.Add("style",
                     "background-color: " + args.Data.BgColor);
-            }
+        }
         }
         */
     }

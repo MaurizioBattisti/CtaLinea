@@ -2,6 +2,8 @@
 using CtaLinea.Model.Helpers;
 using CtaLinea.Model.ModelServices;
 using CtaLinea.Model.QueryModel;
+using CtaLinea.Model.Request;
+using CtaLinea.Model.Response;
 using CtaLinea.Model.Runs;
 using CtaLineaApp.Application.Model.Utility;
 using CtaLineaApp.Application.Services.Helper;
@@ -106,5 +108,13 @@ namespace CtaLineaApp.Application.Services.Run
             var data = new RunNodeDecodeRequest() { NodesText = text };
 			return await this._http.Post<IEnumerable<RunNode>, string>(Constants.Endpoint_Run_NodeDecode, data);
 		}
+
+        public async Task<MultiRunOperationResponse?> SetRunsSuspensionsAsync(
+            MultiRunSetSuspensionRequest request)
+        {
+            return await this._http.Post<MultiRunOperationResponse, CheckResult>(
+                Constants.Endpoint_Run_SetSuspensions, 
+                request);
+        }
 	}
 }

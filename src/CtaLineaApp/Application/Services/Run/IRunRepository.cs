@@ -1,4 +1,6 @@
 ﻿using CtaLinea.Model.QueryModel;
+using CtaLinea.Model.Request;
+using CtaLinea.Model.Response;
 using CtaLinea.Model.Runs;
 using static System.Net.WebRequestMethods;
 
@@ -22,5 +24,8 @@ namespace CtaLineaApp.Application.Services.Run
             IEnumerable<int> tags);
 
         Task<IEnumerable<RunNode>?> DecodeNodeAsync(string text);
+
+        Task<MultiRunOperationResponse?> SetRunsSuspensionsAsync(
+            MultiRunSetSuspensionRequest request);
 	}
 }
