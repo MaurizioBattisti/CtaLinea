@@ -115,7 +115,7 @@ namespace CtaLineaWebApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
         [Route("overlappingcars")]
-        public async Task<ActionResult<IEnumerable<OverlappingCarItem>>> GetRunPlanningAsync(
+        public async Task<ActionResult<IEnumerable<OverlappingCarItem>>> GetRunOverlappingCarsAsync(
             [FromQuery] Guid runCarId,
             [FromQuery] DateTime startDate,
             [FromQuery] DateTime endDate
@@ -131,6 +131,26 @@ namespace CtaLineaWebApi.Controllers
 
             return this.Ok(result);
         }
+		[Authorize(Policy = Constants.Policy_ManageData)]
+		[Consumes(MediaTypeNames.Application.Json)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[HttpGet]
+		[Route("globaloverlappingcars")]
+		public async Task<ActionResult<IEnumerable<GlobalCarOverlappingItem>>> GetGlobalOverlappingCarsAsync(
+			[FromQuery] DateTime? startDate,
+			[FromQuery] DateTime? endDate
+			)
+		{
+			// TODO: filtrare per ditta se l'utente lo prevede
+
+			var result = await this._queries.GetGlobalOverlappingRunCarAsync(
+				startDate, endDate
+				)
+				.ConfigureAwait(false);
+
+			return this.Ok(result);
+		}
 
 		[Authorize(Policy = Constants.Policy_ViewData)]
 		[Consumes(MediaTypeNames.Application.Json)]

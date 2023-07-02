@@ -350,6 +350,27 @@ namespace CtaLinea.Model.ModelServices
                         Id = variation.RunVariationId
                     });
             }
+            if (variation.Calendars != null 
+                && variation.ExclusionCalendars != null)
+            {
+                // contolla che non sia stato usato los teso calendario sia in inclusione che in sesclusione
+                var overlap = (from c in variation.ExclusionCalendars
+                               where variation.Calendars.Contains(c)
+                               select c)
+                               .Count();
+                if (overlap > 0)
+                {
+                    errors.Add(
+                        new CheckResultItem()
+                        {
+                            Category = RunCheckResult.Category_RunVariation,
+                            Title = "Calendario incoerenti",
+                            Description = "uno stesso clanedario non puù essere usato sia in inclusione che in esclusione",
+                            Id = variation.RunVariationId
+                        });
+                }
+
+            }
             
             // controlla che sia stato indicato almeno un giorno della settimana
             if (variation.Monday ==false

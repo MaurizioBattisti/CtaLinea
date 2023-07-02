@@ -107,65 +107,126 @@ BEGIN
 		FOR	
 			SELECT v.RunVariantId,
 					vc.CalendarId,
+					vc.Exclusion,
 					v.StartDate,
 					v.EndDate,
 					v.LastOne
 				FROM @Tbl_Variants v
 				INNER JOIN dbo.RunVariationCalendars vc
 					ON V.RunVariantId = vc.RunVariationId
+				ORDER BY v.RunVariantId, vc.Exclusion
 		;
 
+	DECLARE @Limit_EndDate	date;
 	DECLARE @v_RunVariationId	uniqueidentifier;
 	DECLARE @v_CalendarId		int;
 	DECLARE @v_StartDate		date;
 	DECLARE @v_EndDate			date;
 	DECLARE @v_LastOne			bit;
+	DECLARE @v_Exclusion		bit;
+
 	OPEN Var_Curr;
 	FETCH NEXT FROM Var_Curr INTO 
-			@v_RunVariationId, @v_CalendarId, 
+			@v_RunVariationId, @v_CalendarId, @v_Exclusion,
 			@v_StartDate, @v_EndDate,
 			@v_LastOne;
 
 	WHILE @@FETCH_STATUS = 0  
 	BEGIN  
-		DECLARE @Limit_EndDate	date = @v_EndDate;
+		SET @Limit_EndDate	= @v_EndDate;
 		IF @v_LastOne = 1 
 		BEGIN
 			SET @Limit_EndDate = @EndDAte;
 		END;
 
-		-- inserisce le date nella tabella dei gironi della corsa
-		WITH CTE_Days AS (
-			SELECT @v_RunVariationId AS RunVariantId,
-					d.Day AS Day, 
-					DATEPART(dw, day) AS WeekDay
-				FROM dbo.tvf_CalendarDays(@v_CalendarId, 
-						@v_StartDate, 
-						@Limit_EndDate) d
-		)
-		INSERT INTO @Tbl_Var_Days
-				(RunVariantId, Day, WeekDay, OutOfPeriod)
-			SELECT d.RunVariantId, 
-					d.Day,
-					d.WeekDay,
-					CASE WHEN d.day > @v_EndDate AND @v_LastOne = 1 AND d.day <= @EndDAte THEN 1 ELSE 0 END
-				FROM CTE_Days d
-				LEFT JOIN @Tbl_Var_Days dd
-					ON dd.RunVariantId = @v_RunVariationId
-					AND dd.Day = d.Day
-				CROSS JOIN Dbo.RunVariations v
-				WHERE dd.RunVariantId IS NULL
-					AND V.RunVariationId = @v_RunVariationId
-					AND (
-						(d.WeekDay = @Monday AND  v.Monday = 1)
-						OR (d.WeekDay = @Tuesday AND  v.Tuesday = 1)
-						OR (d.WeekDay = @Wednesday AND  v.Wednesday = 1)
-						OR (d.WeekDay = @Thursday AND  v.Thursday = 1)
-						OR (d.WeekDay = @Friday AND  v.Friday = 1)
-						OR (d.WeekDay = @Saturday AND  v.Saturday = 1)
-						OR (d.WeekDay = @Sunday AND  v.Sunday = 1)
-						)
+		IF @v_Exclusion = 0
+		BEGIN
+			-- clanedairo in inclusione (DEFAULT)
+			-- inserisce le date nella tabella dei gironi della corsa
+			WITH CTE_Days AS (
+				SELECT @v_RunVariationId AS RunVariantId,
+						d.Day AS Day, 
+						DATEPART(dw, day) AS WeekDay
+					FROM dbo.tvf_CalendarDays(@v_CalendarId, 
+							@v_StartDate, 
+							@Limit_EndDate) d
+			)
+			INSERT INTO @Tbl_Var_Days
+					(RunVariantId, Day, WeekDay, OutOfPeriod)
+				SELECT d.RunVariantId, 
+						d.Day,
+						d.WeekDay,
+						CASE WHEN d.day > @v_EndDate AND @v_LastOne = 1 AND d.day <= @EndDAte THEN 1 ELSE 0 END
+					FROM CTE_Days d
+					LEFT JOIN @Tbl_Var_Days dd
+						ON dd.RunVariantId = @v_RunVariationId
+						AND dd.Day = d.Day
+					CROSS JOIN Dbo.RunVariations v
+					WHERE dd.RunVariantId IS NULL
+						AND V.RunVariationId = @v_RunVariationId
+						AND (
+							(d.WeekDay = @Monday AND  v.Monday = 1)
+							OR (d.WeekDay = @Tuesday AND  v.Tuesday = 1)
+							OR (d.WeekDay = @Wednesday AND  v.Wednesday = 1)
+							OR (d.WeekDay = @Thursday AND  v.Thursday = 1)
+							OR (d.WeekDay = @Friday AND  v.Friday = 1)
+							OR (d.WeekDay = @Saturday AND  v.Saturday = 1)
+							OR (d.WeekDay = @Sunday AND  v.Sunday = 1)
+							)
+					;
+		END
+		ELSE
+		BEGIN
+			-- se il calendario è in esclusione elimina i gironi dalla tabella
+			-- inserisce le date nella tabella dei gironi della corsa
+			WITH CTE_Days AS (
+				SELECT @v_RunVariationId AS RunVariantId,
+						d.Day AS Day, 
+						DATEPART(dw, day) AS WeekDay
+					FROM dbo.tvf_CalendarDays(@v_CalendarId, 
+							@v_StartDate, 
+							@Limit_EndDate) d
+			)
+			DELETE vd
+				FROM @Tbl_Var_Days vd
+				INNER JOIN CTE_Days d
+					ON vd.Day = d.Day
+					AND vd.RunVariantId = d.RunVariantId
+			;
+		END
+
+		FETCH NEXT FROM Var_Curr INTO 
+				@v_RunVariationId, @v_CalendarId, @v_Exclusion,
+				@v_StartDate, @v_EndDate,
+				@v_LastOne;
+	END;
+
+	CLOSE Var_Curr;  
+	DEALLOCATE Var_Curr;  
+
+	-- gestisce i giorni aggiuntivi sulla variante
+	DECLARE Var_Curr_2 CURSOR LOCAL FORWARD_ONLY 
+		FOR	
+			SELECT v.RunVariantId,
+					v.StartDate,
+					v.EndDate,
+					v.LastOne
+				FROM @Tbl_Variants v
 				;
+
+	OPEN Var_Curr_2;
+	FETCH NEXT FROM Var_Curr_2 INTO 
+			@v_RunVariationId, 
+			@v_StartDate, @v_EndDate,
+			@v_LastOne;
+
+	WHILE @@FETCH_STATUS = 0  
+	BEGIN  
+		SET @Limit_EndDate = @v_EndDate;
+		IF @v_LastOne = 1 
+		BEGIN
+			SET @Limit_EndDate = @EndDAte;
+		END;
 
 		-- aggiunge anche i giorni aggiuntivi relativi a questoa variante
 		INSERT INTO @Tbl_Var_Days
@@ -182,14 +243,14 @@ BEGIN
 					AND d.Day BETWEEN @v_StartDate AND @Limit_EndDate
 					AND dd.OutOfPeriod IS NULL;
 
-		FETCH NEXT FROM Var_Curr INTO 
-				@v_RunVariationId, @v_CalendarId, 
+		FETCH NEXT FROM Var_Curr_2 INTO 
+				@v_RunVariationId, 
 				@v_StartDate, @v_EndDate,
 				@v_LastOne;
 	END;
 
-	CLOSE Var_Curr;  
-	DEALLOCATE Var_Curr;  
+	CLOSE Var_Curr_2;
+	DEALLOCATE Var_Curr_2;
 
 	INSERT INTO @Tbl_Days
 			(RunId, Day,

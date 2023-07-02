@@ -22,6 +22,7 @@ namespace ZzSoft.CtaLinea.Dal.Queries
         private const string SQL_up_GetPlanning = "[dbo].[up_GetPlanning]";
         private const string SQL_up_GetRunPlanning = "[dbo].[up_GetRunPlanning]";
         private const string SQç_uo_OverlappingCars = "[dbo].[up_Check_CarOverlappings]";
+		private const string SQç_uo_GlobalOverlappingCars = "[dbo].[up_Check_GobalCarOverlappings]";
 
 		private readonly CtaDbContext _context;
         private readonly ILogger _logger;
@@ -108,5 +109,26 @@ namespace ZzSoft.CtaLinea.Dal.Queries
             var items = reader.Read<OverlappingCarItem>();
             return await Task.FromResult(items);
         }
+
+		public async Task<IEnumerable<GlobalCarOverlappingItem>> GetGlobalOverlappingRunCarAsync(
+			DateTime? startDate,
+			DateTime? endDate)
+		{
+			using IDbConnection conn = this._context.Database.GetDbConnection();
+			conn.Open();
+
+            using var reader = await conn.QueryMultipleAsync(
+                SQç_uo_GlobalOverlappingCars,
+                param: new
+                {
+                    StartDate = startDate,
+                    EndDate = endDate
+                },
+                commandType: CommandType.StoredProcedure,
+                commandTimeout: 600);
+
+            var items = reader.Read<GlobalCarOverlappingItem>();
+            return await Task.FromResult(items);
+		}
 	}
 }

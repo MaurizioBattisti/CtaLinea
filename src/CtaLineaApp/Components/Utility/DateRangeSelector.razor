@@ -1,7 +1,16 @@
 ﻿
 <RadzenRow>
+    @if (InlineLabels == true)
+    {
+        <RadzenColumn Size="@ColSize">
+            <RadzenLabel Component="@StartName" Text="Data Inizio" />
+        </RadzenColumn>
+    }
     <RadzenColumn Size="@ColSize">
-        <RadzenText TextStyle="TextStyle.Overline" Text="Data Inizio" />
+        @if (InlineLabels == false)
+        {
+            <RadzenText TextStyle="TextStyle.Overline" Text="Data Inizio" />
+        }
         <DateSelector @bind-Value="StartDate"
                       Changed=@OnStartDateChanged
                       Name=@StartName
@@ -10,8 +19,17 @@
                       ShowSetTodayButton=true
                       AllowClear=@AllowClear />
     </RadzenColumn>
+    @if (InlineLabels == true)
+    {
+        <RadzenColumn Size="@ColSize">
+            <RadzenLabel Component="@StartName" Text="Data Inizio" />
+        </RadzenColumn>
+    }
     <RadzenColumn Size="@ColSize">
-        <RadzenText TextStyle="TextStyle.Overline" Text="Data Fine" />
+        @if (InlineLabels == false)
+        {
+            <RadzenLabel Component="@EndName" Text="Data Fine" />
+        }
         <DateSelector @bind-Value="EndDate"
                       Changed=@OnEndDateChanged
                       Name=@EndName
@@ -23,7 +41,15 @@
 </RadzenRow>
 
 @code {
-    private int ColSize => this.Inline ? 6:12;
+    private int ColSize 
+    {
+        get
+        {
+            var cols = this.Inline ? 6 : 12;
+            cols = this.InlineLabels ? cols / 2 : cols;
+            return cols;
+        }
+    }
 
     [Parameter]
     public DateTime? StartDate { get; set; }
@@ -46,6 +72,8 @@
     public bool Disabled { get; set; } = false;
     [Parameter]
     public bool Inline { get; set; } = false;
+    [Parameter]
+    public bool InlineLabels { get; set; } = false;
 
     [Parameter]
     public bool AllowClear { get; set; } = true;

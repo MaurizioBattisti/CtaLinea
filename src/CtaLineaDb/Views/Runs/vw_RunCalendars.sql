@@ -8,13 +8,14 @@ AS
 WITH CTE_Calendars AS
 (
 	SELECT DISTINCT  rv.RunId,
-			vc.CalendarId
+			vc.CalendarId,
+			vc.Exclusion
 		FROM  dbo.RunVariationCalendars vc
 		INNER JOIN dbo.RunVariations rv
 			ON rv.RunVariationId = vc.RunVariationId
 )
 SELECT rc.RunId ,
-		STRING_AGG(c.CalendarName, ', ') AS CalendarsDescr
+		STRING_AGG(c.CalendarName + (CASE WHEN rc.Exclusion = 1 THEN ' (E)' ELSE '' END)  , ', ') AS CalendarsDescr
 	FROM CTE_Calendars rc
 	INNER JOIN dbo.Calendars c
 		ON rc.CalendarId  = c.CalendarId

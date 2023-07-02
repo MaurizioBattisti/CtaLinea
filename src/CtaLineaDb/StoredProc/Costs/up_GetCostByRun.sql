@@ -126,12 +126,12 @@ BEGIN
 			  SUM(d.RealKm_Contract) AS Km,
 			  SUM(d.RealKm_Extra) AS KmExtra,
 			  SUM(d.DayCost) AS DayCost, 
-			  SUM(d.RealKm_Contract * d.RealKm_Contract_Cost) AS CostKm,
-			  SUM(d.RealKm_Extra * d.RealKm_Extra_Cost) AS CostKmExtra,
+			  SUM(d.RealKm_Contract_Cost) AS CostKm,
+			  SUM(d.RealKm_Extra_Cost) AS CostKmExtra,
 			  
 			  SUM(d.DayIntegration) AS DayIntegration, 
 			  SUM(d.DayForfait) AS DayForfait, 
-			  SUM(d.MultiRunForfait) AS DayMultiRunForfait, 
+			  SUM(d.MultiRunForfait) AS DayMultiRunForfait,
 			  
 			  d.MultiRunForfaitName AS MultiRunForfaitName,
 			  d.MultiRunForfaitType AS MultirunForfaitType,

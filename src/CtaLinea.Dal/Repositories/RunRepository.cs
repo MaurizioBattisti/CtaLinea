@@ -216,19 +216,33 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                         {
                             await this.UpdateVariationAsync(runItem.RunId, variant, conn, tran);
 
-                            // inserisce i nuovi calendari
-                            await this.FindNewAsync(
-                                oldVariant.Calendars,
-                                variant.Calendars,
-                                (v) => v,
-                                async (cal) => await this.InsertCalendarAsync(variant.RunVariationId, cal, conn, tran)
-                                );
-                            // elimina i calendari non più usati
+                            // elimina i calendari a inclusione non più usati
                             await this.FindDeletedAsync(
                                 oldVariant.Calendars,
                                 variant.Calendars,
                                 (v) => v,
                                 async (k) => await this.DeleteCalendarAsync(variant.RunVariationId, k, conn, tran)
+                                );
+                            // elimina i calendari ad esclusione  non più usati
+                            await this.FindDeletedAsync(
+                                oldVariant.ExclusionCalendars,
+                                variant.ExclusionCalendars,
+                                (v) => v,
+                                async (k) => await this.DeleteCalendarAsync(variant.RunVariationId, k, conn, tran)
+                                );
+                            // inserisce i nuovi calendari a inclusione
+                            await this.FindNewAsync(
+                                oldVariant.Calendars,
+                                variant.Calendars,
+                                (v) => v,
+                                async (cal) => await this.InsertCalendarAsync(variant.RunVariationId, cal, false, conn, tran)
+                                );
+                            // inserisce i nuovi calendari a esclusione
+                            await this.FindNewAsync(
+                                oldVariant.ExclusionCalendars,
+                                variant.ExclusionCalendars,
+                                (v) => v,
+                                async (cal) => await this.InsertCalendarAsync(variant.RunVariationId, cal, true, conn, tran)
                                 );
 
                             // inserisce i nuovi nodi
@@ -646,7 +660,13 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                                select v).SingleOrDefault();
                 if (variatn != null)
                 {
+                    // aggiunge i calendari ad inclusione
                     variatn.Calendars = (from c in varCal
+                                         where c.Exclusion == false
+                                         select c.CalendarId)
+                                         .ToList();
+                    variatn.ExclusionCalendars = (from c in varCal
+                                         where c.Exclusion == true
                                          select c.CalendarId)
                                          .ToList();
                 }
@@ -895,12 +915,20 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                     )
                 );
 
-            // inserisce i calendari
+            // inserisce i calendari in inclusione
             if (variation.Calendars != null)
             {
                 foreach (var cal in variation.Calendars)
                 {
-                    await this.InsertCalendarAsync(variation.RunVariationId, cal, conn, tran);
+                    await this.InsertCalendarAsync(variation.RunVariationId, cal, false, conn, tran);
+                }
+            }
+            // inserisce i calendari in esclusione
+            if (variation.ExclusionCalendars != null)
+            {
+                foreach (var cal in variation.ExclusionCalendars)
+                {
+                    await this.InsertCalendarAsync(variation.RunVariationId, cal, true, conn, tran);
                 }
             }
 
@@ -1030,6 +1058,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         private async Task InsertCalendarAsync(
             Guid runVariationId,
             int calendarId,
+            bool exclusion,
             IDbConnection conn,
             IDbTransaction tran
             )
@@ -1037,7 +1066,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             await this.InsertTableAsync(
                 SQL_Table_RunCalendars,
                 conn, tran,
-                this.GetCalendarKey(runVariationId, calendarId)
+                this.JoinObjects(
+                    this.GetCalendarKey(runVariationId, calendarId),
+                    new { Exclusion = exclusion }
+                    )
                 );
         }
 

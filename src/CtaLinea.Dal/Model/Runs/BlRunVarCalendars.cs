@@ -10,5 +10,6 @@ namespace ZzSoft.CtaLinea.Dal.Model.Runs
     {
         public int CalendarId { get; set; }
         public Guid RunVariationId { get; set; }
+        public bool Exclusion { get; set; } = false;
     }
 }

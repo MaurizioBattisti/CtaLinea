@@ -40,6 +40,19 @@
 					Changed=@(a=> this.EditableData?.SetDirty()) />
 			</RadzenColumn>
 		</RadzenRow>
+		<RadzenRow AlignItems="AlignItems.Center">
+			<RadzenColumn Size="3">
+				<RadzenLabel Component="ExclusionCalendarIds" Text="Calendari a Esclusione" />
+			</RadzenColumn>
+			<RadzenColumn Size="9">
+				<CalendarMultiSelect Disabled=@ReadOnly
+					AllowClear=true
+					Name="ExclusionCalendarIds"
+					@bind-CalendarIds=@EsclusionCalendarIds
+					Changed=@(a=> this.EditableData?.SetDirty()) />
+			</RadzenColumn>
+		</RadzenRow>
+
 		<RadzenRow AlignItems="AlignItems.Start" Gap="0">
 			<RadzenColumn Size="9">
 				<RadzenRow AlignItems="AlignItems.Center" Gap="5px">
@@ -111,7 +124,7 @@
 	[Parameter]
 	public bool ReadOnly { get; set; } = false;
 
-	private CalendarDropDown? Calendars;
+	// private CalendarDropDown? Calendars;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -147,6 +160,17 @@
 			if (this.Variation != null)
 			{
 				this.Variation.Calendars = value?.ToList();
+			}
+		}
+	}
+	private IEnumerable<int>? EsclusionCalendarIds
+	{
+		get { return this.Variation?.ExclusionCalendars; }
+		set
+		{
+			if (this.Variation != null)
+			{
+				this.Variation.ExclusionCalendars = value?.ToList();
 			}
 		}
 	}

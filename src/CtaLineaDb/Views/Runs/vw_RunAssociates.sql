@@ -3,7 +3,7 @@
 *	19/12/2022
 *	Crea la lista delle ditte che lavorano su una corsa
  ************************************************* */
-  CREATE VIEW [dbo].[vw_RunAssociates]
+CREATE VIEW [dbo].[vw_RunAssociates]
 AS 
 WITH CTE_Associates AS
 (
@@ -12,6 +12,7 @@ WITH CTE_Associates AS
 		FROM  dbo.RunCars rc
 		INNER JOIN dbo.RunPeriods rp
 			ON Rc.RunPEriodId = rp.[RunPeriodId]
+		WHERE rc.CarType = 'P'
 )
 SELECT rc.RunId,
 		STRING_AGG(a.Description, ', ') AS AssociatesDescr

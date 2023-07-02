@@ -84,8 +84,28 @@ namespace CtaLineaApp.Application.Services.Utilities
 			var items = await _http.Get<IEnumerable<OverlappingCarItem>>(url);
 			return items ?? new List<OverlappingCarItem>();
 		}
+        public async Task<IEnumerable<GlobalCarOverlappingItem>> GetGlobalOverlappingCarsAsync(
+            DateTime? startDate = null,
+            DateTime? endDate = null
+            )
+        {
+            var url = Constants.EndPoint_RunGlobalOverlappingCars;
+            // crea gli arggomenti opzionali
+            var args = new List<string>();
+            if (startDate != null) args.Add(string.Format("{0}={1:yyyy-MM-dd}", Constants.EndPoint_CostsByAssociate_StartDate, startDate));
+            if (endDate != null) args.Add(string.Format("{0}={1:yyyy-MM-dd}", Constants.EndPoint_CostsByAssociate_EndDAte, endDate));
+            // aggiunge gli argomeni all'url
+            var strArgs = string.Join("&", args);
+            if (string.IsNullOrEmpty(strArgs) == false) url += "?" + strArgs;
 
-		public async Task<IEnumerable<Guid>?> GetCarsForDiscontinuationAsunc (
+            // esegue la chiamata al server
+            var items = await _http.Get<IEnumerable<GlobalCarOverlappingItem>>(url);
+            return items ?? new List<GlobalCarOverlappingItem>();
+        }
+
+        
+
+        public async Task<IEnumerable<Guid>?> GetCarsForDiscontinuationAsunc (
 			Guid associateId,
 			DateTime? refDate)
 		{

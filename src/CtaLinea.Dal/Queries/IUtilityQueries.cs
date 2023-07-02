@@ -18,5 +18,8 @@ namespace ZzSoft.CtaLinea.Dal.Queries
             Guid runCarId,
             DateTime startDate,
             DateTime endDate);
-    }
+		Task<IEnumerable<GlobalCarOverlappingItem>> GetGlobalOverlappingRunCarAsync(
+			DateTime? startDate,
+			DateTime? endDate);
+	}
 }

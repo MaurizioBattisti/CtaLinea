@@ -183,5 +183,8 @@
     <Build Include="Functions\Run\fn_IsAssociateUserRun.sql" />
     <Build Include="Functions\Incongruence\tvf_RunIncongruence.sql" />
     <Build Include="StoredProc\Incongruence\up_GetRunIncongruence.sql" />
+    <Build Include="StoredProc\Checks\up_Check_GobalCarOverlappings.sql" />
+    <Build Include="Functions\Costs\fn_GetStartDate.sql" />
+    <Build Include="Functions\Costs\fn_GetEndDate.sql" />
   </ItemGroup>
 </Project>

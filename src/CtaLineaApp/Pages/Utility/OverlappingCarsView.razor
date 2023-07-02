@@ -1,0 +1,244 @@
+﻿@page "/overlappings"
+@using CtaLinea.Model.Checks;
+@using CtaLinea.Model.Utilities
+@using CtaLineaApp.Pages.Runs;
+
+@inject IApplicationSettings AppSettings;
+@inject IUtilityService _utilityService
+@inject DialogService DialogService
+@inject IExcelExporterService ExcelService
+@inject NotificationService notificationService;
+@attribute [Authorize]
+
+<CheckAuthorization Roles=@(new string[] { UserRoles.Role_Planning }) />
+<PageTitle>@Constants.App_Title - Sovrapposizioni</PageTitle>
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Sovrapposizioni" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<RadzenLayout Style="height: 100%; grid-template-columns: auto 1fr auto; grid-template-areas: 'rz-header rz-header rz-header' 'rz-sidebar rz-body rz-right-sidebar'">
+    <RadzenBody>
+        <RadzenDataGrid @ref="@grdData"
+                        FilterMode="FilterMode.Simple"
+                        IsLoading=@IsLoading
+                        Count="@Data.Count()"
+                        Data="@Data"
+                        TItem="GlobalCarOverlappingItem"
+                        AllowVirtualization=true
+                        AllowFiltering="true"
+                        AllowColumnResize="true"
+                        AllowSorting="true"
+                        LogicalFilterOperator="LogicalFilterOperator.And"
+                        Style="height:100%"
+                        Density=@Settings.Density
+                        PageSize=@(Settings?.PageSize ?? 5)>
+            <HeaderTemplate>
+                <RadzenStack Orientation="Orientation.Horizontal">
+                    <RadzenSplitButton ButtonStyle="ButtonStyle.Dark"
+                                    Icon="file_download" Click=@DownloadData_Click>
+                        <ChildContent>
+                            <RadzenSplitButtonItem Text="Excel" Value="X" Icon="grid_on" />
+                            <RadzenSplitButtonItem Text="CSV" Value="C" Icon="wrap_text" />
+                        </ChildContent>
+                    </RadzenSplitButton>
+
+                    <DateRangeSelector AllowClear="true"
+                                       Inline="true"
+                                       InlineLabels="true"
+                                       @bind-StartDate="@StartDate"
+                                       @bind-EndDate="@EndDate" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Success"
+                                  IsBusy=@IsLoading
+                                  Icon="refresh"
+                                  Click="@(()=>LoadDataAsync())" />
+                </RadzenStack>
+            </HeaderTemplate>
+            <EmptyTemplate>
+                <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessuna sovrapposizione </p>
+            </EmptyTemplate>
+            <Columns>
+                <!-- dati corsa originale -->
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="o_CtaRunId" Title="ID CTA" Width="100px" />
+
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="o_ContractName" Title="Appalto" Width="250px" />
+                <RadzenDataGridColumn TItem="OverlappingCarItem" Property="o_ContractRowNumber" Title="Riga" Width="100px" />
+
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="o_RunName" Title="Nome corsa" Width="250px" />
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="o_LineNumber" Title="Nr. Linea" Width="100px" />
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="o_RunNumber" Title="Nome Corsa" Width="250px" />
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="o_Path" Title="Percorso" Width="250px" />
+
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="o_CarType" Title="Tipo mezzo" Width="250px">
+                    <Template Context="data">
+                        @GetCarTypeDescfr(data.o_CarType)
+                    </Template>
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="o_StartTime" Title="Ora inizio" Width="120px">
+                    <Template Context="data">
+                        @FormatTime(data.o_StartTime)
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="o_EndTime" Title="Ora fine" Width="120px">
+                    <Template Context="data">
+                        @FormatTime(data.o_EndTime)
+                    </Template>
+                </RadzenDataGridColumn>
+                
+                <!-- dati corse sovrapposte-->
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="CtaRunId" Title="ID CTA" Width="100px" />
+
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="ContractName" Title="Appalto" Width="250px" />
+                <RadzenDataGridColumn TItem="OverlappingCarItem" Property="ContractRowNumber" Title="Riga" Width="100px" />
+
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="RunName" Title="Nome corsa" Width="250px" />
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="LineNumber" Title="Nr. Linea" Width="100px" />
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="RunNumber" Title="Nome Corsa" Width="250px" />
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="Path" Title="Percorso" Width="250px" />
+
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="CarType" Title="Tipo mezzo" Width="250px">
+                    <Template Context="data">
+                        @GetCarTypeDescfr(data.CarType)
+                    </Template>
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="StartTime" Title="Ora inizio" Width="120px">
+                    <Template Context="data">
+                        @FormatTime(data.StartTime)
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="EndTime" Title="Ora fine" Width="120px">
+                    <Template Context="data">
+                        @FormatTime(data.EndTime)
+                    </Template>
+                </RadzenDataGridColumn>
+                
+                <!-- dati sovrapposizioni-->
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="@nameof(GlobalCarOverlappingItem.MinDay)" Title="Dal giorno" FormatString="{0:dd/MM/yyyy}" Width="150px" />
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="@nameof(GlobalCarOverlappingItem.MaxDay)" Title="Al giorno" FormatString="{0:dd/MM/yyyy}" Width="150px" />
+                <RadzenDataGridColumn TItem="GlobalCarOverlappingItem" Property="@nameof(GlobalCarOverlappingItem.DayCount)" Title="Nr GG"  Width="80px" />
+                
+
+            </Columns>
+        </RadzenDataGrid>
+    </RadzenBody>
+</RadzenLayout>
+
+@code {
+    private RadzenDataGrid<GlobalCarOverlappingItem> grdData;
+
+    [CascadingParameter]
+    public CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+    [CascadingParameter]
+    public CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
+
+    private bool IsLoading { get; set; } = false;
+
+    private DateTime? StartDate { get; set; }
+    private DateTime? EndDate { get; set; }
+
+    private IEnumerable<GlobalCarOverlappingItem> Data { get; set; } = new List<GlobalCarOverlappingItem>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.StartDate = this.GlobalFilters?.Period?.StartDate;
+        this.EndDate = this.GlobalFilters?.Period?.EndDate;
+
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task DownloadData_Click(RadzenSplitButtonItem item)
+    {
+        this.IsLoading = true;
+        // var columninfo = this.grdData?.GetExportColumnInfo();
+        var columninfo = this.Data.GetExportColumnInfo();
+
+        try
+        {
+            string title = "Elenco Corse";
+            if (item == null)
+            {
+                await this.ExcelService.Export(title, this.Data, columninfo);
+            }
+            else
+            {
+                switch (item.Value)
+                {
+                    case "X":
+                        await this.ExcelService.ExportExcel(title, this.Data, columninfo);
+                        break;
+                    case "C":
+                        await this.ExcelService.ExportCsv(title, this.Data, columninfo);
+                        break;
+                }
+            }
+            this.notificationService.Notify(NotificationSeverity.Info, "File pronto per il donwload");
+        }
+        catch (Exception ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Errori esportando i dati",
+                ex.Message);
+        }
+        finally
+        {
+            this.IsLoading = false;
+        }
+    }
+
+    private async Task LoadDataAsync()
+    {
+        this.IsLoading = true;
+
+        try
+        {
+            var data = await this._utilityService.GetGlobalOverlappingCarsAsync(
+                this.StartDate, this.EndDate);
+
+            this.Data = data;
+        }
+        catch (Exception exc)
+        {
+            this.notificationService.Notify(NotificationSeverity.Warning, "errore durante il caricamento dei dati ", exc.Message);
+        }
+        finally
+        {
+            this.IsLoading = false;
+        }
+    }
+
+    private string FormatTime(
+        TimeSpan? time)
+    {
+        if (time == null) return string.Empty;
+        var to = new TimeOnly(time.Value.Hours, time.Value.Minutes, time.Value.Minutes);
+        return string.Format("{0:HH:mm}", to);
+    }
+
+    private string GetCarTypeDescfr(string? carType)
+    {
+        switch (carType)
+        {
+            case "P":
+                return "Titolare";
+            case "S":
+                return "Scorta";
+            case "R":
+                return "Sostituzione";
+        }
+        return string.Empty;
+    }
+}

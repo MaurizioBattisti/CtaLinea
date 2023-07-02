@@ -93,6 +93,7 @@ BEGIN
 			ON V.RunVariationId = cal.RunVariationId
 		LEFT JOIN @Tbl_CAlendars myCal
 			ON cal.CalendarId = myCal.CalendarId
+			AND cal.Exclusion = 0
 		LEFT JOIN dbo.RunNodes n
 			ON v.RunVariationId = n.RunVariationId
 		LEFT JOIN dbo.CollectionPoints cp

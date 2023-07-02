@@ -17,7 +17,12 @@ namespace CtaLineaApp.Application.Services.Utilities
 			DateTime? startDate = null,
 			DateTime? endDate = null
 			);
-		Task<IEnumerable<Guid>?> GetCarsForDiscontinuationAsunc(
+		Task<IEnumerable<GlobalCarOverlappingItem>> GetGlobalOverlappingCarsAsync(
+			DateTime? startDate = null,
+			DateTime? endDate = null
+			);
+
+        Task<IEnumerable<Guid>?> GetCarsForDiscontinuationAsunc(
 			Guid associateId,
 			DateTime? refDate);
 		Task ReplaceCarsAsync(
