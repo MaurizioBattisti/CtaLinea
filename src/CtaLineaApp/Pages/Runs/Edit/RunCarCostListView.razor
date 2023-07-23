@@ -167,6 +167,12 @@
 			RunCarCostId = Guid.NewGuid(),
 			StartDate = DateTime.Now
 		};
+		// se è il primo costo che si inserisce  mette la data di inizioa  null
+		if (this.PeriodCar.CarCosts == null
+			|| this.PeriodCar.CarCosts.Count == 0)
+		{
+			CostToInsert.StartDate = null;
+		}
 
 		if (this.CostGrid != null)
 		{
