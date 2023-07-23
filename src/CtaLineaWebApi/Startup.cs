@@ -172,6 +172,11 @@ namespace CtaLineaWebApi
             configuration.GetSection(Constants.ConfigSection_CtaLineaDb)
                 .Bind(ctaLinaDbConf);
             services.AddSingleton<CtaLineaDbContextConfiguration>(ctaLinaDbConf);
+            
+            var importerOptions = new ImporterConfiguration();
+            configuration.GetSection(Constants.Configuration_Importer)
+                .Bind(importerOptions);
+            services.AddSingleton<ImporterConfiguration>(importerOptions);
 
             // registra il contesto di database
             services.AddScoped<CtaDbContext, CtaDbContext>();
@@ -205,6 +210,7 @@ namespace CtaLineaWebApi
                 .AddScoped<IUtilityREpository, UtilityREpository>()
                 .AddScoped<IForfaitRepository, ForfaitRepository>()
                 .AddScoped<ISchedulerTaskRepository, SchedulerTaskRepository> ()
+                .AddScoped<IAssociatesRepository, AssociatesRepository>()
 
                 // altri servizi del DAL
                 .AddScoped<INodeMatchService, NodeMatchService>()

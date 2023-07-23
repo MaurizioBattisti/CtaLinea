@@ -1,0 +1,134 @@
+﻿@using CtaLinea.Model.Runs;
+@inject DialogService DialogService;
+
+<RadzenStack 
+	Orientation="Orientation.Horizontal"
+	AlignItems="AlignItems.Center"
+	>
+
+	<CalendarMultiSelect Disabled=@Disabled
+						 AllowClear=@AllowClear
+						 Name=@Name
+						 @bind-CalendarIds=@CalendarIds
+						 Changed=@DataChanged />
+	
+	<RadzenButton Disabled=@(this.ShowDetails() == false)
+		ButtonStyle="ButtonStyle.Dark"
+		Click="@Detail_Click"
+		Icon="more_horiz" />
+</RadzenStack>
+
+@code {
+	[Parameter]
+	public IList<RunVariationCalendar>? RunCalendars { get; set; }
+	[Parameter]
+	public EventCallback<IList<RunVariationCalendar>?> RunCalendarsChanged { get; set; }
+
+	[Parameter]
+	public bool Exclusion { get; set; } = false;
+
+	[Parameter]
+	public bool AllowClear { get; set; } = false;
+	[Parameter]
+	public bool Disabled { get; set; } = false;
+
+	[Parameter]
+	public EventCallback<object> Changed { get; set; }
+	[Parameter]
+	public string? Name { get; set; }
+
+	[Parameter]
+	public IEditableData? EditableData { get; set; }
+
+	private bool ShowDetails()
+	{
+		if (this.RunCalendars == null) return false;
+		if (this.RunCalendars.Count() == 0) return false;
+		return ((from c in this.RunCalendars
+					where c.Exclusion == this.Exclusion
+					select c.CalendarId)
+				.Count() > 0);
+	}
+
+	private async Task DataChanged (object value)
+	{
+		await RunCalendarsChanged.InvokeAsync(this.RunCalendars);
+		await Changed.InvokeAsync(value);
+	}
+
+	private IEnumerable<int>? CalendarIds
+	{
+		get => this.GEtCalendarIds();
+		set
+		{
+			this.SetCalendars(value);
+		}
+	}
+
+	public void SetCalendars(IEnumerable<int>? calendars)
+	{
+		var workCals = this.RunCalendars?.ToList() ?? new List<RunVariationCalendar>();
+		var ids = calendars?.ToList() ?? new List<int>();
+		var wrkIds = (from c in workCals
+							select c.CalendarId)
+							.ToList();
+
+		var idTodDel = (from c in workCals
+						where ids.Contains(c.CalendarId) == false
+							&& c.Exclusion == this.Exclusion
+						select c)
+						.ToList();
+		// elimina gli id non più usati
+		foreach (var c in idTodDel)
+		{
+			workCals.Remove(c);
+		}
+		// imposta lo stesso valore di esclusione  / insnclusione per gli altri
+		var updt = (from c in workCals
+					where ids.Contains(c.CalendarId) == true
+					&& c.Exclusion != this.Exclusion
+					select c);
+		foreach (var c in updt)
+		{
+			c.Exclusion = this.Exclusion;
+		}
+		// aggiunge mancanti
+		var toAdd = (from id in ids
+						where wrkIds.Contains(id) == false
+						select new RunVariationCalendar()
+						 {
+							 CalendarId = id
+						 }
+					);
+
+		workCals = workCals.Union(toAdd).ToList();
+		this.RunCalendars = workCals;
+		
+		RunCalendarsChanged.InvokeAsync(this.RunCalendars);
+		this.StateHasChanged();
+	}
+	private IList<int>? GEtCalendarIds()
+	{
+		if (this.RunCalendars == null) return null;
+		return (from c in this.RunCalendars
+				where c.Exclusion == this.Exclusion
+				select c.CalendarId).ToList();
+	}
+
+	private async Task Detail_Click ()
+	{
+		await DialogService.OpenAsync(
+			"Dettaglio calendari",
+	ds => @<RunVariationCalendarDetailDialog ds=@ds RunCalendars="@RunCalendars" Exclusion=@Exclusion Disabled=@Disabled EditableData=@EditableData />
+			, new DialogOptions()
+			{
+				ShowClose = true,
+				CloseDialogOnEsc = true,
+				CloseDialogOnOverlayClick = true,
+
+				Width = "1000px",
+				Draggable = false
+			}
+		);
+	}
+}

@@ -2,6 +2,12 @@
 	Maurizio Battisti
 	11/06/2023
 	Estrazione dei costi divisi per consorziato
+	
+	* Sommatoria raggruppata per
+	- Ditta
+	- mezzo
+	- Appalto
+	- mese
 ****************************************************************************************** */
 CREATE PROCEDURE [dbo].[up_GetCostByAssociate]
 (
@@ -133,7 +139,7 @@ BEGIN
 			  SUM(d.RealKm_Contract) AS Km,
 			  SUM(d.RealKm_Extra) AS KmExtra,
 			  SUM(d.DayCost) AS DayCost, 
-			  SUM(d.RealKm_Contract * d.RealKm_Contract_Cost) AS CostKm,
+			  SUM(d.RealKm_Contract_Cost) AS CostKm,
 			  SUM(d.RealKm_Extra * d.RealKm_Extra_Cost) AS CostKmExtra,
 			  
 			  SUM(d.DayIntegration) AS DayIntegration, 

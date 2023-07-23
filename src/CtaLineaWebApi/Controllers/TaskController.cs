@@ -221,5 +221,72 @@ namespace CtaLineaWebApi.Controllers
             await _scheduler.EndActivityAsycn(Constants.Activity_RecalcCosts, id);
             return this.NoContent();
         }
+
+        [SwaggerOperation("Importa i dati relativi ai consorziati / mezzi e  autisti")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPost]
+        [Route(Constants.Activity_ImportAssociate + "/{id}")]
+        public async Task<IActionResult> ImportAssociateDataASycn(
+            [FromRoute] int id,
+            [FromQuery] int? timeout)
+        {
+            _schedulerLogger.TaskId = id;
+            await _scheduler.StartActivityAsync(Constants.Activity_ImportAssociate, id);
+
+            var request = new ImportAssociateActivityRequest()
+            {
+                Timeout = timeout ?? 100
+            };
+
+            try
+            {
+                var result = await this._mediator.Send(request)
+                    .ConfigureAwait(false);
+                if (result == false)
+                {
+                    return this.BadRequest("Operazione fallita senza messaggio");
+                }
+            }
+            catch (Exception ex)
+            {
+                return this.BadRequest(ex);
+            }
+
+            await _scheduler.EndActivityAsycn(Constants.Activity_ImportAssociate, id);
+            return this.NoContent();
+        }
+        [SwaggerOperation("Importa i dati dei punti di racolta")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPost]
+        [Route(Constants.Activity_ImportPoints + "/{id}")]
+        public async Task<IActionResult> ImportPointsAsync(
+            [FromRoute] int id,
+            [FromQuery] int? timeout)
+        {
+            _schedulerLogger.TaskId = id;
+            await _scheduler.StartActivityAsync(Constants.Activity_ImportPoints, id);
+
+            var request = new ImportPointsActivityRequest()
+            {
+                Timeout = timeout ?? 100
+            };
+
+            try
+            {
+                var result = await this._mediator.Send(request)
+                    .ConfigureAwait(false);
+                if (result == false)
+                {
+                    return this.BadRequest("Operazione fallita senza messaggio");
+                }
+            }
+            catch (Exception ex)
+            {
+                return this.BadRequest(ex);
+            }
+
+            await _scheduler.EndActivityAsycn(Constants.Activity_ImportPoints, id);
+            return this.NoContent();
+        }
     }
 }

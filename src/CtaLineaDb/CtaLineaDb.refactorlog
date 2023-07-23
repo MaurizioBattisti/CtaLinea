@@ -805,4 +805,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="MultiRunForfaitName" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="c5f0ee7c-c205-48bf-b176-ae66cdc82c96" ChangeDateTime="07/21/2023 15:31:35">
+    <Property Name="ElementName" Value="[dbo].[RunInternalNotes].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[RunInternalNotes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="RunId" />
+  </Operation>
 </Operations>

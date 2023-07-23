@@ -23,6 +23,7 @@ using CtaLinea.Model.Filters;
 using ZzSoft.CtaLinea.Dal.Services;
 using CtaLinea.Model.Request;
 using CtaLinea.Model.Response;
+using CtaLinea.Model;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -261,6 +262,25 @@ namespace CtaLineaWebApi.Controllers
 
             return this.Ok(result);
         }
+
+		[Authorize(Policy = Constants.Policy_ManageData)]
+		[SwaggerOperation("crea una copia della corsa")]
+		[ProducesResponseType(StatusCodes.Status200OK, 
+            Type = typeof(OperationResult<Guid>))]
+		[HttpPost]
+		[Route("createcopy")]
+		public async Task<IActionResult> NodeDecodeAsync(
+			[FromBody] CreateRunCopyRequest copyRequest)
+		{
+			var request = new CopyOneRunRequest()
+			{
+				CreateCopyPayload = copyRequest
+			};
+			var result = await this._mediator.Send(request)
+				.ConfigureAwait(false);
+
+			return this.Ok(result);
+		}
 
 		#region dettagli
 		[Authorize(Policy = Constants.Policy_RunView)]

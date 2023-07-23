@@ -22,7 +22,9 @@ BEGIN
 	-- calendari delle varianti
 	SELECT vc.RunVariationId,
 			vc.CalendarId,
-			vc.Exclusion
+			vc.Exclusion,
+			vc.Monday, vc.Tuesday, vc.Wednesday,
+			vc.Thursday, vc.Friday, vc.Saturday, vc.Sunday
 		FROM dbo.RunVariationCalendars vc
 		INNER JOIN dbo.RunVariations v
 			ON vc.RunVariationId =v.RunVariationId 

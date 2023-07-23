@@ -1,0 +1,85 @@
+﻿
+<QueryLoader @ref=@CalendarQueryLoadr
+             TItem="CalendarQueryItem"
+             Endpoint="@(Constants.Endpoint_Calendars)"
+             @bind-Data=@Data
+             DataLoaded=@DataLoaded
+             @bind-IsBusy=@isLoading />
+
+<RadzenDataList @ref=@CalendarList
+				Data=@GetData()
+				WrapItems="true"
+				Style="height:500px"
+				TItem=RunVariationCalendar>
+	<Template Context="item">
+		<RadzenCard Style="width: 250px">
+			<RadzenStack Orientation="Orientation.Vertical">
+			
+				<RadzenLabel>@this.GetCalendarDescr(item.CalendarId)</RadzenLabel>
+
+				<FormWeekDays @bind-Monday="@item.Monday"
+							  @bind-Tuesday="@item.Tuesday"
+							  @bind-Wednesday="@item.Wednesday"
+							  @bind-Thursday="@item.Thursday"
+							  @bind-Friday="@item.Friday"
+							  @bind-Saturday="@item.Saturday"
+							  @bind-Sunday="@item.Sunday"
+							  Disabled=@Disabled
+							  Changed=@(()=> this.EditableData?.SetDirty()) />
+			</RadzenStack>
+		</RadzenCard>
+	</Template>
+</RadzenDataList>
+
+@code {
+	[Parameter]
+	public DialogService ds { get; set; }
+	[Parameter]
+	public bool Disabled { get; set; } = false;
+
+	[Parameter]
+	public IEditableData? EditableData { get; set; }
+
+	[Parameter]
+	public IList<RunVariationCalendar>? RunCalendars { get; set; }
+
+	[Parameter]
+	public bool Exclusion { get; set; } = false;
+
+	RadzenDataList<RunVariationCalendar>? CalendarList;
+
+	private bool isLoading { get; set; }
+	private IList<CalendarQueryItem>? Data { get; set; }
+	QueryLoader<CalendarQueryItem>? CalendarQueryLoadr;
+
+	private string GetCalendarDescr (int calendarId)
+	{
+		string? calDescr = null;
+		if (this.Data != null )
+		{
+			calDescr = (from c in this.Data
+						where c.Id == calendarId
+						select c.CalendarName)
+						.FirstOrDefault();
+		}
+		return calDescr ?? "< Assente >";
+	}
+
+	private IList<RunVariationCalendar> GetData ()
+	{
+		if (this.RunCalendars == null) return new List<RunVariationCalendar>();
+
+		return (from c in this.RunCalendars
+				where c.Exclusion == this.Exclusion
+				select c)
+					.ToList();
+	}
+
+	private async Task DataLoaded ()
+	{
+		if (this.CalendarList != null)
+		{
+			await CalendarList.Reload();
+		}
+	}
+}

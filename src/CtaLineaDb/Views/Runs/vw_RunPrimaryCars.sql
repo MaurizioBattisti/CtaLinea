@@ -12,7 +12,8 @@ WITH CTE_Cars AS
 		FROM  dbo.RunCars rc
 		INNER JOIN dbo.RunPeriods rp
 			ON Rc.RunPEriodId = rp.[RunPeriodId]
-		WHERE rc.CarType IN ('P', 'R')
+		-- WHERE rc.CarType IN ('P', 'R')
+		WHERE rc.CarType  = 'P'
 )
 SELECT rc.RunId,
 		STRING_AGG(c.Description, ', ') AS PrimaryCarsDescr

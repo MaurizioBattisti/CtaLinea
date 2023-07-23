@@ -51,10 +51,15 @@ namespace CtaLinea.Model.QueryModel
         [ColumnDescription(Header = "Titolari")]
         [SqlField(FullText = true)]
 		public string? PrimaryCarsDescr { get; set; }
-		[SqlField(FullText = true)]
-        [ColumnDescription(Header = "Scorte")]
+
+        [SqlField(FullText = true)]
+        [ColumnDescription(Header = "Mezzi riserva")]
         public string? SpareCarsDescr { get; set; }
-		[SqlField(FullText = true)]
+        [SqlField(FullText = true)]
+        [ColumnDescription(Header = "Ditte riserva")]
+        public string? SpareAssociatesDescr { get; set; }
+
+        [SqlField(FullText = true)]
         [ColumnDescription(Header = "Calendari")]
         public string? CalendarsDescr { get; set; }
 		[SqlField(FullText = true)]
@@ -141,7 +146,10 @@ namespace CtaLinea.Model.QueryModel
 		[ColumnDescription(Header = "Coincidenza")]
 		public string? CoincidenceState { get; set; }
 
-		public void CopyFrom (RunItemQueryModel source)
+        [ColumnDescription(Header = "Ha note", Ignore = true)]
+        public bool HasNote { get; set; } = false;
+
+        public void CopyFrom (RunItemQueryModel source)
 		{
             Id = source.Id;
             CtaRunId = source.CtaRunId;
@@ -157,7 +165,8 @@ namespace CtaLinea.Model.QueryModel
 
 			AssociatesDescr = source.AssociatesDescr;
 			PrimaryCarsDescr = source.PrimaryCarsDescr;
-			SpareCarsDescr = source.SpareCarsDescr;
+            SpareAssociatesDescr = source.SpareAssociatesDescr;
+            SpareCarsDescr = source.SpareCarsDescr;
 			CalendarsDescr = source.CalendarsDescr;
 			PathsDescr = source.PathsDescr;
 
@@ -199,6 +208,7 @@ namespace CtaLinea.Model.QueryModel
             ForfaitType = source.ForfaitType;
 
             CoincidenceState = source.CoincidenceState;
-		}
+            HasNote = source.HasNote;
+        }
     }
 }

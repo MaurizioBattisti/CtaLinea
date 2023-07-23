@@ -32,6 +32,9 @@ namespace CtaLinea.Model.Costs
         public double Km { get; set; }
         [ColumnDescription(Header = "Km Extra")]
         public double KmExtra { get; set; }
+        [ColumnDescription(Header = "Km Totali")]
+        public double KmTot => this.Km + this.KmExtra;
+
         [ColumnDescription(Header = "Import al Giorno")]
         public decimal DayCost { get; set; }
         [ColumnDescription(Header = "Importo al GG per Km")]
@@ -46,5 +49,9 @@ namespace CtaLinea.Model.Costs
 
         [ColumnDescription(Header = "Forfait Multipli al giorno")]
         public decimal DayMultiRunForfait { get; set; }
+
+        [ColumnDescription(Header = "Totale riga")]
+        public decimal Total => this.DayCost + this.CostKm + this.CostKmExtra + this.DayIntegration + this.DayForfait + this.DayMultiRunForfait;
+
     }
 }

@@ -4,6 +4,7 @@
 @inject IExcelExporterService ExcelService
 @inject NotificationService _notificationService
 @inject ICostService _CostService
+@inject IApplicationSettings AppSettings;
 
 <RadzenDataGrid AllowFiltering="false" 
                 AllowSorting="false" 
@@ -46,20 +47,23 @@
         </RadzenRow>
     </HeaderTemplate>
     <Columns>
-        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.Day)" Title="Giorno" FormatString="{0:dd/MM/yyyy}" />
+        <RadzenDataGridColumn TItem="CostByRunItem"  Property="@nameof(CostByRunItem.Day)" Title="Giorno" FormatString="{0:dd/MM/yyyy}" />
         <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.AssociateName)" Title="Ditta" Width="200px" />
         <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.CarDescription)" Title="Mezzo" Width="200px" />
+        
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.KmTot)" Title="Km Totali" FormatString="{0:f2}" Width="100px" />
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.Total)" Title="Costo Totale" FormatString="{0:C}" Width="150px" />
 
-        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.Km)" Title="Km" Width="100px" />
-        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.KmExtra)" Title="Km Extra" Width="100px" />
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.Km)" Title="Km" FormatString="{0:f2}" Width="100px" />
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.KmExtra)" Title="Km Extra" FormatString="{0:f2}" Width="100px" />
 
-        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.DayCost)" Title="Costo al GG" Width="150px" />
-        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.CostKm)" Title="Costo Km GG" Width="150px" />
-        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.CostKmExtra)" Title="Costo Km GG Extra" Width="150px" />
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.DayCost)" Title="Costo al GG" FormatString="{0:C}" Width="150px" />
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.CostKm)" Title="Costo Km GG" FormatString="{0:C}" Width="150px" />
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.CostKmExtra)" Title="Costo Km GG Extra" FormatString="{0:C}" Width="150px" />
 
-        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.DayIntegration)" Title="Integrazione GG" Width="150px" />
-        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.DayForfait)" Title="Forfait GG" Width="150px" />
-        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.DayMultiRunForfait)" Title="Forfait Multiplo GG" Width="150px" />
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.DayIntegration)" Title="Integrazione GG" FormatString="{0:C}" Width="150px" />
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.DayForfait)" Title="Forfait GG" FormatString="{0:C}" Width="150px" />
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.DayMultiRunForfait)" Title="Forfait Multiplo GG" FormatString="{0:C}" Width="150px" />
 
         <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.MultiRunForfaitName)" Title="Forfait" Width="200px" />
         <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.MultirunForfaitType)" Title="Tipo Forfait" Width="100px" >
@@ -257,6 +261,12 @@
             {
                 args.Attributes.Add("rowspan", coun);
             }
+        }
+
+        if (args.Column.Property == nameof(CostByRunItem.KmTot)
+            || args.Column.Property == nameof(CostByRunItem.Total))
+        {
+            args.Attributes.Add("style", $"background-color: var(--rz-success-darker)");
         }
     }
 }

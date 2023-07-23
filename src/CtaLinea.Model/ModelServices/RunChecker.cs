@@ -338,8 +338,8 @@ namespace CtaLinea.Model.ModelServices
                     });
             }
 
-            if (variation.Calendars == null
-                || variation.Calendars.Count() < 1)
+            if (variation.AllCalendars == null
+                || variation.AllCalendars.Count() < 1)
             {
                 errors.Add(
                     new CheckResultItem()
@@ -350,26 +350,33 @@ namespace CtaLinea.Model.ModelServices
                         Id = variation.RunVariationId
                     });
             }
-            if (variation.Calendars != null 
-                && variation.ExclusionCalendars != null)
+
+            if (variation.AllCalendars != null 
+                && variation.AllCalendars != null)
             {
-                // contolla che non sia stato usato los teso calendario sia in inclusione che in sesclusione
-                var overlap = (from c in variation.ExclusionCalendars
-                               where variation.Calendars.Contains(c)
+                // controlla che tutti i calendari abbiano alemno un girono della settimana impostato
+                var emptyCal = (from c in variation.AllCalendars
+                                where c.Monday == false
+                                    && c.Tuesday == false
+                                    && c.Wednesday == false
+                                    && c.Thursday == false
+                                    && c.Friday == false
+                                    && c.Saturday == false
+                                    && c.Sunday == false
                                select c)
-                               .Count();
-                if (overlap > 0)
+                               .FirstOrDefault();
+
+                if (emptyCal != null)
                 {
                     errors.Add(
                         new CheckResultItem()
                         {
                             Category = RunCheckResult.Category_RunVariation,
                             Title = "Calendario incoerenti",
-                            Description = "uno stesso clanedario non puù essere usato sia in inclusione che in esclusione",
+                            Description = "E' inutile assegnare un calendario senza specificare nemmeno un giorno",
                             Id = variation.RunVariationId
                         });
                 }
-
             }
             
             // controlla che sia stato indicato almeno un giorno della settimana

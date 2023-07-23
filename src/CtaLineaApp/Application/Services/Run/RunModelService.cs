@@ -48,8 +48,7 @@ namespace CtaLineaApp.Application.Services.Run
                     RunVariationId = Guid.NewGuid(),
                     StartDate = startDate,
 
-                    Calendars = new List<int> (),
-                    Nodes = new List<RunNode>()
+                    AllCalendars = new List<RunVariationCalendar> ()
                 };
             }
             else
@@ -444,9 +443,9 @@ namespace CtaLineaApp.Application.Services.Run
                 RequestedCapacity = source.RequestedCapacity,
                 Note = source.Note,
 
-                Calendars = (source.Calendars == null ?
-                        new List<int>()
-                        : new List<int>(source.Calendars)),
+                AllCalendars = (source.AllCalendars == null ?
+                        new List<RunVariationCalendar>()
+                        : new List<RunVariationCalendar>(source.AllCalendars)),
                 Nodes = new List<RunNode>()
 			};
 

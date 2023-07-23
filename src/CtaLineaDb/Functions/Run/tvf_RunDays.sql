@@ -108,6 +108,8 @@ BEGIN
 			SELECT v.RunVariantId,
 					vc.CalendarId,
 					vc.Exclusion,
+					vc.Monday, vc.Tuesday, vc.Wednesday,
+					vc.Thursday, vc.Friday, vc.Saturday, vc.Sunday,
 					v.StartDate,
 					v.EndDate,
 					v.LastOne
@@ -124,10 +126,20 @@ BEGIN
 	DECLARE @v_EndDate			date;
 	DECLARE @v_LastOne			bit;
 	DECLARE @v_Exclusion		bit;
+	-- giorni del calendario da includere o sceludere
+	DECLARE @v_c_Monday			bit;
+	DECLARE @v_c_Tuesday		bit;
+	DECLARE @v_c_Wednesday		bit;
+	DECLARE @v_c_Thursday		bit;
+	DECLARE @v_c_Friday			bit;
+	DECLARE @v_c_Saturday		bit;
+	DECLARE @v_c_Sunday			bit;
 
 	OPEN Var_Curr;
 	FETCH NEXT FROM Var_Curr INTO 
 			@v_RunVariationId, @v_CalendarId, @v_Exclusion,
+			@v_c_Monday, @v_c_Tuesday, @v_c_Wednesday,
+			@v_c_Thursday, @v_c_Friday, @v_c_Saturday, @v_c_Sunday,
 			@v_StartDate, @v_EndDate,
 			@v_LastOne;
 
@@ -165,13 +177,13 @@ BEGIN
 					WHERE dd.RunVariantId IS NULL
 						AND V.RunVariationId = @v_RunVariationId
 						AND (
-							(d.WeekDay = @Monday AND  v.Monday = 1)
-							OR (d.WeekDay = @Tuesday AND  v.Tuesday = 1)
-							OR (d.WeekDay = @Wednesday AND  v.Wednesday = 1)
-							OR (d.WeekDay = @Thursday AND  v.Thursday = 1)
-							OR (d.WeekDay = @Friday AND  v.Friday = 1)
-							OR (d.WeekDay = @Saturday AND  v.Saturday = 1)
-							OR (d.WeekDay = @Sunday AND  v.Sunday = 1)
+							(d.WeekDay = @Monday AND v.Monday = 1 AND @v_c_Monday = 1)
+							OR (d.WeekDay = @Tuesday AND v.Tuesday = 1 AND  @v_c_Tuesday = 1)
+							OR (d.WeekDay = @Wednesday AND v.Wednesday = 1 AND  @v_c_Wednesday = 1)
+							OR (d.WeekDay = @Thursday AND  v.Thursday = 1 AND  @v_c_Thursday = 1)
+							OR (d.WeekDay = @Friday AND v.Friday = 1 AND @v_c_Friday = 1)
+							OR (d.WeekDay = @Saturday AND v.Saturday = 1 AND @v_c_Saturday = 1)
+							OR (d.WeekDay = @Sunday AND v.Sunday = 1 AND @v_c_Sunday = 1)
 							)
 					;
 		END
@@ -192,11 +204,22 @@ BEGIN
 				INNER JOIN CTE_Days d
 					ON vd.Day = d.Day
 					AND vd.RunVariantId = d.RunVariantId
+					AND (
+						(d.WeekDay = @Monday AND  @v_c_Monday = 1)
+						OR (d.WeekDay = @Tuesday AND  @v_c_Tuesday = 1)
+						OR (d.WeekDay = @Wednesday AND  @v_c_Wednesday = 1)
+						OR (d.WeekDay = @Thursday AND  @v_c_Thursday = 1)
+						OR (d.WeekDay = @Friday AND  @v_c_Friday = 1)
+						OR (d.WeekDay = @Saturday AND  @v_c_Saturday = 1)
+						OR (d.WeekDay = @Sunday AND  @v_c_Sunday = 1)
+						)
 			;
 		END
 
 		FETCH NEXT FROM Var_Curr INTO 
 				@v_RunVariationId, @v_CalendarId, @v_Exclusion,
+				@v_c_Monday, @v_c_Tuesday, @v_c_Wednesday,
+				@v_c_Thursday, @v_c_Friday, @v_c_Saturday, @v_c_Sunday,
 				@v_StartDate, @v_EndDate,
 				@v_LastOne;
 	END;

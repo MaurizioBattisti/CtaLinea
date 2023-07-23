@@ -186,5 +186,9 @@
     <Build Include="StoredProc\Checks\up_Check_GobalCarOverlappings.sql" />
     <Build Include="Functions\Costs\fn_GetStartDate.sql" />
     <Build Include="Functions\Costs\fn_GetEndDate.sql" />
+    <Build Include="StoredProc\Costs\up_GetCostByAssociateByRun.sql" />
+    <Build Include="StoredProc\Run\up_Run_CreateCopy.sql" />
+    <Build Include="Views\Runs\vw_RunSpareAssociates.sql" />
+    <Build Include="Tables\Runs\RunInternalNotes.sql" />
   </ItemGroup>
 </Project>

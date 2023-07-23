@@ -27,6 +27,8 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             IEnumerable<Guid> runIds,
             SetSuspensionRequest suspnesion
             );
+        Task<Guid> CreateRunCopyAsync(
+            CreateRunCopyRequest request);
 
-    }
+	}
 }

@@ -53,10 +53,11 @@ namespace CtaLineaApp
 		internal const string Endpoint_Run_Tags_Fmt = Endpoint_OneRun_Frm + "/tags";
         internal const string Endpoint_Run_NodeDecode = Endpoint_Runs + "/decodenodes";
         internal const string Endpoint_Run_SetSuspensions = Endpoint_Runs + "/suspensions";
+        internal const string Endpoint_Run_CreateCopy = Endpoint_Runs + "/createcopy";
 
 
-        // costi
-        internal const string EndPoint_Costs = "api/costs";
+		// costi
+		internal const string EndPoint_Costs = "api/costs";
         internal const string EndPoint_CostsByAssociate_GET = EndPoint_Costs + "/byassociate";
 		internal const string EndPoint_CostsByRun = EndPoint_Costs + "/byrun";
 		internal const string EndPoint_CostsByAssociate = EndPoint_Costs + "/byassociate";
@@ -153,7 +154,8 @@ namespace CtaLineaApp
 		internal const string Activity_CleanLog = "cleanlog";
 		internal const string Activity_SendMail = "sendmail";
         internal const string Activity_RecalcCosts = "recalcosts";
-
+        internal const string Activity_ImportAssociate = "i_asso";
+        internal const string Activity_ImportPoints = "i_points";
 
         // budget types
         internal const string BudgetTYpe_Last_Calc = "LAST CALC";

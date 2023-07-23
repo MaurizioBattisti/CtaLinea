@@ -14,6 +14,7 @@ namespace CtaLineaWebApi
         internal const string ConfigSection_IdentityServer = "IdentityServer";
         internal const string ConfigSection_CtaLineaDb = "CtaLineaDb";
         internal const string Configuration_MailSender = "MailSender";
+        internal const string Configuration_Importer = "Importer";
 
         // claims type
 
@@ -29,6 +30,8 @@ namespace CtaLineaWebApi
 		internal const string Activity_CleanLog = "cleanlog";
         internal const string Activity_SendMail = "sendmail";
         internal const string Activity_RecalcCosts = "recalcosts";
+        internal const string Activity_ImportAssociate = "i_asso";
+        internal const string Activity_ImportPoints = "i_points";
 
         // Policy
         internal const string Policy_ChangePAssword = "ChangePAssword";

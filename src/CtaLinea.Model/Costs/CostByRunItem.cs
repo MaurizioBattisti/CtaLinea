@@ -28,5 +28,7 @@ namespace CtaLinea.Model.Costs
         public string? MultirunForfaitType { get; set; }
         public decimal MultiRunForfaitAmount { get; set; }
 
+        public double KmTot => this.Km + this.KmExtra;
+        public decimal Total => this.DayCost + this.CostKm + this.CostKmExtra + this.DayIntegration + this.DayForfait + this.DayMultiRunForfait;
     }
 }

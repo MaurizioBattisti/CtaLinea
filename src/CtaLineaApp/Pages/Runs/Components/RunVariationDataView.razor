@@ -42,11 +42,12 @@
 		@if (this.EditMode == true)
 		{
 			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Calendari</RadzenText>
+			<!--
 			<CalendarMultiSelect 
 				AllowClear=true
 				@bind-CalendarIds=@CalendarIds
 				Changed=@(a=> this.EditableData?.SetDirty()) />
-
+			-->
 			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Frequenza</RadzenText>
 			<RadzenTextBox @bind-Value="Variation.RequestedFrequency" MaxLength="200" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 
@@ -56,10 +57,11 @@
 		else
 		{
 			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Calendari</RadzenText>
+			<!--
 			<CalendarMultiSelect 
 				CalendarIds="Variation.Calendars"
 				Disabled=true />
-
+			-->
 			<RadzenText TextStyle="TextStyle.Overline" Class="d-flex mt-1 mb-0">Frequenza</RadzenText>
 			<RadzenText TextStyle="TextStyle.Body1"><strong>@Variation.RequestedFrequency</strong></RadzenText>
 
@@ -158,6 +160,7 @@
 		return string.Format("{0:HH:mm}", dt);
 	}
 
+	/*
 	private IEnumerable<int>? CalendarIds
 	{
 		get { return this.Variation?.Calendars; }
@@ -169,6 +172,7 @@
 			}
 		}
 	}
+	*/
 
 	/*
 	private int? SelectedCalednarId

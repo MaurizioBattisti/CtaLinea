@@ -33,11 +33,13 @@
 				<RadzenLabel Component="CalendarIds" Text="Calendari" />
 			</RadzenColumn>
 			<RadzenColumn Size="9">
-				<CalendarMultiSelect Disabled=@ReadOnly
-					AllowClear=true
-					Name="CalendarIds"
-					@bind-CalendarIds=@CalendarIds
-					Changed=@(a=> this.EditableData?.SetDirty()) />
+				<RunVariationCalendarSelector Disabled=@ReadOnly
+											  AllowClear=true
+											  Name="CalendarIds"
+											  @bind-RunCalendars="Variation.AllCalendars"
+											  Exclusion=false
+											  EditableData=@EditableData
+											  Changed=@(a=> this.EditableData?.SetDirty()) />
 			</RadzenColumn>
 		</RadzenRow>
 		<RadzenRow AlignItems="AlignItems.Center">
@@ -45,11 +47,13 @@
 				<RadzenLabel Component="ExclusionCalendarIds" Text="Calendari a Esclusione" />
 			</RadzenColumn>
 			<RadzenColumn Size="9">
-				<CalendarMultiSelect Disabled=@ReadOnly
-					AllowClear=true
-					Name="ExclusionCalendarIds"
-					@bind-CalendarIds=@EsclusionCalendarIds
-					Changed=@(a=> this.EditableData?.SetDirty()) />
+				<RunVariationCalendarSelector Disabled=@ReadOnly
+											  AllowClear=true
+											  Name="ExclusionCalendarIds"
+											  @bind-RunCalendars="Variation.AllCalendars"
+											  Exclusion=true
+											  EditableData=@EditableData
+											  Changed=@(a=> this.EditableData?.SetDirty()) />
 			</RadzenColumn>
 		</RadzenRow>
 
@@ -150,28 +154,5 @@
 		if (time == null) return string.Empty;
 		var to = new TimeOnly(time.Value.Hours, time.Value.Minutes, time.Value.Seconds);
 		return string.Format("{0:HH:mm}", to);
-	}
-
-	private IEnumerable<int>? CalendarIds
-	{
-		get { return this.Variation?.Calendars; }
-		set
-		{
-			if (this.Variation != null)
-			{
-				this.Variation.Calendars = value?.ToList();
-			}
-		}
-	}
-	private IEnumerable<int>? EsclusionCalendarIds
-	{
-		get { return this.Variation?.ExclusionCalendars; }
-		set
-		{
-			if (this.Variation != null)
-			{
-				this.Variation.ExclusionCalendars = value?.ToList();
-			}
-		}
 	}
 }

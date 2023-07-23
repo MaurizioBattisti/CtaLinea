@@ -133,6 +133,18 @@ namespace CtaLineaApp.Application.Services.Base
                 TaskName = "Ricalcola i costi correnti",
                 DefaultArguments  =null
             };
+            yield return new AppTaskDescription()
+            {
+                TaskId = Constants.Activity_ImportAssociate,
+                TaskName = "Import Ditte / mezzi / autisti",
+                DefaultArguments = null
+            };
+            yield return new AppTaskDescription()
+            {
+                TaskId = Constants.Activity_ImportPoints,
+                TaskName = "Import Punti di Raccolta",
+                DefaultArguments = null
+            };
         }
-	}
+    }
 }

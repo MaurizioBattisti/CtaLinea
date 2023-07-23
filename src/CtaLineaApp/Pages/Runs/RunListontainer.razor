@@ -210,6 +210,7 @@
                                         TValue="bool" Change=@(args => this.MultiSelectionChangedAsync(args, data)) />
                     </Template>
                 </RadzenDataGridColumn>
+
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="CtaRunId" Title="Id CTA" Width="100px" FilterValue=@Filter_CtaRunId Frozen=true>
                     <Template Context="item">
                         @if (item.Color != null)
@@ -229,6 +230,14 @@
                         <div style="width: 100%;" class="@GetRunStatusStyleClass(item.RunStatus)" >
                             @item.RunStatusDesvr
                         </div>
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="@nameof(RunItemQueryModel.HasNote)" Title="N" Width="40px" Frozen=true>
+                    <Template Context="data">
+                        @if (data.HasNote)
+                        {
+                            <RadzenIcon Icon="feedback" />
+                        }
                     </Template>
                 </RadzenDataGridColumn>
                 
@@ -397,6 +406,8 @@
     {
         Tags,
         Forfait,
+
+        CreateCopy,
 
         Delete,
 
@@ -735,6 +746,30 @@
         }
     }
 
+    private async Task CopyRunAsync(
+    RunItemQueryModel item)
+    {
+        Guid? newId = await this.DialogService.OpenAsync(
+            "Copia una corsa",
+            ds => @<CopyRunDialog ds=@ds RunData="@item" />
+            , new DialogOptions()
+                {
+                    ShowClose = true,
+                    CloseDialogOnEsc = true,
+                    CloseDialogOnOverlayClick = true,
+
+                    Width = "1000px",
+                    Draggable = false
+                }
+        );
+
+        if (newId != null)
+        {
+            // ricarica i dati della corsa appena creata
+            await this.RealodOneRowAsync(newId.Value);
+        }
+    }
+
     private void RowActionCellContextMenu(DataGridCellMouseEventArgs<RunItemQueryModel> args)
     {
         if (grdData != null)
@@ -754,6 +789,8 @@
                     <RadzenMenuItem Icon="local_offer" Text="Etichette..." Value=@RunMenuItems.Tags />
                     <RadzenMenuItem Icon="savings" Text=@(args.Data.ForfaitId == null ? "Aggiungi Forfait..." : "Elimina forfait..." ) Value="@RunMenuItems.Forfait" />
                     <hr class="separator">
+                    <RadzenMenuItem Icon="file_copy" Text="Crea Copia ..." Value="@RunMenuItems.CreateCopy" />
+                    <hr class="separator">
                 }
                 @if(CanEdit()
                     && multiSel == true)
@@ -764,7 +801,7 @@
                 }
                 <RadzenMenuItem Icon="delete" Text="Elimina..." Value=@RunMenuItems.Delete />
             </RadzenMenu>
-    );
+        );
     }
 
     private async Task OnMenuItemClick(
@@ -784,6 +821,9 @@
                 break;
             case RunMenuItems.Tags:
                 await this.ShowTagsEditor(args.Data.Id);
+                break;
+            case RunMenuItems.CreateCopy:
+                await this.CopyRunAsync(args.Data);
                 break;
             case RunMenuItems.Forfait:
                 if (args.Data.ForfaitId == null)
@@ -875,17 +915,6 @@
     private RunEditArguments? EditArgs = null;
 
     private bool EditorVisible { get; set; }  = false;
-    /*
-    public bool EditorVisible 
-    {
-    get 
-    {
-    return (this.IsClean == false
-        || this._EditorVisible);
-        }
-        set { this._EditorVisible = value;}
-    }
-    */
 
     private async Task SelectAllAsync(bool all)
     {

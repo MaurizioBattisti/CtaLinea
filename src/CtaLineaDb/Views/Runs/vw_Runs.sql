@@ -36,6 +36,7 @@ SELECT  r.RunId,
 		-- descrizioni
 		rAss.AssociatesDescr,
 		rPrimCar.PrimaryCarsDescr,
+		rSpareAss.SpareAssociatesDescr,
 		rSpareCar.SpareCarsDescr,
 		rCal.CalendarsDescr,
 		rPath.PathsDescr,
@@ -72,7 +73,8 @@ SELECT  r.RunId,
 		END) AS RunStatusDesvr,
 		mrf.ForfaitId,
 		mrf.ForfaitName,
-		mrf.[ForfaitType]
+		mrf.[ForfaitType],
+		CASE WHEN note.RunId IS NOT NULL THEN 1 ELSE 0 END AS HasNote
 	FROM dbo.Runs r
 	INNER JOIN CTE_Variants v
 		ON R.RunId = v.RunId
@@ -82,6 +84,8 @@ SELECT  r.RunId,
 		ON r.RunId = vc.RunId
 	LEFT JOIN dbo.vw_RunAssociates rAss
 		ON r.RunId = rAss.RunId
+	LEFT JOIN [dbo].[vw_RunSpareAssociates] rSpareAss
+		ON r.RunId = rSpareAss.RunId
 	LEFT JOIN dbo.vw_RunPrimaryCars rPrimCar
 		ON r.RunId = rPrimCar.RunId
 	LEFT JOIN dbo.vw_RunSpareCars rSpareCar
@@ -96,4 +100,6 @@ SELECT  r.RunId,
 		ON mrfd.RunId = r.RunId
 	LEFT JOIN dbo.MultiRunForfait mrf
 		ON mrf.ForfaitId = mrfd.ForfaitId
+	LEFT JOIN [dbo].[RunInternalNotes] note
+		ON R.RunId = note.RunId
 	;

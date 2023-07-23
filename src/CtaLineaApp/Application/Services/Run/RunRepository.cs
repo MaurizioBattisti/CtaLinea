@@ -1,4 +1,5 @@
-﻿using CtaLinea.Model.Base;
+﻿using CtaLinea.Model;
+using CtaLinea.Model.Base;
 using CtaLinea.Model.Helpers;
 using CtaLinea.Model.ModelServices;
 using CtaLinea.Model.QueryModel;
@@ -116,5 +117,14 @@ namespace CtaLineaApp.Application.Services.Run
                 Constants.Endpoint_Run_SetSuspensions, 
                 request);
         }
+
+        public async Task<OperationResult<Guid>?> CreateRunCopyAsync (
+			CreateRunCopyRequest copyRequest
+			)
+        {
+			return await this._http.Post<OperationResult<Guid>, CheckResult>(
+	            Constants.Endpoint_Run_CreateCopy,
+				copyRequest);
+		}
 	}
 }

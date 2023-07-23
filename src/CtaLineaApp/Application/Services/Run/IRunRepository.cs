@@ -1,4 +1,5 @@
-﻿using CtaLinea.Model.QueryModel;
+﻿using CtaLinea.Model;
+using CtaLinea.Model.QueryModel;
 using CtaLinea.Model.Request;
 using CtaLinea.Model.Response;
 using CtaLinea.Model.Runs;
@@ -27,5 +28,9 @@ namespace CtaLineaApp.Application.Services.Run
 
         Task<MultiRunOperationResponse?> SetRunsSuspensionsAsync(
             MultiRunSetSuspensionRequest request);
+
+        Task<OperationResult<Guid>?> CreateRunCopyAsync(
+            CreateRunCopyRequest copyRequest
+            );
 	}
 }

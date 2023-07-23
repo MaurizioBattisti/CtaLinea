@@ -3,6 +3,7 @@
 @inject IExcelExporterService ExcelService
 @inject NotificationService _notificationService
 @inject ICostService _CostService;
+@inject IApplicationSettings AppSettings;
 @attribute [Authorize]
 
 <CheckAuthorization Roles=@(new string[] { UserRoles.Role_Costs }) />
@@ -99,6 +100,8 @@
         <RadzenDataGrid @ref="@grdData"
                         FilterMode="FilterMode.Simple"
                         IsLoading=@isLoading
+                        CellRender="@Month_CellRender"
+                        Culture=@AppSettings.CurrentCulture
                         Data="@this.Data" TItem="CostByAssociateItem"
                         AllowFiltering="true"
                         AllowSorting="true"
@@ -128,17 +131,20 @@
                 <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.CarDescription)" Title="Mezzo" Width="70px" />
 
                 <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.Month)" Title="Mese" Width="100px" />
+                
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.KmTot)" Title="Km Totali" FormatString="{0:f2}" Width="100px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.Total)" Title="Costo Totale" FormatString="{0:C}" Width="150px" />
 
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.Km)" Title="Km" Width="100px" />
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.KmExtra)" Title="Km Extra" Width="100px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.Km)" Title="Tod. Km" FormatString="{0:f2}" Width="100px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.KmExtra)" Title="Tod. Km Extra" FormatString="{0:f2}" Width="100px" />
 
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayCost)" Title="Costo al GG" Width="150px" />
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.CostKm)" Title="Costo Km GG" Width="150px" />
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.CostKmExtra)" Title="Costo Km GG Extra" Width="150px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayCost)" Title="Tod. Costo da GG" FormatString="{0:C}" Width="150px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.CostKm)" Title="Tod. Costo Km GG" FormatString="{0:C}" Width="150px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.CostKmExtra)" Title="Tit. Costo Km GG Extra" FormatString="{0:C}" Width="150px" />
 
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayIntegration)" Title="Integrazione GG" Width="150px" />
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayForfait)" Title="Forfait GG" Width="150px" />
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayMultiRunForfait)" Title="Forfait Multiplo GG" Width="150px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayIntegration)" Title="Tot. int. GG" FormatString="{0:C}" Width="150px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayForfait)" Title="Tot. Forfait GG" FormatString="{0:C}" Width="150px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayMultiRunForfait)" Title="Tot. Forfait Multiplo GG" FormatString="{0:C}" Width="150px" />
             </Columns>
         </RadzenDataGrid>
     </RadzenBody>    
@@ -271,6 +277,15 @@
         finally
         {
             this.isLoading = false;
+        }
+    }
+
+    private void Month_CellRender(DataGridCellRenderEventArgs<CostByAssociateItem> args)
+    {
+        if (args.Column.Property == nameof(CostByAssociateItem.KmTot)
+            || args.Column.Property == nameof(CostByAssociateItem.Total))
+        {
+            args.Attributes.Add("style", $"background-color: var(--rz-success-darker)");
         }
     }
 }
