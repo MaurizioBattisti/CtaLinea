@@ -9,6 +9,8 @@ CREATE PROCEDURE [dbo].[up_GetCarForDiscontinuation]
 	@RefDate			Date = NULL
 AS
 BEGIN
+	SET DATEFIRST 1; -- this sets Monday to the first day of the week for the current connection.
+
 	IF @RefDate IS NULL SET @RefDate = GETDATE();
 
 	SELECT * FROM

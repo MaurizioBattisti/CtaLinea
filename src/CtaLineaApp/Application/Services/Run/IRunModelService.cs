@@ -17,6 +17,8 @@ namespace CtaLineaApp.Application.Services.Run
             RunPeriod period,
             CarReplacement currRepl
             );
+        RunPeriod DuplicatePeriod(RunItem run,
+                    RunPeriod source);
 		RunPeriodCar AddReplacmeent(
             RunPeriod period,
             RunPeriodCar car,

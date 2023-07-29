@@ -812,4 +812,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="RunId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="9f1892c0-963f-4d17-b300-130144d43116" ChangeDateTime="07/26/2023 15:40:58">
+    <Property Name="ElementName" Value="[dbo].[RunPeriods].[RepeatitionType]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[RunPeriods]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Repeat type" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2274f45a-d5f8-4a44-b6b7-a2e49b945dd8" ChangeDateTime="07/26/2023 18:59:04">
+    <Property Name="ElementName" Value="[dbo].[RunPeriods].[Repeat type]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[RunPeriods]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="RepeatType" />
+  </Operation>
 </Operations>

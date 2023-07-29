@@ -1179,7 +1179,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 period.Saturday,
                 period.Sunday,
 
-                period.Note
+				period.RepeatType,
+				period.RepeatPattern,
+
+				period.Note
             };
         }
         private object GetPeriodKey(

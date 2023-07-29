@@ -14,6 +14,8 @@ CREATE PROCEDURE [dbo].[up_GetCostByRun]
 )
 AS
 BEGIN
+	SET DATEFIRST 1; -- this sets Monday to the first day of the week for the current connection.
+
 	DECLARE @UseFreshData	 bit = 1;
 	DECLARE @BudgetId		 int = NULL;
 	

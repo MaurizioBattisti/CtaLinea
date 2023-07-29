@@ -28,11 +28,18 @@
 </RadzenScheduler>
 
 @code {
+    private const string PRoblemSlotStyle = "background: Red; color: yellow";
+
     [CascadingParameter]
     public CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
 
     [Parameter]
     public Guid RunId { get; set; }
+
+    [Parameter]
+    public IDictionary<Guid, int> RunPeriodColorMap { get; set; } = new Dictionary<Guid, int>();
+    [Parameter]
+    public string[] Colors { get; set; } = new string[] { };
 
     RadzenScheduler<RunPlanningItem>? scheduler;
 
@@ -67,13 +74,6 @@
                 args.Start, args.End
                 );
             this.Planning = data;
-
-            // slava la lista dei mezzi per assegnargli un colore
-            /*
-            this.CarIds = (from d in data.OrderBy(x => x.CarDescr)
-                           group d by d.CarId into c
-                           select c.Key).ToList();
-        */
         }
         finally
         {
@@ -104,24 +104,27 @@
     private async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<RunPlanningItem> args)
     {
         await Task.CompletedTask;
-        /*
-        await DialogService.OpenSideAsync<RunItemDetail>($"Dettaglio della Corsa",
-            new Dictionary<string, object>() { { "Id", args.Data.RunId } },
-            options: new SideDialogOptions() { CloseDialogOnOverlayClick = true, Width = "88%" }
-            );
-        */
     }
 
     private void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<RunPlanningItem> args)
     {
+        string? style = null;
         // Never call StateHasChanged in AppointmentRender - would lead to infinite loop
-        /*
-        var index = CarIds?.IndexOf(args.Data.CarId);
-        if (index != null)
-        {
-            args.Attributes["style"] = this.Colors[index.Value % this.Colors.Length];
-        }
-        */
-    }
+        var periodId = args.Data.RunPeriodId;
 
+        if (periodId == null
+            || this.RunPeriodColorMap.ContainsKey(periodId.Value) == false)
+        {
+            style = PRoblemSlotStyle;
+        }
+        else
+        {
+            var index = this.RunPeriodColorMap[periodId.Value];
+            style = this.Colors[index];
+        }
+        if (style != null)
+        {
+            args.Attributes["style"] = style;
+        }
+    }
 }

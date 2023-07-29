@@ -9,6 +9,8 @@ CREATE PROCEDURE [dbo].[up_GetRunPlanning]
 	@EndDate	date = NULL
 AS
 BEGIN
+	SET DATEFIRST 1; -- this sets Monday to the first day of the week for the current connection.
+
 	SET @StartDate = COALESCE(@StartDate, GETDATE());
 	SET @EndDate = COALESCE(@EndDate, GETDATE());
 
@@ -18,10 +20,10 @@ BEGIN
 	WITH CTE_Hours AS
 	(
 		SELECT n.RunVariationId,
-   			 MIN(n.Hour) AS MinHour,
-   			 MAX(n.Hour) AS MaxHour
-   		 FROM dbo.RunNodes n
-   		 GROUP BY n.RunVariationId
+   				MIN(n.Hour) AS MinHour,
+   				MAX(n.Hour) AS MaxHour
+   			FROM dbo.RunNodes n
+   			GROUP BY n.RunVariationId
 	), CTE_Days_Base AS
 	(
 		SELECT DISTINCT rd.RunId,
@@ -63,10 +65,10 @@ BEGIN
 			+ CASE WHEN  p.Sunday = 1 THEN 'Dom, ' ELSE '' END
 			AS PeriodWeek_Descr
 		FROM CTE_Days_Base rd
-		INNER JOIN dbo.RunPeriods p
-			ON rd.RunPeriodId = p.RunPeriodId
 		INNER JOIN dbo.RunVariations v
 			ON rd.RunVariationId = v.RunVariationId
+		LEFT JOIN dbo.RunPeriods p
+			ON rd.RunPeriodId = p.RunPeriodId
 		LEFT JOIN CTE_Hours h
 			ON v.RunVariationId = h.RunVariationId
 	)
@@ -77,9 +79,12 @@ BEGIN
 		rd.RunPeriodId,
 		rd.RunVariationId,
 		rd.VariationDescr,
-		rd.PeriodDate_Descr + ' ( '+
-			SUBSTRING(rd.PeriodWeek_Descr, 0, LEN(rd.PeriodWeek_Descr) )
-			+ ' )' AS PeriodDescr
+		CASE WHEN rd.RunPeriodId IS NULL 
+			THEN 'No Periodo' 
+			ELSE rd.PeriodDate_Descr + ' ( '+
+				SUBSTRING(rd.PeriodWeek_Descr, 0, LEN(rd.PeriodWeek_Descr) )
+				+ ' )'
+		END AS PeriodDescr
 	FROM CTE_DaySDescr rd
 		;
 

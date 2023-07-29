@@ -1,0 +1,183 @@
+﻿@inject NotificationService _notificationService
+@inject IRunRepository _runRepo;
+@inject IRunModelService RunModelService
+@inject DialogService DialogService;
+
+<RadzenStack Orientation="Orientation.Vertical">
+	<RadzenRow>
+		<RadzenColumn Size="7">
+			<DateRangeSelector @bind-StartDate=@this.PeriodInEdit.StartDate
+			@bind-EndDate=@this.PeriodInEdit.EndDate
+							   Inline=false
+							   AllowClear=true />
+		</RadzenColumn>
+		<RadzenColumn Size="5">
+			<FormWeekDays @bind-Monday="@this.PeriodInEdit.Monday"
+			@bind-Tuesday="@this.PeriodInEdit.Tuesday"
+			@bind-Wednesday="@this.PeriodInEdit.Wednesday"
+			@bind-Thursday="@this.PeriodInEdit.Thursday"
+			@bind-Friday="@this.PeriodInEdit.Friday"
+			@bind-Saturday="@this.PeriodInEdit.Saturday"
+			@bind-Sunday="@this.PeriodInEdit.Sunday" />
+		</RadzenColumn>
+	</RadzenRow>
+	<RadzenRow>
+		<RadzenColumn Size="7">
+			<RadzenRow>
+				<RadzenLabel Component="Repeat" Text="Ripetizione" />
+			</RadzenRow>
+			<RadzenRow>
+				<RadzenDropDown Name="Repeat"
+								TValue="RunPeriodRepeatType"
+				@bind-Value=@this.PeriodInEdit.PeriodRepeatType
+								Data=@RepatDataList
+								ValueProperty="Item1"
+								TextProperty="Item2"
+								class="w-100" />
+			</RadzenRow>
+			<RadzenRow>
+				<RadzenLabel Component="RepeatCount" Text="Nr." />
+			</RadzenRow>
+			<RadzenRow>
+				<RadzenNumeric 
+					Name="RepeatCount" 
+					TValue="int" 
+					Disabled=@NoRepeat()
+					@bind-Value=@Period_RepeatCount class="w-100" />
+			</RadzenRow>
+		</RadzenColumn>
+		<RadzenColumn Size="5">
+			<BooleanPatternStringEditor ReadOnly=@NoRepeat()
+				@bind-Pattern=@this.PeriodInEdit.RepeatPattern />
+		</RadzenColumn>
+	</RadzenRow>
+	<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
+		@if (this.IsAdding == true)
+		{
+			<RadzenButton Click="@(() => this.OkClick(ds))"
+				ButtonStyle="ButtonStyle.Primary"
+				Text="Crea" />
+		}
+		else
+		{
+			<RadzenButton Click="@(() => this.OkClick(ds))"
+				ButtonStyle="ButtonStyle.Primary"
+				Text="Aggiorna" />
+
+		}
+		<RadzenButton Click="@(() => ds.Close())"
+					  ButtonStyle="ButtonStyle.Secondary"
+					  Text="Annulla" />
+	</RadzenStack>
+</RadzenStack>
+
+@code {
+	[Parameter]
+	public DialogService ds { get; set; }
+
+	[Parameter]
+	public RunPeriod PeriodInEdit { get; set; } = new RunPeriod();
+
+	[Parameter]
+	public bool IsAdding { get; set; } = false;
+
+	private IList<Tuple<RunPeriodRepeatType, string>> RepatDataList = new List<Tuple<RunPeriodRepeatType, string>>()
+	{
+		new(RunPeriodRepeatType.Always, "Sempre"),
+		new(RunPeriodRepeatType.ByWeek, "Per Settimana"),
+		new(RunPeriodRepeatType.Always, "Per Mese")
+	};
+
+	private string GetRepeatDescr(RunPeriod item)
+	{
+		switch (item.PeriodRepeatType)
+		{
+			case RunPeriodRepeatType.ByWeek:
+				return "Per Settimana";
+			case RunPeriodRepeatType.ByMonth:
+				return "per Mese";
+			default:
+				return "Sempre";
+		}
+	}
+
+	private bool NoRepeat ()
+	{
+		return this.PeriodInEdit.PeriodRepeatType == RunPeriodRepeatType.Always;
+	}
+
+	private int Period_RepeatCount
+	{
+		get
+		{
+			return this.PeriodInEdit.RepeatPattern?.Count() ?? 0;
+		}
+		set
+		{
+			var pattern = this.PeriodInEdit.RepeatPattern ?? string.Empty;
+			if (value < pattern.Length)
+			{
+				pattern = pattern.Substring(0, value);
+			}
+			else if (value > pattern.Length)
+			{
+				var toAdd = new string('0', value - pattern.Length);
+				pattern = pattern + toAdd;
+			}
+			this.PeriodInEdit.RepeatPattern = pattern;
+		}
+	}
+
+	private async Task OkClick(DialogService ds)
+	{
+		await Task.CompletedTask;
+
+		var msg = string.Empty;
+
+		// esegue il contorllo dei dati
+		if (this.PeriodInEdit.StartDate != null
+			&& this.PeriodInEdit.EndDate != null
+			&& this.PeriodInEdit.StartDate >= this.PeriodInEdit.EndDate)
+		{
+			// le date sono incongruenti
+			msg += "Le date sono incongruenti tra loro. ";
+		}
+		if (this.PeriodInEdit.Monday == false
+			&& this.PeriodInEdit.Tuesday == false
+			&& this.PeriodInEdit.Wednesday == false
+			&& this.PeriodInEdit.Thursday == false
+			&& this.PeriodInEdit.Friday == false
+			&& this.PeriodInEdit.Saturday == false
+			&& this.PeriodInEdit.Sunday == false)
+		{
+			// nessun giorno selezionato
+			msg += "Deve essere selezionato almeno un giorno della settimana.";
+		}
+		if (this.PeriodInEdit.PeriodRepeatType != RunPeriodRepeatType.Always)
+		{
+			// la lungehzza deve essere mlmano di 2
+			var pattern = this.PeriodInEdit.RepeatPattern ?? string.Empty;
+			if (pattern.Length < 2)
+			{
+				msg += "Il pattern per la ripetizione deve lungo almeno 2 elmeneit. ";
+			}
+			if (pattern.Contains("1") == false)
+			{
+				msg += "Almeno un elemento del pattern deve essere selezionato. ";
+			}
+		}
+		if (string.IsNullOrEmpty(msg) == false)
+		{
+			await this.DialogService.Alert(msg, "dati periodo");
+			return;
+		}
+
+		if (this.PeriodInEdit.PeriodRepeatType == RunPeriodRepeatType.Always)
+		{
+			this.PeriodInEdit.RepeatPattern = null;
+		}
+
+		ds.Close(this.PeriodInEdit);
+	}
+
+}

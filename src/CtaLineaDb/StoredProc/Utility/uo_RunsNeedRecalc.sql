@@ -10,6 +10,8 @@ CREATE PROCEDURE [dbo].[uo_RunsNeedRecalc]
 	@TagId			int = NULL
 AS
 BEGIN
+	SET DATEFIRST 1; -- this sets Monday to the first day of the week for the current connection.
+
 	-- verifica che i parametri siano tutti a null
 	-- se sono tutti null inserisce tutte le  corse nella tabella delle necessità di ricalcoo
 	if @RunId IS NULL

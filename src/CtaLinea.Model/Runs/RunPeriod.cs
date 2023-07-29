@@ -2,9 +2,20 @@
 
 namespace CtaLinea.Model.Runs
 {
+    public enum RunPeriodRepeatType
+    {
+        Always,
+        ByWeek,
+        ByMonth
+    }
+
     public class RunPeriod
     {
-        public Guid RunPeriodId { get; set; }
+		private const string RepeatType_Always = "A";
+		private const string RepeatType_ByWeek = "W";
+		private const string RepeatType_ByMonth = "M";
+
+		public Guid RunPeriodId { get; set; }
 
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
@@ -19,7 +30,48 @@ namespace CtaLinea.Model.Runs
 
         public string? Note { get; set; }
 
-        public IList<RunPeriodCar>? Cars { get; set; }
+        public string RepeatType { get; set; } = RepeatType_Always;
+        public RunPeriodRepeatType PeriodRepeatType
+        {
+            get
+            {
+				RunPeriodRepeatType result = RunPeriodRepeatType.Always;
+				switch (this.RepeatType)
+				{
+					case RepeatType_Always:
+						result = RunPeriodRepeatType.Always;
+						break;
+					case RepeatType_ByWeek:
+						result = RunPeriodRepeatType.ByWeek;
+						break;
+					case RepeatType_ByMonth:
+						result = RunPeriodRepeatType.ByMonth;
+						break;
+				}
+				return result;
+			}
+            set
+            {
+				switch (value)
+				{
+					case RunPeriodRepeatType.Always:
+						this.RepeatType = RepeatType_Always;
+						break;
+					case RunPeriodRepeatType.ByWeek:
+						this.RepeatType = RepeatType_ByWeek;
+						break;
+					case RunPeriodRepeatType.ByMonth:
+						this.RepeatType = RepeatType_ByMonth;
+						break;
+					default:
+						this.RepeatType = RepeatType_Always;
+						break;
+				}
+			}
+        }
+        public string? RepeatPattern { get; set; }
+
+		public IList<RunPeriodCar>? Cars { get; set; }
 
         public IList<CarReplacement>? CarReplacements { get; set; }
 
@@ -75,7 +127,10 @@ namespace CtaLinea.Model.Runs
             this.Saturday = item.Saturday;
             this.Sunday = item.Sunday;
 
-            this.Note = item.Note;
+			this.RepeatType = item.RepeatType;
+            this.RepeatPattern = item.RepeatPattern;
+
+			this.Note = item.Note;
             this.Cars = item.Cars;
             this.CarReplacements = item.CarReplacements;
 		}
@@ -95,6 +150,9 @@ namespace CtaLinea.Model.Runs
                 Friday = this.Friday,
                 Saturday = this.Saturday,
                 Sunday = this.Sunday,
+
+                RepeatType = this.RepeatType,
+                RepeatPattern = this.RepeatPattern,
 
                 Note = this.Note,
                 Cars = this.Cars,
@@ -125,7 +183,5 @@ namespace CtaLinea.Model.Runs
 		{
 			return Enumerable.Range(0, 9).Select(b => (mask & (1 << b)) != 0).ToArray();
 		}
-
 	}
-
 }

@@ -11,6 +11,8 @@ CREATE PROCEDURE [dbo].[up_AssociateActivityWeeksForMail]
 	@ForceDsetination	Varchar(MAX) = NULL
 AS
 bEGIN
+	SET DATEFIRST 1; -- this sets Monday to the first day of the week for the current connection.
+
 	DECLARE @Monday int = DATEPART(dw, '20221226');
 	DECLARE @Tuesday int = DATEPART(dw, '20221227');
 	DECLARE @Wednesday int = DATEPART(dw, '20221228');

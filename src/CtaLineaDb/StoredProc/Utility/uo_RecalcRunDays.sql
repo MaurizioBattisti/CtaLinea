@@ -9,6 +9,8 @@ CREATE PROCEDURE [dbo].[uo_RecalcRunDays]
 )
 AS
 BEGIN
+	SET DATEFIRST 1; -- this sets Monday to the first day of the week for the current connection.
+
 	DECLARE @Tbl_Days TABLE
 	(
 		RunId				uniqueidentifier NOT NULL,

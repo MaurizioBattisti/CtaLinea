@@ -15,6 +15,8 @@ CREATE PROCEDURE [dbo].[up_User_New]
 	@Roles				varchar(MAX) = NULL
 AS
 BEGIN
+	SET DATEFIRST 1; -- this sets Monday to the first day of the week for the current connection.
+
 	DECLARE @Tbl_Roles AS TABLE 
 	(
 		RoleId		varchar(32) PRIMARY KEY

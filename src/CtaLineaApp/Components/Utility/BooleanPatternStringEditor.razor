@@ -1,0 +1,87 @@
+﻿@using System.Text;
+
+<RadzenCheckBoxList 
+	Data="@Data"
+    ReadOnly=@ReadOnly
+    Disabled=@Disabled
+    @bind-Value=@values
+    Orientation="Orientation.Vertical"
+    TValue="int" 
+	TextProperty="Text" 
+	ValueProperty="Id" 
+	class="w-100"
+    Change=@Changed
+    />
+	
+@code {
+    [Parameter]
+    public string? Pattern { get; set; }
+    [Parameter]
+    public EventCallback<string?> PatternChanged { get; set; }
+    [Parameter]
+    public bool ReadOnly { get; set; } = false;
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
+    public class PatternObject
+    {
+        public int Id { get; set; }
+        public string Text { get; set; } = string.Empty;
+    }
+
+    private IEnumerable<int> values = new List<int>();
+    private IList<PatternObject> Data = new List<PatternObject>();
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        // crea la lista dei dati
+        if (string.IsNullOrEmpty(this.Pattern) == false)
+        {
+            int id = 0;
+            var ids = new List<int>();
+            var data = new List<PatternObject>();
+            foreach (var ch in this.Pattern)
+            {
+                ++id;
+                data.Add(
+                    new PatternObject()
+                        {
+                            Id = id,
+                            Text = string.Format("{0}°", id)
+                        }
+                    );
+
+                if (ch == '1')
+                {
+                    ids.Add(id);
+                }
+            }
+            this.Data = data;
+            this.values = ids;
+        }
+    }
+
+    private async Task Changed ()
+    {
+        if (this.Data != null)
+        {
+            var sb = new StringBuilder(this.Data.Count + 1);
+            foreach (var item in this.Data)
+            {
+                if (this.values != null
+                    && this.values.Contains(item.Id))
+                {
+                    sb.Append("1");
+                }
+                else
+                {
+                    sb.Append("0");
+                }
+            }
+            this.Pattern = sb.ToString();
+            await this.PatternChanged.InvokeAsync(this.Pattern);
+        }
+    }
+}

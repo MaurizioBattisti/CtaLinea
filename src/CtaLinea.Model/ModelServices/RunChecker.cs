@@ -536,6 +536,32 @@ namespace CtaLinea.Model.ModelServices
                         Id = period.RunPeriodId
                     });
             }
+            // controlla i dati di ripetizione
+            if (period.PeriodRepeatType != RunPeriodRepeatType.Always)
+            {
+                if (string.IsNullOrEmpty(period.RepeatPattern) == true)
+                {
+					errors.Add(
+						new CheckResultItem()
+						{
+							Category = RunCheckResult.Category_Period,
+							Title = "Ripetizione senza pattern",
+							Description = "Deve essere indicato un pattern per la ripetizione",
+							Id = period.RunPeriodId
+						});
+				}
+                else if (period.RepeatPattern.Contains("1") == false)
+                {
+					errors.Add(
+						new CheckResultItem()
+						{
+							Category = RunCheckResult.Category_Period,
+							Title = "Patter di ripetizione errato",
+							Description = "Non è stata indicata nessuna ripetizione nel pattern, almeno un valore del pattern deve indicare la ripetizione",
+							Id = period.RunPeriodId
+						});
+				}
+			}
             #endregion
 
             // contorlla i mezzi

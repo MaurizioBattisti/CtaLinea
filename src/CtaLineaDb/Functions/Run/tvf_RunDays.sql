@@ -303,6 +303,8 @@ BEGIN
 			INNER JOIN @Tbl_Days d
 				ON d.RunId = p.RunId
 				AND d.Day BETWEEN p.NewStart AND p.NEwEnd
+				-- controlla che il periodo sia nella ripetizione indicata
+				AND [dbo].[fn_IsDatInRepeatRange](d.Day, p.NewStart, p.RepeatType, p.RepeatPattern) = 1
 				AND (
 					(d.WeekDay = @Monday AND  p.Monday = 1)
 					OR (d.WeekDay = @Tuesday AND  p.Tuesday = 1)

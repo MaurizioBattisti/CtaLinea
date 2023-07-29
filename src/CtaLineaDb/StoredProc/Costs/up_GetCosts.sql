@@ -14,6 +14,8 @@ CREATE PROCEDURE [dbo].[up_GetCosts]
 )
 AS
 BEGIN
+	SET DATEFIRST 1; -- this sets Monday to the first day of the week for the current connection.
+
 	-- si assicura che tutti i dati da ricalcolare siano ricalcolati
 	EXEC [dbo].[uo_RecalcRunDays_Massive] 0, @RunId;
 

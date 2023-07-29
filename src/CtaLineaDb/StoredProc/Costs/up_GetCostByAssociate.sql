@@ -25,6 +25,8 @@ CREATE PROCEDURE [dbo].[up_GetCostByAssociate]
 )
 AS
 BEGIN
+	SET DATEFIRST 1; -- this sets Monday to the first day of the week for the current connection.
+
 	DECLARE @UseFreshData	 bit = 1;
 	
 	IF @OutOfPEriod =0

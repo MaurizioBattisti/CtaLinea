@@ -10,6 +10,8 @@ CREATE PROCEDURE [dbo].[up_GetPlanning]
 	@EndDate		date = NULL
 AS
 BEGIN
+	SET DATEFIRST 1; -- this sets Monday to the first day of the week for the current connection.
+
 	SET @StartDate = COALESCE(@StartDate, GETDATE());
 	SET @EndDate = COALESCE(@EndDate, GETDATE());
 

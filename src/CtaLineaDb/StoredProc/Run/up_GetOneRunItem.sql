@@ -8,6 +8,7 @@ CREATE PROCEDURE [dbo].[up_GetOneRunItem]
 	@RunId		uniqueidentifier
 AS
 BEGIN
+	SET DATEFIRST 1; -- this sets Monday to the first day of the week for the current connection.
 	SET NOCOUNT ON;
 
 	-- tabella corse (run)

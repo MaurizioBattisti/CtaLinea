@@ -7,6 +7,8 @@ CREATE PROCEDURE [dbo].[up_User_Delete]
 	@UserName		varchar(128)
 AS
 BEGIN
+	SET DATEFIRST 1; -- this sets Monday to the first day of the week for the current connection.
+
 	DECLARE @IsADmin		bit = 0;
 	DECLARE @OtherAdmins	bit = 0;
 	-- verifica se l'utente è un amministratore

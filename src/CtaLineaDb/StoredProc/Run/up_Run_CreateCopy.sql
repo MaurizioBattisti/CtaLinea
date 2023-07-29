@@ -21,6 +21,8 @@ CREATE PROCEDURE [dbo].[up_Run_CreateCopy]
 	@Inc_InternalNotes		bit = 1
 AS
 BEGIN
+	SET DATEFIRST 1; -- this sets Monday to the first day of the week for the current connection.
+
 	IF @NewRunId IS NULL SET @NewRunId = newID();
 
 	DECLARE @Tbl_Map AS TABLE 

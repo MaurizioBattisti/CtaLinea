@@ -9,6 +9,8 @@ CREATE PROCEDURE [dbo].[up_User_ResetPassword]
 	@SetMustChange	bit = 0
 AS
 BEGIN
+	SET DATEFIRST 1; -- this sets Monday to the first day of the week for the current connection.
+
 	UPDATE [dbo].[Meta_Users]
 		SET PasswordHash =@PasswordHash,
 			MustChangePassword = @SetMustChange

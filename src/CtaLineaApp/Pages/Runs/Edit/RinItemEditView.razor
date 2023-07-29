@@ -66,7 +66,7 @@ else if (this.NoData == false)
             </RadzenTabsItem>
 
             <RadzenTabsItem Text="Mezzi" Icon="airport_shuttle">
-                <RunCarPEriodListView ReadOnly=@ReadOnly CurrentRun=@this.CurrentRun EditableData=@this />
+                <RunCarPEriodListView Colors=@Colors RunPeriodColorMap=@RunPeriodColorMap ReadOnly=@ReadOnly CurrentRun=@this.CurrentRun EditableData=@this />
             </RadzenTabsItem>
             
             <RadzenTabsItem Text="Sospensioni">
@@ -91,7 +91,7 @@ else if (this.NoData == false)
                 @if (this.CanViewPlanning())
                 {
                     <RadzenTabsItem Text="Planning" Icon="calendar_month">
-                        <RunPlanningView @ref=@Planning RunId=@RunId />
+                        <RunPlanningView Colors=@Colors RunPeriodColorMap=@RunPeriodColorMap @ref=@Planning RunId=@RunId />
                     </RadzenTabsItem>
                 }
 
@@ -155,6 +155,32 @@ else if (this.NoData == true)
     private RunPlanningView? Planning;
     private RunCostsView? CostsView;
 
+    // colori degli appuntamenti
+    private string[] Colors = new string[]
+    {
+        "background: Chartreuse; color: black",
+        "background: DarkBlue; color: white",
+        "background: DarkGreen; color: white",
+        "background: BlueViolet; color: white",
+        "background: DarkCyan; color: white",
+        "background: DarkMagenta; color: white",
+        "background: DarkRedt; color: white",
+        "background: DarkOrange; color: black",
+        "background: DeepPink; color: white",
+        "background: DodgerBlue; color: black",
+        "background: Gold; color: black",
+        "background: Indigo ; color: white",
+        "background: IndianRed ; color: white",
+        "background: DarkGray; color: black",
+        "background: Crimson; color: white",
+        "background: Brown; color: white",
+        "background: Chocolate; color: white",
+        "background: Crimson; color: white",
+        "background: white; color: black",
+        "background: black; color: white"
+    };
+    public IDictionary<Guid, int> RunPeriodColorMap = new Dictionary<Guid, int>();
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -203,8 +229,27 @@ else if (this.NoData == true)
             if (this.IsAdding == false)
             {
                 var run = await _repo.GetOneAsync(this.RunId);
+                var map = new Dictionary<Guid, int>(); ;
+
                 if (run != null)
                 {
+                    // crea la mappa dei colori dei periodi
+                    if (run.SubPeriods != null)
+                    {
+                        int colorIndex = 0;
+                        var periodQry = (from p in run.SubPeriods
+                                         orderby p.StartDate, p.EndDate, p.RunPeriodId
+                                         select p.RunPeriodId);
+                        
+                        foreach (var pId in periodQry)
+                        {
+                            if (colorIndex > this.Colors.Length) colorIndex = 0;
+                            map.Add(pId, colorIndex);
+                            ++colorIndex;
+                        }
+                    }
+                    this.RunPeriodColorMap = map;
+
                     this.CurrentRun = run;
                     this.IsClean = true;
                     this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);

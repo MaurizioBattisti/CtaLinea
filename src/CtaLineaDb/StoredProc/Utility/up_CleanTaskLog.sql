@@ -9,6 +9,8 @@ CREATE PROCEDURE [dbo].[up_CleanTaskLog]
 	@MonthlyRetention	INT = NULL
 AS
 BEGIN
+	SET DATEFIRST 1; -- this sets Monday to the first day of the week for the current connection.
+
 	DECLARE @DailyMinDate	DATETIME2;
 	DECLARE @WeeklyMinDate	DATETIME2;
 	DECLARE @MonthlyMinDate	DATETIME2;

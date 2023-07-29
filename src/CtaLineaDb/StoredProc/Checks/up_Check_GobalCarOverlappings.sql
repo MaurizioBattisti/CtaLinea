@@ -8,6 +8,8 @@ CREATE PROCEDURE [dbo].[up_Check_GobalCarOverlappings]
 	@EndDate	 	 DATE = NULL
 AS
 BEGIN
+	SET DATEFIRST 1; -- this sets Monday to the first day of the week for the current connection.
+
 	IF @StartDate IS NULL  SET @StartDate = [dbo].[fn_GetStartDate](COALESCE(@EndDate, GETDATE()));
 	IF @EndDate IS NULL  SET @EndDate = [dbo].[fn_GetEndtDate](COALESCE(@StartDate, GETDATE()));
 

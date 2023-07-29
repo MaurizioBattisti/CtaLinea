@@ -190,5 +190,6 @@
     <Build Include="StoredProc\Run\up_Run_CreateCopy.sql" />
     <Build Include="Views\Runs\vw_RunSpareAssociates.sql" />
     <Build Include="Tables\Runs\RunInternalNotes.sql" />
+    <Build Include="Functions\Run\fn_IsDatInRepeatRange.sql" />
   </ItemGroup>
 </Project>

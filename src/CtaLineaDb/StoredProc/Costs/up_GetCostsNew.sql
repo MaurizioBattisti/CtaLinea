@@ -19,6 +19,8 @@ CREATE PROCEDURE [dbo].[up_GetCosts_New]
 )
 AS
 BEGIN
+	SET DATEFIRST 1; -- this sets Monday to the first day of the week for the current connection.
+
 	-- indic ache il modo di calcolare il peso deve  tenere conto della capacità richiesta da tT
 	DECLARE @WeightCapacity	bit = 1;
 

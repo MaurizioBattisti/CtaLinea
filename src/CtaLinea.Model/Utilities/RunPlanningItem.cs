@@ -13,7 +13,7 @@ namespace CtaLinea.Model.Utilities
 		public DateTime EndTime { get; set; }
 
 		public Guid RunVariationId { get; set; }
-		public Guid RunPeriodId { get; set; }
+		public Guid? RunPeriodId { get; set; }
 
 		public string VariationDescr { get; set; } = string.Empty;
 		public string PeriodDescr { get; set; } = string.Empty;

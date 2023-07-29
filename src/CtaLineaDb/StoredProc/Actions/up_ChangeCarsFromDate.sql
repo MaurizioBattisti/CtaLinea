@@ -12,6 +12,8 @@ CREATE PROCEDURE [dbo].[up_ChangeCarsFromDate]
 	@CarMapList			Varchar(MAX)
 AS
 BEGIN
+	SET DATEFIRST 1; -- this sets Monday to the first day of the week for the current connection.
+
 	DECLARE @DayBefore DATE;
 	-- se la data è nulla prende la data di oggi
 	IF @RefDate IS NULL SET @RefDate = GETDATE();

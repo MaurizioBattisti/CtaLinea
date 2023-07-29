@@ -11,6 +11,7 @@ CREATE PROCEDURE [dbo].[uo_RecalcRunDays_Massive]
 AS
 BEGIN
 	SET NOCOUNT ON;
+	SET DATEFIRST 1; -- this sets Monday to the first day of the week for the current connection.
 
 	DECLARE @RecCount int = 1;
 	DECLARE @The_RunId	uniqueidentifier;

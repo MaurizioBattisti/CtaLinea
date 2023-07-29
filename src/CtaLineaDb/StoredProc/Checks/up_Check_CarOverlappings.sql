@@ -12,6 +12,8 @@ CREATE PROCEDURE [dbo].[up_Check_CarOverlappings]
     @EndDate	DATE 
 AS
 BEGIN
+	SET DATEFIRST 1; -- this sets Monday to the first day of the week for the current connection.
+
     DECLARE @RunId uniqueidentifier = NULL;
     -- recupera l'id della corsa  di base
     /*  Non è sufficiente ricalcola re la corsa attuale

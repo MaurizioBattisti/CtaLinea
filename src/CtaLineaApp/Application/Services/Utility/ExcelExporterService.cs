@@ -20,7 +20,7 @@ namespace CtaLineaApp.Application.Services.Utility
         private const string Field_Separator = ";";
         private const string Text_Format = "\"{0}\"";
         private const string Date_Format = "\"{0:dd/MM/yyyy}\"";
-		private const string Time_Format = "\"{0:hh:mm}\"";
+		private const string Time_Format = "\"{0:HH:mm}\"";
 		private const string Number_Format = "{0}";
 		private const string DecimalNumber_Format = "{0:0.0000}";
 		private const string FloatNumber_Format = "{0:0.00}";

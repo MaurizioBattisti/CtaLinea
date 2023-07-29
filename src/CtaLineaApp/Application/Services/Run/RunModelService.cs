@@ -185,7 +185,48 @@ namespace CtaLineaApp.Application.Services.Run
             return period;
         }
 
-        public RunPeriodCar CreatePeriodCar(
+        public RunPeriod DuplicatePeriod (RunItem run,
+			RunPeriod source)
+        {
+            var period = this.CreateNewPeriod(run, source.StartDate, source.EndDate);
+			var cars = new List<RunPeriodCar>();
+            
+			// riporta tutti i dait
+			period.CopyFrom (source);
+			period.RunPeriodId = Guid.NewGuid();
+
+			// crea le copie dei mezzi associati
+			if (source.Cars != null)
+            {
+                foreach (var  car in source.Cars)
+                {
+                    if (car.RunCarType != CarTypeEnum.Replacement)
+                    {
+                        var newcar = car.CreateCopy();
+						newcar.RunCarId = Guid.NewGuid();
+						// sistem ai costi
+						var costs = new List<RunCarCost>();
+                        if (car.CarCosts != null)
+                        {
+                            foreach (var cost in car.CarCosts)
+                            {
+                                var newCost = new RunCarCost();
+								newCost.CopyFrom(cost);
+								newCost.RunCarCostId = Guid.NewGuid();
+                                costs.Add(newCost);
+							}
+                        }
+                        newcar.CarCosts = costs;
+						cars.Add(newcar);
+					}
+                }
+            }
+			period.Cars = cars;
+
+			return period;
+		}
+
+		public RunPeriodCar CreatePeriodCar(
             RunPeriod period,
             CarTypeEnum runCarType = CarTypeEnum.Primary,
             Guid? associateId = null,
