@@ -21,20 +21,24 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         private const string SQL_TagsTable = "[dbo].[Tags]";
 
         private readonly CtaDbContext _context;
-
         private readonly ILogger _logger;
+        private readonly IZzRequestConstx _zzContext;
+
         public TagRepository(
             CtaDbContext context,
+            IZzRequestConstx zzzContext,
             ILogger<TagRepository> logger)
         {
             _context = context;
+            _zzContext = zzzContext;
             _logger = logger;
         }
 
         public async Task<IEnumerable<TagForRun>> GetAllTagsAsync()
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             return await conn.QueryAsync<TagForRun>(
                 SQL_Select_Star + SQL_TagsTable);
@@ -43,8 +47,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task<int> InsertASync(
             TagForRun model)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             await this.InsertTableAsync(
                 SQL_TagsTable,
@@ -55,8 +60,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task UpdateASync(
             TagForRun model)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             await this.UpdateTableAsync(
                 SQL_TagsTable,
@@ -68,8 +74,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task DeleteASync(
             int tagId)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             await this.DeleteTableAsync(
                 SQL_TagsTable,

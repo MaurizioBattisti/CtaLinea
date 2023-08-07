@@ -14,6 +14,14 @@ WITH CTE_Cars AS
 			ON Rc.RunPEriodId = rp.[RunPeriodId]
 		-- WHERE rc.CarType IN ('P', 'R')
 		WHERE rc.CarType  = 'P'
+			AND (rp.StartDate IS NULL
+				OR dbo.fn_Session_GetPeriodEndDate() IS NULL
+				OR rp.StartDate <= dbo.fn_Session_GetPeriodEndDate()
+				)
+			AND (rp.EndDate IS NULL
+				OR dbo.fn_Session_GetPeriodStartDate() IS NULL
+				OR rp.EndDate >= dbo.fn_Session_GetPeriodStartDate()
+				)
 )
 SELECT rc.RunId,
 		STRING_AGG(c.Description, ', ') AS PrimaryCarsDescr

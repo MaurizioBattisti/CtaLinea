@@ -19,13 +19,16 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
     {
         private readonly ILogger _logger;
         private readonly CtaDbContext _context;
+        private readonly IZzRequestConstx _zzContext;
 
         public UserRepository(
             CtaDbContext context,
+            IZzRequestConstx zzContext,
             ILogger<UserRepository> logger
             )
         {
             this._context = context;
+            this._zzContext = zzContext;
             this._logger = logger;
         }
 
@@ -34,6 +37,8 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         {
             using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
+
             string sql = "SELECT * FROM dbo.Meta_Users WHERE UserName = @UserName";
             var user = await conn.QuerySingleOrDefaultAsync<UserEntity>(
                 sql,
@@ -56,6 +61,8 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         {
             using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
+
             var tran = conn.BeginTransaction();
             string sql = "UPDATE dbo.Meta_Users SET PasswordHash = @PasswordHash, Description = @Description, Email = @Email, MustChangePassword = @MustChangePassword, Expiration = @Expiration, AssociateId = @AssociateId, Interactive = @Interactive  WHERE UserName = @UserName";
             var rows = await conn.ExecuteAsync(
@@ -120,6 +127,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         {
             using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             string rolesString = null;
             if (user.Roles != null)
@@ -151,8 +159,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         {
             using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
-			string rolesString = null;
+            string rolesString = null;
 			if (user.Roles != null)
 			{
 				rolesString = string.Join(",", user.Roles);
@@ -180,6 +189,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         {
             using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             await conn.ExecuteAsync(
                 "[dbo].[up_User_Delete]",
@@ -198,6 +208,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         {
             using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             await conn.ExecuteAsync(
                 "[dbo].[up_User_ResetPassword]",
@@ -232,6 +243,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         {
             using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             var data = await conn.ExecuteScalarAsync<bool>(
                 "SELECT [dbo].[fn_IsAssociateUserRun](@UserName, @RunId)",

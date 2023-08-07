@@ -20,15 +20,18 @@ namespace ZzSoft.CtaLinea.Dal.Queries
         private const string SQL_up_CostsByAssociate = "[dbo].[up_GetCosts]";
 
         private readonly CtaDbContext _context;
+        private readonly IZzRequestConstx _zzContext;
         private readonly ILogger _logger;
 
         public CostQueries(
             CtaDbContext context,
+            IZzRequestConstx zzContext,
             ILogger<CostQueries> logger
             )
         {
             _context = context;
             _logger = logger;
+            _zzContext = zzContext;
         }
 
         public async Task<IEnumerable<CostsByAssociate>> GetCostByAssociateAsync(
@@ -40,8 +43,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
             Guid? runId = null
             )
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             using var reader = await conn.QueryMultipleAsync(
                 SQL_up_CostsByAssociate,

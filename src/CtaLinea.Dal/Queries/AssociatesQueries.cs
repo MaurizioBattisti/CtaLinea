@@ -19,12 +19,15 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 
         private readonly  CtaDbContext _context;
         private readonly ICurrentUserService _userSvc;
+        private readonly IZzRequestConstx _zzContext;
 
-		public AssociatesQueries(
+        public AssociatesQueries(
 			ICurrentUserService userSvc,
-			CtaDbContext context)
+            IZzRequestConstx zzContext,
+            CtaDbContext context)
         {
             this._context = context;
+            this._zzContext = zzContext;
             this._userSvc = userSvc;
         }
 
@@ -42,7 +45,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 				filter,
 				args);
 
-            IDbConnection conn = this._context.GetNewConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
             return await conn.QueryListAsync(
                 queryDef)
                 .ConfigureAwait(false);
@@ -59,8 +64,10 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 "a.AssociateId = @AssociateId",
                 new { AssociateId = id });
 
-			IDbConnection conn = this._context.GetNewConnection();
-			return await conn.QueryOneAsync(
+			using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
+            return await conn.QueryOneAsync(
                 queryDef)
                 .ConfigureAwait(false);
         }
@@ -79,8 +86,10 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 filter,
                 args);
 
-			IDbConnection conn = this._context.GetNewConnection();
-			return await conn.QueryListAsync(
+			using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
+            return await conn.QueryListAsync(
                 queryDef)
                 .ConfigureAwait(false);
         }
@@ -97,7 +106,8 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 				"c.AssociateId = @AssociateId",
                 new { AssociateId = associateId });
 
-			IDbConnection conn = this._context.GetNewConnection();
+			using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open ();
 			return await conn.QueryListAsync(
                 queryDef)
                 .ConfigureAwait(false);
@@ -115,8 +125,10 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 filter,
                 args);
 
-			IDbConnection conn = this._context.GetNewConnection();
-			return await conn.QueryOneAsync(
+			using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
+            return await conn.QueryOneAsync(
                 queryDef)
                 .ConfigureAwait(false);
         }
@@ -135,7 +147,8 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 filter,
                 args);
 
-			IDbConnection conn = this._context.GetNewConnection();
+			using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open ();
 			return await conn.QueryListAsync(
                 queryDef)
                 .ConfigureAwait(false);
@@ -153,8 +166,10 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 "d.AssociateId = @AssociateId",
                 new { AssociateId = associateId });
 
-			IDbConnection conn = this._context.GetNewConnection();
-			return await conn.QueryListAsync(
+			using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
+            return await conn.QueryListAsync(
                 queryDef)
                 .ConfigureAwait(false);
         }
@@ -171,8 +186,10 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 filter,
                 args);
 
-			IDbConnection conn = this._context.GetNewConnection();
-			return await conn.QueryOneAsync(
+			using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
+            return await conn.QueryOneAsync(
                 queryDef)
                 .ConfigureAwait(false);
         }

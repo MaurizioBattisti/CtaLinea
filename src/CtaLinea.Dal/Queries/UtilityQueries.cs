@@ -26,14 +26,17 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 
 		private readonly CtaDbContext _context;
         private readonly ILogger _logger;
+        private readonly IZzRequestConstx _zzContext;
 
         public UtilityQueries(
             CtaDbContext context,
+            IZzRequestConstx zzContext,
             ILogger<CostQueries> logger
             )
         {
             _context = context;
             _logger = logger;
+            _zzContext = zzContext;
         }
 
         public async Task<IEnumerable<CarPlanningItem>> GetCarPlanningAsync(
@@ -43,8 +46,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
             DateTime? endDate = null
             )
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             using var reader = await conn.QueryMultipleAsync(
                 SQL_up_GetPlanning,
@@ -68,10 +72,11 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 			DateTime? endDate = null
 			)
 		{
-			using IDbConnection conn = this._context.Database.GetDbConnection();
+			using IDbConnection conn = this._context.GetNewConnection();
 			conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
-			using var reader = await conn.QueryMultipleAsync(
+            using var reader = await conn.QueryMultipleAsync(
 				SQL_up_GetRunPlanning,
 				param: new
 				{
@@ -92,8 +97,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
             DateTime startDate,
             DateTime endDate)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             using var reader = await conn.QueryMultipleAsync(
                 SQç_uo_OverlappingCars,
@@ -114,8 +120,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 			DateTime? startDate,
 			DateTime? endDate)
 		{
-			using IDbConnection conn = this._context.Database.GetDbConnection();
+			using IDbConnection conn = this._context.GetNewConnection();
 			conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             using var reader = await conn.QueryMultipleAsync(
                 SQç_uo_GlobalOverlappingCars,

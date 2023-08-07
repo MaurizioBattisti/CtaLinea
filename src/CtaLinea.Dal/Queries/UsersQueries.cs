@@ -21,12 +21,15 @@ namespace ZzSoft.CtaLinea.Dal.Queries
     {
         private const string Sql_UserTable = "[dbo].[vw_Users] u";
 
-        private CtaDbContext _context;
+        private readonly CtaDbContext _context;
+        private readonly IZzRequestConstx _zzContext;
 
         public UsersQueries(
-            CtaDbContext context)
+            CtaDbContext context, 
+            IZzRequestConstx zzContext)
         {
             this._context = context;
+            _zzContext = zzContext; 
         }
 
         public async Task<QueryItemList<UserQueryModel>> GetListAsync(
@@ -36,7 +39,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 Sql_UserTable,
                 filterContext);
 
-            IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
             return await conn.QueryListAsync(
                 queryDef)
                 .ConfigureAwait(false);
@@ -50,7 +55,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 "u.UserName = @UserName",
                 new { UserName = id });
 
-            IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
             return await conn.QueryOneAsync(
                 queryDef)
                 .ConfigureAwait(false);

@@ -16,18 +16,21 @@ namespace CtaLineaApp.Application.Services.Helper
         private HttpClient _httpClient;
         private NavigationManager _navigationManager;
         private ILocalStorageService _localStorageService;
+        private IGlobalFiltersService _FilterData;
         private IConfiguration _configuration;
 
         public HttpService(
             HttpClient httpClient,
             NavigationManager navigationManager,
             ILocalStorageService localStorageService,
+            IGlobalFiltersService filterData,
             IConfiguration configuration
         )
         {
             _httpClient = httpClient;
             _navigationManager = navigationManager;
             _localStorageService = localStorageService;
+            _FilterData = filterData;
             _configuration = configuration;
         }
 
@@ -161,6 +164,26 @@ namespace CtaLineaApp.Application.Services.Helper
             HttpRequestMessage request)
         {
             if (request == null) return;
+
+            // aggiunge gli header dei filtir globali se diversi da nullo
+            if (_FilterData.PeriodStartDate != null)
+            {
+                request.Headers.Add(Constants.RequestHeader_PeriodStartDate,
+                    string.Format("{0:yyyy-MM-dd}",
+                    _FilterData.PeriodStartDate));
+            }
+            if (_FilterData.PerioEndDate != null)
+            {
+                request.Headers.Add(Constants.RequestHeader_PeriodEndDate,
+                    string.Format("{0:yyyy-MM-dd}",
+                    _FilterData.PerioEndDate));
+            }
+            if (_FilterData.ContractId != null)
+            {
+                request.Headers.Add(Constants.RequestHeader_ContractId,
+                    string.Format("{0}",
+                    _FilterData.ContractId));
+            }
 
             // add jwt auth header if user is logged in and request is to the api url
             var user = await _localStorageService.GetItem<UserModel>(Constants.LoalStorageKey_User);

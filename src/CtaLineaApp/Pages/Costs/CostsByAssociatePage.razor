@@ -132,19 +132,59 @@
 
                 <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.Month)" Title="Mese" Width="100px" />
                 
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.KmTot)" Title="Km Totali" FormatString="{0:f2}" Width="100px" />
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.Total)" Title="Costo Totale" FormatString="{0:C}" Width="150px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.KmTot)" Title="Km Totali" FormatString="{0:f2}" Width="100px" >
+                    <FooterTemplate>
+                        <RadzenText Text="@string.Format("{0:f2}",Totals.KmTot)" />
+                    </FooterTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.Total)" Title="Costo Totale" FormatString="{0:C}" Width="150px" >
+                    <FooterTemplate>
+                        <RadzenText Text="@string.Format("{0:C}",Totals.Total)" />
+                    </FooterTemplate>
+                </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.Km)" Title="Tod. Km" FormatString="{0:f2}" Width="100px" />
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.KmExtra)" Title="Tod. Km Extra" FormatString="{0:f2}" Width="100px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.Km)" Title="Tod. Km" FormatString="{0:f2}" Width="100px" >
+                    <FooterTemplate>
+                        <RadzenText Text="@string.Format("{0:f2}",Totals.Km)" />
+                    </FooterTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.KmExtra)" Title="Tod. Km Extra" FormatString="{0:f2}" Width="100px" >
+                    <FooterTemplate>
+                        <RadzenText Text="@string.Format("{0:f2}",Totals.KmExtra)" />
+                    </FooterTemplate>
+                </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayCost)" Title="Tod. Costo da GG" FormatString="{0:C}" Width="150px" />
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.CostKm)" Title="Tod. Costo Km GG" FormatString="{0:C}" Width="150px" />
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.CostKmExtra)" Title="Tit. Costo Km GG Extra" FormatString="{0:C}" Width="150px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayCost)" Title="Tod. Costo da GG" FormatString="{0:C}" Width="150px" >
+                    <FooterTemplate>
+                        <RadzenText Text="@string.Format("{0:C}",Totals.DayCost)" />
+                    </FooterTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.CostKm)" Title="Tod. Costo Km GG" FormatString="{0:C}" Width="150px" >
+                    <FooterTemplate>
+                        <RadzenText Text="@string.Format("{0:C}",Totals.CostKm)" />
+                    </FooterTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.CostKmExtra)" Title="Tit. Costo Km GG Extra" FormatString="{0:C}" Width="150px" >
+                    <FooterTemplate>
+                        <RadzenText Text="@string.Format("{0:C}",Totals.CostKmExtra)" />
+                    </FooterTemplate>
+                </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayIntegration)" Title="Tot. int. GG" FormatString="{0:C}" Width="150px" />
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayForfait)" Title="Tot. Forfait GG" FormatString="{0:C}" Width="150px" />
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayMultiRunForfait)" Title="Tot. Forfait Multiplo GG" FormatString="{0:C}" Width="150px" />
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayIntegration)" Title="Tot. int. GG" FormatString="{0:C}" Width="150px" >
+                    <FooterTemplate>
+                        <RadzenText Text="@string.Format("{0:C}",Totals.DayIntegration)" />
+                    </FooterTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayForfait)" Title="Tot. Forfait GG" FormatString="{0:C}" Width="150px" >
+                    <FooterTemplate>
+                        <RadzenText Text="@string.Format("{0:C}",Totals.DayForfait)" />
+                    </FooterTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayMultiRunForfait)" Title="Tot. Forfait Multiplo GG" FormatString="{0:C}" Width="150px" >
+                    <FooterTemplate>
+                        <RadzenText Text="@string.Format("{0:C}",Totals.DayMultiRunForfait)" />
+                    </FooterTemplate>
+                </RadzenDataGridColumn>
             </Columns>
         </RadzenDataGrid>
     </RadzenBody>    
@@ -188,6 +228,7 @@
 
     private bool isLoading = false;
     private IEnumerable<CostByAssociateItem>? Data = null;
+    private CostByAssociateItem Totals { get; set; } = new CostByAssociateItem();
 
     protected override async Task OnInitializedAsync()
     {
@@ -207,6 +248,7 @@
                 this.Request);
 
             this.Data = data;
+            this.Totals = this.ComputeTotals(this.Data);
         }
         catch (BadRequestException<CheckResult> ex)
         {
@@ -227,6 +269,34 @@
         {
             this.isLoading = false;
         }
+    }
+    private CostByAssociateItem ComputeTotals(IEnumerable<CostByAssociateItem> costs)
+    {
+        var total = new CostByAssociateItem()
+            {
+                Km = 0,
+                KmExtra = 0,
+                DayCost = 0,
+                CostKm = 0,
+                CostKmExtra = 0,
+                DayIntegration = 0,
+                DayForfait = 0,
+                DayMultiRunForfait = 0
+            };
+        foreach (var c in costs)
+        {
+            total.Km += c.Km;
+            total.KmExtra += c.KmExtra;
+            total.DayCost += c.DayCost;
+            total.CostKm += c.CostKm;
+            total.CostKmExtra += c.CostKmExtra;
+
+            total.DayIntegration += c.DayIntegration;
+            total.DayForfait += c.DayForfait;
+            total.DayMultiRunForfait += c.DayMultiRunForfait;
+        }
+
+        return total;
     }
     private async Task DownloadData_Click(RadzenSplitButtonItem item)
     {

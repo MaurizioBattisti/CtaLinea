@@ -23,13 +23,16 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 
         private readonly CtaDbContext _context;
         private readonly ILogger _logger;
+        private readonly IZzRequestConstx _zzContext;
 
         public BudgetRepository(
             CtaDbContext context,
+            IZzRequestConstx zzzContext,
             ILogger<BudgetRepository> logger)
         {
             _context = context;
             _logger = logger;
+            _zzContext = zzzContext;
         }
 
         #region gestione della tabella dei budgets
@@ -39,8 +42,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task UpdateBudgetDetaulsAsync(
             CalcCostsRequest request)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             using var reader = await conn.QueryMultipleAsync(
                 SQL_GetCosts,
@@ -67,8 +71,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             CalcCostsRequest request
             )
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             using var reader = await conn.QueryMultipleAsync(
                 SQL_GetCostsByAssociate,
@@ -96,8 +101,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             CalcCostsRequest request
             )
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             using var reader = await conn.QueryMultipleAsync(
                 SQç_GetCostsByRun,

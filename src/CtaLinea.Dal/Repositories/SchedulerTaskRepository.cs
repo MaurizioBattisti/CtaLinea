@@ -19,20 +19,24 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 
         private readonly CtaDbContext _context;
         private readonly ILogger _logger;
+        private readonly IZzRequestConstx _zzContext;
 
         public SchedulerTaskRepository(
             CtaDbContext context,
+            IZzRequestConstx zzzContext,
             ILogger<SchedulerTaskRepository> logger)
         {
             _context = context;
+            _zzContext = zzzContext;
             _logger = logger;
         }
 
         public async Task<int> InsertASync(
             ScheduledTaskItem model)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             await this.InsertTableAsync(
                 SQL_TagsTable,
@@ -43,8 +47,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task UpdateASync(
             ScheduledTaskItem model)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             await this.UpdateTableAsync(
                 SQL_TagsTable,
@@ -56,8 +61,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task DeleteASync(
             int id)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             await this.DeleteTableAsync(
                 SQL_TagsTable,

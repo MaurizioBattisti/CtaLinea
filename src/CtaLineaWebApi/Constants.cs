@@ -8,6 +8,11 @@ namespace CtaLineaWebApi
 {
     public static class Constants
     {
+        // HTTP header da inviare
+        internal const string RequestHeader_PeriodStartDate = "x-zz-start";
+        internal const string RequestHeader_PeriodEndDate = "x-zz-end";
+        internal const string RequestHeader_ContractId = "x-zz-contract";
+
         internal const string CorsPolicyName = "MyCorsPolicy";
 
         // configuration section

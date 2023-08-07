@@ -14,12 +14,15 @@ namespace ZzSoft.CtaLinea.Dal.Queries
     {
         private const string Sql_ForfaitView = "[dbo].[vw_MultiRunForfaits] f";
 
-        private CtaDbContext _context;
+        private readonly CtaDbContext _context;
+        private readonly IZzRequestConstx _zzContext;
 
         public ForfaitQueries(
-            CtaDbContext context)
+            CtaDbContext context, 
+            IZzRequestConstx zzContext)
         {
             this._context = context;
+            this._zzContext = zzContext;
         }
 
         // Calendari
@@ -30,7 +33,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 Sql_ForfaitView,
                 filterContext);
 
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
             return await conn.QueryListAsync(
                 queryDef)
                 .ConfigureAwait(false);
@@ -44,7 +49,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 "f.ForfaitId = @ForfaitId",
                 new { ForfaitId = id });
 
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
             return await conn.QueryOneAsync(
                 queryDef)
                 .ConfigureAwait(false);

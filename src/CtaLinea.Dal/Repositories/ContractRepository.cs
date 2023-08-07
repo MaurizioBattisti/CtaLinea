@@ -19,22 +19,26 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 
 		private readonly CtaDbContext _context;
 		private readonly ILogger _logger;
+        private readonly IZzRequestConstx _zzContext;
 
-		public ContractRepository(
+        public ContractRepository(
 			CtaDbContext context,
+			IZzRequestConstx zzContext,
 			ILogger<ContractRepository> logger)
 		{
 			_context = context;
+			_zzContext = zzContext;
 			_logger = logger;
 		}
 
 		public async Task<int> InsertASync(
 			Contract model)
 		{
-			using IDbConnection conn = this._context.Database.GetDbConnection();
+			using IDbConnection conn = this._context.GetNewConnection();
 			conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
-			await this.InsertTableAsync(
+            await this.InsertTableAsync(
 				SQL_TagsTable,
 				conn, null,
 				this.GetData(model));
@@ -43,10 +47,11 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 		public async Task UpdateASync(
 			Contract model)
 		{
-			using IDbConnection conn = this._context.Database.GetDbConnection();
+			using IDbConnection conn = this._context.GetNewConnection();
 			conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
-			await this.UpdateTableAsync(
+            await this.UpdateTableAsync(
 				SQL_TagsTable,
 				conn, null,
 				this.GetKey(model.ContractId),
@@ -56,10 +61,11 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 		public async Task DeleteASync(
 			int tagId)
 		{
-			using IDbConnection conn = this._context.Database.GetDbConnection();
+			using IDbConnection conn = this._context.GetNewConnection();
 			conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
-			await this.DeleteTableAsync(
+            await this.DeleteTableAsync(
 				SQL_TagsTable,
 				conn, null,
 				this.GetKey(tagId)

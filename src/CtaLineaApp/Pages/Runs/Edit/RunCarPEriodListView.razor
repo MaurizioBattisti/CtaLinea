@@ -1,5 +1,6 @@
 ﻿@using CtaLineaApp.Components.Base
 @using CtaLineaApp.Pages.Runs.Dialogs
+@using System.Text;
 
 @inject ContextMenuService ContextMenuService
 @inject IRunModelService RunModelService
@@ -514,9 +515,18 @@
 	private string GetPatternTest (string? pattern)
 	{
 		if (string.IsNullOrEmpty(pattern)) return pattern;
-		var text = pattern.Replace('0', '-')
-						.Replace('1', 'X');
-		return text;
+		var sb = new StringBuilder(256);
+		var index = 1;
+		foreach (var ch in pattern)
+		{
+			if (ch== '1')
+			{
+				if (sb.Length > 0) sb.Append (", ");
+				sb.AppendFormat ("{0}", index);
+			}
+			++index;
+		}
+		return sb.ToString();
 	}
 
 	private string GetRepeatDescr(RunPeriod item)

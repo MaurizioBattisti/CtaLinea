@@ -19,12 +19,15 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 	{
 		private readonly CtaDbContext _context;
 		private readonly ILogger _logger;
+        private readonly IZzRequestConstx _zzContext;
 
-		public UtilityREpository(
+        public UtilityREpository(
 			CtaDbContext context,
+			IZzRequestConstx zzzContext,
 			ILogger<UtilityREpository> logger)
 		{
 			_context = context;
+			_zzContext = zzzContext;
 			_logger = logger;
 		}
 
@@ -34,10 +37,11 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 		{
 			if (refDate == null) refDate = DateTime.Today;
 
-			using IDbConnection conn = this._context.Database.GetDbConnection();
+			using IDbConnection conn = this._context.GetNewConnection();
 			conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
-			using var reader = await conn.QueryMultipleAsync(
+            using var reader = await conn.QueryMultipleAsync(
                 "[dbo].[up_GetCarForDiscontinuation]",
 				param: new
 				{
@@ -62,10 +66,11 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 			await Task.CompletedTask;
 
 			// TODO: chiamare la stored proc [dbo].[up_ChangeCarsFromDate]
-			using IDbConnection conn = this._context.Database.GetDbConnection();
+			using IDbConnection conn = this._context.GetNewConnection();
 			conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
-			await conn.ExecuteAsync(
+            await conn.ExecuteAsync(
 				"[dbo].[up_ChangeCarsFromDate]",
 				param: new
 				{
@@ -85,10 +90,11 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 			IEnumerable<int> whatIncongruence = null
             )
 		{
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
-			string whatToCheck = null;
+            string whatToCheck = null;
 			if (whatIncongruence != null
 				&& whatIncongruence.Count() > 0)
 			{

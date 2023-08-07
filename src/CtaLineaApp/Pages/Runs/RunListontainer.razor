@@ -241,7 +241,13 @@
                     </Template>
                 </RadzenDataGridColumn>
                 
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="AssociatesDescr" Title="Ditte" Width="200px" FilterValue=@Filter_AssociatesDescr />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="AssociatesDescr" Title="Ditte" Width="200px" FilterValue=@Filter_AssociatesDescr >
+                    <Template Context="item">
+                        <div style="width: 100%;" class="@GetAssociateDescrStyle(item)">
+                            @item.AssociatesDescr
+                        </div>
+                    </Template>
+                </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="StartTime" Title="Ora inizio" Width="120px" FilterOperator="FilterOperator.Equals" FilterValue=@Filter_StartTime_2>
                     <FilterTemplate>
                         <TimeSelector @bind-Value="Filter_StartTime" AllowClear=true Changed=@StartTime_Changed />
@@ -653,6 +659,14 @@
             default:
                 return string.Empty;
         }
+    }
+    private string GetAssociateDescrStyle (RunItemQueryModel item)
+    {
+        if (item.IsAssociateNotPrimary())
+        {
+            return "rz-background-color-primary-lighter";
+        }
+        return string.Empty;
     }
 
     private string FormatTime(
@@ -1258,6 +1272,17 @@
             }
         }
         /*
+        else if (args.Column.Property == nameof(RunItemQueryModel.AssociatesDescr))
+        {
+            if (args.Data.IsAssociateNotPrimary())
+            {
+                    args.Attributes.Add("class",
+                        "--rz-warning-darker");
+                        // "--rz-primary-lighter") ;
+            }
+        }
+        */
+            /*
             if (args.Column.Property == "CtaRunId"
             || args.Column.Property == "ContractRowNumber")
             {

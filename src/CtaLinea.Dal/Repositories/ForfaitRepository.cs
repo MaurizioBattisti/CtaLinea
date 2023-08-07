@@ -22,23 +22,27 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 		private const string SQl_ForfaitDetailTable = "[dbo].[MultiRunForfaitDetails]";
 
 		private readonly CtaDbContext _context;
-		private readonly ILogger _logger;
+        private readonly IZzRequestConstx _zzContext;
+        private readonly ILogger _logger;
 
 		public ForfaitRepository(
 			CtaDbContext context,
+			IZzRequestConstx zzContext,
 			ILogger<ForfaitRepository> logger)
 		{
 			_context = context;
+			_zzContext = zzContext;
 			_logger = logger;
 		}
 
 		public async Task<int> InsertASync(
 			MultiRunForfait model)
 		{
-			using IDbConnection conn = this._context.Database.GetDbConnection();
+			using IDbConnection conn = this._context.GetNewConnection();
 			conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
-			await this.InsertTableAsync(
+            await this.InsertTableAsync(
 				Sql_ForfaitTable,
 				conn, null,
 				this.GetData(model));
@@ -47,10 +51,11 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 		public async Task UpdateASync(
 			MultiRunForfait model)
 		{
-			using IDbConnection conn = this._context.Database.GetDbConnection();
+			using IDbConnection conn = this._context.GetNewConnection();
 			conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
-			await this.UpdateTableAsync(
+            await this.UpdateTableAsync(
 				Sql_ForfaitTable,
 				conn, null,
 				this.GetKey(model.ForfaitId),
@@ -60,10 +65,11 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 		public async Task DeleteASync(
 			int id)
 		{
-			using IDbConnection conn = this._context.Database.GetDbConnection();
+			using IDbConnection conn = this._context.GetNewConnection();
 			conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
-			await this.DeleteTableAsync(
+            await this.DeleteTableAsync(
 				Sql_ForfaitTable,
 				conn, null,
 				this.GetKey(id)
@@ -74,9 +80,11 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 			int id,
 			IEnumerable<Guid> runIds)
 		{
-			using IDbConnection conn = this._context.Database.GetDbConnection();
+			using IDbConnection conn = this._context.GetNewConnection();
 			conn.Open();
-			var tran = conn.BeginTransaction();
+            await conn.InitializeSession(this._zzContext);
+
+            var tran = conn.BeginTransaction();
 			try
 			{
 				var argsPrefis = "p_";
@@ -185,8 +193,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 					);
 				++index;
 			}
-			using IDbConnection conn = this._context.Database.GetDbConnection();
+			using IDbConnection conn = this._context.GetNewConnection();
 			conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             var deleteValues = string.Join(",",
                 this.GetArgumetnNameList(index, argsPrefis)
@@ -207,11 +216,12 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 		public async Task RemoveAllRunsAsync(
 			int id)
 		{
-			using IDbConnection conn = this._context.Database.GetDbConnection();
+			using IDbConnection conn = this._context.GetNewConnection();
 			conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
-			// elimina tutti i dettagli del forfait il cui id è indicato
-			await this.DeleteTableAsync(
+            // elimina tutti i dettagli del forfait il cui id è indicato
+            await this.DeleteTableAsync(
 				SQl_ForfaitDetailTable,
 				conn, null,
 				this.GetKey(id)

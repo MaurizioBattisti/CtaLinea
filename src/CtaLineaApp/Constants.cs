@@ -35,7 +35,11 @@ namespace CtaLineaApp
         internal const string Scope_App = "app";
         internal const string Scope_Http_Api = "api";
 
-        // headers del response
+        // HTTP header da inviare
+        internal const string RequestHeader_PeriodStartDate = "x-zz-start";
+        internal const string RequestHeader_PeriodEndDate = "x-zz-end";
+        internal const string RequestHeader_ContractId = "x-zz-contract";
+        // HTTP headers del response
         internal const string ResponseHeader_TotalRows = "X-Total-Count";
 
         // import type description

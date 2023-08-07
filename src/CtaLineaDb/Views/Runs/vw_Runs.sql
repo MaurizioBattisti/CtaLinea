@@ -11,7 +11,7 @@ WITH CTE_Variants_Base AS
 			ROW_NUMBER() OVER (PARTITION BY v.RunId ORDER BY COALESCE (v.StartDate, '1900-01-01') DESC) AS num
 		FROM dbo.RunVariations v
 		WHERE v.StartDate IS NULL
-			OR v.StartDate < GETDATE()
+			OR v.StartDate < dbo.fn_Session_GetCurrentDate()
 ), CTE_Variants AS
 (
 	SELECT v.*

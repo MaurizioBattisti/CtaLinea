@@ -29,14 +29,21 @@ namespace ZzSoft.CtaLinea.Dal.Queries
         private const string RunItemçistSql_Coincidence = @" LEFT JOIN [dbo].[tvf_oincidenceNodes](NULL) AS n ON n.RunId = r.RunId";
         private const string RunItemçistSql_Coincidence_adv = @" LEFT JOIN [dbo].[tvf_oincidenceNodes](@CollectionPointId) AS n ON n.RunId = r.RunId";
 
+        // indica se ilc osnorziato è titolare o meno
+		private const string RunItemçistSql_NoPrimaryAss = @" LEFT JOIN [dbo].[tvf_NotPrimaryAssociateRuns](NULL) AS npa ON npa.RunId = r.RunId";
+		private const string RunItemçistSql_NoPrimaryAss_adv = @" LEFT JOIN [dbo].[tvf_NotPrimaryAssociateRuns](@AssociateId) AS npa ON npa.RunId = r.RunId";
+
 		private readonly CtaDbContext _context;
         private readonly ICurrentUserService _userSvc;
+        private readonly IZzRequestConstx _zzContext;
 
-		public RunQueries(
+        public RunQueries(
 			CtaDbContext context,
-			ICurrentUserService userSvc)
+            IZzRequestConstx zzContext,
+            ICurrentUserService userSvc)
 		{
 			this._context = context;
+            this._zzContext = zzContext;
             this._userSvc = userSvc;
 		}
 
@@ -59,6 +66,8 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 			}
 
             using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             // filtri standard
             string stdFilters = string.Empty;
@@ -104,7 +113,10 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 						 );
 				}
 
-                table += RunItemListSql_AdvandedFilters + RunItemçistSql_Coincidence_adv;
+                table += RunItemListSql_AdvandedFilters 
+                    + RunItemçistSql_Coincidence_adv
+                    + RunItemçistSql_NoPrimaryAss_adv
+					;
 				args = new
 				{
                     AssociateId = advancedFilter.AssociateId,
@@ -135,7 +147,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
             }
             else
             {
-                table += RunItemçistSql_Coincidence;
+                table += RunItemçistSql_Coincidence
+                    + RunItemçistSql_NoPrimaryAss
+                    ;
 			}
 
             // se non sono stati aggiunti filtri ne aggiunge uno ininfluente
@@ -146,9 +160,10 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 				filterContext,
                 stdFilters,
 				args);
-			return await conn.QueryListAsync(
-				queryDef)
-				.ConfigureAwait(false);
+            
+            return await conn.QueryListAsync(
+                queryDef)
+                .ConfigureAwait(false);
         }
         public async Task<RunItemQueryModel> GetOneRunAsync(
 			Guid id)
@@ -166,7 +181,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 "r.RunId = @RunId",
 				new { RunId = id });
 
-			IDbConnection conn = this._context.GetNewConnection();
+			using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
             return await conn.QueryOneAsync(
                 queryDef)
                 .ConfigureAwait(false);
@@ -189,7 +206,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 				"v.RunId = @RunId",
 				new { RunId = runId });
 
-            IDbConnection conn = this._context.GetNewConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
             return await conn.QueryListAsync(
                 queryDef)
                 .ConfigureAwait(false);
@@ -212,7 +231,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 "v.RunVariationId = @RunVariationId",
                 new { RunVariationId = id });
 
-            IDbConnection conn = this._context.GetNewConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
             return await conn.QueryOneAsync(
                 queryDef)
                 .ConfigureAwait(false);

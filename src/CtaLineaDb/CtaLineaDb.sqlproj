@@ -85,6 +85,7 @@
     <Folder Include="Functions\Costs" />
     <Folder Include="Functions\Incongruence" />
     <Folder Include="StoredProc\Incongruence" />
+    <Folder Include="Session" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post_Deploy.sql" />
@@ -191,5 +192,13 @@
     <Build Include="Views\Runs\vw_RunSpareAssociates.sql" />
     <Build Include="Tables\Runs\RunInternalNotes.sql" />
     <Build Include="Functions\Run\fn_IsDatInRepeatRange.sql" />
+    <Build Include="Session\up_Session_SetInfo.sql" />
+    <Build Include="Session\tvf_Session_DecodeInfo.sql" />
+    <Build Include="Session\fn_Session_GetPeriodStartDate.sql" />
+    <Build Include="Session\fn_Session_GetPeriodEndDate.sql" />
+    <Build Include="Session\fn_Session_GetContractId.sql" />
+    <Build Include="Session\fn_Session_GetUserName.sql" />
+    <Build Include="Session\fn_Session_GetCurrentDate.sql" />
+    <Build Include="Functions\Run\tvf_NotPrimaryAssociateRuns.sql" />
   </ItemGroup>
 </Project>

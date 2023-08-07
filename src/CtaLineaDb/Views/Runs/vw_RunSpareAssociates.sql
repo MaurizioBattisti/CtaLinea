@@ -12,7 +12,15 @@ WITH CTE_Associates AS
 		FROM  dbo.RunCars rc
 		INNER JOIN dbo.RunPeriods rp
 			ON Rc.RunPEriodId = rp.[RunPeriodId]
-		WHERE rc.CarType = 'P'
+		WHERE rc.CarType = 'S'
+			AND (rp.StartDate IS NULL
+				OR dbo.fn_Session_GetPeriodEndDate() IS NULL
+				OR rp.StartDate <= dbo.fn_Session_GetPeriodEndDate()
+				)
+			AND (rp.EndDate IS NULL
+				OR dbo.fn_Session_GetPeriodStartDate() IS NULL
+				OR rp.EndDate >= dbo.fn_Session_GetPeriodStartDate()
+				)
 )
 SELECT rc.RunId,
 		STRING_AGG(a.Description, ', ') AS SpareAssociatesDescr

@@ -23,6 +23,7 @@ using CtaLineaWebApi.Application.Scheduler;
 using NPOI.OpenXml4Net.OPC;
 using Microsoft.AspNetCore.Identity;
 using CtaLineaWebApi.Auth.Services;
+using CtaLineaWebApi.Utility;
 
 namespace CtaLineaWebApi
 {
@@ -181,6 +182,8 @@ namespace CtaLineaWebApi
             // registra il contesto di database
             services.AddScoped<CtaDbContext, CtaDbContext>();
 
+            // aggiunge il servizio di contesto di chiamata
+            services.AddScoped<IZzRequestConstx, ZzRequestConstx>();
 
 			// aggiunge ils ervizio dell'utente corrente
 			services.AddHttpContextAccessor();

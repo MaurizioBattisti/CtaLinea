@@ -43,15 +43,18 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 		private readonly CtaDbContext _context;
         private readonly ICurrentUserService _currentUser;
         private readonly ILogger _logger;
+        private readonly IZzRequestConstx _zzContext;
 
         public RunRepository(
             CtaDbContext context,
             ICurrentUserService currentUser,
+            IZzRequestConstx zzContext,
             ILogger<RunRepository> logger
             )
         {
             _context = context;
             _currentUser = currentUser;
+            _zzContext = zzContext;
             _logger = logger;
         }
 
@@ -68,6 +71,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 
             using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             return await this.InternalGetOneRunItemAsync(
                 runId,
@@ -90,8 +94,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 
 			using IDbConnection conn = this._context.GetNewConnection();
 			conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
-			var tran = conn.BeginTransaction();
+            var tran = conn.BeginTransaction();
 
 			try
 			{
@@ -127,8 +132,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 throw new DllNotFoundException();
             }
 
-            using IDbConnection conn = this._context.Database.GetDbConnection();
-            conn.Open();
+            using IDbConnection conn = this._context.GetNewConnection();
+
+            await conn.InitializeSession(this._zzContext);
+
             var tran = conn.BeginTransaction();
 
             try
@@ -162,8 +169,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 throw new DllNotFoundException();
             }
 
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
+
             var tran = conn.BeginTransaction();
 
             // se l'id della corsa è vuoto n ne crea uno nuovo
@@ -302,7 +311,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                                 oldVariant.Nodes,
                                 variant.Nodes,
                                 (v) => v.RunNodeId,
-                                async (k) => await this.DeleteVariationAsync(variant.RunVariationId, k, conn, tran)
+                                async (k) => await this.DeleteNodeAsync(variant.RunVariationId, k, conn, tran)
                                 );
                         });
 
@@ -505,10 +514,11 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task<IEnumerable<int>?> GetRunTagsAsync (
 			Guid runId)
         {
-			using IDbConnection conn = this._context.Database.GetDbConnection();
+			using IDbConnection conn = this._context.GetNewConnection();
 			conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
-			return await conn.QueryAsync<int>(
+            return await conn.QueryAsync<int>(
 				"SELECT TagId FROM " + SQL_Table_RunTags
                 + " WHERE RunId = @RunId",
                 new { RunId  = runId});
@@ -517,8 +527,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 			Guid runId,
             IEnumerable<int> tags)
 		{
-			using IDbConnection conn = this._context.Database.GetDbConnection();
+			using IDbConnection conn = this._context.GetNewConnection();
 			conn.Open();
+            await conn.InitializeSession(this._zzContext);
+
             var tran = conn.BeginTransaction();
 
             if (tags == null) tags = new List<int>();
@@ -578,8 +590,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         {
             var result = new Dictionary<Guid, OperationResponse>();
 
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
+
             var tran = conn.BeginTransaction();
 
             try

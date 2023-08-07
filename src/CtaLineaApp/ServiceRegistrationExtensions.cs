@@ -33,6 +33,9 @@ namespace CtaLineaApp
             });
 
             builder.Services
+                // agginge i servizi globali
+                .AddSingleton<IGlobalFiltersService, GlobalFiltersService> ()
+
                 // radzen registration
                 .AddScoped<NotificationService>()
                 .AddScoped<DialogService>()

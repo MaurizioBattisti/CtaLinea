@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using ZzSoft.CtaLinea.Dal.Context;
 using ZzSoft.QueryHelper;
 using CtaLinea.Model.QueryModel;
+using System.Collections.Generic;
 
 namespace ZzSoft.CtaLinea.Dal.Queries
 {
@@ -13,12 +14,15 @@ namespace ZzSoft.CtaLinea.Dal.Queries
     {
         private const string CollectionPointSql_Table = "[dbo].[vw_CollectionPoints] cp";
 
-        private CtaDbContext _context;
+        private readonly CtaDbContext _context;
+        private readonly IZzRequestConstx _zzContext;
 
         public CollectionPointsQueries(
-            CtaDbContext context)
+            CtaDbContext context,
+            IZzRequestConstx zzContext)
         {
             this._context = context;
+            this._zzContext = zzContext;
         }
 
         // Collection Point
@@ -29,7 +33,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 CollectionPointSql_Table,
                 filterContext);
 
-            IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
             return await conn.QueryListAsync(
                 queryDef)
                 .ConfigureAwait(false);
@@ -43,7 +49,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 "cp.CollectionPointId = @CollectionPointId",
                 new { CollectionPointId = id });
 
-            IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
             return await conn.QueryOneAsync(
                 queryDef)
                 .ConfigureAwait(false);

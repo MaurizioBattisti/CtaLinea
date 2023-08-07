@@ -26,13 +26,16 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         private readonly string Sql_InsertService;
         private readonly string Sql_UpdateService;
         private readonly string SQL_InsertNodes;
+        private readonly IZzRequestConstx _zzContext;
 
         public TtServiceRepository(
             CtaDbContext context,
+            IZzRequestConstx zzContext,
             ILogger<TtServiceRepository> logger
             )
         {
             this._context = context;
+            this._zzContext = zzContext;    
             this._logger = logger;
 
             // comandi di insert
@@ -50,7 +53,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task<bool> CanImportAsync(
             string importDescr)
         {
-            IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
+
             string sql = "SELECT COUNT(*) FROM dbo.Imports WHERE ImportDescr=@Descr AND ImportStatus = 'PROGRESS' AND LastUpdateDate >= dateadd(SECOND,-10,getdate())";
             var num = await conn.ExecuteScalarAsync<int>(sql,
                 new { Descr = importDescr });
@@ -66,8 +72,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 
             if (await this.CanImportAsync(importDescr) == true)
             {
-                IDbConnection conn = this._context.Database.GetDbConnection();
-                conn.Close();
+                using IDbConnection conn = this._context.GetNewConnection();
+                conn.Open();
+                await conn.InitializeSession(this._zzContext);
 
                 context = new ImportContext(Guid.NewGuid(), conn);
 

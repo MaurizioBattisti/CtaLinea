@@ -149,7 +149,14 @@ namespace CtaLinea.Model.QueryModel
         [ColumnDescription(Header = "Ha note", Ignore = true)]
         public bool HasNote { get; set; } = false;
 
-        public void CopyFrom (RunItemQueryModel source)
+		[ColumnDescription(Header = "Id interno ditta non Titolare", Ignore = true)]
+		[SqlAlias("npa")]
+		[SqlField("RunId")]
+        public Guid? NonPrimaryCarRunId { get; set; }
+
+        public bool IsAssociateNotPrimary() => this.NonPrimaryCarRunId != null;
+
+		public void CopyFrom (RunItemQueryModel source)
 		{
             Id = source.Id;
             CtaRunId = source.CtaRunId;
@@ -209,6 +216,8 @@ namespace CtaLinea.Model.QueryModel
 
             CoincidenceState = source.CoincidenceState;
             HasNote = source.HasNote;
-        }
+            NonPrimaryCarRunId = source.NonPrimaryCarRunId;
+
+		}
     }
 }

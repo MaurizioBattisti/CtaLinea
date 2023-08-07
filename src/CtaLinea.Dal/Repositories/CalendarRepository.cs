@@ -20,22 +20,26 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 
         private readonly CtaDbContext _context;
         private readonly ILogger _logger;
+        private readonly IZzRequestConstx _zzContext;
 
         public CalendarRepository(
             CtaDbContext context,
+            IZzRequestConstx zzContext,
             ILogger<CalendarRepository> logger
             )
         {
             _context = context;
             _logger = logger;
+            _zzContext = zzContext;
         }
 
         #region calendars
         public async Task<Calendar> GetOneAsync(
             int calendarId)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
             return await this.InternalGetOneAsync(
                 conn, null,
                 calendarId);
@@ -43,8 +47,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task<Calendar> UpdateAsync(
             Calendar model)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             var tran = conn.BeginTransaction();
             try
@@ -71,8 +76,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task<Calendar> InsertAsync(
             Calendar model)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             var tran = conn.BeginTransaction();
             try
@@ -101,8 +107,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task DeleteAsync(
             int calendarId)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             var tran = conn.BeginTransaction();
             try
@@ -174,8 +181,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task<IEnumerable<CalendarPeriod>> GetPeriodListAsync(
             int calendarId)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             var model = await conn.QueryAsync<CalendarPeriod>(
                 SQL_Select_Star + Sql_CalendarPeriods_Table
@@ -189,16 +197,18 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task<CalendarPeriod> GetOnePeriodAsync(
             int calendarPeriodId)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             return await this.InternalGetOnePeriodAsync(conn, null, calendarPeriodId);
         }
         public async Task<CalendarPeriod> UpdatePeriodASync(
             CalendarPeriod model)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             var tran = conn.BeginTransaction();
             try
@@ -225,8 +235,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task<CalendarPeriod> InsertPeriodASync(
             CalendarPeriod model)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             var tran = conn.BeginTransaction();
             try
@@ -255,8 +266,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task DeletePeriodAsync(
             int calendarPeriodId)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             var tran = conn.BeginTransaction();
             try
@@ -317,9 +329,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task<IEnumerable<CalendarHoliday>> GetHolidaysAsync(
             int calendarId)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
-            await Task.CompletedTask;
+            await conn.InitializeSession(this._zzContext);
 
             var model = await conn.QueryAsync<CalendarHoliday>(
                 SQL_Select_Star + Sql_CalendarHolidays_Table
@@ -333,9 +345,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task<CalendarHoliday> UpdateHolidayAsync(
             CalendarHoliday model)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
-            await Task.CompletedTask;
+            await conn.InitializeSession(this._zzContext);
 
             var tran = conn.BeginTransaction();
             try
@@ -362,9 +374,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         public async Task<CalendarHoliday> InsertHolidayAsync(
             CalendarHoliday model)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
-            await Task.CompletedTask;
+            await conn.InitializeSession(this._zzContext);
 
             var tran = conn.BeginTransaction();
             try
@@ -394,9 +406,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             int calendarId,
             DateTime date)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
-            await Task.CompletedTask;
+            await conn.InitializeSession(this._zzContext);
 
             var tran = conn.BeginTransaction();
             try
@@ -458,8 +470,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             DateTime startDate,
             DateTime endDate)
         {
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            await conn.InitializeSession(this._zzContext);
 
             var model = await conn.QueryAsync<SingleCalendarDay>(
                 SQL_Select_Star + Sql_SimpleCalendarDays,

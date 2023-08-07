@@ -13,12 +13,15 @@ namespace ZzSoft.CtaLinea.Dal.Queries
     {
         private const string CalendarsSql_Table = "dbo.vw_Calendars c";
 
-        private CtaDbContext _context;
+        private readonly CtaDbContext _context;
+        private readonly IZzRequestConstx _zzContext;
 
         public CalendaQueries(
-            CtaDbContext context)
+            CtaDbContext context,
+            IZzRequestConstx zzContext)
         {
             this._context = context;
+            this._zzContext = zzContext;
         }
 
         // Calendari
@@ -29,7 +32,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 CalendarsSql_Table,
                 filterContext);
 
-            IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
             return await conn.QueryListAsync(
                 queryDef)
                 .ConfigureAwait(false);
@@ -43,7 +48,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 "c.CalendarId = @CalendarId",
                 new { CalendarId = id });
 
-            IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
             return await conn.QueryOneAsync(
                 queryDef)
                 .ConfigureAwait(false);

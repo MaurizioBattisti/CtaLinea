@@ -32,7 +32,6 @@ SELECT  v.RunId,
 	FROM dbo.RunVariations v
 	INNER JOIN CTE_CalendarNames c
 		ON V.RunVariationId =  c.RunVariationId
-
 	;
 
 

@@ -15,12 +15,15 @@ namespace ZzSoft.CtaLinea.Dal.Queries
         private const string ContractsSql_Table = "dbo.Contracts c";
         private const string OperationalPEriod_Table = "[dbo].[vw_OperationalPEriods]";
 
-        private CtaDbContext _context;
+        private readonly CtaDbContext _context;
+        private readonly IZzRequestConstx _zzContext;
 
         public ContractsQueries(
-            CtaDbContext context)
+            CtaDbContext context, 
+            IZzRequestConstx zzContext)
         {
             this._context = context;
+            _zzContext = zzContext; 
         }
 
         // Calendari
@@ -31,7 +34,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 ContractsSql_Table,
                 filterContext);
 
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
             return await conn.QueryListAsync(
                 queryDef)
                 .ConfigureAwait(false);
@@ -45,7 +50,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 "c.ContractId = @ContractId",
                 new { ContractId = id });
 
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
             return await conn.QueryOneAsync(
                 queryDef)
                 .ConfigureAwait(false);
@@ -58,7 +65,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 OperationalPEriod_Table,
                 filterContext);
 
-            using IDbConnection conn = this._context.Database.GetDbConnection();
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
             return await conn.QueryListAsync(
                 queryDef)
                 .ConfigureAwait(false);

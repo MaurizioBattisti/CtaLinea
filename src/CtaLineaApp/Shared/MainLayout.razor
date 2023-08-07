@@ -2,6 +2,8 @@
 @using CtaLineaApp.Application.Model;
 @using CtaLineaApp.Components.ToolBars
 
+@inject IGlobalFiltersService _FilterData;
+
 <CascadingValue Value=@this>
 <CascadingValue Value=@this.LineaSettings >
 <CascadingValue Value=@this.GlobalFilters>
@@ -63,6 +65,15 @@
     protected override async Task OnInitializedAsync()
     {
         await Task.CompletedTask;
+        this.GlobalFilters.FilterChange += () =>
+        {
+            _FilterData.SetFilters(
+                this.GlobalFilters.Period?.StartDate,
+                this.GlobalFilters.Period?.EndDate,
+                this.GlobalFilters.Contract?.Id
+                );
+            return;
+        };
     }
 
     public void SetHeaderAndFooter(

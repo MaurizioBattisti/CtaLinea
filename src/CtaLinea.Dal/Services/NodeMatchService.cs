@@ -22,13 +22,16 @@ namespace ZzSoft.CtaLinea.Dal.Services
 
         private readonly CtaDbContext _context;
         private readonly ILogger _logger;
+        private readonly IZzRequestConstx _zzContext;
 
         public NodeMatchService(
             CtaDbContext context,
+            IZzRequestConstx zzContext,
             ILogger<NodeMatchService> logger
             )
         {
             _context = context;
+            _zzContext = zzContext;
             _logger = logger;
         }
 
@@ -56,6 +59,7 @@ namespace ZzSoft.CtaLinea.Dal.Services
 
                 using IDbConnection conn = this._context.GetNewConnection();
                 conn.Open();
+                await conn.InitializeSession(this._zzContext);
 
                 // esegue la query che restituisce i punti trovati
                 var data = await conn.QueryAsync<CollectionPointSimple>(
