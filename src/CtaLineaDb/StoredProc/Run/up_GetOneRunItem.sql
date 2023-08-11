@@ -109,6 +109,15 @@ BEGIN
 		INNER JOIN dbo.RunPeriods p 
 			ON c.RunPEriodId = p.[RunPeriodId] 
 		WHERE p.RunId = @RunId;
+	
+	-- autisti
+	SELECT DISTINCT drv.*
+		FROM dbo.Drivers drv
+		INNER JOIN dbo.RunCars c 
+			ON drv.DriverId = c.DriverId
+		INNER JOIN dbo.RunPeriods p 
+			ON c.RunPEriodId = p.[RunPeriodId] 
+		WHERE p.RunId = @RunId;
 
 	RETURN 0;
 END

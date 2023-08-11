@@ -58,65 +58,65 @@ BEGIN
 		New_CarReplacementId	uniqueidentifier DEFAULT (NEWID())
 	)
 	BEGIN;
-	-- primo riempimento della tabella dei Mezzi
-	WITH CTE_Periods AS
-	(
-		SELECT rc.RunPeriodId
-			FROM dbo.RunCars rc
-			INNER JOIN dbo.RunPeriods rp
-				ON rc.RunPeriodId = rp.RunPeriodId
-			INNER JOIN dbo.Runs r
-				ON rp.RunId = r.RunId
-			INNER JOIN Dbo.Contracts c
-				ON r.ContractId = c.ContractId
-			INNER JOIN @Tbl_CarMap cm
-				ON rc.CarId = cm.Old_CarId
-			WHERE @RefDate BETWEEN COALESCE (rp.StartDate, r.StartDate,c.StartDate)
-								AND COALESCE (rp.EndDate, r.EndDate,c.EndDate) 
-	)
-	INSERT INTO @Tbl_RunCars 
-		(RunCarId, RunPeriodId)
-		SELECT DISTINCT rc.RunCarId, rc.RunPeriodId
-			FROM dbo.RunCars rc
-			INNER JOIN CTE_Periods p
-				ON rc.RunPeriodId = p.RunPeriodId
-		;
-	-- riempie la tabella dei rimpiazzi che hanno un mezzo da sostituire
-	INSERT INTO @Tbl_CarReplacments (CarReplacementId, RunPeriodId)
-		SELECT crd.CarReplacementId, cr.RunPeriodId
-			FROM dbo.RunCarReplacementDetails crd
-			INNER JOIN dbo.RunCarReplacements cr
-				ON crd.CarReplacementId = cr.CarReplacementId
-			INNER JOIN dbo.RunCars rc
-				ON crd.ReplacedRunCarId = rc.RunCarId
-			INNER JOIN dbo.RunPeriods rp
-				ON rc.RunPeriodId = rp.RunPeriodId
-			INNER JOIN dbo.Runs r
-				ON rp.RunId = r.RunId
-			INNER JOIN Dbo.Contracts c
-				ON r.ContractId = c.ContractId
-			INNER JOIN @Tbl_CarMap cm
-				ON rc.CarId = cm.Old_CarId
-			WHERE @RefDate BETWEEN COALESCE (cr.StartDate, rp.StartDate, r.StartDate,c.StartDate)
-								AND COALESCE (cr.EndDate, rp.EndDate, r.EndDate,c.EndDate) 
+		-- primo riempimento della tabella dei Mezzi
+		WITH CTE_Periods AS
+		(
+			SELECT rc.RunPeriodId
+				FROM dbo.RunCars rc
+				INNER JOIN dbo.RunPeriods rp
+					ON rc.RunPeriodId = rp.RunPeriodId
+				INNER JOIN dbo.Runs r
+					ON rp.RunId = r.RunId
+				INNER JOIN Dbo.Contracts c
+					ON r.ContractId = c.ContractId
+				INNER JOIN @Tbl_CarMap cm
+					ON rc.CarId = cm.Old_CarId
+				WHERE @RefDate BETWEEN COALESCE (rp.StartDate, r.StartDate,c.StartDate)
+									AND COALESCE (rp.EndDate, r.EndDate,c.EndDate) 
+		)
+		INSERT INTO @Tbl_RunCars 
+			(RunCarId, RunPeriodId)
+			SELECT DISTINCT rc.RunCarId, rc.RunPeriodId
+				FROM dbo.RunCars rc
+				INNER JOIN CTE_Periods p
+					ON rc.RunPeriodId = p.RunPeriodId
+			;
+		-- riempie la tabella dei rimpiazzi che hanno un mezzo da sostituire
+		INSERT INTO @Tbl_CarReplacments (CarReplacementId, RunPeriodId)
+			SELECT crd.CarReplacementId, cr.RunPeriodId
+				FROM dbo.RunCarReplacementDetails crd
+				INNER JOIN dbo.RunCarReplacements cr
+					ON crd.CarReplacementId = cr.CarReplacementId
+				INNER JOIN dbo.RunCars rc
+					ON crd.ReplacedRunCarId = rc.RunCarId
+				INNER JOIN dbo.RunPeriods rp
+					ON rc.RunPeriodId = rp.RunPeriodId
+				INNER JOIN dbo.Runs r
+					ON rp.RunId = r.RunId
+				INNER JOIN Dbo.Contracts c
+					ON r.ContractId = c.ContractId
+				INNER JOIN @Tbl_CarMap cm
+					ON rc.CarId = cm.Old_CarId
+				WHERE @RefDate BETWEEN COALESCE (cr.StartDate, rp.StartDate, r.StartDate,c.StartDate)
+									AND COALESCE (cr.EndDate, rp.EndDate, r.EndDate,c.EndDate) 
 
-	-- aggiunge i mezzi che vengono da rimpiazzi solo se  se devono essere creati nuovi
-	INSERT INTO @Tbl_RunCars 
-		(RunCarId, RunPeriodId, DueToPeriodChange)
-		SELECT crd.ReplacedRunCarId, r.RunPeriodId, 0 AS DueToPeriodChange
-			FROM dbo.RunCarReplacementDetails crd
-			INNER JOIN @Tbl_CarReplacments r
-				ON crd.CarReplacementId = r.CarReplacementId
-			LEFT JOIN @Tbl_RunCars ex
-				ON ex.RunCarId = crd.ReplacedRunCarId
-			WHERE ex.RunCarId IS NULL
-		;
+		-- aggiunge i mezzi che vengono da rimpiazzi solo se  se devono essere creati nuovi
+		INSERT INTO @Tbl_RunCars 
+			(RunCarId, RunPeriodId, DueToPeriodChange)
+			SELECT crd.ReplacedRunCarId, r.RunPeriodId, 0 AS DueToPeriodChange
+				FROM dbo.RunCarReplacementDetails crd
+				INNER JOIN @Tbl_CarReplacments r
+					ON crd.CarReplacementId = r.CarReplacementId
+				LEFT JOIN @Tbl_RunCars ex
+					ON ex.RunCarId = crd.ReplacedRunCarId
+				WHERE ex.RunCarId IS NULL
+			;
 
-	-- riempie la tabella di periodi da inserire
-	INSERT INTO @Tbl_RunPeriods (RunPeriodId)
-		SELECT DISTINCT c.RunPeriodId
-			FROM @Tbl_RunCars c
-			WHERE c.DueToPeriodChange = 1;
+		-- riempie la tabella di periodi da inserire
+		INSERT INTO @Tbl_RunPeriods (RunPeriodId)
+			SELECT DISTINCT c.RunPeriodId
+				FROM @Tbl_RunCars c
+				WHERE c.DueToPeriodChange = 1;
 	END;
 
 	BEGIN TRAN;
@@ -136,11 +136,11 @@ BEGIN
 				INNER JOIN @Tbl_RunPeriods rp2
 					ON Rp.RunPeriodId = rp2.RunPeriodId
 			;
-		-- crea i nuovi mezzi nei nei periodi
+		-- crea i nuovi mezzi nei periodi
 		INSERT INTO dbo.RunCars 
-			(RunCarId, RunPeriodId, AssociateId, CarId, CarType, Note)
+			(RunCarId, RunPeriodId, AssociateId, CarId, DriverId, CarType, Note)
 			SELECT rc_2.New_RunCarId, COALESCE(rp2.New_RunPeriodId, rc.RunPeriodId),
-				rc.AssociateId, rc.CarId, 
+				rc.AssociateId, rc.CarId, rc.DriverId,
 				rc.CarType, rc.Note
 				FROM dbo.RunCars rc
 				INNER JOIN @Tbl_RunCars rc_2
@@ -271,14 +271,22 @@ BEGIN
 	)
 	UPDATE dbo.RunCars 
 		SET AssociateId =c.AssociateId,
-			CarId = c.CarId
+			CarId = c.CarId,
+			DriverId =CASE
+					WHEN c.AssociateId = old_d.ASsociateId
+						THEN rc.DriverId
+					ELSE NULL
+				END
 		FROM dbo.RunCars rc
 		INNER JOIN CTE_RunCars rc_2
 			ON rc.RunCarId = rc_2.RunCarId
 		INNER JOIN @Tbl_CarMap cm
 			ON cm.Old_CarId = rc.CarId
 		INNER JOIN dbo.Cars c
-			ON cm.New_CarId = c.CarId;
+			ON cm.New_CarId = c.CarId
+		LEFT JOIN dbo.Drivers old_d
+			ON rc.DriverId = old_d.DriverId
+		;
 		
 	-- esegue la pulizia dei dati
 	BEGIN;

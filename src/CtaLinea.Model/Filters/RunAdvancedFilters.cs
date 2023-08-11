@@ -15,7 +15,8 @@ namespace CtaLinea.Model.Filters
 
         public Guid? AssociateId { get; set; }
         public Guid? CarId { get; set; }
-        public int? MinSittings { get; set; }
+		public Guid? DriverId { get; set; }
+		public int? MinSittings { get; set; }
         public int? MaxSittings { get; set; }
         public int? LineNumber { get; set; }
         public string? RunNumber { get; set; }
@@ -42,7 +43,8 @@ namespace CtaLinea.Model.Filters
         {
             this.AssociateId = null;
             this.CarId = null;
-            this.MinSittings = null;
+			this.DriverId = null;
+			this.MinSittings = null;
             this.MaxSittings = null;
             this.LineNumber = null;
             this.RunNumber = null;
@@ -70,7 +72,8 @@ namespace CtaLinea.Model.Filters
         {
             if (this.AssociateId == Guid.Empty) this.AssociateId = null;
             if (this.CarId == Guid.Empty) this.CarId = null;
-            if (string.IsNullOrWhiteSpace(this.Node)) this.Node = null;
+			if (this.DriverId == Guid.Empty) this.CarId = null;
+			if (string.IsNullOrWhiteSpace(this.Node)) this.Node = null;
             if (string.IsNullOrWhiteSpace(this.CollectionPointId)) this.CollectionPointId = null;
 
             if (string.IsNullOrWhiteSpace(this.Frequency)) this.Frequency = null;
@@ -92,7 +95,8 @@ namespace CtaLinea.Model.Filters
             bool hasImpact = !(
                 this.AssociateId == null
                 && this.CarId == null
-                && this.MinSittings == null
+				&& this.DriverId == null
+				&& this.MinSittings == null
                 && this.MaxSittings == null
                 && this.LineNumber == null
                 && this.RunNumber == null

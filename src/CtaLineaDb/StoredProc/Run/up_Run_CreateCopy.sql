@@ -222,10 +222,10 @@ BEGIN
 	-- inserisce i mezzi sui periodi
 	INSERT INTO dbo.RunCars
 			(RunCarId, RunPeriodId,
-			AssociateId, CarId,
+			AssociateId, CarId, DriverId,
 			CarType, Note)
 		SELECT m.New_Id, mp.New_Id,
-				rc.AssociateId, rc.CarId,
+				rc.AssociateId, rc.CarId, DriverId,
 				rc.CarType, rc.Note
 			FROM dbo.RunCars rc
 			INNER JOIN @Tbl_Map m

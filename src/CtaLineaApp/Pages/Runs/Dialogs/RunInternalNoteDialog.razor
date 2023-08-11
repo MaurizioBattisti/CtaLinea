@@ -1,0 +1,58 @@
+﻿@inject IRunRepository RunRepository
+@inject DialogService DialogService
+
+<RadzenStack Orientation="Orientation.Vertical">
+	<RadzenRow>
+		<RadzenLabel Component="Note" Text="Note Interne" />
+	</RadzenRow>
+	<RadzenRow >
+		<RadzenTextArea Name="Note" @bind-Value=@Note.Note
+						Style="height: 500px; width:100%" />
+	</RadzenRow>
+
+	<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
+		<RadzenButton IsBusy=@IsBusy
+					  Text="Salva "
+					  ButtonStyle="ButtonStyle.Primary"
+					  Click=@Save_Click />
+		<RadzenButton Text="Annulla "
+					  ButtonStyle="ButtonStyle.Secondary"
+					  Click=@Cancel_Click />
+	</RadzenStack>
+</RadzenStack>
+
+@code {
+	[Parameter]
+	public Guid Id { get; set; } = Guid.Empty;
+	[Parameter]
+	public InternalNoteQueryItem Note { get; set; } = new InternalNoteQueryItem();
+
+	private bool IsBusy = false;
+
+	private void Cancel_Click()
+	{
+		this.DialogService.Close(false);
+	}
+	private async Task Save_Click()
+	{
+		// salva le etichette
+		try
+		{
+			this.IsBusy = true;
+
+			await this.RunRepository.UpdateRunInternalNoteAsync(
+				this.Id,
+				this.Note);
+
+			this.DialogService.Close(true);
+		}
+		catch (Exception ex)
+		{
+			await this.DialogService.Alert(ex.Message, "errore salvando le etichette");
+		}
+		finally
+		{
+			this.IsBusy = false;
+		}
+	}
+}

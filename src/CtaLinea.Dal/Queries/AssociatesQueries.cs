@@ -15,7 +15,7 @@ namespace ZzSoft.CtaLinea.Dal.Queries
     {
         private const string AssociateSQL_Tables = "dbo.Associates AS a";
         private const string CareSQL_Tables = "dbo.Cars c INNER JOIN dbo.Associates a ON c.ASsociateId = a.AssociateId";
-        private const string DriverSQL_Tables = "dbo.Drivers d INNER JOIN dbo.Associates a ON d.ASsociateId = a.AssociateId";
+        private const string DriverSQL_Tables = "dbo.vw_Drivers d INNER JOIN dbo.Associates a ON d.ASsociateId = a.AssociateId";
 
         private readonly  CtaDbContext _context;
         private readonly ICurrentUserService _userSvc;

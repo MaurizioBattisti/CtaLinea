@@ -1,4 +1,5 @@
-﻿using CtaLinea.Model.Request;
+﻿using CtaLinea.Model.QueryModel;
+using CtaLinea.Model.Request;
 using CtaLinea.Model.Response;
 using CtaLinea.Model.Runs;
 using System;
@@ -29,6 +30,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             );
         Task<Guid> CreateRunCopyAsync(
             CreateRunCopyRequest request);
-
-	}
+        
+        Task<bool> SaveRunInternalNoteAsync(
+            Guid runId,
+            InternalNoteQueryItem note);
+    }
 }

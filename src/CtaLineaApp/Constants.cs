@@ -58,10 +58,10 @@ namespace CtaLineaApp
         internal const string Endpoint_Run_NodeDecode = Endpoint_Runs + "/decodenodes";
         internal const string Endpoint_Run_SetSuspensions = Endpoint_Runs + "/suspensions";
         internal const string Endpoint_Run_CreateCopy = Endpoint_Runs + "/createcopy";
+        internal const string Endpoint_OneRun_Note_Frm = Endpoint_OneRun_Frm + "/note";
 
-
-		// costi
-		internal const string EndPoint_Costs = "api/costs";
+        // costi
+        internal const string EndPoint_Costs = "api/costs";
         internal const string EndPoint_CostsByAssociate_GET = EndPoint_Costs + "/byassociate";
 		internal const string EndPoint_CostsByRun = EndPoint_Costs + "/byrun";
 		internal const string EndPoint_CostsByAssociate = EndPoint_Costs + "/byassociate";
@@ -120,9 +120,10 @@ namespace CtaLineaApp
         // ditte
         internal const string Endpoint_Associates = "/api/associates";
         internal const string Endpoint_Cars = "/api/cars";
+        internal const string Endpoint_Drivers = "/api/drivers";
 
-		// punti di raccolta
-		internal const string Endpoint_CollectionPoints = "/api/collectionpoints";
+        // punti di raccolta
+        internal const string Endpoint_CollectionPoints = "/api/collectionpoints";
 
 		// utility
 		internal const string Endpoint_Utility = "/api/utility";
@@ -136,7 +137,6 @@ namespace CtaLineaApp
 		// Task invocation
 		internal const string Endpoint_Task_Invoke_Fmt = "/api/tasks/{0}/{1}?timeout={2}";
 
-		internal const string Endpoint_Drivers = "/api/drivers";
         internal const string Endpoint_PendingImport = "/api/importlogs/pending/{0}";
         internal const string Endpoint_ImportLog = "/api/importlogs";
         internal const string Endpoint_ImportLog_Single = "/api/importlogs/{0}";

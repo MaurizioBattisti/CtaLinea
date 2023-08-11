@@ -1,0 +1,203 @@
+﻿@using CtaLinea.QueryModel;
+@using CtaLinea.Model.QueryModel
+@inject IQueryUtilityService queryService
+
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<QueryLoader @ref=@DriverQueryLoader
+             TItem="DriverQueryItem"
+             Endpoint="@(Constants.Endpoint_Drivers)"
+             Filter="@Filter"
+             @bind-Data=@Data
+             DataLoaded=@DataLoaded
+             @bind-IsBusy=@isLoading />
+
+<RadzenDropDown 
+    Disabled=@Disabled
+    Data=@Data 
+    @bind-Value="CurrentItem"
+                TValue="DriverQueryItem"
+                AllowClear=@AllowClear
+    Change=@OnChange 
+    AllowFiltering=true
+    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+    FilterOperator="StringFilterOperator.Contains"
+    Class="w-100">
+    <Template>
+        <div class="@GetClassByStatus(context as DriverQueryItem)">
+            @context.CompleteName
+        </div>
+    </Template>
+</RadzenDropDown>
+
+@code {
+    QueryLoader<DriverQueryItem>? DriverQueryLoader;
+
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+    [Parameter]
+    public Guid? AssociateId  { get; set; }
+
+    private Guid? _DriverId;
+
+    [Parameter]
+    public Guid? DriverId 
+    {
+        get { return this._DriverId; }
+        set
+        {
+            _DriverId = value;
+            this.SelectItem(this._DriverId);
+        }
+    }
+    [Parameter]
+    public EventCallback<Guid?> DriverIdChanged { get; set; }
+    [Parameter]
+    public bool AllowClear { get; set; } = false;
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<object> Changed { get; set; }
+
+    QueryDefinition _servicesQueryDef = new QueryDefinition();
+    IList<DriverQueryItem>? Data = null;
+    bool isLoading = false;
+    DriverQueryItem? CurrentItem = null;
+    private bool SuccesfullyInitialized = false;
+    private string? Filter { get; set; }
+
+    public DriverQueryItem? SelectedDriverData
+    {
+        get
+        {
+            return this.CurrentItem;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // this._servicesQueryDef.EndPoint = Constants.Endpoint_Cars;
+        SuccesfullyInitialized = true;
+        this.StateHasChanged();
+        await base.OnInitializedAsync();
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadDataAsync();
+        await base.OnParametersSetAsync();
+    }
+
+    private Guid? LastAssociateId = null;
+    private async Task LoadDataAsync()
+    {
+        var id = this.AssociateId;
+        await Task.CompletedTask;
+
+        if (SuccesfullyInitialized == false) return;
+        if (id == LastAssociateId && id != null) return;
+        LastAssociateId = id;
+
+        if (id == null)
+        {
+            this.Data = null;
+            this.CurrentItem = null;
+            this.StateHasChanged();
+            return;
+        }
+
+        this.Filter = string.Format("$eq(associateId,'{0}')", id.Value);
+        if (this.DriverQueryLoader != null)
+        {
+            await this.DriverQueryLoader.LoadDataAsync(this.Filter);
+        }
+    }
+    /*
+    private async Task LoadDataAsync ()
+    {
+        var id = this.AssociateId;
+        await Task.CompletedTask;
+
+        if (SuccesfullyInitialized == false) return;
+        if (id == LastAssociateId && id != null) return;
+        LastAssociateId = id;
+
+        if (id == null)
+        {
+            this.Data = null;
+            this.RowCount = 0;
+            this.CurrentItem = null;
+            this.StateHasChanged();
+            return;
+        }
+
+        this._servicesQueryDef.Filter = string.Format("$eq(associateId,'{0}')", id.Value);
+        this._servicesQueryDef.Sort = "regNumber";
+        this._servicesQueryDef.FullText = string.Empty;
+
+        this._servicesQueryDef.Page = 0;
+        this._servicesQueryDef.PageSize = 100000;
+
+        var result = await queryService.GetListAsync<DriverQueryItem>(
+                    this._servicesQueryDef);
+
+        if (result != null)
+        {
+            this.Data = result.Items;
+            this.RowCount = result.TotalRows;
+        }
+        this.SelectItem(this.CarId);
+        this.StateHasChanged();
+    }
+    */
+    private async Task DataLoaded()
+    {
+        this.SelectItem(this.DriverId);
+        this.StateHasChanged();
+
+        await Task.CompletedTask;
+    }
+
+    private string GetClassByStatus (
+        DriverQueryItem? driver)
+    {
+        if (driver == null) return string.Empty;
+        if (driver.Active == false || driver.AssociateActive == false) return this.GetStyle(this.Settings.InactiveCarBgStyle, this.Settings.InactiveCarFgStyle);
+        /*
+        if (driver.PrimaryCar) return this.GetStyle(this.Settings.PrimaryCarBgStyle, this.Settings.PrimaryCarFgStyle);
+        if (driver.SpareCar) return this.GetStyle(this.Settings.SpareCarBgStyle, this.Settings.SpareCarFgStyle);
+        */
+        return this.GetStyle(this.Settings.OtherCarBgStyle, this.Settings.OtherCarFStyle);
+    }
+
+    private string GetStyle (
+        params string[] styles)
+    {
+        var str = string.Join(' ', styles);
+        return str.Trim();
+    }
+
+    private void SelectItem (Guid? carId)
+    {
+        if(carId != null
+            && this.Data != null)
+        {
+            this.CurrentItem = (from d in this.Data
+                                where d.Id == carId
+                                select d)
+                        .SingleOrDefault();
+        }
+        else
+        {
+            this.CurrentItem = null;
+        }
+    }
+
+    private async Task OnChange (object value)
+    {
+        this._DriverId = (value as DriverQueryItem)?.Id;
+        await DriverIdChanged.InvokeAsync(this.DriverId);
+        await Changed.InvokeAsync(this);
+    }
+}

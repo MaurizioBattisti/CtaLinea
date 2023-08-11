@@ -86,6 +86,7 @@
     <Folder Include="Functions\Incongruence" />
     <Folder Include="StoredProc\Incongruence" />
     <Folder Include="Session" />
+    <Folder Include="Views\External" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post_Deploy.sql" />
@@ -200,5 +201,6 @@
     <Build Include="Session\fn_Session_GetUserName.sql" />
     <Build Include="Session\fn_Session_GetCurrentDate.sql" />
     <Build Include="Functions\Run\tvf_NotPrimaryAssociateRuns.sql" />
+    <Build Include="Views\External\vw_Drivers.sql" />
   </ItemGroup>
 </Project>

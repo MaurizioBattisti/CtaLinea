@@ -386,5 +386,47 @@ namespace CtaLineaWebApi.Controllers
             return this.Ok(result);
         }
         #endregion
+
+        #region note interne
+        [Authorize(Policy = Constants.Policy_ManageData)]
+        [SwaggerOperation("Recupera le note interne")]
+        [ProducesResponseType(StatusCodes.Status200OK,
+            Type = typeof(InternalNoteQueryItem))]
+        [HttpGet]
+        [Route("{id}/note")]
+        public async Task<IActionResult> GetNoteAsync(
+            [FromRoute] Guid id)
+        {
+            var note = await this._queries.GetNoteAsync(id)
+                .ConfigureAwait (false);
+            if (note == null)
+            {
+                note = new InternalNoteQueryItem() { };
+            }
+
+            return this.Ok(note);
+        }
+        [Authorize(Policy = Constants.Policy_ManageData)]
+        [SwaggerOperation("aggiorna le note interne")]
+        [ProducesResponseType(StatusCodes.Status200OK,
+            Type = typeof(OperationResult<bool>))]
+        [HttpPost]
+        [Route("{id}/note")]
+        public async Task<IActionResult> SetNoteAsync(
+            [FromRoute] Guid id,
+            [FromBody] InternalNoteQueryItem note)
+        {
+            var request = new SetRunInternalNoteRequest()
+            {
+                RunId = id,
+                Note = note
+            };
+
+            var result = await this._mediator.Send(request)
+                .ConfigureAwait (false);
+
+            return this.Ok(result);
+        }
+        #endregion
     }
 }

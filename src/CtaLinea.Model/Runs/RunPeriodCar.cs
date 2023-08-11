@@ -56,6 +56,8 @@ namespace CtaLinea.Model.Runs
         public Associate? AssociateData { get; set; }
         public Guid CarId { get; set; }
         public Car? CarData { get; set; }
+        public Guid? DriverId { get; set; }
+        public Driver? DriverData { get; set; }
         public string? Note { get; set; }
 
         public IList<RunCarCost>? CarCosts { get; set; }
@@ -70,8 +72,10 @@ namespace CtaLinea.Model.Runs
                 CarType = this.CarType,
                 AssociateId = this.AssociateId,
                 AssociateData = this.AssociateData,
-                CarId= this.CarId,
-                CarData = this.CarData ,
+                CarId = this.CarId,
+                CarData = this.CarData,
+                DriverId = this.DriverId,
+                DriverData = this.DriverData,
 
                 CarCosts = this.CarCosts ,
 

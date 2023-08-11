@@ -12,7 +12,7 @@ namespace CtaLineaApp.Application.Services.Run
             Guid? nreRunId = null);
 
         RunVariation CreateNewVariation(RunItem run, DateTime? startDate = null);
-        RunPeriodCar CreatePeriodCar(RunPeriod period, CarTypeEnum runCarType = CarTypeEnum.Primary, Guid? associateId = null, Guid? carId = null);
+        RunPeriodCar CreatePeriodCar(RunPeriod period, CarTypeEnum runCarType = CarTypeEnum.Primary, Guid? associateId = null, Guid? carId = null, Guid? driverId = null);
         RunCarCost ComputeReplacementCost(
             RunPeriod period,
             CarReplacement currRepl

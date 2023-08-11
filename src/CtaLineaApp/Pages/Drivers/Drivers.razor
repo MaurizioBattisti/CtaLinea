@@ -1,0 +1,172 @@
+﻿@page "/drivers"
+@inject IAutoLoadDataList<DriverQueryItem> AutoLoad;
+@inject IExcelExporterService ExcelService
+@inject NotificationService notificationService
+@attribute [Authorize]
+
+<CheckAuthorization Roles=@(new string[] { UserRoles.Role_Anagraohics }) />
+<PageTitle>@Constants.App_Title - Autisti</PageTitle>
+
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Autisti" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<RadzenDataGrid @ref="@grdData" 
+        FilterMode="FilterMode.Simple"
+        IsLoading=@AutoLoad.isLoading
+        Count="@AutoLoad.RowCount"
+        LoadData="@this.AutoLoad.LoadData"
+                Data="@this.AutoLoad.Data" TItem="DriverQueryItem"
+        AllowFiltering="true"
+        AllowColumnResize="true"
+        AllowSorting="true"
+        LogicalFilterOperator="LogicalFilterOperator.And"
+        Style="height:100%"
+        AllowPaging="true"
+        PagerHorizontalAlign="HorizontalAlign.Left"
+        ShowPagingSummary="true"
+        Density=@Settings.Density
+        PageSize=@(Settings?.PageSize ?? 5)
+        >
+    <HeaderTemplate>
+        <RadzenStack Orientation="Orientation.Horizontal">
+            <RadzenSplitButton ButtonStyle="ButtonStyle.Dark"
+                               Icon="file_download" Click=@DownloadData_Click>
+                <ChildContent>
+                    <RadzenSplitButtonItem Text="Excel" Value="X" Icon="grid_on" />
+                    <RadzenSplitButtonItem Text="CSV" Value="C" Icon="wrap_text" />
+                </ChildContent>
+            </RadzenSplitButton>
+
+            <RadzenTextBox @bind-Value=@this.AutoLoad.FullTextSearch Placeholder="Cerca..." Style="width: 200px" Change="@FullText_OnChange" Class="w-100" />
+            <RadzenButton ButtonStyle="ButtonStyle.Success"
+                          IsBusy=@AutoLoad.isLoading
+                          Icon="refresh"
+                          Click="@(()=>ReloadData())" />
+        </RadzenStack>
+    </HeaderTemplate>
+    <EmptyTemplate>
+        <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun autista trovato !</p>
+    </EmptyTemplate>
+    <Columns>
+        <RadzenDataGridColumn TItem="DriverQueryItem" Property="Id" Title="Id" Visible=false />
+
+        <RadzenDataGridColumn TItem="DriverQueryItem" Property="@nameof(DriverQueryItem.LastName)" Title="Cognome" Width="200px" />
+        <RadzenDataGridColumn TItem="DriverQueryItem" Property="@nameof(DriverQueryItem.FirstName)" Title="Nome" Width="200px" />
+        <!--
+        <RadzenDataGridColumn TItem="DriverQueryItem" Property="@nameof(DriverQueryItem.CompleteName)" Title="Nominativo" Width="250px" />
+        -->
+        <RadzenDataGridColumn TItem="DriverQueryItem" Property="@nameof(DriverQueryItem.AssociateDescription)" Title="Ditta" Width="200px" />
+
+        <RadzenDataGridColumn TItem="DriverQueryItem" Property="@nameof(DriverQueryItem.LicenseNumber)" Title="Nr patente" Width="150px" />
+        <RadzenDataGridColumn TItem="DriverQueryItem" Property="@nameof(DriverQueryItem.LicenceCategory)" Title="Cat. patente" Width="150px" />
+
+        <RadzenDataGridColumn TItem="DriverQueryItem" Property="@nameof(DriverQueryItem.BsDriverId)" Title="Cod. B.S." Width="100px" />
+
+        <RadzenDataGridColumn TItem="DriverQueryItem" Property="@nameof(DriverQueryItem.DismissionDate)" Title="Licenziamento " FormatString="{0:dd/MM/yyyy}" Width="150px" />
+
+        <RadzenDataGridColumn TItem="DriverQueryItem" Property="Active" Title="Attivo" Width="100px">
+            <Template Context="data">
+                @if (data.Active)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="DriverQueryItem" Property="AssociateActive" Title="Ditta Att." Width="150px">
+            <Template Context="data">
+                @if (data.AssociateActive)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+    RadzenDataGrid<DriverQueryItem>? grdData;
+
+    private async Task DownloadData_Click(RadzenSplitButtonItem item)
+    {
+        this.AutoLoad.StartLoading();
+
+        try
+        {
+            var data = await this.AutoLoad.GetAllAsync();
+            if (data != null)
+            {
+                // var columninfo = this.grdData?.GetExportColumnInfo();
+                var columninfo = data.GetExportColumnInfo();
+
+                string title = "Mezzi";
+                if (item == null)
+                {
+                    await this.ExcelService.Export(title, data, columninfo);
+                }
+                else
+                {
+                    switch (item.Value)
+                    {
+                        case "X":
+                            await this.ExcelService.ExportExcel(title, data, columninfo);
+                            break;
+                        case "C":
+                            await this.ExcelService.ExportCsv(title, data, columninfo);
+                            break;
+                    }
+                }
+                this.notificationService.Notify(NotificationSeverity.Info, "File pronto per il donwload");
+            }
+            else
+            {
+                this.notificationService.Notify(
+                    NotificationSeverity.Warning,
+                    "Nessun dato da esportare"
+                    );
+            }
+        }
+        catch (Exception ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "ERrore recuperando i dati",
+                ex.Message
+                );
+        }
+        finally
+        {
+            this.AutoLoad.EndLoading();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AutoLoad.Initilize (
+            Constants.Endpoint_Drivers
+            );
+
+        await Task.CompletedTask;
+        this.StateHasChanged();
+    }
+
+    void FullText_OnChange(string value)
+    {
+        this.grdData?.Reload();
+    }
+
+    private async Task ReloadData()
+    {
+        if (this.grdData != null)
+        {
+            await this.grdData.Reload();
+        }
+    }
+}

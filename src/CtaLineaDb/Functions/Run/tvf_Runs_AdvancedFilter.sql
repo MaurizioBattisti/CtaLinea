@@ -7,6 +7,7 @@ CREATE FUNCTION [dbo].[tvf_Runs_AdvancedFilter]
 (
 	@AssociateId		uniqueidentifier = NULL,
 	@CarId				uniqueidentifier = NULL,
+	@DriverId			uniqueidentifier = NULL,
 	@MinSittings		int = NULL,
 	@MaxSittings		int = NULL,
 	@LineNumber			int = NULL,
@@ -31,7 +32,7 @@ CREATE FUNCTION [dbo].[tvf_Runs_AdvancedFilter]
 	@DateRef			Date = NULL,
 	@TabIds				VARCHAR(MAX) = NULL,
 	@ForfaitId			int NULL,
-	@CollectionPointId	varchar(20) NULL
+	@CollectionPointId	varchar(20) NULL	
 )
 RETURNS @Tbl TABLE
 (
@@ -115,6 +116,8 @@ BEGIN
 				OR rc.AssociateId = @AssociateId)
 			AND (@CarId IS NULL
 				OR rc.CarId = @CarId)
+			AND (@DriverId IS NULL
+				OR rc.DriverId = @DriverId)
 			AND (@MinSittings IS NULL
 				OR c.NrSittings >= @MinSittings)
 			AND (@MaxSittings IS NULL

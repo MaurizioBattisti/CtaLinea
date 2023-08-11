@@ -44,6 +44,7 @@
         <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_ExternalAnags)) Text="Dati" Icon="inventory">
             <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_AnagASsociates)) Text="Ditte" Path="/associates" Icon="business"></RadzenPanelMenuItem>
             <RadzenPanelMenuItem  Visible=@(VisibleItems.Contains(Iten_AnagCars)) Text="Mezzi" Path="/cars" Icon="directions_bus"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Iten_AnagDrivers)) Text="Autisti" Path="/drivers" Icon="sports_motorsports"></RadzenPanelMenuItem>
 
             <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_AnagNodes)) Text="Punti" Path="/points" Icon="place"></RadzenPanelMenuItem>
         </RadzenPanelMenuItem>
@@ -79,6 +80,7 @@
     private const string Item_ExternalAnags = "extAnag";
     private const string Item_AnagASsociates = "extAssociates";
     private const string Iten_AnagCars = "extCars";
+    private const string Iten_AnagDrivers = "extDrivers";
     private const string Item_AnagNodes = "extCp";
     #endregion
 
@@ -140,6 +142,7 @@
             VisibleItems.Add(Item_ExternalAnags);
         if (this.IsUserInRole(UserRoles.Role_Anagraohics)) VisibleItems.Add(Item_AnagASsociates);
         if (this.IsUserInRole(UserRoles.Role_Anagraohics)) VisibleItems.Add(Iten_AnagCars);
+        if (this.IsUserInRole(UserRoles.Role_Anagraohics)) VisibleItems.Add(Iten_AnagDrivers);
         if (this.IsUserInRole(UserRoles.Role_Anagraohics)) VisibleItems.Add(Item_AnagNodes);
 
         this.StateHasChanged();

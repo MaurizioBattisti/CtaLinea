@@ -5,7 +5,7 @@
 	{
 		<div>
 			<RadzenText TextStyle="TextStyle.Overline" Text="Tipo di mezzo" />
-			<RadzenDropDown @bind-Value=@PeriodCar.RunCarType
+			<RadzenDropDown @bind-Value=@RunCarType
 						AllowClear="false"
 						TValue="CarTypeEnum"
 						Class="w-100"
@@ -15,10 +15,11 @@
 		</div>
 	}
 	<div>
-		<AssociateAndCarDropDown 
+		<AssociateAndCarDropDown AskDriver=@AskDriver
 			@ref="@AssAndCars"
 			@bind-AssociateId=@AssociateId
 			@bind-CarId=@CarId
+			@bind-DriverId=@DriverId
 			AllowClear=false />
 	</div>
 </RadzenCard>
@@ -42,6 +43,31 @@
 		new CCarType { Id = CarTypeEnum.Primary,  Description  ="Titolare" },
 		new CCarType { Id = CarTypeEnum.Spare,  Description  = "Scorta" }
 	};
+
+	private bool AskDriver
+	{
+		get
+		{
+			return PeriodCar.RunCarType == CarTypeEnum.Primary
+				|| PeriodCar.RunCarType == CarTypeEnum.Replacement;
+		}
+	}
+
+	private CarTypeEnum RunCarType
+	{
+		get
+		{
+			return this.PeriodCar.RunCarType;
+		}
+		set
+		{
+			this.PeriodCar.RunCarType = value;
+			if (this.PeriodCar.RunCarType == CarTypeEnum.Spare)
+			{
+				this.DriverId = null;
+			}
+		}
+	}
 
 	private Guid? CarId
 	{
@@ -83,10 +109,53 @@
 			}
 			else
 			{
+				this.PeriodCar.CarId = Guid.Empty;
 				this.PeriodCar.CarData = null;
 				this.StateHasChanged();
 			}
 
+		}
+	}
+	private Guid? DriverId
+	{
+		get
+		{
+			if (this.PeriodCar.DriverId == Guid.Empty) return null;
+			return this.PeriodCar.DriverId;
+		}
+		set
+		{
+			if (value != null)
+			{
+				this.PeriodCar.DriverId = value;
+				if (this.AssAndCars?.SelectedDriverData != null)
+				{
+					var d = this.AssAndCars?.SelectedDriverData;
+					this.PeriodCar.DriverData = new Driver
+						{
+							DriverId = d.Id,
+							LastName = d.LastName,
+							FirstName = d.FirstName,
+							LicenseNumber = d.LicenseNumber,
+							LicenceCategory = d.LicenceCategory,
+							DismissionDate = d.DismissionDate,
+							AssociateId = d.AssociateId,
+							BsDriverId = d.BsDriverId,
+
+							Active = d.Active
+						};
+				}
+				else
+				{
+					this.PeriodCar.DriverData = null;
+				}
+			}
+			else
+			{
+				this.PeriodCar.DriverId = null;
+				this.PeriodCar.DriverData = null;
+				this.StateHasChanged();
+			}
 		}
 	}
 	private Guid? AssociateId 

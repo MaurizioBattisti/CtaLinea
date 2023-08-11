@@ -9,21 +9,36 @@
     </RadzenColumn>
     <RadzenColumn Size="@CarColSize">
         <RadzenText TextStyle="TextStyle.Overline" Text="Mezzo" />
-        <ChildCarDropDown @ref="@Cars" Disabled=@CarDisabled() AssociateId=@AssociateId @bind-CarId="CarId" AllowClear=@AllowClear Changed=@CarChanged />
+        <ChildCarDropDown @ref="@Cars" Disabled=@ChildrenDisabled() AssociateId=@AssociateId @bind-CarId="CarId" AllowClear=@AllowClear Changed=@CarChanged />
     </RadzenColumn>
+
+    @if (this.AskDriver == true)
+    {
+        <RadzenColumn Size="@DriverColSize">
+            <RadzenText TextStyle="TextStyle.Overline" Text="Autista" />
+            <ChildDriverDropDown @ref="@Drivers" Disabled=@ChildrenDisabled() AssociateId=@AssociateId @bind-DriverId="DriverId" AllowClear=true Changed=@DriverChanged />
+        </RadzenColumn>
+    }
 </RadzenRow>
 
 @code {
-    private int ASsociateColSize => this.Inline ? 10 : 12;
+    private int ASsociateColSize => this.Inline ? (this.AskDriver ? 6 : 10) : 12;
     private int CarColSize => this.Inline ? 2 : 6;
+    private int DriverColSize => this.Inline ? 4 : 12;
 
     private AssociateDropDown? Associates;
     private ChildCarDropDown? Cars;
+    private ChildDriverDropDown? Drivers;
+
+    [Parameter]
+    public bool AskDriver { get; set; } = false;
 
     [Parameter]
     public Guid? AssociateId { get; set; }
     [Parameter]
     public Guid? CarId { get; set; }
+    [Parameter]
+    public Guid? DriverId { get; set; }
 
     [Parameter]
     public bool AllowClear { get; set; } = false;
@@ -36,6 +51,8 @@
     public EventCallback<Guid?> AssociateIdChanged { get; set; }
     [Parameter]
     public EventCallback<Guid?> CarIdChanged { get; set; }
+    [Parameter]
+    public EventCallback<Guid?> DriverIdChanged { get; set; }
 
     [Parameter]
     public EventCallback<object> Changed { get; set; }
@@ -52,6 +69,13 @@
         get
         {
             return this.Cars?.SelectedCarData;
+        }
+    }
+    public DriverQueryItem? SelectedDriverData
+    {
+        get
+        {
+            return this.Drivers?.SelectedDriverData;
         }
     }
 
@@ -78,7 +102,12 @@
         await CarIdChanged.InvokeAsync(this.CarId);
         await Changed.InvokeAsync(this);
     }
-    private bool CarDisabled ()
+    private async Task DriverChanged(object value)
+    {
+        await DriverIdChanged.InvokeAsync(this.DriverId);
+        await Changed.InvokeAsync(this);
+    }
+    private bool ChildrenDisabled()
     {
         if (this.Disabled == true) return this.Disabled;
         return this.AssociateId == null;

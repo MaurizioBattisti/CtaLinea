@@ -217,7 +217,6 @@ namespace CtaLinea.Model.QueryModel
             CoincidenceState = source.CoincidenceState;
             HasNote = source.HasNote;
             NonPrimaryCarRunId = source.NonPrimaryCarRunId;
-
 		}
     }
 }

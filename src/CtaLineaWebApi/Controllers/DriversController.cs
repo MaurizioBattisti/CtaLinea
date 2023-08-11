@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using CtaLinea.Model.QueryModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -8,11 +9,10 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using ZzSoft.Api.Utility.Base;
 using ZzSoft.CtaLinea.Dal.Queries;
-using CtaLinea.QueryModel;
 
 namespace CtaLineaWebApi.Controllers
 {
-	[Authorize]
+    [Authorize]
 	[ApiController]
     [Route("api/drivers")]
     public class DriversController

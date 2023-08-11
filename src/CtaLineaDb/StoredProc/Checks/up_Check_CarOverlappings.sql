@@ -1,7 +1,7 @@
 ﻿/* *****************************************************************************
     Maurizio Battisti
     16/04/2023
-    carica un lenco con le sovrapposizioni dun runperiod id 
+    carica un elenco con le sovrapposizioni dun runperiod id 
     nel periodo indicato
     con tutti gli altri runperiod id dove lo stesso meszzo viene usato contemporanemanete
     indicando l'orario

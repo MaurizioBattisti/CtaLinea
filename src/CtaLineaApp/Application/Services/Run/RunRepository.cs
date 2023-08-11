@@ -8,6 +8,7 @@ using CtaLinea.Model.Response;
 using CtaLinea.Model.Runs;
 using CtaLineaApp.Application.Model.Utility;
 using CtaLineaApp.Application.Services.Helper;
+using System;
 
 namespace CtaLineaApp.Application.Services.Run
 {
@@ -126,5 +127,21 @@ namespace CtaLineaApp.Application.Services.Run
 	            Constants.Endpoint_Run_CreateCopy,
 				copyRequest);
 		}
-	}
+
+        public async Task<InternalNoteQueryItem?> GetRunNoteAsync (Guid runId)
+        {
+            var url = string.Format(Constants.Endpoint_OneRun_Note_Frm, runId);
+            var data = await _http.Get<InternalNoteQueryItem?>(url);
+            return data;
+        }
+        public async Task<OperationResult<bool>?> UpdateRunInternalNoteAsync (
+            Guid runId,
+            InternalNoteQueryItem note)
+        {
+            var url = string.Format(Constants.Endpoint_OneRun_Note_Frm, runId);
+            return await this._http.Post<OperationResult<bool>, CheckResult>(
+                url,
+                note);
+        }
+    }
 }

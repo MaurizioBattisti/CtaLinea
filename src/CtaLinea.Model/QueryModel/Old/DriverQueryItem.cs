@@ -1,5 +1,6 @@
 ﻿using ZzSoft.QueryHelper;
 
+/*
 namespace CtaLinea.QueryModel
 {
     [SqlAlias("d")]
@@ -34,3 +35,4 @@ namespace CtaLinea.QueryModel
         public bool AssociateActive { get; set; }
     }
 }
+*/

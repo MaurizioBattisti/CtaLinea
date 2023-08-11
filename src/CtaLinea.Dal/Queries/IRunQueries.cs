@@ -10,7 +10,7 @@ using ZzSoft.QueryHelper;
 
 namespace ZzSoft.CtaLinea.Dal.Queries
 {
-	public interface IRunQueries
+    public interface IRunQueries
 	{
 		Task<QueryItemList<RunItemQueryModel>> GetRunListAsycn(
 			IFilteringContext filterContext,
@@ -23,5 +23,8 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 			IFilteringContext filterContext);
         Task<RunVariationQueryModel> GetOneVariationAsync(
             Guid id);
+
+		Task<InternalNoteQueryItem?> GetNoteAsync(
+			Guid id);
     }
 }

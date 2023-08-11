@@ -17,20 +17,21 @@ using ZzSoft.CtaLinea.Dal.Services;
 
 namespace ZzSoft.CtaLinea.Dal.Queries
 {
-	public class RunQueries
+    public class RunQueries
 		: IRunQueries
 	{
 		private const string RunItemListSql_Table = "[dbo].[vw_Runs] r";
         private const string RunItemListSql_AdvandedFilters = @"
- INNER JOIN dbo.tvf_Runs_AdvancedFilter(@AssociateId, @CarId, @MinSittings
+ INNER JOIN dbo.tvf_Runs_AdvancedFilter(@AssociateId, @CarId, @DriverId, @MinSittings
 , @MaxSittings, @LineNumber, @RunNumber, @Node, @StartDate, @EndDate, @StartTime, @EndTime, @Frequency, @CalendarIds
 , @WeekDays, @InContract, @ActiveRun, @DateRef, @TabIds, @ForfaitId, @CollectionPointId) a ON a.RunId = r.RunId";
         private const string RunVariationList_Table = "[dbo].[vw_RunVariations] v";
         private const string RunItemçistSql_Coincidence = @" LEFT JOIN [dbo].[tvf_oincidenceNodes](NULL) AS n ON n.RunId = r.RunId";
         private const string RunItemçistSql_Coincidence_adv = @" LEFT JOIN [dbo].[tvf_oincidenceNodes](@CollectionPointId) AS n ON n.RunId = r.RunId";
+        private const string RunInternalNotes_Table = "[dbo].[RunInternalNotes] n";
 
         // indica se ilc osnorziato è titolare o meno
-		private const string RunItemçistSql_NoPrimaryAss = @" LEFT JOIN [dbo].[tvf_NotPrimaryAssociateRuns](NULL) AS npa ON npa.RunId = r.RunId";
+        private const string RunItemçistSql_NoPrimaryAss = @" LEFT JOIN [dbo].[tvf_NotPrimaryAssociateRuns](NULL) AS npa ON npa.RunId = r.RunId";
 		private const string RunItemçistSql_NoPrimaryAss_adv = @" LEFT JOIN [dbo].[tvf_NotPrimaryAssociateRuns](@AssociateId) AS npa ON npa.RunId = r.RunId";
 
 		private readonly CtaDbContext _context;
@@ -121,7 +122,8 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 				{
                     AssociateId = advancedFilter.AssociateId,
                     CarId = advancedFilter.CarId,
-                    MinSittings = advancedFilter.MinSittings,
+					DriverId = advancedFilter.DriverId,
+					MinSittings = advancedFilter.MinSittings,
                     MaxSittings = advancedFilter.MaxSittings,
                     LineNumber = advancedFilter.LineNumber,
                     RunNumber = advancedFilter.RunNumber,
@@ -160,10 +162,18 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 				filterContext,
                 stdFilters,
 				args);
-            
-            return await conn.QueryListAsync(
-                queryDef)
-                .ConfigureAwait(false);
+
+            try
+            {
+                return await conn.QueryListAsync(
+                    queryDef)
+                    .ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                string s = ex.Message;
+                throw;
+            }
         }
         public async Task<RunItemQueryModel> GetOneRunAsync(
 			Guid id)
@@ -230,6 +240,23 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                 null,
                 "v.RunVariationId = @RunVariationId",
                 new { RunVariationId = id });
+
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
+            return await conn.QueryOneAsync(
+                queryDef)
+                .ConfigureAwait(false);
+        }
+
+        public async Task<InternalNoteQueryItem?> GetNoteAsync(
+            Guid id)
+        {
+            var queryDef = new QueryDefinition<InternalNoteQueryItem>(
+                RunInternalNotes_Table,
+                null,
+                "RunId = @RunId",
+                new { RunId = id });
 
             using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();

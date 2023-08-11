@@ -13,6 +13,7 @@ CREATE TABLE [dbo].[RunCars]
     [CarId] UNIQUEIDENTIFIER NOT NULL, 
 
     [Note] VARCHAR(MAX) NULL, 
+    [DriverId] UNIQUEIDENTIFIER NULL, 
     CONSTRAINT [FK_Cars_Run] 
         FOREIGN KEY ([RunPeriodId]) 
         REFERENCES [dbo].[RunPeriods]([RunPeriodId])
@@ -26,6 +27,11 @@ CREATE TABLE [dbo].[RunCars]
     CONSTRAINT [FK_RunCars_Car] 
         FOREIGN KEY ([CarId]) 
         REFERENCES [dbo].[Cars]([CarId])
+        ON DELETE NO ACTION
+        ON UPDATE NO ACTION, 
+    CONSTRAINT [FL_RunCars_Driver]
+        FOREIGN KEY ([DriverId])
+        REFERENCES [dbo].[Drivers]([DriverId])
         ON DELETE NO ACTION
         ON UPDATE NO ACTION, 
     CONSTRAINT [CHK_RunCar_CarType] 

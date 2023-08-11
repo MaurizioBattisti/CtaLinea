@@ -1,5 +1,6 @@
 ﻿using CtaLinea.Model.Base;
 using CtaLinea.Model.External;
+using CtaLinea.Model.QueryModel;
 using CtaLinea.Model.Request;
 using CtaLinea.Model.Response;
 using CtaLinea.Model.Runs;
@@ -7,6 +8,7 @@ using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -37,6 +39,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         private const string SQL_Table_CarReplacements = "[dbo].[RunCarReplacements]";
         private const string SQL_Table_CarReplacementDetails = "[dbo].[RunCarReplacementDetails]";
         private const string SQL_Table_RunSuspensions = "[dbo].[RunSuspensions]";
+        private const string SQL_Table_RunInternalNotes = "[dbo].[RunInternalNotes]";
 
         private const string SQL_Table_RunTags = "[dbo].[RunTags]";
 
@@ -120,6 +123,54 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 				}
 			}
 		}
+
+        public async Task<bool> SaveRunInternalNoteAsync (
+            Guid runId,
+            InternalNoteQueryItem note)
+        {
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
+
+            var result = false;
+
+            if (string.IsNullOrEmpty(note.Note) == true)
+            {
+                // elimina le note
+                await this.DeleteTableAsync(
+                    SQL_Table_RunInternalNotes,
+                    conn, null,
+                    new { RunId = runId });
+                result = true;
+            }
+            else
+            {
+                // elimina le note
+                var num = await this.UpdateTableAsync(
+                    SQL_Table_RunInternalNotes,
+                    conn, null,
+                    new { RunId = runId },
+                    new
+                    {
+                        Note = note.Note ?? string.Empty
+                    });
+                if (num == 0) 
+                {
+                    // se non riesce a  aggiornare prova ad inserire
+                    num = await this.InsertTableAsync(
+                        SQL_Table_RunInternalNotes,
+                        conn, null,
+                        new
+                        {
+                            RunId = runId,
+                            Note = note.Note ?? string.Empty
+                        });
+                }
+
+                result = num > 0;
+            }
+            return result;
+        }
 
         public async Task DeleteRunAsync (
             Guid runId)
@@ -855,10 +906,11 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 
                 var allAssociates = reader.Read<Associate>().ToList();
                 var allCars = reader.Read<Car>().ToList();
+                var allDrivers = reader.Read<Driver>().ToList();
 
-                // assegna i calendari a lle varianti
-                // Non serve più perchè non engono neanche caricati
-                /*
+				// assegna i calendari a lle varianti
+				// Non serve più perchè non engono neanche caricati
+				/*
                 foreach (var v in item.Variations)
                 {
                     if (v.Calendars != null)
@@ -872,8 +924,8 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 }
                 */
 
-                // assegna le diette e i mezzi ai  perido cars
-                if (item.SubPeriods != null)
+				// assegna le diette e i mezzi ai  perido cars
+				if (item.SubPeriods != null)
                 {
                     foreach (var p in item.SubPeriods)
                     {
@@ -883,7 +935,11 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                             {
                                 pc.AssociateData = allAssociates.Where(a => a.AssociateId == pc.AssociateId).SingleOrDefault();
                                 pc.CarData = allCars.Where(c => c.CarId == pc.CarId).SingleOrDefault();
-                            }
+                                if (pc.DriverId != null)
+                                {
+                                    pc.DriverData = allDrivers.Where(d => d.DriverId == pc.DriverId).SingleOrDefault();
+                                }
+							}
                         }
                     }
                 }
@@ -1282,7 +1338,8 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             {
                 periodCar.AssociateId,
                 periodCar.CarId,
-                periodCar.CarType,
+				periodCar.DriverId,
+				periodCar.CarType,
 
                 periodCar.Note
             };

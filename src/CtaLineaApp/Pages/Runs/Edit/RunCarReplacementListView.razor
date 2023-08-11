@@ -377,12 +377,14 @@
 				this.Period,
 				item.RunCarType,
 				item.AssociateId,
-				item.CarId);
+				item.CarId,
+				item.DriverId);
 
 			// assegna i valori recueprati dall'oggetto
 			car.RunCarId = item.RunCarId;
 			car.AssociateData = item.AssociateData;
 			car.CarData = item.CarData;
+			car.DriverData = item.DriverData;
 			car.Note = item.Note;
 
 			// aggiunge il costo al mezzo
@@ -439,6 +441,8 @@
 				car.AssociateData = item.AssociateData;
 				car.CarId = item.CarId;
 				car.CarData = item.CarData;
+				car.DriverId = item.DriverId;
+				car.DriverData = item.DriverData;
 
 				this.EditableData?.SetDirty();
 				this.EditableData?.SetDirty();

@@ -32,7 +32,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         }
 
         #region funzioni generiche di lavoro
-        protected async Task InsertTableAsync<T>(
+        protected async Task<int> InsertTableAsync<T>(
             string tableName,
             IDbConnection conn,
             IDbTransaction tran,
@@ -46,13 +46,13 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 tableName,
                 this.GetFieldListString(data, exclude),
                 this.GetArgsListString(data), exclude);
-            await conn.ExecuteAsync(
+            return await conn.ExecuteAsync(
                 sql,
                 data,
                 tran);
         }
 
-        protected async Task UpdateTableAsync<TData, TKey>(
+        protected async Task<int> UpdateTableAsync<TData, TKey>(
             string tableName,
             IDbConnection conn,
             IDbTransaction tran,
@@ -72,12 +72,12 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             // fonde i dati con le chiavi
             var newData = this.JoinObjects(data, key);
 
-            await conn.ExecuteAsync(
+            return await conn.ExecuteAsync(
                 sql,
                 newData,
                 tran);
         }
-        protected async Task DeleteTableAsync<TKey>(
+        protected async Task<int> DeleteTableAsync<TKey>(
             string tableName,
             IDbConnection conn,
             IDbTransaction tran,
@@ -90,7 +90,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 tableName,
                 this.GetFieldEqualArgString(key, "AND"));
 
-            await conn.ExecuteAsync(
+            return await conn.ExecuteAsync(
                 sql,
                 key,
                 tran);

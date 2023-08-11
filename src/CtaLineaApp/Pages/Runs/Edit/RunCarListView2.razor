@@ -87,12 +87,21 @@ else
 					</div>
 				</Template>
 			</RadzenDataGridColumn>
-			<RadzenDataGridColumn TItem="RunPeriodCar" Title="Mezzo" Width="200px">
+			<RadzenDataGridColumn TItem="RunPeriodCar" Title="Mezzo" Width="150px">
 				<Template Context="data">
 					<div class="@this.GetClassByStatus(data.CarData)">
 						<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
 							<span>@data.CarData?.RegNumber</span> 
 							<RadzenBadge>@data.CarData?.NrSittings</RadzenBadge>
+						</RadzenStack>
+					</div>
+				</Template>
+			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="RunPeriodCar" Title="Autista" Width="160px">
+				<Template Context="data">
+					<div class="@this.GetDriverClassByStatus(data.DriverData)">
+						<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+							<span>@data.DriverData?.LastName @data.DriverData?.FirstName</span>
 						</RadzenStack>
 					</div>
 				</Template>
@@ -129,8 +138,8 @@ else
 		}
 
 		<DialogBoxWrapper @ref=@CarDialog
-				  Width="400px"
-				  Title="Mezzo" >
+				  Width="600px"
+				  Title="Ditta Mezzo e Autista" >
 			<Body Context="ds">
 				<RunCarEditDialog CanEditType=@IsCarTYpeColumnVisible()
 				PeriodCar=@PeriodCarInEdit />
@@ -299,6 +308,13 @@ else
 		if (car.SpareCar) return this.GetStyle(this.Settings.SpareCarBgStyle, this.Settings.SpareCarFgStyle);
 		return this.GetStyle(this.Settings.OtherCarBgStyle, this.Settings.OtherCarFStyle);
 	}
+	private string GetDriverClassByStatus(
+		Driver? driver)
+	{
+		if (driver == null) return string.Empty;
+		if (driver.Active == false) return this.GetStyle(this.Settings.InactiveCarBgStyle, this.Settings.InactiveCarFgStyle);
+		return this.GetStyle(this.Settings.OtherCarBgStyle, this.Settings.OtherCarFStyle);
+	}
 	private string GetStyle(
 		params string[] styles)
 	{
@@ -390,6 +406,8 @@ else
 				editPeriod.AssociateData = carPeriod.AssociateData;
 				editPeriod.CarId = carPeriod.CarId;
 				editPeriod.CarData = carPeriod.CarData;
+				editPeriod.DriverId = carPeriod.DriverId;
+				editPeriod.DriverData = carPeriod.DriverData;
 
 				IsAdding = false;
 				this.PeriodCarInEdit = editPeriod;

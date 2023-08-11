@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using Radzen.Blazor.Rendering;
 using System.Xml.Linq;
 using System.Data.SqlTypes;
+using CtaLinea.QueryModel;
 
 namespace CtaLineaApp.Application.Services.Run
 {
@@ -230,7 +231,8 @@ namespace CtaLineaApp.Application.Services.Run
             RunPeriod period,
             CarTypeEnum runCarType = CarTypeEnum.Primary,
             Guid? associateId = null,
-            Guid? carId = null
+            Guid? carId = null,
+            Guid? driverId = null
             )
         {
             var periodCar = new RunPeriodCar()
@@ -240,6 +242,7 @@ namespace CtaLineaApp.Application.Services.Run
                 RunCarType = runCarType,
                 AssociateId = associateId ?? Guid.Empty,
                 CarId = carId ?? Guid.Empty,
+                DriverId = driverId ?? Guid.Empty,
 
                 CarCosts = new List<RunCarCost>()
             };

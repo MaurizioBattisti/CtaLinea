@@ -32,5 +32,11 @@ namespace CtaLineaApp.Application.Services.Run
         Task<OperationResult<Guid>?> CreateRunCopyAsync(
             CreateRunCopyRequest copyRequest
             );
+
+        Task<InternalNoteQueryItem?> GetRunNoteAsync(Guid runId);
+
+        Task<OperationResult<bool>?> UpdateRunInternalNoteAsync(
+            Guid runId,
+            InternalNoteQueryItem note);
 	}
 }

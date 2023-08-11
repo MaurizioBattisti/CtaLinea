@@ -5,9 +5,11 @@
 	<RadzenRow>
 		<RadzenColumn Size="8">
 			<AssociateAndCarDropDown @bind-AssociateId="Filters.AssociateId"
-										@bind-CarId="Filters.CarId"
-										Inline=true
-										AllowClear=true />
+									 @bind-CarId="Filters.CarId"
+									 @bind-DriverId="Filters.DriverId"
+									 AskDriver=true
+									 Inline=true
+									 AllowClear=true />
 		</RadzenColumn>
 		<RadzenColumn Size="1">
 			<RadzenText TextStyle="TextStyle.Overline" Text="Da posti" />

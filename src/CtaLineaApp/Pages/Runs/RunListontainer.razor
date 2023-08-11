@@ -234,10 +234,7 @@
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="@nameof(RunItemQueryModel.HasNote)" Title="N" Width="40px" Frozen=true>
                     <Template Context="data">
-                        @if (data.HasNote)
-                        {
-                            <RadzenIcon Icon="feedback" />
-                        }
+                        <RadzenIcon Visible=@data.HasNote Icon="feedback" />
                     </Template>
                 </RadzenDataGridColumn>
                 
@@ -414,6 +411,7 @@
         Forfait,
 
         CreateCopy,
+        InternalNote,
 
         Delete,
 
@@ -802,6 +800,7 @@
                 {
                     <RadzenMenuItem Icon="local_offer" Text="Etichette..." Value=@RunMenuItems.Tags />
                     <RadzenMenuItem Icon="savings" Text=@(args.Data.ForfaitId == null ? "Aggiungi Forfait..." : "Elimina forfait..." ) Value="@RunMenuItems.Forfait" />
+                    <RadzenMenuItem Icon="feedback" Text="Note interne..." Value=@RunMenuItems.InternalNote />
                     <hr class="separator">
                     <RadzenMenuItem Icon="file_copy" Text="Crea Copia ..." Value="@RunMenuItems.CreateCopy" />
                     <hr class="separator">
@@ -856,6 +855,10 @@
             case RunMenuItems.MultiRun_SetForfait:
                 await this.MultiRunSetForfaitAsync();
                 break;
+            case RunMenuItems.InternalNote:
+                await this.ShowInternalNoteDialogAsync(args.Data.Id);
+                break;
+
             default:
                 break;
         };
@@ -1042,6 +1045,44 @@
         if (done == true)
         {
             await this.RealodOneRowAsync (runId);
+        }
+    }
+    private async Task ShowInternalNoteDialogAsync(
+        Guid runId)
+    {
+        InternalNoteQueryItem note = new InternalNoteQueryItem();
+
+        try
+        {
+            var note_2 = await this.RunRepo.GetRunNoteAsync(runId);
+            if (note_2 != null)
+            {
+                note = note_2;
+            }
+        }
+        catch (Exception ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Errore caricando le note",
+                ex.Message);
+            return;
+        }
+
+        var done = await DialogService.OpenAsync<RunInternalNoteDialog>($"Note interne della corsa",
+            new Dictionary<string, object>() { 
+                    { "Id", runId },
+                    {"Note", note}
+                    },
+                options: new DialogOptions()
+                {
+                    CloseDialogOnOverlayClick = false,
+                    Width = "600px"
+                });
+
+        if (done == true)
+        {
+            await this.RealodOneRowAsync(runId);
         }
     }
 
