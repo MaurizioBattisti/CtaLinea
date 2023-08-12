@@ -52,7 +52,14 @@ namespace CtaLineaApp.Application.Services.Costs
             var items = await _http.Post<IEnumerable<CostByAssociateItem>, string>(url, request);
             return items;
         }
-        public async Task<IEnumerable<CostByRunItem>?> GetCostsByRunASync(
+		public async Task<IEnumerable<CostByAssociateByRunItem>?> GetCostsByAssociateByRunASync(
+			CalcCostsRequest request)
+		{
+			var url = Constants.EndPoint_CostsByAssociateByRun;
+			var items = await _http.Post<IEnumerable<CostByAssociateByRunItem>, string>(url, request);
+			return items;
+		}
+		public async Task<IEnumerable<CostByRunItem>?> GetCostsByRunASync(
             CalcCostsRequest request)
         {
             var url = Constants.EndPoint_CostsByRun;

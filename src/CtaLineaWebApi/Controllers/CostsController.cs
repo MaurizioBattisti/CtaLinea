@@ -123,5 +123,33 @@ namespace CtaLineaWebApi.Controllers
 
             return this.Ok(result);
         }
-    }
+		[Authorize(Policy = Constants.Policy_Costs)]
+		[Consumes(MediaTypeNames.Application.Json)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[HttpPost]
+		[Route("byassociatebyrun")]
+		public async Task<ActionResult<IEnumerable<CostByAssociateByRunItem>>> GetCostByAssociateByRunASync(
+			[FromBody] CalcCostsRequest request
+			)
+		{
+			var assId = await this._currentUSer.GetUserAssociateId()
+				.ConfigureAwait(false);
+			if (assId != null)
+			{
+				request.ASsociateId = assId;
+				request.BudgetName = null;
+			}
+
+			var myRequest = new GetCorstByAssociateByRunRequest()
+			{
+				BudgetId = null,
+				RawRwquest = request
+			};
+			var result = await this._mediator.Send(myRequest)
+				.ConfigureAwait(false);
+
+			return this.Ok(result);
+		}
+	}
 }

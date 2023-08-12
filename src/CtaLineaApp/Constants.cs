@@ -65,7 +65,8 @@ namespace CtaLineaApp
         internal const string EndPoint_CostsByAssociate_GET = EndPoint_Costs + "/byassociate";
 		internal const string EndPoint_CostsByRun = EndPoint_Costs + "/byrun";
 		internal const string EndPoint_CostsByAssociate = EndPoint_Costs + "/byassociate";
-
+		internal const string EndPoint_CostsByAssociateByRun = EndPoint_Costs + "/byassociatebyrun";
+		
 		// utility
 		internal const string EndPoint_Utilitys = "api/utility";
         internal const string EndPoint_CarPlanning = EndPoint_Utilitys + "/carplanning";

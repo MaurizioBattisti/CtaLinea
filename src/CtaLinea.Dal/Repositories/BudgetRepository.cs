@@ -19,7 +19,8 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
     {
         private const string SQL_GetCosts = "[dbo].[up_GetCosts_New]";
         private const string SQL_GetCostsByAssociate = "[dbo].[up_GetCostByAssociate]";
-        private const string SQç_GetCostsByRun = "[dbo].[up_GetCostByRun]";
+		private const string SQL_GetCostsByAssociateByRun = "[dbo][up_GetCostByAssociateByRun]";
+		private const string SQç_GetCostsByRun = "[dbo].[up_GetCostByRun]";
 
         private readonly CtaDbContext _context;
         private readonly ILogger _logger;
@@ -66,38 +67,70 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 
             return;
         }
-        public async Task<IEnumerable<CostByAssociateItem>> GEtCostsByAssociateAsync(
-            int? budgetId,
-            CalcCostsRequest request
-            )
-        {
-            using IDbConnection conn = this._context.GetNewConnection();
-            conn.Open();
-            await conn.InitializeSession(this._zzContext);
+		public async Task<IEnumerable<CostByAssociateItem>> GEtCostsByAssociateAsync(
+			int? budgetId,
+			CalcCostsRequest request
+			)
+		{
+			using IDbConnection conn = this._context.GetNewConnection();
+			conn.Open();
+			await conn.InitializeSession(this._zzContext);
 
-            using var reader = await conn.QueryMultipleAsync(
-                SQL_GetCostsByAssociate,
-                param: new
-                {
-                    BudgetId = budgetId,
-                    ContractId = request.ContractId,
-                    StartDate = request.StartDate,
-                    EndDate = request.EndDate,
-                    AssociateId = request.ASsociateId,
-                    CarId = request.CarId,
-                    OutOfPEriod = request.IncludeOutOfPeriod,
-                    Suspended = request.IncludeSuspended,
-                    RplacedCars = request.UseReplacedCars,
-                    BudgetName = request.BudgetName,
-                    BudgetType = request.BudgetType
-                },
-                commandType: CommandType.StoredProcedure,
-                commandTimeout: 600);
+			using var reader = await conn.QueryMultipleAsync(
+				SQL_GetCostsByAssociate,
+				param: new
+				{
+					BudgetId = budgetId,
+					ContractId = request.ContractId,
+					StartDate = request.StartDate,
+					EndDate = request.EndDate,
+					AssociateId = request.ASsociateId,
+					CarId = request.CarId,
+					OutOfPEriod = request.IncludeOutOfPeriod,
+					Suspended = request.IncludeSuspended,
+					RplacedCars = request.UseReplacedCars,
+					BudgetName = request.BudgetName,
+					BudgetType = request.BudgetType
+				},
+				commandType: CommandType.StoredProcedure,
+				commandTimeout: 600);
 
-            var items = reader.Read<CostByAssociateItem>();
-            return await Task.FromResult(items);
-        }
-        public async Task<IEnumerable<CostByRunItem>> GetRunCostAsync(
+			var items = reader.Read<CostByAssociateItem>();
+			return await Task.FromResult(items);
+		}
+		public async Task<IEnumerable<CostByAssociateByRunItem>> GEtCostsByAssociateByRunAsync(
+			int? budgetId,
+			CalcCostsRequest request
+			)
+		{
+			using IDbConnection conn = this._context.GetNewConnection();
+			conn.Open();
+			await conn.InitializeSession(this._zzContext);
+
+			using var reader = await conn.QueryMultipleAsync(
+				SQL_GetCostsByAssociate,
+				param: new
+				{
+					BudgetId = budgetId,
+					ContractId = request.ContractId,
+					StartDate = request.StartDate,
+					EndDate = request.EndDate,
+					AssociateId = request.ASsociateId,
+					CarId = request.CarId,
+					OutOfPEriod = request.IncludeOutOfPeriod,
+					Suspended = request.IncludeSuspended,
+					RplacedCars = request.UseReplacedCars,
+					BudgetName = request.BudgetName,
+					BudgetType = request.BudgetType
+				},
+				commandType: CommandType.StoredProcedure,
+				commandTimeout: 600);
+
+			var items = reader.Read<CostByAssociateByRunItem>();
+			return await Task.FromResult(items);
+		}
+		
+		public async Task<IEnumerable<CostByRunItem>> GetRunCostAsync(
             CalcCostsRequest request
             )
         {

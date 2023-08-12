@@ -136,7 +136,7 @@ BEGIN
 	(
 		SELECT d.AssociateId,
 			  d.ContractId,
-			  d.runId,
+			  d.RunId,
 			  
 			  SUM(d.RealKm_Contract) AS Km,
 			  SUM(d.RealKm_Extra) AS KmExtra,
