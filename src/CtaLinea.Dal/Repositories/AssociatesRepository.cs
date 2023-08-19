@@ -17,8 +17,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 	{
 		private const string SQL_Associate_Table = "[dbo].[Associates]";
 		private const string SQL_Car_Table = "[dbo].[Cars]";
+        private const string SQL_Driver_Table = "[dbo].[Drivers]";
+		private const string Sql_VirutalDelete_Fmt = "UPDATE {0} SET {1} = 0 WHERE {2} = @{2}";
 
-		private readonly CtaDbContext _context;
+        private readonly CtaDbContext _context;
 		private readonly ILogger _logger;
 
 		public AssociatesRepository(
@@ -43,25 +45,49 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 			return await Task.FromResult(model.ToList());
 		}
 		public async Task InsertAssociateASync(
-			Associate data
-			)
+			Associate data,
+			IDbConnection conn,
+            IDbTransaction tran
+            )
 		{
-			await Task.CompletedTask;
-
+			await this.InsertTableAsync(
+				SQL_Associate_Table,
+				conn, tran,
+				this.JoinObjects(
+					this.GetAssociateKey(data.AssociateId),
+					this.GetAssociateData(data)
+				))
+				.ConfigureAwait (false);
 		}
 		public async Task UpdateAssociateASync(
-			Associate data
-			)
+			Associate data,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
 		{
-			await Task.CompletedTask;
-
+			await this.UpdateTableAsync(
+				SQL_Associate_Table,
+				conn, tran,
+				this.GetAssociateKey(data.AssociateId),
+				this.GetAssociateData(data)
+				).ConfigureAwait(false);
 		}
 		public async Task DeleteAssociateASync(
-			Guid associateId
-			)
+			Guid associateId,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
 		{
-			await Task.CompletedTask;
+			var sql = string.Format(Sql_VirutalDelete_Fmt,
+				SQL_Associate_Table,
+				"Active",
+				"AssociateId");
 
+			await conn.ExecuteAsync( 
+				sql,
+				new {AssociateId = associateId },
+				tran)
+				.ConfigureAwait(true);
 		}
 
 		public async Task<IList<Car>> GetAssociateCarsAsync(
@@ -80,30 +106,114 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 		}
 
 		public async Task InsertCarAsync(
-			Car data
-			)
+			Car data,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
 		{
-			await Task.CompletedTask;
-
-		}
-		public async Task UpdateCarAsync(
-			Car data
-			)
+            await this.InsertTableAsync(
+                SQL_Car_Table,
+                conn, tran,
+                this.JoinObjects(
+                    this.GetCarKey(data.CarId),
+	                this.GetCarData(data)
+				))
+                .ConfigureAwait(false);
+        }
+        public async Task UpdateCarAsync(
+			Car data,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
 		{
-			await Task.CompletedTask;
-
-		}
-		public async Task DeleteCarASync(
-			Guid carId
-			)
+            await this.UpdateTableAsync(
+                SQL_Car_Table,
+                conn, tran,
+                this.GetCarKey(data.CarId),
+                this.GetCarData(data)
+                ).ConfigureAwait(false);
+        }
+        public async Task DeleteCarASync(
+			Guid carId,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
 		{
-			await Task.CompletedTask;
+            var sql = string.Format(Sql_VirutalDelete_Fmt,
+                SQL_Car_Table,
+                "Active",
+                "CarId");
 
-		}
+            await conn.ExecuteAsync(
+                sql,
+                new { CarId = carId },
+                tran)
+                .ConfigureAwait(true);
+        }
 
+        public async Task<IList<Driver>> GetAssociateDriversAsync(
+            Guid associateId,
+            IDbConnection conn,
+            IDbTransaction tran)
+        {
+            var model = await conn.QueryAsync<Driver>(
+                SQL_Select_Star + SQL_Driver_Table
+                 + "WHERE AssociateId = @AssociateId",
+                new { AssociateId = associateId },
+                tran
+                ).ConfigureAwait(false);
 
-		#region data preparation
-		private object GetAssociateKey(
+            return await Task.FromResult(model.ToList());
+        }
+
+        public async Task InsertDriverAsync(
+            Driver data,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.InsertTableAsync(
+                SQL_Driver_Table,
+                conn, tran,
+                this.JoinObjects(
+                    this.GetDriverKey(data.DriverId),
+					this.GetDriverData(data)
+				))
+                .ConfigureAwait(false);
+        }
+        public async Task UpdateDriverAsync(
+            Driver data,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            await this.UpdateTableAsync(
+                SQL_Driver_Table,
+                conn, tran,
+                this.GetDriverKey(data.DriverId),
+                this.GetDriverData(data)
+                ).ConfigureAwait(false);
+        }
+        public async Task DeleteDriverASync(
+            Guid driverId,
+            IDbConnection conn,
+            IDbTransaction tran
+            )
+        {
+            var sql = string.Format(Sql_VirutalDelete_Fmt,
+                SQL_Driver_Table,
+                "Active",
+                "DriverId");
+
+            await conn.ExecuteAsync(
+                sql,
+                new { DriverId = driverId },
+                tran)
+                .ConfigureAwait(true);
+        }
+
+        #region data preparation
+        private object GetAssociateKey(
 			Guid associateId)
 		{
 			return new
@@ -153,6 +263,29 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 				data.Active,
 			};
 		}
-		#endregion
-	}
+        private object GetDriverKey(
+            Guid driverId)
+        {
+            return new
+            {
+                DriverId = driverId
+            };
+        }
+        private object GetDriverData(
+            Driver data)
+        {
+            return new
+            {
+				data.AssociateId,
+				data.BsDriverId,
+				data.FirstName,
+				data.LastName,
+				data.LicenseNumber,
+				data.LicenceCategory,
+				data.DismissionDate,
+                data.Active,
+            };
+        }
+        #endregion
+    }
 }

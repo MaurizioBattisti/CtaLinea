@@ -6,7 +6,7 @@
     [FirstName] VARCHAR(50) NOT NULL, 
     [BsDriverId] VARCHAR(20) NULL, 
     [LicenseNumber] VARCHAR(50) NOT NULL, 
-    [LicenceCategory] VARCHAR(10) NULL, 
+    [LicenceCategory] VARCHAR(100) NULL, 
     [DismissionDate] DATE NULL,
     [Active] BIT NOT NULL DEFAULT 1, 
 

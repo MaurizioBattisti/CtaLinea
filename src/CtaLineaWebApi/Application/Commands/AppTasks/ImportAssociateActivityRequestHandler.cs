@@ -20,6 +20,7 @@ using ZzSoft.CtaLinea.Dal.Context;
 using System.Data;
 using ZzSoft.CtaLinea.Dal.Repositories;
 using CtaLinea.Model.External;
+using System.Security.Cryptography;
 
 namespace CtaLineaWebApi.Application.Commands.AppTasks
 {
@@ -207,7 +208,8 @@ namespace CtaLineaWebApi.Application.Commands.AppTasks
 					Active = true
 				};
 				// ... elo inserisce
-				await this._associateRepo.InsertAssociateASync(newAss).ConfigureAwait (false);
+				await this._associateRepo.InsertAssociateASync(newAss, conn, tran)
+					.ConfigureAwait (false);
 			}
 
 			// cra la lista di quelli da aggiornare
@@ -229,7 +231,8 @@ namespace CtaLineaWebApi.Application.Commands.AppTasks
 						assToUpd.Email = a.Email;
 						assToUpd.Active = true;
 
-						await this._associateRepo.UpdateAssociateASync(assToUpd).ConfigureAwait (false);
+						await this._associateRepo.UpdateAssociateASync(assToUpd, conn, tran)
+							.ConfigureAwait (false);
 					}
 				}
 			}
@@ -242,7 +245,8 @@ namespace CtaLineaWebApi.Application.Commands.AppTasks
 					&& delAss.Active == true)
 				{
 					delAss.Active = false;
-					await this._associateRepo.UpdateAssociateASync(delAss);
+					await this._associateRepo.UpdateAssociateASync(delAss, conn, tran)
+						.ConfigureAwait(false);
 				}
 			}
 		}
@@ -273,38 +277,185 @@ namespace CtaLineaWebApi.Application.Commands.AppTasks
 								 where assCarsIBsc.Contains(c.BsCarId) == false
 								 select c);
 
-				// TODO: crea la lista dei nuovi e li aggiunge
+                // crea la lista dei nuovi e li aggiunge
+                var oldCodes = (from c in oldCars select c.BsCarId);
+                var toAdd = (from c in assCars
+                             where oldCodes.Contains(c.BsCarId) == false
+                             select c);
+                foreach (var c in toAdd)
+                {
+					// prepara un nuovo car ....
+					var newCar = new Car()
+					{
+						CarId = Guid.NewGuid(),
+						AssociateId = a.AssociateId,
+						BsCarId = c.BsCarId,
+						RegNumber = c.RegNumber,
+                        NrSittings = c.NrSittings ?? 0,
+                        Description = (c.RegNumber ?? string.Empty) + (c.NrSittings != null ? string.Format(" / {0}", c.NrSittings) : string.Empty),
+                        ChassisNumber = c.ChassisNumber,
 
+						PrimaryCar = PrimaryUsage.Contains(c.CarUsage ?? 0) == true,
+                        SpareCar = SpareUsage.Contains(c.CarUsage ?? 0) == true,
 
-				// TODO: cra la lista di quelli da aggiornare
-				// TODO; aggiorna tuti quelli da aggiornare e quelli da cancellare mettendo Active a false
+                        DiscontinuationDate = this.GetDate(c.DiscontinuationDate),
+						FirstRegistration = this.GetDate(c.FirstRegistrationDate),
+                        Active = true
+                    };
+                    newCar.Active = this.GetActive(newCar.DiscontinuationDate);
 
+                    // ... elo inserisce
+                    await this._associateRepo.InsertCarAsync(newCar, conn, tran)
+						.ConfigureAwait(false);
+                }
 
-			}
+                //  crea la lista di quelli da aggiornare
+                var toUpdate = (from c in assCars
+                                where assCarsIBsc.Contains(c.BsCarId) == true
+                                select c);
+                foreach (var c in toUpdate)
+                {
+                    // cerca il mezzo tra i vecchi
+                    var carToUpdt = oldCars.Where(x => x.BsCarId == c.BsCarId).FirstOrDefault();
+                    if (carToUpdt != null)
+                    {
+						// aggiorna semrpe
+						carToUpdt.RegNumber = c.RegNumber;
+                        carToUpdt.NrSittings = c.NrSittings ?? 0;
+                        carToUpdt.Description = (c.RegNumber ?? string.Empty) + (c.NrSittings != null ? string.Format(" / {0}", c.NrSittings) : string.Empty);
+                        carToUpdt.ChassisNumber = c.ChassisNumber;
+
+                        carToUpdt.PrimaryCar = PrimaryUsage.Contains(c.CarUsage ?? 0) == true;
+                        carToUpdt.SpareCar = SpareUsage.Contains(c.CarUsage ?? 0) == true;
+
+                        carToUpdt.DiscontinuationDate = this.GetDate(c.DiscontinuationDate);
+                        carToUpdt.FirstRegistration = this.GetDate(c.FirstRegistrationDate);
+                        carToUpdt.Active = this.GetActive(carToUpdt.DiscontinuationDate);
+
+                        await this._associateRepo.UpdateCarAsync(carToUpdt, conn, tran)
+							.ConfigureAwait(false);
+                    }
+                }
+                // aggiorna tuti quelli da cancellare mettendo Active a false
+                foreach (var c in carsToDel)
+				{
+					await this._associateRepo.DeleteCarASync(c.CarId, conn, tran)
+						.ConfigureAwait (false);
+				}
+            }
 		}
 
-		private async Task UpdateDriversAsync(
+        private async Task UpdateDriversAsync(
 			IList<DriverImport> drivers,
 			IDbConnection conn,
 			IDbTransaction tran)
 		{
-			// TODO: carica gli autisti dal db
+            // carica i consorziati dal db
+            var oldAssociates = await this._associateRepo.GetAllAssociatesAsync(
+                conn, tran)
+                .ConfigureAwait(false);
 
+            foreach (var a in oldAssociates)
+            {
+                // crea la query filtrata degli autisti da improtare
+                var assDrivers = drivers.Where(x => x.BsAssociateId == a.BsSupplierCode);
+                var assDriversIds = assDrivers.Select(x => x.BsDriverId);
 
+                // carica gli atuisti dal db
+                var oldDrivers = await this._associateRepo.GetAssociateDriversAsync(
+                    a.AssociateId, conn, tran)
+                    .ConfigureAwait(false);
 
-			// TODO: crea la lista di qeulli non più presenti
+                //  crea la lista di qeulli non più presenti				
+                var driversToDel = (from d in oldDrivers
+                                 where assDriversIds.Contains(d.BsDriverId) == false
+                                 select d);
 
+                // crea la lista dei nuovi e li aggiunge
+                var oldDriverIds = (from d in oldDrivers select d.BsDriverId);
+                var toAdd = (from d in assDrivers
+                             where oldDriverIds.Contains(d.BsDriverId) == false
+                             select d);
+                foreach (var d in toAdd)
+                {
+                    // prepara un nuovo autista ....
+                    var newDriver = new Driver()
+                    {
+                        DriverId = Guid.NewGuid(),
+                        AssociateId = a.AssociateId,
 
+						BsDriverId = d.BsDriverId,
+						FirstName = d.FirstName,
+						LastName = d.LastName,
+						LicenseNumber = d.LicenseNumber,
+						LicenceCategory = d.LicenceCategory,
 
-			// TODO: crea la lista dei nuovi e li aggiunge
+						DismissionDate = this.GetDate( d.DismissionDate),
+                        Active = true
+                    };
+                    newDriver.Active = this.GetActive(newDriver.DismissionDate);
 
+                    // ... elo inserisce
+                    await this._associateRepo.InsertDriverAsync(newDriver, conn, tran)
+                        .ConfigureAwait(false);
+                }
 
-			// TODO: cra la lista di quelli da aggiornare
-			// TODO; aggiorna tuti quelli da aggiornare e quelli da cancellare mettendo Active a false
+                //  crea la lista di quelli da aggiornare
+                var toUpdate = (from d in assDrivers
+                                where assDriversIds.Contains(d.BsDriverId) == true
+                                select d);
+                foreach (var d in toUpdate)
+                {
+                    // cerca l'autista tra i vecchi
+                    var driverToUpdt = oldDrivers.Where(x => x.BsDriverId == d.BsDriverId).FirstOrDefault();
+                    if (driverToUpdt != null)
+                    {
+                        // aggiorna semrpe
+                        driverToUpdt.BsDriverId = d.BsDriverId;
+                        driverToUpdt.FirstName = d.FirstName;
+                        driverToUpdt.LastName = d.LastName;
+                        driverToUpdt.LicenseNumber = d.LicenseNumber;
+                        driverToUpdt.LicenceCategory = d.LicenceCategory;
 
+                        driverToUpdt.DismissionDate = this.GetDate(d.DismissionDate);
+                        driverToUpdt.Active = this.GetActive(driverToUpdt.DismissionDate);
 
+                        await this._associateRepo.UpdateDriverAsync(driverToUpdt, conn, tran)
+                            .ConfigureAwait(false);
+                    }
+                }
+                // aggiorna tuti quelli da cancellare mettendo Active a false
+                foreach (var d in driversToDel)
+                {
+                    await this._associateRepo.DeleteDriverASync(d.DriverId, conn, tran)
+                        .ConfigureAwait(false);
+                }
+            }
+        }
 
-			await Task.CompletedTask;
-		}
-	}
+        private bool GetActive(
+            DateTime? discontinuationDate,
+            bool active = true)
+        {
+            if (discontinuationDate != null
+                && discontinuationDate <= DateTime.Today.AddYears(-1)
+				)
+            {
+                active = false;
+            }
+            return active;
+        }
+        private DateTime? GetDate(string dateStr)
+        {
+            DateTime? date = null;
+            if (string.IsNullOrEmpty(dateStr) == false)
+            {
+                if (DateTime.TryParse(dateStr, out DateTime newDate) == true)
+                {
+                    date = newDate;
+                }
+            }
+            return date;
+        }
+    }
 }
