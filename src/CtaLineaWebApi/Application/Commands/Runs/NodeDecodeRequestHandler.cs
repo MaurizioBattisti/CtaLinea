@@ -51,8 +51,7 @@ namespace CtaLineaWebApi.Application.Commands.Runs
             bool validRow = false;
 			foreach (var row in IterateRows (text))
             {
-                if (validRow == false
-                    && row.ToLower().Contains("cod. fermata"))
+                if (row.ToLower().Contains("cod. fermata"))
                 {
                     validRow = true;
                     continue;
