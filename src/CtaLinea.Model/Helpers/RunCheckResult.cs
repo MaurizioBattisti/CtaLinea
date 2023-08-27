@@ -18,5 +18,6 @@ namespace CtaLinea.Model.Helpers
         public const string Category_CarCost = "COST";
         public const string Category_CarReplacement = "REPLACEMENT";
         public const string Category_Suspension = "SUSPENSION";
+        public const string Category_ElbDays = "ELB_DAYS";
     }
 }

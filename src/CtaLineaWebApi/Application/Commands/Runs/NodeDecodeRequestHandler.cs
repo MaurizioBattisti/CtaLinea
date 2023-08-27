@@ -48,20 +48,40 @@ namespace CtaLineaWebApi.Application.Commands.Runs
         private IEnumerable<Tuple<string, TimeSpan>> IterateAndExtract (
             string text)
         {
+            bool validRow = false;
 			foreach (var row in IterateRows (text))
             {
-				var cols = row.Split("\t");
-				if (cols.Length != 10) continue;
+                if (validRow == false
+                    && row.ToLower().Contains("cod. fermata"))
+                {
+                    validRow = true;
+                    continue;
+                }
+                else if (validRow == false) continue;
+
+				var rawCols = row.Split("\t");
+                var cols = (from c in rawCols
+                            where string.IsNullOrEmpty(c) == false
+                            select c).ToArray();
+                if (cols.Length < 3)
+                {
+                    validRow = false;
+                    continue;
+                }
 
                 // recupera l'id della femrata
-                string id = cols[2].Trim();
+                string id = cols[0].Trim();
                 // recupera l'orario
-                if (TimeSpan.TryParse(cols[4].Replace(".", ":"), out TimeSpan hour) == true)
+                if (TimeSpan.TryParse(cols[2].Replace(".", ":"), out TimeSpan hour) == true)
                 {
                     if (hour.Days < 1)
                     { 
                         yield return new Tuple<string, TimeSpan>(id, hour);
                     }
+                }
+                else
+                {
+                    validRow = false;
                 }
             }
         }

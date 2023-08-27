@@ -202,5 +202,6 @@
     <Build Include="Session\fn_Session_GetCurrentDate.sql" />
     <Build Include="Functions\Run\tvf_NotPrimaryAssociateRuns.sql" />
     <Build Include="Views\External\vw_Drivers.sql" />
+    <Build Include="Tables\Runs\RunElastibusDays.sql" />
   </ItemGroup>
 </Project>

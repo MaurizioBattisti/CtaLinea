@@ -22,6 +22,7 @@ namespace CtaLinea.Model.Request
 		public bool InvertNodes { get; set; } = false;
 
 		public bool Inc_AdditionalDays { get; set; } = true;
+		public bool Inc_ElastibusDays { get; set; } = true;
 		public bool Inc_Suspensions { get; set; } = true;
 		public bool Inc_Replacements { get; set; } = true;
 		public bool Inc_Tabs { get; set; } = true;

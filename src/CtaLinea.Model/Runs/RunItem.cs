@@ -15,8 +15,9 @@ namespace CtaLinea.Model.Runs
         public Contract? ContractData { get; set; }
 
         public bool Extra { get; set; } = false;
+		public bool Elastibus { get; set; } = false;
 
-        public int? ContractRowNumber { get; set; }
+		public int? ContractRowNumber { get; set; }
 
         public DateTime? StartDate { get; set; }
 
@@ -32,7 +33,9 @@ namespace CtaLinea.Model.Runs
 
         public IList<RunSuspension>? Suspensions { get; set; }
 
-        public IList<RunAdditionalDay> AdditionalDays { get; set; }
-    }
+        public IList<RunAdditionalDay>? AdditionalDays { get; set; }
+		public IList<RunElastibusDay>? ElastibusDays { get; set; }
+		
+	}
 }
 

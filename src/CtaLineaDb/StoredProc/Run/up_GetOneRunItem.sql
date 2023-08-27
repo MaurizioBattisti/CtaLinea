@@ -19,6 +19,8 @@ BEGIN
 	SELECT p.* FROM dbo.RunPeriods p WHERE p.RunId = @RunId;
 	-- giorni addizionali
 	SELECT r.* FROM dbo.RunAdditionalDays r WHERE r.RunId = @RunId;
+	-- gironi di effettuaizone dei servizi elastibus
+	SELECT d.* FROM [dbo].[RunElastibusDays] d WHERE d.RunId = @RunId;
 
 	-- calendari delle varianti
 	SELECT vc.RunVariationId,

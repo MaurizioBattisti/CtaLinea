@@ -14,9 +14,10 @@
 			Easing="Easings.Ease"
 			Duration="TimeSpan.FromSeconds(0.5)"
 		>
-		<div class="row">
+		<RadzenStack Orientation="Orientation.Horizontal">
 			<RadzenIcon Icon="@(this.CurrentRun.Extra ?"health_and_safety" : "shield")" IconStyle=@(this.CurrentRun.Extra ? IconStyle.Warning : IconStyle.Info) />
-		</div>
+			<RadzenIcon Icon="auto_awesome" Visible=@CurrentRun.Elastibus IconStyle="IconStyle.Primary" />
+		</RadzenStack>
 		<div class="row">
 			<RadzenFieldset Text="Appalto">
 				<RadzenRow AlignItems="AlignItems.Center">
@@ -68,9 +69,13 @@
 					<RadzenColumn Size="3">
 						<RadzenNumeric ReadOnly=@ReadOnly Name="ContractRowNumber" TValue="int?" @bind-Value="this.CurrentRun.ContractRowNumber" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 					</RadzenColumn>
-					<RadzenColumn Size="6">
-						<RadzenCheckBox Disabled=@ReadOnly Name="ExtraContract" @bind-Value=@this.CurrentRun.Extra TValue="bool" />
+					<RadzenColumn Size="3">
+						<RadzenCheckBox Disabled=@ReadOnly Name="ExtraContract" @bind-Value=@this.CurrentRun.Extra TValue="bool" Change=@(a=> this.EditableData?.SetDirty()) />
 						<RadzenLabel Text="Extra Capitolato" Component="ExtraContract" Style="margin-left: 8px; vertical-align: middle;" />
+					</RadzenColumn>
+					<RadzenColumn Size="3">
+						<RadzenCheckBox Disabled=@ReadOnly Name="Elastibus" @bind-Value=@this.CurrentRun.Elastibus TValue="bool" Change=@(a=> this.EditableData?.SetDirty()) />
+						<RadzenLabel Text="Elastibus" Component="Elastibus" Style="margin-left: 8px; vertical-align: middle;" />
 					</RadzenColumn>
 				</RadzenRow>
 			</RadzenFieldset>

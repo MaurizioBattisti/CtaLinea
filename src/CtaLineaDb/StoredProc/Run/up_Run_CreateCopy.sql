@@ -14,6 +14,7 @@ CREATE PROCEDURE [dbo].[up_Run_CreateCopy]
 	@StartTime				Time = NULL,
 	@InvertNodes			bit = 0,
 	@Inc_AdditionalDays		bit = 1,
+	@Inc_ElastibusDays		bit = 1,
 	@Inc_Suspensions		bit = 1,
 	@Inc_Replacements		bit = 1,
 	@Inc_Tabs				bit = 1,
@@ -320,6 +321,17 @@ BEGIN
 				(RunId,  Day, Note)
 			SELECT @NewRunId, d.Day, d.Note
 				FROM dbo.RunAdditionalDays d
+				WHERE d.RunId = @RunId;
+	END
+
+	--- inserisce i giorni effettivi elastibus
+	IF @Inc_ElastibusDays = 1
+	BEGIN
+		-- inserisce i giorni elastibus
+		INSERT INTO dbo.RunElastibusDays 
+				(RunId,  Day, Km, PeopleCount,  Note)
+			SELECT @NewRunId, d.Day, d.Km, d.PeopleCount, d.Note
+				FROM dbo.RunElastibusDays d
 				WHERE d.RunId = @RunId;
 	END
 

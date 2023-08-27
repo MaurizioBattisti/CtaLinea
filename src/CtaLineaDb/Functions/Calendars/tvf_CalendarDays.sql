@@ -79,6 +79,18 @@ BEGIN
 		FROM @CalendarTree c
 		WHERE c.BaseCalendarId IS NULL;
 
+	-- controlla se l'ultimo livello è un  calendario ad inversione del livello precedente
+	DECLARE @Is_IPL		bit = 0;
+	SELECT @Is_IPL = 1
+		FROM @CalendarTree t
+		WHERE t.CalendarId = @CalendarId
+		AND t.CalendarType = 'IPL';;
+
+	IF @Is_IPL = 1 
+	BEGIN
+		SET @Int_Lvele = 1;
+	END;
+
 	WHILE @Int_Lvele > 0
 	bEGIN
 		SELECT @Int_CalendarId = c.CalendarId,
@@ -199,16 +211,22 @@ BEGIN
 		IF @Int_CalendarType = 'IPL' 
 		BEGIN
 			DELETE FROM @TmpDays;
+			DELETE FROM @Days;
+			
+			-- calendario sottostante
 			SELECT @Tmp_CalendarId = t.CalendarId FROM @CalendarTree t WHERE  t.TreeLevel = @Int_Lvele + 2;
+			INSERT INTO @Days (Day, Number, ExcludedByCalendar, ExcludedByPeriod)
+				SELECT d.DAy, 1, 0, 0 FROM [dbo].[tvf_CalendarDays] (@Tmp_CalendarId, @StartDate, @EndDate) d;
 
+			-- livello precedente
+			SELECT @Tmp_CalendarId = t.CalendarId FROM @CalendarTree t WHERE  t.TreeLevel = @Int_Lvele + 1;
 			INSERT INTO @TmpDays (Day)
 				SELECT d.DAy FROM [dbo].[tvf_CalendarDays] (@Tmp_CalendarId, @StartDate, @EndDate) d;
 
 			-- nverte tutto il calendario già calcolato
 			UPDATE @Days 
-				SET ExcludedByCalendar =(CASE ExcludedByCalendar WHEN 0 THEN 1 ELSE 0 END),
-					ExcludedByPeriod = (CASE ExcludedByPeriod WHEN 0 THEN 1 ELSE 0 END)
-
+				SET ExcludedByCalendar =1,
+					ExcludedByPeriod =0
 				FROM @Days d
 				INNER JOIN @TmpDays dd
 					ON d.Day = dd.Day;
@@ -244,7 +262,6 @@ BEGIN
 				-- LEFT JOIN dbo.CalendarHolidays h
 					ON d.Day = h.Holiday
 					;
-
 		END
 
 		SET @Int_Lvele = @Int_Lvele -1;
@@ -258,5 +275,6 @@ BEGIN
 			AND d.ExcludedByCalendar = 0
 			AND d.ExcludedByPeriod = 0
 		;
-	RETURN
+
+	RETURN;
 END

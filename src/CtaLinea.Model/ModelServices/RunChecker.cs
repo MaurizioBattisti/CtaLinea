@@ -15,6 +15,11 @@ namespace CtaLinea.Model.ModelServices
     {
         public async Task<RunItem> CleanGraphAsync (RunItem run)
         {
+            if (run.Elastibus == false)
+            {
+                run.ElastibusDays = null;
+            }
+
             if (run.SubPeriods != null)
             {
                 foreach (var period in run.SubPeriods)
@@ -40,11 +45,19 @@ namespace CtaLinea.Model.ModelServices
                         }
                     }
 
-                    // gestisce i costi dei mezzi
                     if (period.Cars != null)
                     {
                         foreach (var car in period.Cars)
                         {
+                            // controlla se l'id dell'autista sia impostato
+                            // se non lo è  lo mette anull
+                            if (car.DriverId ==Guid.Empty)
+                            {
+                                car.DriverId = null;
+                                car.DriverData = null;
+                            }
+
+                            // gestisce i costi dei mezzi
                             // se il mezzo è una scorta
                             if (car.RunCarType == CarTypeEnum.Spare)
                             {
@@ -197,6 +210,28 @@ namespace CtaLinea.Model.ModelServices
             if (errors.Count > 0) result.Status = CheckStatus.Failed;
             else if (warnings.Count > 0) result.Status = CheckStatus.Warning;
             else if (informations.Count > 0) result.Status = CheckStatus.Information;
+
+            // contrlla i gironi elastibus
+            if (run.Elastibus == true
+                && run.ElastibusDays != null)
+            {
+                // controlla ogni giorno elastibus
+                foreach (var elbDay in run.ElastibusDays)
+                {
+                    if (elbDay.Km <= 0 
+                        && elbDay.PeopleCount <= 0)
+                    {
+                        errors.Add(
+                            new CheckResultItem()
+                            {
+                                Category = RunCheckResult.Category_ElbDays,
+                                Title = "Km o nr persone non impostato sui gironi Elastibus",
+                                Description = "Non è stato indicata la distanza percorsa e/o il numerod i eprsone trasportate",
+                                Id = run.RunId
+                            });
+                    }
+                }
+            }
 
             return await Task.FromResult(result);
         }

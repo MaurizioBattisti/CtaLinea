@@ -34,7 +34,8 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         private const string SQL_Table_RunNodes = "[dbo].[RunNodes]";
         private const string SQL_Table_RunPeriods = "[dbo].[RunPeriods]";
         private const string SQL_Table_RunAdditionalDays = "[dbo].[RunAdditionalDays]";
-        private const string SQL_Table_RunCars = "[dbo].[RunCars]";
+		private const string SQL_Table_RunElastibusDays = "[dbo].[RunElastibusDays]";
+		private const string SQL_Table_RunCars = "[dbo].[RunCars]";
         private const string SQL_Table_RunCarCosts = "[dbo].[RunCarCosts]";
         private const string SQL_Table_CarReplacements = "[dbo].[RunCarReplacements]";
         private const string SQL_Table_CarReplacementDetails = "[dbo].[RunCarReplacementDetails]";
@@ -282,11 +283,21 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                             await this.InsertDayAsync(runItem.RunId, addDay, conn, tran);
                         }
                     }
-                    #endregion
+					#endregion
 
-                    #endregion
-                }
-                else
+					#region inserisce i giorni effettivi elastibus
+					if (runItem.ElastibusDays != null)
+					{
+						foreach (var elbDay in runItem.ElastibusDays)
+						{
+							await this.InsertElbDayAsync(runItem.RunId, elbDay, conn, tran);
+						}
+					}
+					#endregion
+
+					#endregion
+				}
+				else
                 {
                     // è un update
                     #region aggiorna i dati della corsa
@@ -542,11 +553,40 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                         (v) => v.Day,
                         async (k) => await this.DeleteDayAsync(runItem.RunId, k, conn, tran)
                         );
-                    #endregion
-                }
+					#endregion
 
-                // indica che il ricalcolo dei gironi è necessario
-                await this.AddToRecalcNeededAsync(
+					#region gestisce i giorni effettivi elastibus
+					// inserisce i nuovi giorni effetivi elastibus
+					await this.FindNewAsync(
+						oldRun.ElastibusDays,
+						runItem.ElastibusDays,
+						(v) => v.Day,
+						async (elbDay) => await this.InsertElbDayAsync(runItem.RunId, elbDay, conn, tran)
+						);
+
+					// aggionra i giorni effettivi elastibus
+					await this.FindUpdatedAsync(
+						oldRun.ElastibusDays,
+						runItem.ElastibusDays,
+						(v) => v.Day,
+						(n, o) => o.Day == n.Day,
+						async (elbDay, oldElbDay) =>
+						{
+							await this.UpdateElbDayAsync(runItem.RunId, elbDay, conn, tran);
+						});
+
+					// identifica le giorante effettibe elastibus da eliminare
+					await this.FindDeletedAsync(
+						oldRun.ElastibusDays,
+						runItem.ElastibusDays,
+						(v) => v.Day,
+						async (k) => await this.DeleteElbDayAsync(runItem.RunId, k, conn, tran)
+						);
+					#endregion
+				}
+
+				// indica che il ricalcolo dei gironi è necessario
+				await this.AddToRecalcNeededAsync(
                     conn, tran,
                     runItem.RunId);
 
@@ -746,10 +786,12 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 
             // Giorni addizionali
             item.AdditionalDays = reader.Read<RunAdditionalDay>().ToList();
+			// Giorni effettivi Elastibus
+			item.ElastibusDays = reader.Read<RunElastibusDay>().ToList();
 
-            // calendari varianti
-            #region variaton calendars
-            var varCals = (from c in reader.Read<BlRunVarCalendars>()
+			// calendari varianti
+			#region variaton calendars
+			var varCals = (from c in reader.Read<BlRunVarCalendars>()
                          group c by (Guid)c.RunVariationId into varCalendars
                          orderby varCalendars.Key
                          select varCalendars);
@@ -963,6 +1005,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 runItem.ContractId,
                 runItem.ContractRowNumber,
                 runItem.Extra,
+                runItem.Elastibus,
 				runItem.RunName,
 
                 runItem.Note
@@ -1737,8 +1780,75 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 this.GetDayKey(runId, day)
                 );
         }
-        #endregion
+		#endregion
 
+		#region Gironi effettivi Elastibus
+		private object GetElbDayData(
+			RunElastibusDay elbDay)
+		{
+			return new
+			{
+				elbDay.Km,
+				elbDay.PeopleCount,
+				elbDay.Note
+			};
+		}
+		private object GetElbDayKey(
+			Guid runId,
+			DateTime day)
+		{
+			return new
+			{
+				RunId = runId,
+				Day = day
+			};
+		}
+
+		private async Task InsertElbDayAsync(
+			Guid runId,
+			RunElastibusDay elbDay,
+			IDbConnection conn,
+			IDbTransaction tran
+			)
+		{
+			await this.InsertTableAsync(
+				SQL_Table_RunElastibusDays,
+				conn, tran,
+				this.JoinObjects(
+					this.GetElbDayKey(runId, elbDay.Day),
+					this.GetElbDayData(elbDay)
+					)
+				);
+		}
+		private async Task UpdateElbDayAsync(
+			Guid runId,
+			RunElastibusDay elbDay,
+			IDbConnection conn,
+			IDbTransaction tran
+			)
+		{
+			await this.UpdateTableAsync(
+				SQL_Table_RunElastibusDays,
+				conn, tran,
+				this.GetElbDayKey(runId, elbDay.Day),
+				this.GetElbDayData(elbDay)
+				);
+		}
+		private async Task DeleteElbDayAsync(
+			Guid runId,
+			DateTime day,
+			IDbConnection conn,
+			IDbTransaction tran
+			)
+		{
+			await this.DeleteTableAsync(
+				SQL_Table_RunElastibusDays,
+				conn, tran,
+				this.GetElbDayKey(runId, day)
+				);
+		}
+		#endregion
+		
         #endregion
-    }
+	}
 }

@@ -186,7 +186,7 @@ namespace ZzSoft.CtaLinea.Dal.Queries
             }
 
             var queryDef = new QueryDefinition<RunItemQueryModel>(
-				RunItemListSql_Table + RunItemçistSql_Coincidence,
+				RunItemListSql_Table + RunItemçistSql_Coincidence + RunItemçistSql_NoPrimaryAss,
 				null,
                 "r.RunId = @RunId",
 				new { RunId = id });

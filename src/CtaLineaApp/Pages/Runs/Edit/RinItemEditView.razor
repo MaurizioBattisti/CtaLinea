@@ -44,7 +44,11 @@ else if (this.NoData == false)
     <RadzenTabs 
         @bind-SelectedIndex=@TabSelectedIndex
         TabPosition="TabPosition.Top" 
-        RenderMode="TabRenderMode.Client">
+        
+        Change=@TabChangedd>
+        <!--
+            RenderMode="TabRenderMode.Client"
+        -->
          <Tabs>
             <RadzenTabsItem Text="Errori" Icon="beenhere">
                 <Animate Animation="Animations.ZoomIn"
@@ -83,7 +87,12 @@ else if (this.NoData == false)
             </RadzenTabsItem>
 
             <RadzenTabsItem Text="Giorni Add." Icon="free_cancellation">
-                <RunAdditionalDayListView ReadOnly="@ReadOnly" EditableData=@this CurrentRun=@CurrentRun />
+                <RadzenRow>
+                    <RunAdditionalDayListView ReadOnly="@ReadOnly" EditableData=@this CurrentRun=@CurrentRun />
+                </RadzenRow>
+                <RadzenRow Visible=@ElastibusDaysVisible>
+                    <RunElastibusDayListView ReadOnly="@ReadOnly" EditableData=@this CurrentRun=@CurrentRun />
+                </RadzenRow>
             </RadzenTabsItem>
             
             @if (this.IsAdding == false)
@@ -151,6 +160,8 @@ else if (this.NoData == true)
     [Parameter]
     public bool NoData { get; set; } = true;
 
+    public bool ElastibusDaysVisible { get; set; } = false;
+
     private RunCheckResult? CheckResult { get; set; }
     private RunPlanningView? Planning;
     private RunCostsView? CostsView;
@@ -215,9 +226,11 @@ else if (this.NoData == true)
         this.RunId = runId;
         this.IsAdding = isAdding;
 
+
         // se il guid è empty non tenta neanche ilc aricamento e segna subito che non ci sono dati
         if (this.RunId == Guid.Empty)
         {
+            this.ElastibusDaysVisible = false;
             this.NoData = true;
             this.IsClean = true;
             this.IsAdding = false;
@@ -240,7 +253,7 @@ else if (this.NoData == true)
                         var periodQry = (from p in run.SubPeriods
                                          orderby p.StartDate, p.EndDate, p.RunPeriodId
                                          select p.RunPeriodId);
-                        
+
                         foreach (var pId in periodQry)
                         {
                             if (colorIndex > this.Colors.Length) colorIndex = 0;
@@ -254,6 +267,7 @@ else if (this.NoData == true)
                     this.IsClean = true;
                     this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
                     this.NoData = false;
+                    this.ElastibusDaysVisible = this.CurrentRun.Elastibus;
                 }
             }
             else
@@ -281,11 +295,13 @@ else if (this.NoData == true)
                     this.IsClean = true;
                     this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
                     this.NoData = false;
+                    this.ElastibusDaysVisible = this.CurrentRun.Elastibus;
                 }
                 else
                 {
                     this.NoData = true;
                     this.notificationService.Notify(NotificationSeverity.Warning, "Selezionare un appalto prima di aggiungere una corsa");
+                    this.ElastibusDaysVisible = false;
                 }
             }
         }
@@ -293,6 +309,7 @@ else if (this.NoData == true)
         {
             this.notificationService.Notify(NotificationSeverity.Error, "Errore caricando i dati", exc.Message);
             this.NoData = true;
+            this.ElastibusDaysVisible = false;
         }
         finally
         {
@@ -325,7 +342,7 @@ else if (this.NoData == true)
                 "Salvataggio dati corsa OK"
             );
 
-            
+
             if (this.Planning != null)
             {
                 await this.Planning.ReloadDataAsync();
@@ -334,7 +351,7 @@ else if (this.NoData == true)
             {
                 await this.CostsView.ReloadDataAsync();
             }
-            
+
             await this.RaiseSavedEvent();
         }
         catch (BadRequestException<RunCheckResult> ex)
@@ -363,6 +380,11 @@ else if (this.NoData == true)
         }
     }
 
+    private async Task TabChangedd (int index )
+    {
+        this.ElastibusDaysVisible = this.CurrentRun.Elastibus;
+        await this.InvokeAsync(this.StateHasChanged);
+    }
     /*
     private void Btn_Click()
     {

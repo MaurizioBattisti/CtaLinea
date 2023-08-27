@@ -176,7 +176,7 @@
 	{
 		await Task.CompletedTask;
 
-		this.ScheduledTask.Interval = this.EndTime ?? new TimeSpan(0, 0, 0);
+		this.ScheduledTask.Interval = this.Interval ?? new TimeSpan(0, 0, 0);
 	}
 
 	private async Task SaveData (DialogService ds)

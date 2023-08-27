@@ -13,15 +13,15 @@
 			 Duration="TimeSpan.FromSeconds(0.5)">
 
 		<RadzenRow>
-			<RadzenText TextStyle="TextStyle.H5">Giorni Aggiuntivi</RadzenText>
+			<RadzenText TextStyle="TextStyle.H5">Giorni effettivi Elastibus</RadzenText>
 			<RadzenDataGrid 
 				@ref="grdData"
 				AllowAlternatingRows="false" 
 				AllowFiltering="true" 
 				AllowSorting="true" 
 				EditMode="DataGridEditMode.Single"
-				Data="@CurrentRun.AdditionalDays" 
-				TItem="RunAdditionalDay" 
+				Data="@CurrentRun.ElastibusDays" 
+				TItem="RunElastibusDay" 
 				RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow" 
 				Sort="@Reset" 
 				Page="@Reset" 
@@ -29,14 +29,14 @@
 				<HeaderTemplate>
 					@if(ReadOnly == false)
 					{
-					<RadzenButton Text="Nuogo Giorno"
+					<RadzenButton Text="Aggiungi dati"
 								  ButtonStyle="ButtonStyle.Primary"
 								  Icon="add"
 								  Click=@AddDay_Click />
 					}
 				</HeaderTemplate>
 				<Columns>
-					<RadzenDataGridColumn TItem="RunAdditionalDay" Property="Day" Title="Giorno" Width="150px">
+					<RadzenDataGridColumn TItem="RunElastibusDay" Property="Day" Title="Giorno" Width="150px">
 						<Template Context="item">
 							@String.Format("{0:dd/MM/yyyy}", item.Day)
 						</Template>
@@ -48,7 +48,27 @@
 								Class="w-100" />
 						</EditTemplate>
 					</RadzenDataGridColumn>
-					<RadzenDataGridColumn TItem="RunAdditionalDay" Property="Note" Title="Note" Width="380px">
+
+					<RadzenDataGridColumn TItem="RunElastibusDay" Title="Km" Property="@nameof(RunElastibusDay.Km)" FormatString="{0:F2}" Width="90px">
+						<EditTemplate Context="data">
+							<RadzenNumeric TValue="double"
+										   @bind-Value="@data.Km"
+										   Culture=@AppSettings.CurrentCulture
+										   Format="0.00"
+										   Class="w-100" />
+						</EditTemplate>
+					</RadzenDataGridColumn>
+					<RadzenDataGridColumn TItem="RunElastibusDay" Title="Nr. Pers." Property="@nameof(RunElastibusDay.PeopleCount)" FormatString="{0:0}" Width="90px">
+						<EditTemplate Context="data">
+							<RadzenNumeric TValue="int"
+							@bind-Value="@data.PeopleCount"
+										   Culture=@AppSettings.CurrentCulture
+										   Format="0"
+										   Class="w-100" />
+						</EditTemplate>
+					</RadzenDataGridColumn>
+					
+					<RadzenDataGridColumn TItem="RunElastibusDay" Property="Note" Title="Note" Width="380px">
 						<EditTemplate Context="item">
 							<RadzenTextBox @bind-Value="item.Note" Class="w-100" />
 						</EditTemplate>
@@ -56,7 +76,7 @@
 
 					@if (ReadOnly == false)
 					{
-						<RadzenDataGridColumn TItem="RunAdditionalDay" Context="item" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
+						<RadzenDataGridColumn TItem="RunElastibusDay" Context="item" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
 							<Template Context="item">
 								<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@(args => EditRow_Click(item))" @onclick:stopPropagation="true">
 								</RadzenButton>
@@ -87,16 +107,16 @@
 	[Parameter]
 	public bool ReadOnly { get; set; } = false;
 
-	RunAdditionalDay? DayToInsert;
-	RunAdditionalDay? DayToUpdate;
-	private RadzenDataGrid<RunAdditionalDay>? grdData;
+	RunElastibusDay? DayToInsert;
+	RunElastibusDay? DayToUpdate;
+	private RadzenDataGrid<RunElastibusDay>? grdData;
 	void Reset()
 	{
 		DayToInsert = null;
 		DayToUpdate = null;
 	}
 
-	async Task EditRow_Click(RunAdditionalDay item)
+	async Task EditRow_Click(RunElastibusDay item)
 	{
 		await Task.CompletedTask;
 		DayToUpdate = item;
@@ -106,7 +126,7 @@
 		}
 	}
 
-	void OnUpdateRow(RunAdditionalDay item)
+	void OnUpdateRow(RunElastibusDay item)
 	{
 		if (item == DayToInsert)
 		{
@@ -117,12 +137,12 @@
 		this.EditableData?.SetDirty();
 	}
 
-	async Task SaveRow_Click(RunAdditionalDay item)
+	async Task SaveRow_Click(RunElastibusDay item)
 	{
 		await Task.CompletedTask;
 
 		// controlla che non sia stati inseriti doppioni
-		var list = CurrentRun.AdditionalDays ?? new List<RunAdditionalDay> ();
+		var list = CurrentRun.ElastibusDays ?? new List<RunElastibusDay>();
 		var duplicate = (from d in list
 							where d != item
 								&& d.Day == item.Day
@@ -142,7 +162,7 @@
 		}
 	}
 
-	void CancelEdit_Click(RunAdditionalDay item)
+	void CancelEdit_Click(RunElastibusDay item)
 	{
 		if (item == DayToInsert)
 		{
@@ -154,7 +174,7 @@
 		grdData?.CancelEditRow(item);
 	}
 
-	async Task DeleteRow_Click(RunAdditionalDay item)
+	async Task DeleteRow_Click(RunElastibusDay item)
 	{
 		this.EditableData?.SetDirty();
 
@@ -167,24 +187,24 @@
 		{
 			DayToUpdate = null;
 		}
-		CurrentRun.AdditionalDays?.Remove(item);
+		CurrentRun.ElastibusDays?.Remove(item);
 		if (grdData != null)
 		{
 			await grdData.Reload();
 		}
 	}
 
-	void OnCreateRow(RunAdditionalDay item)
+	void OnCreateRow(RunElastibusDay item)
 	{
 		this.EditableData?.SetDirty();
 
-		if (this.CurrentRun.AdditionalDays == null)
+		if (this.CurrentRun.ElastibusDays == null)
 		{
-			CurrentRun.AdditionalDays = new List<RunAdditionalDay>() { item };
+			CurrentRun.ElastibusDays = new List<RunElastibusDay>() { item };
 		}
 		else
 		{
-			CurrentRun.AdditionalDays.Add(item);
+			CurrentRun.ElastibusDays.Add(item);
 		}
 
 		DayToInsert = null;
@@ -198,15 +218,17 @@
 
 	private int DaysCount ()
 	{
-		return (this.CurrentRun?.AdditionalDays?.Count() ?? 0);
+		return (this.CurrentRun?.ElastibusDays?.Count() ?? 0);
 	}
 
 	private async Task AddDay_Click ()
 	{
 		await Task.CompletedTask;
-		DayToInsert = new RunAdditionalDay()
+		DayToInsert = new RunElastibusDay()
 		{
-			Day = DateTime.Today.Date
+			Day = DateTime.Today.Date,
+			Km = 0,
+			PeopleCount = 0
 		};
 		if (grdData != null)
 		{

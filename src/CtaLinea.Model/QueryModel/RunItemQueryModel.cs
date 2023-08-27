@@ -28,7 +28,10 @@ namespace CtaLinea.Model.QueryModel
 
         [ColumnDescription(Header = "Extra")]
         public bool Extra { get; set; }
-        [ColumnDescription(Header = "Riga Appalto")]
+		[ColumnDescription(Header = "Elastibus")]
+		public bool Elastibus { get; set; }
+		
+		[ColumnDescription(Header = "Riga Appalto")]
         [SqlField(SortPosition = 0)]
         public int? ContractRowNumber { get; set; }
 
@@ -163,6 +166,7 @@ namespace CtaLinea.Model.QueryModel
             ContractId = source.ContractId;
 
             Extra = source.Extra;
+            Elastibus = source.Elastibus;
             ContractRowNumber = source.ContractRowNumber;
 			StartDate = source.StartDate;
 			EndDate = source.EndDate;

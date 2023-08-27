@@ -265,6 +265,15 @@
 
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Km" Title="Km" Width="100px" FilterValue=@Filter_Km FormatString="{0:0.00}" />
 
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="@nameof(RunItemQueryModel.Elastibus)" Title="Elastibus" Width="100px">
+                    <Template Context="data">
+                        @if (data.Elastibus)
+                        {
+                            <RadzenIcon Icon="check" />
+                        }
+                    </Template>
+                </RadzenDataGridColumn>
+
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="@nameof(RunItemQueryModel.ForfaitName)" Title="Forfait" Width="150px" />
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="@nameof(RunItemQueryModel.CoincidenceState)" Title="Coincidenza" Width="150px" />
 
@@ -1225,7 +1234,6 @@
         catch (Exception exc)
         {
             this.notificationService.Notify(NotificationSeverity.Warning, "errore durante l'aggiornamento della lista", exc.Message);
-
         }
         finally
         {

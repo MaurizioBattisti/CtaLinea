@@ -13,6 +13,8 @@
     [CtaRunId] INT NOT NULL IDENTITY, 
 
     [RunName] VARCHAR(MAX) NULL, 
+    [Elastibus] BIT NOT NULL DEFAULT 0, 
+
     CONSTRAINT [FK_Funs_Contract] 
         FOREIGN KEY (ContractId) 
         REFERENCES [dbo].[Contracts](ContractId)

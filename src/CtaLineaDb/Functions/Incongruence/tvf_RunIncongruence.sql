@@ -175,7 +175,7 @@ BEGIN
 				INNER JOIN dbo.Cars c
 					ON Rc.CarId = c.CarId
 				WHERE (c.PrimaryCar = 0 AND rc.CarType = 'P')
-					OR (c.SpareCar = 0 AND rc.CarType = 'S')
+					OR (c.SpareCar = 0 AND c.PrimaryCar = 0 AND rc.CarType = 'S')
 		)
 		INSERT INTO @Tbl_Inc (RunId, IncType)
 			SELECT d.RunId, 5
