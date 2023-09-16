@@ -1,6 +1,7 @@
 ﻿@using CtaLinea.Model.Runs
 @using CtaLineaApp.Components.Base
 @inject IRunModelService RunModelService
+@inject IApplicationSettings AppSettings
 
 <div class="d-flex flex-row">
 	<div class="col-2">
@@ -148,7 +149,7 @@
 		DateTime? date)
 	{
 		if (date == null) return string.Empty;
-		return string.Format("{0:dd/MM/yyyy}", date);
+		return string.Format(this.AppSettings.CurrentCulture, "{0:dd/MM/yyyy}", date);
 	}
 
 	private string FormatTime(
@@ -157,7 +158,7 @@
 		if (time == null) return string.Empty;
 		var dt = new DateTime(1, 1, 1);
 		dt = dt.Add(time.Value);
-		return string.Format("{0:HH:mm}", dt);
+		return string.Format(this.AppSettings.CurrentCulture, "{0:HH:mm}", dt);
 	}
 
 	/*

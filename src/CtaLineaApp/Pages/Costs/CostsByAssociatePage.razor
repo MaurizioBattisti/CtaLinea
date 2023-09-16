@@ -138,55 +138,55 @@
 
                 <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.KmTot)" Title="Km Totali" FormatString="{0:f2}" Width="100px">
                     <FooterTemplate>
-                        <RadzenText Text="@string.Format("{0:f2}",ByCarTotals.KmTot)" />
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",ByCarTotals.KmTot)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.Total)" Title="Costo Totale" FormatString="{0:C}" Width="150px">
                     <FooterTemplate>
-                        <RadzenText Text="@string.Format("{0:C}",ByCarTotals.Total)" />
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByCarTotals.Total)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
 
                 <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.Km)" Title="Tod. Km" FormatString="{0:f2}" Width="100px">
                     <FooterTemplate>
-                        <RadzenText Text="@string.Format("{0:f2}",ByCarTotals.Km)" />
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",ByCarTotals.Km)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.KmExtra)" Title="Tod. Km Extra" FormatString="{0:f2}" Width="100px">
                     <FooterTemplate>
-                        <RadzenText Text="@string.Format("{0:f2}",ByCarTotals.KmExtra)" />
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",ByCarTotals.KmExtra)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
 
                 <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayCost)" Title="Tod. Costo da GG" FormatString="{0:C}" Width="150px">
                     <FooterTemplate>
-                        <RadzenText Text="@string.Format("{0:C}",ByCarTotals.DayCost)" />
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByCarTotals.DayCost)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.CostKm)" Title="Tod. Costo Km GG" FormatString="{0:C}" Width="150px">
                     <FooterTemplate>
-                        <RadzenText Text="@string.Format("{0:C}",ByCarTotals.CostKm)" />
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByCarTotals.CostKm)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.CostKmExtra)" Title="Tit. Costo Km GG Extra" FormatString="{0:C}" Width="150px">
                     <FooterTemplate>
-                        <RadzenText Text="@string.Format("{0:C}",ByCarTotals.CostKmExtra)" />
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByCarTotals.CostKmExtra)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
 
                 <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayIntegration)" Title="Tot. int. GG" FormatString="{0:C}" Width="150px">
                     <FooterTemplate>
-                        <RadzenText Text="@string.Format("{0:C}",ByCarTotals.DayIntegration)" />
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByCarTotals.DayIntegration)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayForfait)" Title="Tot. Forfait GG" FormatString="{0:C}" Width="150px">
                     <FooterTemplate>
-                        <RadzenText Text="@string.Format("{0:C}",ByCarTotals.DayForfait)" />
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByCarTotals.DayForfait)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayMultiRunForfait)" Title="Tot. Forfait Multiplo GG" FormatString="{0:C}" Width="150px">
                     <FooterTemplate>
-                        <RadzenText Text="@string.Format("{0:C}",ByCarTotals.DayMultiRunForfait)" />
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByCarTotals.DayMultiRunForfait)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
             </Columns>
@@ -243,55 +243,55 @@
 
                 <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.KmTot)" Title="Km Totali" FormatString="{0:f2}" Width="100px">
                     <FooterTemplate>
-                        <RadzenText Text="@string.Format("{0:f2}",ByRunTotals.KmTot)" />
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",ByRunTotals.KmTot)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.Total)" Title="Costo Totale" FormatString="{0:C}" Width="150px">
                     <FooterTemplate>
-                        <RadzenText Text="@string.Format("{0:C}",ByRunTotals.Total)" />
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByRunTotals.Total)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
 
                 <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.Km)" Title="Tod. Km" FormatString="{0:f2}" Width="100px">
                     <FooterTemplate>
-                        <RadzenText Text="@string.Format("{0:f2}",ByRunTotals.Km)" />
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",ByRunTotals.Km)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.KmExtra)" Title="Tod. Km Extra" FormatString="{0:f2}" Width="100px">
                     <FooterTemplate>
-                        <RadzenText Text="@string.Format("{0:f2}",ByRunTotals.KmExtra)" />
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",ByRunTotals.KmExtra)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
 
                 <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.DayCost)" Title="Tod. Costo da GG" FormatString="{0:C}" Width="150px">
                     <FooterTemplate>
-                        <RadzenText Text="@string.Format("{0:C}",ByRunTotals.DayCost)" />
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByRunTotals.DayCost)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.CostKm)" Title="Tod. Costo Km GG" FormatString="{0:C}" Width="150px">
                     <FooterTemplate>
-                        <RadzenText Text="@string.Format("{0:C}",ByRunTotals.CostKm)" />
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByRunTotals.CostKm)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.CostKmExtra)" Title="Tit. Costo Km GG Extra" FormatString="{0:C}" Width="150px">
                     <FooterTemplate>
-                        <RadzenText Text="@string.Format("{0:C}",ByRunTotals.CostKmExtra)" />
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByRunTotals.CostKmExtra)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
 
                 <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.DayIntegration)" Title="Tot. int. GG" FormatString="{0:C}" Width="150px">
                     <FooterTemplate>
-                        <RadzenText Text="@string.Format("{0:C}",ByRunTotals.DayIntegration)" />
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByRunTotals.DayIntegration)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.DayForfait)" Title="Tot. Forfait GG" FormatString="{0:C}" Width="150px">
                     <FooterTemplate>
-                        <RadzenText Text="@string.Format("{0:C}",ByRunTotals.DayForfait)" />
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByRunTotals.DayForfait)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.DayMultiRunForfait)" Title="Tot. Forfait Multiplo GG" FormatString="{0:C}" Width="150px">
                     <FooterTemplate>
-                        <RadzenText Text="@string.Format("{0:C}",ByRunTotals.DayMultiRunForfait)" />
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByRunTotals.DayMultiRunForfait)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
             </Columns>
@@ -551,7 +551,7 @@
     {
         if (time == null) return string.Empty;
         var to = new TimeOnly(time.Value.Hours, time.Value.Minutes, time.Value.Minutes);
-        return string.Format("{0:HH:mm}", to);
+        return string.Format(this.AppSettings.CurrentCulture, "{0:HH:mm}", to);
     }
     #endregion
 }

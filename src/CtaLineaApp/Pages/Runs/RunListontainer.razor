@@ -12,6 +12,7 @@
 @inject IExcelExporterService ExcelService
 @inject IForfaitService ForfaitService
 @inject IAccountService _accountService
+@inject IApplicationSettings AppSettings
 
 @inherits EditorComponentBase
 @attribute [Authorize]
@@ -56,7 +57,7 @@
                         CellRender=@CellRender
                         Density=@Settings.Density>
             <HeaderTemplate>
-                <RadzenStack Orientation="Orientation.Horizontal" Gap="4px">
+                <RadzenStack Orientation="Orientation.Horizontal" Gap="4px" class="noprint">
                     <RadzenSplitButton 
                             ButtonStyle="ButtonStyle.Dark"
                             Icon="file_download" Click=@DownloadData_Click >
@@ -253,8 +254,10 @@
                         @FormatTime(data?.StartTime)
                     </Template>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="PathsDescr" Title="Percorso (Nodi)" Width="200px" FilterValue=@Filter_PathsDescr />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="PathsDescr" Title="Percorso" Width="200px" FilterValue=@Filter_PathsDescr />
+                <!--
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Path" Title="Percorso" Width="200px" FilterValue=@Filter_Path />
+                -->
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedFrequency" Title="Frequenza richiesta" Width="200px" FilterValue=@Filter_RequestedFrequency />
 
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunName" Title="Nome Corsa" Width="250px" />
@@ -398,7 +401,7 @@
             </Columns>
         </RadzenDataGrid>
     </RadzenBody>
-    <RadzenSidebar Expanded="@EditorVisible" Style=@GetEditorStyle()>
+    <RadzenSidebar Expanded="@EditorVisible" Style=@GetEditorStyle() class="noprint">
         <RinItemEditView @ref=@RunEditDetail
                         ShowCloseButton=true
                         Saved=@RunSaved
@@ -671,7 +674,8 @@
     {
         if (item.IsAssociateNotPrimary())
         {
-            return "rz-background-color-primary-lighter";
+            // return "rz-background-color-primary-lighter";
+            return "rz-background-color-series-4";
         }
         return string.Empty;
     }
@@ -681,7 +685,7 @@
     {
         if (time == null) return string.Empty;
         var to = new TimeOnly(time.Value.Hours, time.Value.Minutes, time.Value.Minutes);
-        return string.Format("{0:HH:mm}", to);
+        return string.Format(this.AppSettings.CurrentCulture, "{0:HH:mm}", to);
     }
 
     private void RowRender(RowRenderEventArgs<RunItemQueryModel> args)

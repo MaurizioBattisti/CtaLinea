@@ -1,8 +1,9 @@
-﻿@using CtaLineaApp.Components.Base
+﻿@inject IApplicationSettings AppSettings
 @using CtaLineaApp.Pages.Runs.Dialogs
 @inject IRunModelService RunModelService
 @inject DialogService DialogService
 @inject NotificationService notificationService
+@inject IApplicationSettings AppSettings
 
 <RadzenPanel AllowCollapse="true" Style="auto;">
 	<HeaderTemplate>
@@ -311,7 +312,7 @@
 		DateTime? date)
 	{
 		if (date == null) return string.Empty;
-		return string.Format("{0:dd/MM/yyyy}", date);
+		return string.Format(this.AppSettings.CurrentCulture, "{0:dd/MM/yyyy}", date);
 	}
 
 	void OnTabChange(int index)
@@ -487,7 +488,7 @@
 		string start = " dall'inizio";
 		if (this.CurrentVariation?.StartDate != null)
 		{
-			start = string.Format("{0:dd/MM/yyyy}", this.CurrentVariation.StartDate);
+			start = string.Format(this.AppSettings.CurrentCulture, "{0:dd/MM/yyyy}", this.CurrentVariation.StartDate);
 		}
 		var result = await this.DialogService.Confirm(
 			string.Format("Sei sicuro di voler eliminare la variante che inizia il {0} ?", start),

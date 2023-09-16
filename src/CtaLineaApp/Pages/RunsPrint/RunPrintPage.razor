@@ -1,0 +1,103 @@
+﻿@page "/run-print/{RunIds}"
+@inject IJSRuntime jsRuntime
+@inject ICurrentUserService _userSvc;
+@attribute [Authorize]
+
+<RadzenRow class="noprint">
+	<RadzenButton Click="@PrintClick" Text="Stampa..." Icon="print" />
+</RadzenRow>
+
+@foreach(var run in this.Runs)
+{
+	@if (this.Runs.IndexOf(run) > 0)
+	{
+		<!-- salto pagina-->
+		<div style="break-before:page"></div>
+	}
+
+	<!-- ... da togliere -->
+	<button class="btn btn-primary">bottone di rpova di bootstrap</button>
+
+	<div class="noscreen">
+		<PrintRun RunId="@run.RunId" />
+
+
+
+		<table class="table table-dark table-sm">
+			<thead>
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">First</th>
+					<th scope="col">Last</th>
+					<th scope="col">Handle</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<th scope="row">1</th>
+					<td>Mark</td>
+					<td>Otto</td>
+					<td>mdo</td>
+				</tr>
+				<tr>
+					<th scope="row">2</th>
+					<td>Jacob</td>
+					<td>Thornton</td>
+					<td>fat</td>
+				</tr>
+				<tr>
+					<th scope="row">3</th>
+					<td colspan="2">Larry the Bird</td>
+					<td>twitter</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+}
+
+@code {
+	private class PrintData
+	{
+		public Guid RunId { get; set; }
+		public RunItem? Run { get; set; }
+		public string Message { get; set; } = string.Empty;
+	}
+
+	[Parameter]
+	public string RunIds { get; set; } = string.Empty;
+
+	private IList<PrintData> Runs = new List<PrintData>();
+
+	protected override async Task OnParametersSetAsync()
+	{
+		if (string.IsNullOrWhiteSpace(this.RunIds) == false)
+		{
+			var list = this.RunIds.Split("|");
+			this.Runs = (from id in list
+							select new PrintData ()
+							{
+								 RunId = new Guid(id),
+								 Run = null
+							}
+						)
+					.ToList();
+			await this.LoadDataAsync();
+		}
+
+		await  base.OnParametersSetAsync();
+	}
+
+	private async Task LoadDataAsync()
+	{
+		
+		await Task.CompletedTask;
+	}
+
+	private void PrintClick()
+	{
+		jsRuntime.InvokeVoidAsync("PrintCurent");
+	}
+
+
+
+}

@@ -14,11 +14,12 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <NeutralLanguage>it-IT</NeutralLanguage>
-    <AssemblyVersion>1.0.0.20</AssemblyVersion>
-    <FileVersion>1.0.0.20</FileVersion>
+    <AssemblyVersion>1.0.0.21</AssemblyVersion>
+    <FileVersion>1.0.0.21</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Append.Blazor.Printing" Version="6.2.0" />
     <PackageReference Include="BlazorAnimate" Version="3.0.0" />
     <PackageReference Include="CEC.Routing" Version="5.0.0" />
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.3" />
@@ -26,7 +27,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="6.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.10" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
-    <PackageReference Include="Radzen.Blazor" Version="4.15.7" />
+    <PackageReference Include="Radzen.Blazor" Version="4.15.14" />
   </ItemGroup>
 
   <ItemGroup>

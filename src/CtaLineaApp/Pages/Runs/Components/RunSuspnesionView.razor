@@ -1,4 +1,5 @@
 ﻿@inject IRunModelService RunModelService
+@inject IApplicationSettings AppSettings
 
 <RadzenCard>
 	 <div class="d-flex flex-row p-1">
@@ -41,7 +42,7 @@
 	private string FormatDate (
 		DateTime date)
 	{
-		return string.Format("{0:dd/MM/yyyy}", date);
+		return string.Format(this.AppSettings.CurrentCulture, "{0:dd/MM/yyyy}", date);
 	}
 
 	protected override async Task OnParametersSetAsync()

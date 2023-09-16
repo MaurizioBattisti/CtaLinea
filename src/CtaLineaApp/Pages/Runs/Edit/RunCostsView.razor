@@ -13,6 +13,7 @@
                 FilterPopupRenderMode="PopupRenderMode.OnDemand" 
                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                 Data="@RunCosts" TItem="CostByRunItem"
+                Culture=@AppSettings.CurrentCulture
                 ColumnWidth="100px" 
                 RowRender="@RowRender" 
                 CellRender="@CellRender" 
@@ -30,9 +31,9 @@
                 </RadzenStack>
                 
                 <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" Gap="4px" >
-                    <RadzenText>@string.Format("{0:dd/MM/yyyy}",Request.StartDate)</RadzenText>
+                    <RadzenText>@string.Format(this.AppSettings.CurrentCulture,"{0:dd/MM/yyyy}",Request.StartDate)</RadzenText>
                     <DateSelectorNotNull Value=@this.Current ValueChanged="@Date_Changed" ShowSetTodayButton=true />
-                    <RadzenText>@string.Format("{0:dd/MM/yyyy}",Request.EndDate)</RadzenText>
+                    <RadzenText>@string.Format(this.AppSettings.CurrentCulture,"{0:dd/MM/yyyy}",Request.EndDate)</RadzenText>
                 </RadzenStack>
 
                 <RadzenStack Orientation="Orientation.Horizontal" Gap="4px" JustifyContent="JustifyContent.Right">
@@ -53,55 +54,55 @@
         
         <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.KmTot)" Title="Km Totali" FormatString="{0:f2}" Width="100px" >
             <FooterTemplate>
-                <RadzenText Text="@string.Format("{0:f2}",Totals.KmTot)" />
+                <RadzenText Culture="@AppSettings.CurrentCulture" Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",Totals.KmTot)" />
             </FooterTemplate>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.Total)" Title="Costo Totale" FormatString="{0:C}" Width="150px" >
+        <RadzenDataGridColumn Culture="@AppSettings.CurrentCulture" TItem="CostByRunItem" Property="@nameof(CostByRunItem.Total)" Title="Costo Totale" FormatString="{0:C}" Width="150px">
             <FooterTemplate>
-                <RadzenText Text="@string.Format("{0:C}",Totals.Total)" />
+                <RadzenText Culture="@AppSettings.CurrentCulture" Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2} ",Totals.Total)" />
             </FooterTemplate>
         </RadzenDataGridColumn>
 
         <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.Km)" Title="Km" FormatString="{0:f2}" Width="100px" >
             <FooterTemplate>
-                <RadzenText Text="@string.Format("{0:f2}",Totals.Km)" />
+                <RadzenText Culture="@AppSettings.CurrentCulture" Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",Totals.Km)" />
             </FooterTemplate>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.KmExtra)" Title="Km Extra" FormatString="{0:f2}" Width="100px" >
             <FooterTemplate>
-                <RadzenText Text="@string.Format("{0:f2}",Totals.KmExtra)" />
+                <RadzenText Culture="@AppSettings.CurrentCulture" Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",Totals.KmExtra)" />
             </FooterTemplate>
         </RadzenDataGridColumn>
 
         <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.DayCost)" Title="Costo al GG" FormatString="{0:C}" Width="150px" >
             <FooterTemplate>
-                <RadzenText Text="@string.Format("{0:C}",Totals.DayCost)" />
+                <RadzenText Culture="@AppSettings.CurrentCulture" Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",Totals.DayCost)" />
             </FooterTemplate>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.CostKm)" Title="Costo Km GG" FormatString="{0:C}" Width="150px" >
             <FooterTemplate>
-                <RadzenText Text="@string.Format("{0:C}",Totals.CostKm)" />
+                <RadzenText Culture="@AppSettings.CurrentCulture" Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",Totals.CostKm)" />
             </FooterTemplate>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.CostKmExtra)" Title="Costo Km GG Extra" FormatString="{0:C}" Width="150px" >
             <FooterTemplate>
-                <RadzenText Text="@string.Format("{0:C}",Totals.CostKmExtra)" />
+                <RadzenText Culture="@AppSettings.CurrentCulture" Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",Totals.CostKmExtra)" />
             </FooterTemplate>
         </RadzenDataGridColumn>
 
         <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.DayIntegration)" Title="Integrazione GG" FormatString="{0:C}" Width="150px" >
             <FooterTemplate>
-                <RadzenText Text="@string.Format("{0:C}",Totals.DayIntegration)" />
+                <RadzenText Culture="@AppSettings.CurrentCulture" Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",Totals.DayIntegration)" />
             </FooterTemplate>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.DayForfait)" Title="Forfait GG" FormatString="{0:C}" Width="150px" >
             <FooterTemplate>
-                <RadzenText Text="@string.Format("{0:C}",Totals.DayForfait)" />
+                <RadzenText Culture="@AppSettings.CurrentCulture" Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",Totals.DayForfait)" />
             </FooterTemplate>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.DayMultiRunForfait)" Title="Forfait Multiplo GG" FormatString="{0:C}" Width="150px" >
             <FooterTemplate>
-                <RadzenText Text="@string.Format("{0:C}",Totals.DayMultiRunForfait)" />
+                <RadzenText Culture="@AppSettings.CurrentCulture" Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",Totals.DayMultiRunForfait)" />
             </FooterTemplate>
         </RadzenDataGridColumn>
 

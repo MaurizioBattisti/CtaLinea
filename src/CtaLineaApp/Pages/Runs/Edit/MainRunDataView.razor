@@ -4,6 +4,7 @@
 @inject IRunModelService RunModelService
 @inject DialogService DialogService
 @inject NotificationService notificationService
+@inject IApplicationSettings AppSettings
 
 <RadzenTemplateForm 
 	Data="@CurrentRun" 
@@ -172,7 +173,7 @@
 		DateTime? date)
 	{
 		if (date == null) return string.Empty;
-		return string.Format("{0:dd/MM/yyyy}", date);
+		return string.Format(this.AppSettings.CurrentCulture, "{0:dd/MM/yyyy}", date);
 	}
 
 

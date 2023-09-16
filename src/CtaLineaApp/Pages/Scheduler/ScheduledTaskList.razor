@@ -1,5 +1,6 @@
 ﻿@page "/scheduledtasks"
 
+@inject IApplicationSettings AppSettings
 @inject ContextMenuService ContextMenuService
 @inject DialogService DialogService
 @inject NotificationService notificationService
@@ -151,7 +152,7 @@
     {
         if (clearZero == true && time == TimeSpan.Zero) return string.Empty;  
         var to = new TimeOnly(time.Hours, time.Minutes, time.Seconds);
-        return string.Format("{0:HH:mm:ss}", to);
+        return string.Format(this.AppSettings.CurrentCulture, "{0:HH:mm:ss}", to);
     }
     private string FormatInterval(TimeSpan time)
     {

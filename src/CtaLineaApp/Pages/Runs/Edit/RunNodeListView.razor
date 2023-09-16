@@ -4,6 +4,7 @@
 @inject DialogService DialogService
 @inject NotificationService _notificationService
 @inject IRunRepository _runRepo;
+@inject IApplicationSettings AppSettings
 
 <div class="d-flex flex-row">
 	<RadzenDataGrid 
@@ -128,7 +129,7 @@
 	{
 		if (time == null) return string.Empty;
 		var to = new TimeOnly(time.Value.Hours, time.Value.Minutes, time.Value.Seconds);
-		return string.Format("{0:HH:mm}", to);
+		return string.Format(this.AppSettings.CurrentCulture, "{0:HH:mm}", to);
 	}
 
 	private async Task DeleteNode_Click(RunNode node)

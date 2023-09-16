@@ -225,7 +225,7 @@
     {
         if (time == null) return string.Empty;
         var to = new TimeOnly(time.Value.Hours, time.Value.Minutes, time.Value.Minutes);
-        return string.Format("{0:HH:mm}", to);
+        return string.Format(this.AppSettings.CurrentCulture, "{0:HH:mm}", to);
     }
 
     private string GetCarTypeDescfr(string? carType)

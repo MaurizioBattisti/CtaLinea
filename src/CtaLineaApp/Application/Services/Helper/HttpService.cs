@@ -1,7 +1,9 @@
 ﻿using CtaLineaApp.Application.Model.Account;
 using CtaLineaApp.Application.Model.Utility;
+using CtaLineaApp.Application.Services.Utility;
 using CtaLineaApp.Helpers;
 using Microsoft.AspNetCore.Components;
+using System;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -13,13 +15,15 @@ namespace CtaLineaApp.Application.Services.Helper
     public class HttpService
         : IHttpService
     {
-        private HttpClient _httpClient;
-        private NavigationManager _navigationManager;
-        private ILocalStorageService _localStorageService;
-        private IGlobalFiltersService _FilterData;
-        private IConfiguration _configuration;
+        private readonly  HttpClient _httpClient;
+        private readonly  NavigationManager _navigationManager;
+        private readonly  ILocalStorageService _localStorageService;
+        private readonly  IGlobalFiltersService _FilterData;
+        private readonly  IConfiguration _configuration;
+        private readonly IApplicationSettings _appSettings;
 
         public HttpService(
+            IApplicationSettings appSettings,
             HttpClient httpClient,
             NavigationManager navigationManager,
             ILocalStorageService localStorageService,
@@ -27,6 +31,7 @@ namespace CtaLineaApp.Application.Services.Helper
             IConfiguration configuration
         )
         {
+            _appSettings = appSettings;
             _httpClient = httpClient;
             _navigationManager = navigationManager;
             _localStorageService = localStorageService;
@@ -169,13 +174,13 @@ namespace CtaLineaApp.Application.Services.Helper
             if (_FilterData.PeriodStartDate != null)
             {
                 request.Headers.Add(Constants.RequestHeader_PeriodStartDate,
-                    string.Format("{0:yyyy-MM-dd}",
+					string.Format("{0:yyyy-MM-dd}",
                     _FilterData.PeriodStartDate));
             }
             if (_FilterData.PerioEndDate != null)
             {
                 request.Headers.Add(Constants.RequestHeader_PeriodEndDate,
-                    string.Format("{0:yyyy-MM-dd}",
+					string.Format("{0:yyyy-MM-dd}",
                     _FilterData.PerioEndDate));
             }
             if (_FilterData.ContractId != null)

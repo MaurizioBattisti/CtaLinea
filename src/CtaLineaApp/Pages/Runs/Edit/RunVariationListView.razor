@@ -4,6 +4,7 @@
 @inject IRunModelService RunModelService
 @inject DialogService DialogService
 @inject NotificationService notificationService
+@inject IApplicationSettings AppSettings
 
 <RadzenTemplateForm Data="@CurrentRun"
 					Submit="@((RunItem args) => { ; })" >
@@ -41,7 +42,7 @@
 					</RadzenDataGridColumn>
 					<RadzenDataGridColumn TItem="RunVariation" Property="Km" Title="Delta KM" Width="70px">
 						<Template Context="data">
-							@(string.Format("{0:0.00}", (data.Km ?? 0) - this.GetBaseKm()))
+							@(string.Format(this.AppSettings.CurrentCulture, "{0:0.00}", (data.Km ?? 0) - this.GetBaseKm()))
 						</Template>
 					</RadzenDataGridColumn>
 
@@ -202,14 +203,14 @@
 		DateTime? date)
 	{
 		if (date == null) return string.Empty;
-		return string.Format("{0:dd/MM/yyyy}", date);
+		return string.Format(this.AppSettings.CurrentCulture, "{0:dd/MM/yyyy}", date);
 	}
 	private string FormatTime(
 		TimeSpan? time)
 	{
 		if (time == null) return string.Empty;
 		var to = new TimeOnly(time.Value.Hours, time.Value.Minutes, time.Value.Seconds);
-		return string.Format("{0:HH:mm}", to);
+		return string.Format(this.AppSettings.CurrentCulture, "{0:HH:mm}", to);
 	}
 
 	#region gestione dialog variaizoni

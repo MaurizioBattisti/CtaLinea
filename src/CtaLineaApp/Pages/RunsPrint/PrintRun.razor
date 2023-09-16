@@ -1,0 +1,43 @@
+﻿@inject IRunRepository _repo
+@inject NotificationService notificationService
+
+<PrintRunMainData CurrentRun=@CurrentRun />
+
+@code {
+    [Parameter]
+    public Guid RunId { get; set; }
+
+    private RunItem CurrentRun = new RunItem();
+    private bool IsBusy { get; set; } = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await this.LoadDataAsync(this.RunId);
+        await base.OnParametersSetAsync();
+    }
+
+    public async Task LoadDataAsync(
+        Guid runId)
+    {
+        try
+        {
+            var run = await _repo.GetOneAsync(this.RunId);
+
+            if (run != null)
+            {
+                this.CurrentRun = run;
+            }
+        }
+        catch (Exception exc)
+        {
+            this.notificationService.Notify(NotificationSeverity.Error, "Errore caricando i dati", exc.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            this.StateHasChanged();
+        }
+    }
+
+
+}

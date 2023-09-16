@@ -1,6 +1,7 @@
 ﻿@inject NotificationService _notificationService
 @inject IRunRepository _runRepo;
 @inject IRunModelService RunModelService
+@inject IApplicationSettings AppSettings
 
 <RadzenStack Orientation="Orientation.Vertical">
 	<RadzenRow>
@@ -67,7 +68,7 @@
 	{
 		if (time == null) return string.Empty;
 		var to = new TimeOnly(time.Value.Hours, time.Value.Minutes, time.Value.Seconds);
-		return string.Format("{0:HH:mm}", to);
+		return string.Format(this.AppSettings.CurrentCulture, "{0:HH:mm}", to);
 	}
 
 	protected override void OnInitialized()

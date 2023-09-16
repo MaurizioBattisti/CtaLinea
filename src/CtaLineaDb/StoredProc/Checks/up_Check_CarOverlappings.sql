@@ -26,6 +26,33 @@ BEGIN
 	-- si assicura che tutti i dati da ricalcolare siano ricalcolati
 	EXEC [dbo].[uo_RecalcRunDays_Massive] 0, @RunId;
 
+    /* Ipotesi per modiicare la funzione di sovrapposizione
+    da replicare eventualmente anche nella funzione globbale
+
+    WITH CTE_Nodes_Base AS
+    (
+	    SELECT n.RunVariationId,
+			    n.Hour,
+			
+			    n.CollectionPointId,
+			    ROW_NUMBER () OVER (PARTITION BY n.RunVariationId ORDER BY n.Hour, n.ProgrNumber) AS Asc_Num,
+			    ROW_NUMBER () OVER (PARTITION BY n.RunVariationId ORDER BY n.Hour DESC, n.ProgrNumber DESC) AS Desc_Num
+		    FROM dbo.RunNodes n
+    ), CTE_Hours AS
+    (
+	    SELECT n1.RunVariationId,
+			    n1.Hour AS MinHour,
+			    n2.Hour AS MaxHour,
+			    n1.CollectionPointId AS StartPointId,
+			    n2.CollectionPointId AS EndPointId
+		    FROM CTE_Nodes_Base n1
+		    INNER JOIN CTE_Nodes_Base n2
+			    ON n1.RunVariationId = n2.RunVariationId
+		    WHERE n1.Asc_Num = 1
+			    AND n2.Desc_Num = 1
+    )
+    */
+
     WITH CTE_Hours AS
     (
         SELECT n.RunVariationId,

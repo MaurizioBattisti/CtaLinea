@@ -116,7 +116,7 @@ BEGIN
 					ON rp.RunPEriodId = rc.RunPeriodId
 					AND rc.CarType  IN ( 'P', 'R')
 				LEFT JOIN dbo.RunCarCosts rcc
-					ON rcc.RunCarId = rcc.RunCarId
+					ON rc.RunCarId = rcc.RunCarId
 				WHERE rcc.RunCarCostId IS NULL
 					OR 0 = (
 						COALESCE(rcc.DayPrice, 0) 
@@ -143,7 +143,7 @@ BEGIN
 				INNER JOIN dbo.RunCars rc
 					ON R.RunCarId = rc.RunCarId
 				LEFT JOIN dbo.RunCarCosts rcc
-					ON rcc.RunCarId = rcc.RunCarId
+					ON rc.RunCarId = rcc.RunCarId
 				WHERE r.Day BETWEEN @StartDate AND @EndDAte
 					AND (rcc.RunCarCostId IS NULL
 						OR 0 = (
@@ -323,7 +323,7 @@ BEGIN
 				FROM CTE_Inc d
 				WHERE (@RunId IS NULL OR d.RunId = @RunId);
 	END
-	-- 14 corsa con capienza del mi mezzi inferiroe alla richiesta
+	-- 14 corsa con capienza del mezzo inferiore alla richiesta
 	IF @WhatToCheck IS NULL OR EXISTS(SELECT 1 FROM @Tbl_What w WHERE w.IncType = 14)
 	BEGIN 
 		WITH CTE_Data AS
@@ -353,8 +353,6 @@ BEGIN
 				WHERE (@RunId IS NULL OR d.RunId = @RunId);
 	END
 
-
-
 	-- preprare i risultati
 	INSERT INTO @Tbl_IncData
 	SELECT d.RunId,
@@ -373,7 +371,7 @@ BEGIN
 				WHEN 11 THEN 'corsa con Km non indicati sulal corsa  o su una variante'
 				WHEN 12 THEN 'corsa con meno di 2 fermate'
 				WHEN 13 THEN 'corsa con capienza richiesta non indicata'
-				WHEN 14 THEN 'corsa con capienza del mi mezzi inferiroe alla richiesta'
+				WHEN 14 THEN 'corsa con capienza del mezzo inferiore alla richiesta'
 				ELSE 'sconosciuto' 
 			END AS Descr
 		FROM @Tbl_Inc d;

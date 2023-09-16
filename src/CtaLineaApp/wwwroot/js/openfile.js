@@ -44,3 +44,7 @@ window.downloadFileFromStream = async (fileName, contentStreamReference) => {
     anchorElement.remove();
     URL.revokeObjectURL(url);
 }
+
+function PrintCurent () {
+    window.print();
+}

@@ -69,8 +69,8 @@ namespace CtaLineaWebApi
                 o.MemoryBufferThreshold = int.MaxValue;
             });
 
-            // swagger
-            this.AddSwagger(services);
+			// swagger
+			this.AddSwagger(services);
 
             // registra il mediator con tutti i tipi 
             services.AddMediatR(
@@ -102,10 +102,10 @@ namespace CtaLineaWebApi
 
 			// per ultimo aggiunge lo scheduler
 			services.AddSingleton<TaskScheduler, TaskScheduler>();
-        }
+		}
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -136,8 +136,8 @@ namespace CtaLineaWebApi
                 c.SwaggerEndpoint("/api-docs/v1/swagger.json", "Cta Linea API V1");
             });
 
-            // recupera il servizio dello scheduler per avviarlo
-            var scheduler = app.ApplicationServices.GetService<TaskScheduler>();
+			// recupera il servizio dello scheduler per avviarlo
+						var scheduler = app.ApplicationServices.GetService<TaskScheduler>();
         }
 
         private void AddSwagger(IServiceCollection services)

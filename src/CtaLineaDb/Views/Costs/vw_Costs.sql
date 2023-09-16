@@ -58,6 +58,17 @@ WITH CTE_CarCosts_base AS
 		INNER JOIN dbo.RunVariations fv
 			ON r.RunId = fv.RunId
 			AND fv.StartDate IS NULL
+), CTE_Days AS
+(
+	SELECT d.*
+		FROM dbo.RunDays d
+		INNER JOIN Dbo.runs r
+			ON d.RunId = r.RunId
+		LEFT JOIN dbo.RunElastibusDays ed
+			ON ed.RunId = d.RunId
+			AND ed.Day = d.Day
+		WHERE ed.RunId IS NOT NULL
+			OR r.Elastibus = 0
 )
 SELECT d.*,
 		k.Km,
@@ -79,7 +90,7 @@ SELECT d.*,
 		CASE WHEN k.ExtraType = 1 THEN 0 ELSE o_costs.DayForfait END AS o_DayForfait,
 		CASE WHEN k.ExtraType = 1 THEN 0 ELSE o_costs.DayIntegration END AS o_DayIntegration
 
-	FROM Dbo.RunDays d
+	FROM CTE_Days d
 	INNER JOIN CTE_Km k
 		ON d.RunVariationId = k.RunVariationId
 	INNER JOIN CTE_CarCosts costs

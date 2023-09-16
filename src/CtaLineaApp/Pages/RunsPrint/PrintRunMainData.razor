@@ -1,0 +1,135 @@
+﻿@using CtaLineaApp.Components.Base
+
+@inject IRunModelService RunModelService
+@inject IApplicationSettings AppSettings
+
+<RadzenStack Orientation="Orientation.Horizontal">
+	<RadzenIcon Icon="@(this.CurrentRun.Extra ?"health_and_safety" : "shield")" IconStyle=@(this.CurrentRun.Extra ? IconStyle.Warning : IconStyle.Info) />
+	<RadzenIcon Icon="auto_awesome" Visible=@CurrentRun.Elastibus IconStyle="IconStyle.Primary" />
+</RadzenStack>
+<div class="row">
+	<RadzenFieldset Text="Appalto">
+		<RadzenRow AlignItems="AlignItems.Center">
+			<RadzenColumn Size="3">
+				<RadzenLabel Text="Appalto" Component="ContractId" />
+			</RadzenColumn>
+			<RadzenColumn Size="6">
+
+
+
+			</RadzenColumn>
+			<RadzenColumn Size="3" >
+
+
+
+
+			</RadzenColumn>
+		</RadzenRow>
+		<RadzenRow AlignItems="AlignItems.Center">
+			<RadzenColumn Size="3">
+				<RadzenLabel Text="Inizio" />
+			</RadzenColumn>
+			<RadzenColumn Size="3">
+				<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDate(CurrentRun.ContractData?.StartDate)</strong></RadzenText>
+			</RadzenColumn>
+			<RadzenColumn Size="3">
+				<RadzenLabel Text="Fine" />
+			</RadzenColumn>
+			<RadzenColumn Size="3">
+				<RadzenText TextStyle="TextStyle.Body1"><strong>@FormatDate(CurrentRun.ContractData?.EndDate)</strong></RadzenText>
+			</RadzenColumn>
+		</RadzenRow>
+		<RadzenRow AlignItems="AlignItems.Center">
+			<RadzenColumn Size="3">
+				<RadzenLabel Component="ContractRowNumber" Text="Riga Appalto" />
+			</RadzenColumn>
+			<RadzenColumn Size="3">
+				<RadzenNumeric ReadOnly=@ReadOnly Name="ContractRowNumber" TValue="int?" @bind-Value="this.CurrentRun.ContractRowNumber" Class="w-100"  />
+			</RadzenColumn>
+			<RadzenColumn Size="3">
+				<RadzenCheckBox Disabled=@ReadOnly Name="ExtraContract" @bind-Value=@this.CurrentRun.Extra TValue="bool"  />
+				<RadzenLabel Text="Extra Capitolato" Component="ExtraContract" Style="margin-left: 8px; vertical-align: middle;" />
+			</RadzenColumn>
+			<RadzenColumn Size="3">
+				<RadzenCheckBox Disabled=@ReadOnly Name="Elastibus" @bind-Value=@this.CurrentRun.Elastibus TValue="bool"  />
+				<RadzenLabel Text="Elastibus" Component="Elastibus" Style="margin-left: 8px; vertical-align: middle;" />
+			</RadzenColumn>
+		</RadzenRow>
+	</RadzenFieldset>
+	<RadzenFieldset Text="Richieste">
+		<FormDateRangeSelector @bind-StartDate="CurrentRun.StartDate"
+			Disabled=@ReadOnly
+			StartName="StartDate"
+			EndName="EndDate"
+			@bind-EndDate="CurrentRun.EndDate"
+			Min=@CurrentRun.ContractData?.StartDate
+			Max=@CurrentRun.ContractData?.EndDate />
+
+		<RadzenRow AlignItems="AlignItems.Center">
+			<RadzenColumn Size="3">
+				<RadzenLabel Component="RequestedDays" Text="Giorni" />
+			</RadzenColumn>
+			<RadzenColumn Size="3">
+				<RadzenNumeric ReadOnly=@ReadOnly Name="RequestedDays" TValue="int?" @bind-Value="CurrentRun.RequestedDays" Class="w-100"  />
+			</RadzenColumn>
+		</RadzenRow>
+		<RadzenRow AlignItems="AlignItems.Start">
+			<RadzenColumn Size="3">
+				<RadzenLabel Text="Nome Corsa" Component="RunName" />
+			</RadzenColumn>
+			<RadzenColumn Size="9">
+				<RadzenTextArea ReadOnly=@ReadOnly Name="RunName" @bind-Value="CurrentRun.RunName" Class="w-100 h-100"  Style="height: 60px" />
+			</RadzenColumn>
+		</RadzenRow>
+		<RadzenRow AlignItems="AlignItems.Start">
+			<RadzenColumn Size="3">
+				<RadzenLabel Component="Note" Text="Note" />
+			</RadzenColumn>
+			<RadzenColumn Size="9">
+				<RadzenTextArea ReadOnly=@ReadOnly Name="Note" @bind-Value="CurrentRun.Note" Class="w-100 h-100"  Style="height: 60px" />
+			</RadzenColumn>
+		</RadzenRow>
+	</RadzenFieldset>
+</div>
+
+
+@code {
+	RunVariationMainDataVide? RunVariationMainDataVide;
+
+	[Parameter]
+	public RunItem CurrentRun { get; set; } = new RunItem();
+
+	private bool ReadOnly = true;
+	private bool SuperEditMode = false;
+	public RunVariation CurrentVariation { get; set; } = new RunVariation();
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnParametersSetAsync();
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		// recupera la variante di default
+		if (this.CurrentRun != null
+			&& this.CurrentRun?.Variations != null)
+		{
+			var variation = (from v in this.CurrentRun.Variations
+								where v.StartDate == null
+								select v).SingleOrDefault();
+			if (variation != null)
+			{
+				this.CurrentVariation = variation;
+			}
+		}
+
+		await base.OnParametersSetAsync();
+	}
+
+	private string FormatDate(
+		DateTime? date)
+	{
+		if (date == null) return string.Empty;
+		return string.Format(this.AppSettings.CurrentCulture, "{0:dd/MM/yyyy}", date);
+	}
+}

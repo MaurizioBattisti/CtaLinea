@@ -99,9 +99,9 @@ namespace CtaLinea.Model.QueryModel
         [ColumnDescription(Header = "Domenica")]
         public bool Sunday { get; set; }
 
-        [ColumnDescription(Header = "Percorso")]
+        [ColumnDescription(Header = "Percorso", Ignore =true)]
         [SqlField(FullText = true)]
-		public string? Path { get; set; }
+        public string? Path { get; set; }
         [ColumnDescription(Header = "Frequenza Richiesta")]
         [SqlField(FullText = true)]
 		public string? RequestedFrequency { get; set; }

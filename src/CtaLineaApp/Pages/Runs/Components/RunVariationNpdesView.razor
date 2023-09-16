@@ -2,6 +2,7 @@
 @using CtaLineaApp.Pages.Runs.Dialogs
 @inject IRunModelService RunModelService
 @inject DialogService DialogService
+@inject IApplicationSettings AppSettings
 
 @if (this.EditMode == true)
 {
@@ -92,7 +93,7 @@
 		if (time == null) return string.Empty;
 		var dt = new DateTime(1, 1, 1);
 		dt = dt.Add(time.Value);
-		return string.Format("{0:HH:mm}", dt);
+		return string.Format(this.AppSettings.CurrentCulture, "{0:HH:mm}", dt);
 	}
 
 	private async Task DeleteNode_Click(RunNode node)

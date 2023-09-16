@@ -1,6 +1,7 @@
 ﻿@using CtaLineaApp.Pages.Runs.Dialogs
 @inject IRunModelService RunModelService
 @inject DialogService DialogService
+@inject IApplicationSettings AppSettings
 
 <RadzenSplitter Orientation="Orientation.Horizontal" 
     Style="min-height: 400x">
@@ -80,7 +81,7 @@
 	private string GetReplacementDescriotion(CarReplacement? replacement)
 	{
 		if (replacement == null) return null;
-		return string.Format("{0:dd/MM/yyyy} - {1:dd/MM/yyyy}",
+		return string.Format(this.AppSettings.CurrentCulture, "{0:dd/MM/yyyy} - {1:dd/MM/yyyy}",
 			replacement.StartDate,
 			replacement.EndDate
 			);

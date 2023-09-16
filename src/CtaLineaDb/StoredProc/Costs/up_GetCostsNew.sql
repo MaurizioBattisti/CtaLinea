@@ -76,7 +76,7 @@ BEGIN
 		RealKm_Contract_Cost, RealKm_Extra_Cost,
 		DayCost, DayIntegration, DayForfait
 		)
-		SELECT  DISTINCT c.RunId,
+		SELECT DISTINCT c.RunId,
 				c.CarNum,
 				c.Day,
 				r.ContractId,

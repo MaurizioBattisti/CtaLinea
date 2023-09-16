@@ -10,21 +10,38 @@
     <link rel="icon" type="image/x-icon" href="/ctalinea.ico">
     -->
     <link rel="icon" type="image/png" href="/images/icons8-autobus-cute-clipart-32.png">
-    
+
 
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
-    <link href="css/app.css" rel="stylesheet" />
-    <link href="CtaLineaApp.styles.css" rel="stylesheet" />
-    <link rel="stylesheet" href="_content/Radzen.Blazor/css/standard-base.css">
+    <link href="css/app.css" media="screen" rel="stylesheet" />
+    <link href="CtaLineaApp.styles.css" media="screen" rel="stylesheet" />
+    <link rel="stylesheet" media="screen"href="_content/Radzen.Blazor/css/standard-base.css">
 
     <!-- tema scuro -->
-    <link rel="stylesheet" href="_content/Radzen.Blazor/css/dark.css">
-</head>
+    <link rel="stylesheet" media="screen" href="_content/Radzen.Blazor/css/dark.css">
 
+    <link rel="stylesheet" media="print" href="css/print.css" />
+    <style>
+        @media screen {
+            .noscreen {
+                visibility: collapse;
+                height: 1px;
+                width: 1px;
+            }
+        }
+        @media print {
+            .noprint {
+                visibility: collapse;
+                height: 1px;
+                width: 1px;
+            }
+        }
+    </style>
+</head>
 <body>
     <div id="app">Attendere caricamento applicazione...</div>
 
-    <div id="blazor-error-ui">
+    <div id="blazor-error-ui" class="noprint">
         An unhandled error has occurred.
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>

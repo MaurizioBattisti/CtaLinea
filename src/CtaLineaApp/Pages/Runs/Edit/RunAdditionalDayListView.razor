@@ -38,7 +38,7 @@
 				<Columns>
 					<RadzenDataGridColumn TItem="RunAdditionalDay" Property="Day" Title="Giorno" Width="150px">
 						<Template Context="item">
-							@String.Format("{0:dd/MM/yyyy}", item.Day)
+							@string.Format(this.AppSettings.CurrentCulture,"{0:dd/MM/yyyy}", item.Day)
 						</Template>
 						<EditTemplate Context="item">
 							<RadzenDatePicker @bind-Value="item.Day"
