@@ -33,7 +33,10 @@ namespace CtaLineaApp.Application.Services.Helper
         {
             _appSettings = appSettings;
             _httpClient = httpClient;
-            _navigationManager = navigationManager;
+            // imposta il timeout 
+			_httpClient.Timeout = TimeSpan.FromSeconds(Constants.HttpTimeOut_Seconds);
+
+			_navigationManager = navigationManager;
             _localStorageService = localStorageService;
             _FilterData = filterData;
             _configuration = configuration;
@@ -42,7 +45,7 @@ namespace CtaLineaApp.Application.Services.Helper
         public async Task<HttpResponseMessage> Get (string uri)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
-            return await this.SendBaserequestAsync (request);
+			return await this.SendBaserequestAsync (request);
         }
         public async Task<T?> Get<T>(string uri)
         {
@@ -160,9 +163,11 @@ namespace CtaLineaApp.Application.Services.Helper
             HttpRequestMessage request)
         {
             await AddJwtHeader(request);
+			// imposta il timeout 
+			_httpClient.Timeout = TimeSpan.FromSeconds(Constants.HttpTimeOut_Seconds);
 
-            // send request
-            return await _httpClient.SendAsync(request);
+			// send request
+			return await _httpClient.SendAsync( request);
         }
 
         private async Task AddJwtHeader(

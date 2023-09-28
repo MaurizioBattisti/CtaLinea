@@ -26,7 +26,12 @@ namespace ZzSoft.QueryHelper
             }
 
             var sql = querydef.GetSelectQuery();
-            var data = await connection.QueryAsync<T>(
+            var aaa = await connection.QueryAsync(
+				sql,
+				querydef.Arguments)
+				.ConfigureAwait(false);
+
+			var data = await connection.QueryAsync<T>(
                 sql,
                 querydef.Arguments)
                 .ConfigureAwait(false);

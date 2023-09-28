@@ -125,7 +125,6 @@ namespace CtaLinea.Model.QueryModel
         [ColumnDescription(Header = "Nr. Varianti")]
         public int VariationCount { get; set; }
 
-        [ColumnDescription(Header = "Etichetta")]
         public string? TagName { get; set; }
         [ColumnDescription(Ignore = true)]
         public string? BgColor { get; set; }

@@ -203,5 +203,7 @@
     <Build Include="Functions\Run\tvf_NotPrimaryAssociateRuns.sql" />
     <Build Include="Views\External\vw_Drivers.sql" />
     <Build Include="Tables\Runs\RunElastibusDays.sql" />
+    <Build Include="StoredProc\Utility\up_GetElastibusDayForExport.sql" />
+    <Build Include="StoredProc\Utility\up_GetRunsForExportTt.sql" />
   </ItemGroup>
 </Project>

@@ -145,6 +145,30 @@ namespace CtaLineaApp.Application.Services.Base
                 TaskName = "Import Punti di Raccolta",
                 DefaultArguments = null
             };
+            yield return new AppTaskDescription()
+            {
+                TaskId = Constants.Activity_ExportElastibus,
+                TaskName = "Esportazione giorni Elastibus",
+                DefaultArguments = JsonSerializer.Serialize(
+                    new ExportElasticDaysTaskRequest()
+                    {
+                        ContractId = null,
+                        StartDate = null,
+                        EndDate = null,
+                    }, optins)
+            };
+            yield return new AppTaskDescription()
+            {
+                TaskId = Constants.Activity_ExporTT,
+                TaskName = "Esportazione dati per TT / PAT",
+                DefaultArguments = JsonSerializer.Serialize(
+                new ExportTtTaskRequest()
+                {
+                    ContractId = null,
+                    StartDate = null,
+                    EndDate = null,
+                }, optins)
+            };
         }
     }
 }

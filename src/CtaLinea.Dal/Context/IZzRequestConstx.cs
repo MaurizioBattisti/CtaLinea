@@ -12,5 +12,7 @@ namespace ZzSoft.CtaLinea.Dal.Context
         DateTime? PeriodEndDate { get; }
         DateTime? PeriodStartDate { get; }
         string UserName { get; }
+
+        void Override(int? contractId, DateTime? startDate, DateTime? endDate);
     }
 }

@@ -8,9 +8,10 @@ namespace CtaLineaApp
 {
     internal class Constants
     {
-        // run editor style
-        
-        internal const string OpenedEditorStype = "width: 1000px; grid-area: rz-right-sidebar";
+        internal const int HttpTimeOut_Seconds = 300;
+		// run editor style
+
+		internal const string OpenedEditorStype = "width: 1000px; grid-area: rz-right-sidebar";
         internal const string ClosedEditorStype = "width: 0px; grid-area: rz-right-sidebar";
 
 
@@ -161,6 +162,8 @@ namespace CtaLineaApp
         internal const string Activity_RecalcCosts = "recalcosts";
         internal const string Activity_ImportAssociate = "i_asso";
         internal const string Activity_ImportPoints = "i_points";
+        internal const string Activity_ExportElastibus = "exp_elastibus";
+        internal const string Activity_ExporTT = "exp_tt";
 
         // budget types
         internal const string BudgetTYpe_Last_Calc = "LAST CALC";

@@ -6,7 +6,7 @@ using ZzSoft.CtaLinea.Dal.Context;
 
 namespace CtaLineaWebApi.Utility
 {
-    public class ZzRequestConstx 
+    public class ZzRequestConstx
         : IZzRequestConstx
     {
         private readonly IHttpContextAccessor _httContext;
@@ -56,8 +56,18 @@ namespace CtaLineaWebApi.Utility
                 return _UserName;
             }
         }
+        public void Override(
+            int? contractId,
+            DateTime? startDate,
+            DateTime? endDate)
+        {
+			if (_read == false) this.GetData();
+            _ContractId = contractId;
+            _PeriodStartDate = startDate;
+            _PeriodEndDate = endDate;
+		}
 
-        private bool _read = false;
+		private bool _read = false;
         private void GetData()
         {
 

@@ -288,5 +288,82 @@ namespace CtaLineaWebApi.Controllers
             await _scheduler.EndActivityAsycn(Constants.Activity_ImportPoints, id);
             return this.NoContent();
         }
-    }
+
+        [SwaggerOperation("Esporta i giorni Elastibus")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPost]
+        [Route(Constants.Activity_ExportElastibus+ "/{id}")]
+        public async Task<IActionResult> ExportElastibusAsync(
+            [FromRoute] int id,
+            [FromQuery] int? timeout,
+            [FromBody] ExportElasticDaysTaskRequest taskRequest)
+        {
+            _schedulerLogger.TaskId = id;
+            await _scheduler.StartActivityAsync(Constants.Activity_ExportElastibus, id);
+
+            var request = new ExportElasticDaysActivityRequest()
+            {
+                Timeout = timeout ?? 100,
+                FileName = taskRequest.FileName,
+                ContractId = taskRequest.ContractId,
+                StartDate = taskRequest.StartDate,
+                EndDate = taskRequest.EndDate
+            };
+
+            try
+            {
+                var result = await this._mediator.Send(request)
+                    .ConfigureAwait(false);
+                if (result == false)
+                {
+                    return this.BadRequest("Operazione fallita senza messaggio");
+                }
+            }
+            catch (Exception ex)
+            {
+                return this.BadRequest(ex);
+            }
+
+            await _scheduler.EndActivityAsycn(Constants.Activity_ExportElastibus, id);
+            return this.NoContent();
+        }
+		[SwaggerOperation("Esporta i dati per TT / PAT")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[HttpPost]
+		[Route(Constants.Activity_ExporTT + "/{id}")]
+		public async Task<IActionResult> ExportTtAsync(
+			[FromRoute] int id,
+			[FromQuery] int? timeout,
+			[FromBody] ExportTtTaskRequest taskRequest)
+		{
+			_schedulerLogger.TaskId = id;
+			await _scheduler.StartActivityAsync(Constants.Activity_ExporTT, id);
+
+			var request = new ExportRunsForPatActivityRequest()
+			{
+				Timeout = timeout ?? 100,
+				FileName = taskRequest.FileName,
+				ContractId = taskRequest.ContractId,
+				StartDate = taskRequest.StartDate,
+				EndDate = taskRequest.EndDate
+			};
+
+			try
+			{
+				var result = await this._mediator.Send(request)
+					.ConfigureAwait(false);
+				if (result == false)
+				{
+					return this.BadRequest("Operazione fallita senza messaggio");
+				}
+			}
+			catch (Exception ex)
+			{
+				return this.BadRequest(ex);
+			}
+
+			await _scheduler.EndActivityAsycn(Constants.Activity_ExporTT, id);
+			return this.NoContent();
+		}
+	}
 }

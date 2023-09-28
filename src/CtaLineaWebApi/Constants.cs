@@ -37,6 +37,8 @@ namespace CtaLineaWebApi
         internal const string Activity_RecalcCosts = "recalcosts";
         internal const string Activity_ImportAssociate = "i_asso";
         internal const string Activity_ImportPoints = "i_points";
+        internal const string Activity_ExportElastibus = "exp_elastibus";
+        internal const string Activity_ExporTT = "exp_tt";
 
         // Policy
         internal const string Policy_ChangePAssword = "ChangePAssword";

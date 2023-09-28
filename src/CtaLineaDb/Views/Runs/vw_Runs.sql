@@ -39,7 +39,8 @@ SELECT  r.RunId,
 		rSpareAss.SpareAssociatesDescr,
 		rSpareCar.SpareCarsDescr,
 		rCal.CalendarsDescr,
-		rPath.PathsDescr,
+		rPath.Path AS PathsDescr,
+		-- rPath.PathsDescr,
 		
 		v.RunVariationId,
 		v.LineNumber, v.RunNumber,
@@ -92,8 +93,12 @@ SELECT  r.RunId,
 		ON r.RunId = rSpareCar.RunId
 	LEFT JOIN dbo.vw_RunCalendars rCal
 		ON r.RunId = rCal.RunId
+	LEFT JOIN dbo.vw_PathByNodes rPath
+		ON v.RunVariationId = rPath.RunVariationId
+		/*
 	LEFT JOIN dbo.vw_RunPaths rPath
 		ON r.RunId = rPath.RunId
+		*/
 	LEFT JOIN dbo.vw_RunFirstTags tag
 		ON r.RunId = tag.RunId
 	LEFT JOIN dbo.MultiRunForfaitDetails mrfd

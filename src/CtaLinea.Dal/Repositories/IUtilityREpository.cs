@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ZzSoft.CtaLinea.Dal.Model;
 
 namespace ZzSoft.CtaLinea.Dal.Repositories
 {
@@ -16,5 +17,16 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             DateTime? endDAte = null,
             IEnumerable<int> whatIncongruence = null
             );
-    }
+        Task<IEnumerable<ElastibusDayExport>> GetElastibusDayForExportAsyunc(
+            DateTime? startDate,
+            DateTime? endDate,
+            int? contractId
+            );
+        Task<IEnumerable<ExportRunTt>> GetExportTtAsync(
+            DateTime? startDate,
+            DateTime? endDate,
+            int? contractId
+            );
+
+	}
 }

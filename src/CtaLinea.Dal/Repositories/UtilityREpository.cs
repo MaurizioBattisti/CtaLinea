@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ZzSoft.CtaLinea.Dal.Context;
+using ZzSoft.CtaLinea.Dal.Model;
 
 namespace ZzSoft.CtaLinea.Dal.Repositories
 {
@@ -115,5 +116,52 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 
             return await Task.FromResult(items);
         }
+
+		public async Task <IEnumerable <ElastibusDayExport>> GetElastibusDayForExportAsyunc (
+			DateTime? startDate,
+			DateTime? endDate,
+			int? contractId
+			)
+		{
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
+
+            var items = await conn.QueryAsync<ElastibusDayExport>(
+                "[dbo].[up_GetElastibusDayForExport]",
+                param: new
+                {
+                    ContractId = contractId,
+                    StartDate = startDate,
+                    EndDAte = endDate
+                },
+                commandType: CommandType.StoredProcedure,
+                commandTimeout: 600);
+
+            return await Task.FromResult(items);
+        }
+		public async Task<IEnumerable<ExportRunTt>> GetExportTtAsync(
+			DateTime? startDate,
+			DateTime? endDate,
+			int? contractId
+			)
+		{
+			using IDbConnection conn = this._context.GetNewConnection();
+			conn.Open();
+			await conn.InitializeSession(this._zzContext);
+
+			var items = await conn.QueryAsync<ExportRunTt>(
+				"[dbo].[up_GetRunsForExportTt]",
+				param: new
+				{
+					ContractId = contractId,
+					StartDate = startDate,
+					EndDAte = endDate
+				},
+				commandType: CommandType.StoredProcedure,
+				commandTimeout: 600);
+
+			return await Task.FromResult(items);
+		}
 	}
 }

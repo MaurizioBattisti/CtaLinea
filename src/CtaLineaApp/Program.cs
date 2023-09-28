@@ -17,7 +17,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 // Servizio di stampa
 builder.Services.AddScoped<IPrintingService, PrintingService>();
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress), Timeout = TimeSpan.FromSeconds(Constants.HttpTimeOut_Seconds) });
 builder.RegisterService();
 
 await builder.Build().RunAsync();

@@ -6,5 +6,8 @@
         public string CarFilePath { get; set; } = string.Empty;
         public string DriverFilePath { get; set; } = string.Empty;
         public string PointsFilePath { get; set; } = string.Empty;
+
+        public string TtExportFilePath { get; set; } = string.Empty;
+        public string ElastibusExportFilePath { get; set; } = string.Empty;
     }
 }

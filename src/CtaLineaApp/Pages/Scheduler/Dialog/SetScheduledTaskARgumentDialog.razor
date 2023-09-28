@@ -35,6 +35,15 @@
 				{
 					<h2>Non sono previsti argometni aggiuntivi per l'attività di Impotazione dei punti di raccolta</h2>
 				}
+				else if (this.ScheduledTask.ActivityId == Constants.Activity_ExportElastibus)
+				{
+					<ExportElastibusArguments @ref=@_collector @bind-Arguments="ScheduledTask.Arguments" />
+				}
+				else if (this.ScheduledTask.ActivityId == Constants.Activity_ExporTT)
+				{
+					<ExportTtArguments @ref=@_collector @bind-Arguments="ScheduledTask.Arguments" />
+				}
+
 				else
 				{
 					<h2>Nessun interfaccia prevista per questo tipod i attività</h2>

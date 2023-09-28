@@ -99,6 +99,9 @@ namespace CtaLineaWebApi
             // servizio di invio mail
             services.AddScoped<IMailSender, MailSender>()
                 ;
+            // servizio di esportazione in excel
+            services.AddScoped<IExportService, ExportService>()
+                ;
 
 			// per ultimo aggiunge lo scheduler
 			services.AddSingleton<TaskScheduler, TaskScheduler>();

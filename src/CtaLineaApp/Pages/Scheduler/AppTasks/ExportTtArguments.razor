@@ -1,0 +1,104 @@
+﻿@inject NotificationService _notificationService
+@implements IArgumentCollector
+
+<h3>esportazione dati per TT / PAT</h3>
+
+<RadzenRow AlignItems="AlignItems.Center">
+	<RadzenColumn Size="4">
+		<RadzenLabel Component="@nameof(ExportTtTaskRequest.FileName)">Nome del file senza estensione. Vuoto = 'default'</RadzenLabel>
+	</RadzenColumn>
+	<RadzenColumn Size="8">
+		<RadzenTextBox Name="@nameof(ExportTtTaskRequest.FileName)"
+					   TValue="int?"
+					   Change=@((x) => this.DataChanged())
+		@bind-Value=@Args.FileName
+					   class="w-100" />
+	</RadzenColumn>
+</RadzenRow>
+<RadzenRow AlignItems="AlignItems.Center">
+	<RadzenColumn Size="4">
+		<RadzenLabel Component="@nameof(ExportTtTaskRequest.ContractId)">Appalto</RadzenLabel>
+	</RadzenColumn>
+	<RadzenColumn Size="8">
+		<ContractDropDown Name="@nameof(ExportTtTaskRequest.ContractId)"
+						  Changed=@((x) => this.DataChanged())
+						  AllowClear=true
+		@bind-ContractId=@Args.ContractId />
+	</RadzenColumn>
+</RadzenRow>
+<RadzenRow AlignItems="AlignItems.Center">
+	<RadzenColumn Size="4">
+		<RadzenLabel Component="@nameof(ExportTtTaskRequest.StartDate)">data di inizio, vuoto = inizio anno sclastico</RadzenLabel>
+	</RadzenColumn>
+	<RadzenColumn Size="2">
+		<DateSelector Name="@nameof(ExportTtTaskRequest.StartDate)"
+					  AllowClear=true
+					  Changed=@((x) => this.DataChanged())
+		@bind-Value=@Args.StartDate />
+	</RadzenColumn>
+</RadzenRow>
+<RadzenRow AlignItems="AlignItems.Center">
+	<RadzenColumn Size="4">
+		<RadzenLabel Component="@nameof(ExportTtTaskRequest.EndDate)">data di fine, vuoto = fine anno scolastico</RadzenLabel>
+	</RadzenColumn>
+	<RadzenColumn Size="2">
+		<DateSelector Name="@nameof(ExportTtTaskRequest.EndDate)"
+					  AllowClear=true
+					  Changed=@((x) => this.DataChanged())
+		@bind-Value=@Args.EndDate />
+	</RadzenColumn>
+</RadzenRow>
+
+@code {
+	[Parameter]
+	public string? Arguments { get; set; }
+	[Parameter]
+	public EventCallback<string?> ArgumentsChanged { get; set; }
+
+	JsonSerializerOptions JsonOptions = new JsonSerializerOptions()
+		{
+			DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+		};
+
+	private ExportTtTaskRequest Args = new ExportTtTaskRequest();
+
+	public object? GetArgs()
+	{
+		return this.Args;
+	}
+
+	protected override Task OnParametersSetAsync()
+	{
+		this.DeserializeArgs();
+		return base.OnParametersSetAsync();
+	}
+
+	private void DeserializeArgs()
+	{
+		try
+		{
+			var obje = JsonSerializer.Deserialize<ExportTtTaskRequest>(this.Arguments, this.JsonOptions);
+			if (obje != null)
+			{
+				this.Args = obje;
+			}
+		}
+		catch (Exception ex)
+		{
+			this._notificationService.Notify(NotificationSeverity.Error,
+				"Errore recuperando i valori",
+				ex.Message);
+		}
+	}
+
+	private string? SerializeArgs()
+	{
+		return JsonSerializer.Serialize(this.Args, JsonOptions);
+	}
+
+	private void DataChanged()
+	{
+		this.Arguments = this.SerializeArgs();
+		this.ArgumentsChanged.InvokeAsync(this.Arguments);
+	}
+}
