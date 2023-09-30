@@ -1466,8 +1466,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 carCost.KmPriceExtra,
                 carCost.DayPrice,
                 carCost.DayForfait,
-                carCost.DayIntegration
-            };
+                carCost.DayIntegration,
+				SimulationName = string.IsNullOrWhiteSpace(carCost.SimulationName) ? null : carCost.SimulationName?.Trim()
+			};
         }
         private object GetCarCostKey(
             Guid runCarId,

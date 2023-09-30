@@ -24,7 +24,16 @@
 	<Columns>
 		<RadzenDataGridColumn TItem="RunCarCost" Title="Inizio" Width="130px">
 			<Template Context="data" >
-				<span>@(data.StartDate == null ? "Dall'Inizio" : string.Format("Dal {0:dd/MM/yy}", data.StartDate.Value)) </span>
+				@if (string.IsNullOrWhiteSpace(data.SimulationName))
+				{
+					<span>@(data.StartDate == null ? "Dall'Inizio" : string.Format("Dal {0:dd/MM/yy}", data.StartDate.Value)) </span>
+				}
+				else
+				{
+					<div style="width: 100%;" class="rz-background-color-warning-darker">
+						@(data.StartDate == null ? "Dall'Inizio" : string.Format("Dal {0:dd/MM/yy}", data.StartDate.Value))
+					</div>
+				}
 			</Template>
 			<EditTemplate Context="cost">
 				<DateSelector @bind-Value="@cost.StartDate"
@@ -74,6 +83,14 @@
 							   @bind-Value="@cost.DayIntegration"
 							   Culture=@AppSettings.CurrentCulture
 							   Format="0.00"
+							   Class="w-100" />
+			</EditTemplate>
+		</RadzenDataGridColumn>
+		<RadzenDataGridColumn TItem="RunCarCost" Title="Simulazione." Property="@nameof(RunCarCost.SimulationName)" Width="150px">
+			<EditTemplate Context="cost">
+				<RadzenTextBox TValue="string?"
+							   @bind-Value="@cost.SimulationName"
+							   Culture=@AppSettings.CurrentCulture
 							   Class="w-100" />
 			</EditTemplate>
 		</RadzenDataGridColumn>
@@ -276,6 +293,16 @@
 
 		this.EditableData?.SetDirty();
 
-        CostToInsert = null;
-    }
+		CostToInsert = null;
+	}
+
+	/*
+	private void RowRender(RowRenderEventArgs<RunCarCost> args)
+	{
+		if (string.IsNullOrWhiteSpace(args.Data.SimulationName) == false)
+		{
+			args.Attributes.Add("class", "rz-background-color-warning-darker");
+		}
+	}
+	*/
 }

@@ -10,7 +10,9 @@ CREATE PROCEDURE [dbo].[up_GetCostByRun]
 	@EndDate		Date = NULL,
 	@OutOfPEriod	BIT = 0,
 	@Suspended		BIT = 0,
-	@RplacedCars	BIT = 1
+	@RplacedCars	BIT = 1,
+	
+	@SimulationName	varchar(50) = NULL
 )
 AS
 BEGIN
@@ -85,7 +87,8 @@ BEGIN
 				NULL, NULL,
 				@RunId,
 				@OutOfPEriod, @Suspended, @RplacedCars,
-				NULL, NULL;
+				NULL, NULL,
+				@SimulationName;
 	END
 	ELSE
 	BEGIN

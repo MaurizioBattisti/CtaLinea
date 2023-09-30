@@ -29,7 +29,7 @@ namespace CtaLineaApp
 			// configure http client
 			builder.Services.AddScoped(x => {
                 var apiUrl = new Uri(config.BaseAddress);
-                return new HttpClient() { BaseAddress = apiUrl , Timeout = TimeSpan.FromSeconds(Constants.HttpTimeOut_Seconds) };
+                return new HttpClient() { BaseAddress = apiUrl, Timeout = TimeSpan.FromSeconds(Constants.HttpTimeOut_Seconds) };
             });
 
 			builder.Services

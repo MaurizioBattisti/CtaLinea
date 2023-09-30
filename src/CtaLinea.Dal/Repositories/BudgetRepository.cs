@@ -60,8 +60,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                     Suspended = request.IncludeSuspended,
                     RplacedCars = request.UseReplacedCars,
                     BudgetName = request.BudgetName,
-                    BudgetType = request.BudgetType
-                },
+                    BudgetType = request.BudgetType,
+                    SimulationName = request.SimulationName
+				},
                 commandType: CommandType.StoredProcedure,
                 commandTimeout: 600);
 
@@ -90,7 +91,8 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 					Suspended = request.IncludeSuspended,
 					RplacedCars = request.UseReplacedCars,
 					BudgetName = request.BudgetName,
-					BudgetType = request.BudgetType
+					BudgetType = request.BudgetType,
+					SimulationName = request.SimulationName
 				},
 				commandType: CommandType.StoredProcedure,
 				commandTimeout: 600);
@@ -121,7 +123,8 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 					Suspended = request.IncludeSuspended,
 					RplacedCars = request.UseReplacedCars,
 					BudgetName = request.BudgetName,
-					BudgetType = request.BudgetType
+					BudgetType = request.BudgetType,
+					SimulationName = request.SimulationName
 				},
 				commandType: CommandType.StoredProcedure,
 				commandTimeout: 600);
@@ -147,8 +150,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                     EndDate = request.EndDate,
                     OutOfPEriod = request.IncludeOutOfPeriod,
                     Suspended = request.IncludeSuspended,
-                    RplacedCars = request.UseReplacedCars
-                },
+                    RplacedCars = request.UseReplacedCars,
+					SimulationName = request.SimulationName
+				},
                 commandType: CommandType.StoredProcedure,
                 commandTimeout: 600);
             var items = reader.Read<CostByRunItem>();

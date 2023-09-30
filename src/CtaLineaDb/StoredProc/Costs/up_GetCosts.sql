@@ -10,7 +10,9 @@ CREATE PROCEDURE [dbo].[up_GetCosts]
 	@EndDate		Date = NULL,
 	@AssociateId	uniqueidentifier = NULL,
 	@CarId			uniqueidentifier = NULL,
-	@RunId			uniqueidentifier = NULL
+	@RunId			uniqueidentifier = NULL,
+
+	@SimulationName	varchar(50) = NULL
 )
 AS
 BEGIN
@@ -37,13 +39,17 @@ BEGIN
 				c.DayPrice,
 				c.DayForfait,
 				c.DayIntegration
-			FROM [dbo].[vw_Costs] c
+			FROM [dbo].[tvf_Costs](@SimulationName) c
+			INNER JOIN dbo.RunDays d
+				ON c.RunId = d.RunId
+				AND c.CarNum = d.CarNum
+				AND c.Day = d.Day
 			INNER JOIN dbo.Runs r
 				ON c.RunId = r.RunId
 			INNER JOIN dbo.RunCars rc
 				ON c.RunCarId = rc.RunCarId
-			WHERE c.Suspended = 0
-				AND c.OutOfPeriod = 0
+			WHERE d.Suspended = 0
+				AND d.OutOfPeriod = 0
 				AND (@RunId IS NULL
 					OR c.RunId = @RunId)
 				AND (@ContractId IS  NULL

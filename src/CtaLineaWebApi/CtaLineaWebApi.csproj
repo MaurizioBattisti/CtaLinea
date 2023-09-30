@@ -34,9 +34,5 @@
     <ProjectReference Include="..\CtaLinea.Dal\CtaLinea.Dal.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Application\Commands\Uility\" />
-  </ItemGroup>
-
 
 </Project>

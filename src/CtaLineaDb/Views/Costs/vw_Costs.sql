@@ -17,6 +17,7 @@ WITH CTE_CarCosts_base AS
 			COALESCE(cc.DayForfait, 0) AS DayForfait,
 			COALESCE(cc.DayIntegration, 0) AS DayIntegration
 		FROM dbo.RunCarCosts cc
+		WHERE cc.SimulationName IS NULL
 ), CTE_CarCosts AS
 (
 	SELECT cc.RunCarCostId,

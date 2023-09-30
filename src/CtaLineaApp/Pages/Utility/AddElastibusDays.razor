@@ -1,0 +1,86 @@
+﻿@page "/elastibusdays"
+@using CtaLinea.Model.Response;
+@inject IApplicationSettings AppSettings;
+@inject IUtilityService _utilityService
+@inject NotificationService notificationService
+@attribute [Authorize]
+
+<CheckAuthorization Roles=@(new string[] { UserRoles.Role_Manage }) />
+<PageTitle>@Constants.App_Title - Giorni Elastibus</PageTitle>
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Giorni Elastibus" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<RadzenRow>
+   <p>Copiare i valori nella casella di test </p>
+   <p>i valori dei gironi dovranno essere separati da TAB e uno per riga</p>
+   <p>id scheda CTA /   giorno /    km con la virgola/  nr persone</p>
+   <RadzenButton Text="Carica"
+       Click=@UploadDaty_Click
+        IsBusy=@IsBusy />
+</RadzenRow>
+
+<RadzenTextArea 
+    @bind-Value=@Args.Data    
+    class="w-100 h-100"
+    />
+
+@code {
+    [CascadingParameter]
+    public CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+    private AddElastibusDaysRequest Args { get; set; } = new AddElastibusDaysRequest();
+    private bool IsBusy { get; set; } = false;
+
+    private async Task UploadDaty_Click ()
+    {
+        this.IsBusy = true;
+        try
+        {
+            var res = await _utilityService.AddElastibusDaysAsync(this.Args);
+
+            if (res == null
+                || res.Success == false)
+            {
+                this.notificationService.Notify(
+                    NotificationSeverity.Warning, 
+                    "Gironi non assegnati con successo",
+                    res?.Message ?? "Nessun detaglio sull'errore");
+            }
+            else
+            {
+                this.notificationService.Notify(
+                    NotificationSeverity.Info,
+                    "Operazione riuscita",
+                    res.Message);
+
+                this.Args.Data = null;
+            }
+        }
+        catch (BadRequestException<OperationResponse> ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Gironi non assegnati con successo",
+                ex.Payload?.Message ?? "Nessun detaglio sull'errore");
+        }
+        catch (Exception ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Gironi non assegnati con successo",
+                ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+        }
+
+        await Task.CompletedTask;
+    }
+ }

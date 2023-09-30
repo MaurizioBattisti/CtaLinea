@@ -34,7 +34,7 @@ namespace CtaLineaApp.Application.Services.Helper
             _appSettings = appSettings;
             _httpClient = httpClient;
             // imposta il timeout 
-			_httpClient.Timeout = TimeSpan.FromSeconds(Constants.HttpTimeOut_Seconds);
+			// _httpClient.Timeout = TimeSpan.FromSeconds(Constants.HttpTimeOut_Seconds);
 
 			_navigationManager = navigationManager;
             _localStorageService = localStorageService;
@@ -164,10 +164,10 @@ namespace CtaLineaApp.Application.Services.Helper
         {
             await AddJwtHeader(request);
 			// imposta il timeout 
-			_httpClient.Timeout = TimeSpan.FromSeconds(Constants.HttpTimeOut_Seconds);
+			// _httpClient.Timeout = TimeSpan.FromSeconds(Constants.HttpTimeOut_Seconds);
 
 			// send request
-			return await _httpClient.SendAsync( request);
+			return await _httpClient.SendAsync( request );
         }
 
         private async Task AddJwtHeader(

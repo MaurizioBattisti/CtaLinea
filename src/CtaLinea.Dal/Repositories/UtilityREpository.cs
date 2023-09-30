@@ -1,4 +1,5 @@
 ﻿using CtaLinea.Model.QueryModel;
+using CtaLinea.Model.Response;
 using CtaLinea.Model.Utilities;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
@@ -162,6 +163,86 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 				commandTimeout: 600);
 
 			return await Task.FromResult(items);
+		}
+
+		public async Task<OperationResponse>  AddElastibusDaysASync (
+			IEnumerable<ElastibusDayDataItem> items)
+		{
+			using IDbConnection conn = this._context.GetNewConnection();
+			conn.Open();
+			await conn.InitializeSession(this._zzContext);
+
+			var result = new OperationResponse()
+			{
+				Success = true,
+			};
+
+			int id = 0;
+			DateTime dt = DateTime.MinValue;
+			int totRos = 0;
+
+			try
+			{
+				foreach (var item in items)
+				{
+					id = item.RunCtaId;
+					dt = item.Date;
+
+					var rows = await conn.ExecuteAsync(
+						"[dbo].[up_AddElastibusDay]",
+						param: new
+						{
+							RunCtaId = item.RunCtaId,
+							Date = item.Date,
+							Km = item.Km,
+							PeopleCount = item.PeopleCount
+						},
+						commandType: CommandType.StoredProcedure)
+						.ConfigureAwait(false);
+					totRos += rows;
+				}
+			}
+			catch (Exception ex)
+			{
+				result.Success = false;
+				result.Message = string.Format("{0}, {1:dd/MM/yyyy} ** Error", id, dt  ) +  ex.Message;
+			}
+			if ( result.Success  == true) 
+			{
+				result.Message = string.Format("ho aggiunto o modificato {0} giorni elastibus", totRos);
+			}
+
+			return await Task.FromResult(result);
+		}
+
+		public async Task<IEnumerable<string>> GetSimulationNamesAsync ()
+		{
+			using IDbConnection conn = this._context.GetNewConnection();
+			conn.Open();
+			await conn.InitializeSession(this._zzContext);
+
+			var result = await conn.QueryAsync<string> (
+				"SELECT SimulationName FROM [dbo].[vw_SimulationNames]"
+				)
+				.ConfigureAwait (false);
+
+			return result;
+		}
+		public async Task DeleteSimulationAsync (
+			string simulationName)
+		{
+			using IDbConnection conn = this._context.GetNewConnection();
+			conn.Open();
+			await conn.InitializeSession(this._zzContext);
+
+			await conn.ExecuteAsync(
+				"[dbo].[up_DeleteSimulation]",
+				new
+				{
+					SimulationName = simulationName
+				},
+				commandType: CommandType.StoredProcedure)
+				.ConfigureAwait(false);
 		}
 	}
 }

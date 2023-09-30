@@ -118,12 +118,14 @@ BEGIN
 				LEFT JOIN dbo.RunCarCosts rcc
 					ON rc.RunCarId = rcc.RunCarId
 				WHERE rcc.RunCarCostId IS NULL
-					OR 0 = (
-						COALESCE(rcc.DayPrice, 0) 
-						+ COALESCE(rcc.DayForfait, 0) 
-						+ COALESCE(rcc.DayIntegration, 0) 
-						+ COALESCE(rcc.KmPrice, 0) 
-						+ COALESCE(rcc.KmPriceExtra, 0)
+					OR ( rcc.SimulationName IS NULL					
+						AND 0 = (
+							COALESCE(rcc.DayPrice, 0) 
+							+ COALESCE(rcc.DayForfait, 0) 
+							+ COALESCE(rcc.DayIntegration, 0) 
+							+ COALESCE(rcc.KmPrice, 0) 
+							+ COALESCE(rcc.KmPriceExtra, 0)
+							)
 						)
 		)
 		INSERT INTO @Tbl_Inc (RunId, IncType)
@@ -146,12 +148,14 @@ BEGIN
 					ON rc.RunCarId = rcc.RunCarId
 				WHERE r.Day BETWEEN @StartDate AND @EndDAte
 					AND (rcc.RunCarCostId IS NULL
-						OR 0 = (
-							COALESCE(rcc.DayPrice, 0) 
-							+ COALESCE(rcc.DayForfait, 0) 
-							+ COALESCE(rcc.DayIntegration, 0) 
-							+ COALESCE(rcc.KmPrice, 0) 
-							+ COALESCE(rcc.KmPriceExtra, 0)
+						OR (rcc.SimulationName IS NULL
+							AND 0 = (
+								COALESCE(rcc.DayPrice, 0) 
+								+ COALESCE(rcc.DayForfait, 0) 
+								+ COALESCE(rcc.DayIntegration, 0) 
+								+ COALESCE(rcc.KmPrice, 0) 
+								+ COALESCE(rcc.KmPriceExtra, 0)
+								)
 							)
 					)
 		)

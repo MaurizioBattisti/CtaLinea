@@ -14,6 +14,8 @@ namespace CtaLinea.Model.Runs
         public decimal? DayIntegration { get; set; }
         public decimal? DayForfait { get; set; }
 
+        public string? SimulationName { get; set; }
+
         public string Text => GetCarCostHeader();
 
         public void CopyFrom (RunCarCost item)
@@ -27,6 +29,7 @@ namespace CtaLinea.Model.Runs
 
 			this.DayIntegration = item.DayIntegration;
 			this.DayForfait = item.DayForfait;
+            this.SimulationName = item.SimulationName;
 	    }
 
         private string GetCarCostHeader()

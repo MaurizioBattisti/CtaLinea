@@ -21,7 +21,9 @@ CREATE PROCEDURE [dbo].[up_GetCostByAssociate]
 	@Suspended		BIT = 0,
 	@RplacedCars	BIT = 1,
 	@BudgetName		varchar(MAX) = NULL,
-	@BudgetType		varchar(10) = NULL
+	@BudgetType		varchar(10) = NULL,
+
+	@SimulationName	varchar(50) = NULL
 )
 AS
 BEGIN
@@ -94,7 +96,8 @@ BEGIN
 				@AssociateId, @CarId,
 				NULL,
 				@OutOfPEriod, @Suspended, @RplacedCars,
-				@BudgetName, @BudgetType;
+				@BudgetName, @BudgetType,
+				@SimulationName;
 	END
 	ELSE
 	BEGIN

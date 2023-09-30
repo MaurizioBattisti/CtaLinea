@@ -23,6 +23,7 @@ using NPOI.HSSF.Record.Chart;
 using ZzSoft.CtaLinea.Dal.Repositories;
 using ZzSoft.CtaLinea.Dal.Services;
 using CtaLinea.Model.QueryModel;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -228,5 +229,65 @@ namespace CtaLineaWebApi.Controllers
 					});
             }
         }
-    }
+
+		[Authorize(Policy = Constants.Policy_ManageData)]
+		[Consumes(MediaTypeNames.Application.Json)]
+		[ProducesResponseType(
+			StatusCodes.Status200OK, 
+			Type=typeof(IEnumerable<string>) 
+			)]
+		[SwaggerOperation("Elenco delle simulazioni presenti in archivio")]
+		[HttpGet]
+		[Route("sims")]
+		public async Task<ActionResult<IEnumerable<string>>> GetSimulationNamesASync(
+			)
+		{
+			try
+			{
+				var model = await this._utilityRepo.GetSimulationNamesAsync()
+				   .ConfigureAwait(false);
+
+				return this.Ok(model);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(
+					new ValidationProblemDetails(new Dictionary<string, string[]>())
+					{
+						Title = "errore caricando i dati",
+						Detail = ex.Message
+					});
+			}
+		}
+		[Authorize(Policy = Constants.Policy_ManageData)]
+		[Consumes(MediaTypeNames.Application.Json)]
+		[ProducesResponseType(
+			StatusCodes.Status204NoContent
+			)]		
+		[SwaggerOperation("Elimina una simulaizone")]
+		[HttpDelete]
+		[Route("sims/{simulationName}")]
+		public async Task<IActionResult> DeleteSimulationASync(
+			[FromRoute] string simulationName
+			)
+		{
+			try
+			{
+				await this._utilityRepo.DeleteSimulationAsync(
+					simulationName)
+				   .ConfigureAwait(false);
+
+				return this.NoContent();
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(
+					new ValidationProblemDetails(new Dictionary<string, string[]>())
+					{
+						Title = "errore caricando i dati",
+						Detail = ex.Message
+					});
+			}
+		}
+	}
 }

@@ -205,5 +205,9 @@
     <Build Include="Tables\Runs\RunElastibusDays.sql" />
     <Build Include="StoredProc\Utility\up_GetElastibusDayForExport.sql" />
     <Build Include="StoredProc\Utility\up_GetRunsForExportTt.sql" />
+    <Build Include="Functions\Costs\tvf_Costs.sql" />
+    <Build Include="StoredProc\Utility\up_AddElastibusDay.sql" />
+    <Build Include="Views\Costs\vw_SimulationNames.sql" />
+    <Build Include="StoredProc\Costs\up_DeleteSimulation.sql" />
   </ItemGroup>
 </Project>

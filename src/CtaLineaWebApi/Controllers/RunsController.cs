@@ -24,6 +24,7 @@ using ZzSoft.CtaLinea.Dal.Services;
 using CtaLinea.Model.Request;
 using CtaLinea.Model.Response;
 using CtaLinea.Model;
+using CtaLineaWebApi.Application.Commands.Uility;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -281,6 +282,36 @@ namespace CtaLineaWebApi.Controllers
 
 			return this.Ok(result);
 		}
+
+		[Authorize(Policy = Constants.Policy_ManageData)]
+		[SwaggerOperation("Aggoinge i giorni elastibus")]
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OperationResponse))]
+		[HttpPost]
+		[Route("addelbdays")]
+		public async Task<IActionResult> AddElastibusDaysASync(
+			[FromBody] AddElastibusDaysRequest model)
+		{
+			var request = new AddMultiRunElastibusDayRequest()
+			{
+				Data = model.Data
+			};
+            try
+            {
+                var result = await this._mediator.Send(request)
+                    .ConfigureAwait(false);
+
+                return this.Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(
+                    new OperationResponse()
+                    {
+                        Success = false,
+                        Message = ex.Message
+                    });
+            }
+        }
 
 		#region dettagli
 		[Authorize(Policy = Constants.Policy_RunView)]

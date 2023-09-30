@@ -1,6 +1,8 @@
 ﻿using CtaLinea.Model.QueryModel;
+using CtaLinea.Model.Response;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 using ZzSoft.CtaLinea.Dal.Model;
 
@@ -27,6 +29,12 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             DateTime? endDate,
             int? contractId
             );
+        Task<OperationResponse> AddElastibusDaysASync(
+            IEnumerable<ElastibusDayDataItem> items);
 
+        Task<IEnumerable<string>> GetSimulationNamesAsync();
+
+        Task DeleteSimulationAsync(
+            string simulationName);
 	}
 }

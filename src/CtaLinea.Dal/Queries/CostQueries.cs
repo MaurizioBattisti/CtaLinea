@@ -40,8 +40,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
             DateTime? endDate = null,
             Guid? associateId = null,
             Guid? carId = null,
-            Guid? runId = null
-            )
+            Guid? runId = null,
+			string simulationName  = null
+			)
         {
             using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
@@ -56,7 +57,9 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                     EndDate = endDate,
                     AssociateId = associateId,
                     CarId = carId,
-                    RunId = runId
+                    RunId = runId,
+                    SimulationName = simulationName
+
                 },
                 commandType: CommandType.StoredProcedure,
                 commandTimeout: 600);

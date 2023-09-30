@@ -47,8 +47,9 @@ namespace CtaLineaWebApi.Controllers
             [FromQuery] DateTime? endDate = null,
             [FromQuery] Guid? associateId = null,
             [FromQuery] Guid? carId = null,
-            [FromQuery] Guid? runId = null
-            )
+            [FromQuery] Guid? runId = null,
+			[FromQuery] string simulationName = null
+			)
         {
             var assId = await this._currentUSer.GetUserAssociateId()
                 .ConfigureAwait(false);
@@ -61,7 +62,8 @@ namespace CtaLineaWebApi.Controllers
                 contractId,
                 startDate, endDate,
                 associateId, carId,
-                runId)
+                runId,
+				simulationName)
                 .ConfigureAwait(false);
 
             return this.Ok(result);

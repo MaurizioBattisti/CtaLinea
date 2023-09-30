@@ -1,6 +1,8 @@
 ﻿using CtaLinea.Model.Checks;
 using CtaLinea.Model.Costs;
 using CtaLinea.Model.QueryModel;
+using CtaLinea.Model.Request;
+using CtaLinea.Model.Response;
 using CtaLinea.Model.Runs;
 using CtaLinea.Model.Utilities;
 using CtaLineaApp.Application.Services.Helper;
@@ -135,6 +137,14 @@ namespace CtaLineaApp.Application.Services.Utilities
             var url = Constants.EndPoint_RunIncongruence;
             var items = await _http.Post<IEnumerable<RunIncongruenceModel>, string>(url, request);
             return items;
+        }
+
+        public async Task<OperationResponse?> AddElastibusDaysAsync(
+            AddElastibusDaysRequest request)
+        {
+            var url = Constants.Endpoint_Run_AddElastibusDays;
+            var result = await _http.Post<OperationResponse, OperationResponse>(url, request);
+            return result;
         }
     }
 }

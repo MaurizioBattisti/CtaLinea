@@ -15,9 +15,17 @@ CREATE TABLE [dbo].[RunCarCosts]
 
     [DayIntegration] MONEY NULL , 
     [DayForfait] MONEY NULL, 
+    
+    [SimulationName] VARCHAR(50) NULL, 
+
     CONSTRAINT [FK_Costs_RunCar] 
         FOREIGN KEY ([RunCarId]) 
         REFERENCES [dbo].[RunCars](RunCarId)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 )
+
+GO
+
+CREATE INDEX [IDX_RunCarCost_SimulationName] 
+    ON [dbo].[RunCarCosts] ([SimulationName])

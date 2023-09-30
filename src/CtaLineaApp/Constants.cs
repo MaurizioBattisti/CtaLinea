@@ -60,9 +60,10 @@ namespace CtaLineaApp
         internal const string Endpoint_Run_SetSuspensions = Endpoint_Runs + "/suspensions";
         internal const string Endpoint_Run_CreateCopy = Endpoint_Runs + "/createcopy";
         internal const string Endpoint_OneRun_Note_Frm = Endpoint_OneRun_Frm + "/note";
+        internal const string Endpoint_Run_AddElastibusDays = Endpoint_Runs + "/addelbdays";
 
-        // costi
-        internal const string EndPoint_Costs = "api/costs";
+		// costi
+		internal const string EndPoint_Costs = "api/costs";
         internal const string EndPoint_CostsByAssociate_GET = EndPoint_Costs + "/byassociate";
 		internal const string EndPoint_CostsByRun = EndPoint_Costs + "/byrun";
 		internal const string EndPoint_CostsByAssociate = EndPoint_Costs + "/byassociate";

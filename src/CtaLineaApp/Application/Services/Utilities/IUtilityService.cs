@@ -1,6 +1,9 @@
 ﻿using CtaLinea.Model.Checks;
 using CtaLinea.Model.QueryModel;
+using CtaLinea.Model.Request;
+using CtaLinea.Model.Response;
 using CtaLinea.Model.Utilities;
+using static System.Net.WebRequestMethods;
 
 namespace CtaLineaApp.Application.Services.Utilities
 {
@@ -31,5 +34,8 @@ namespace CtaLineaApp.Application.Services.Utilities
 
 		Task<IEnumerable<RunIncongruenceModel>?> GetRunIncongruenceAsync(
 			RinIncongruenceRequest request);
+
+		Task<OperationResponse?> AddElastibusDaysAsync(
+			AddElastibusDaysRequest request);
     }
 }

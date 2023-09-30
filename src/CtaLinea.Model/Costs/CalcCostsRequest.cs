@@ -26,9 +26,10 @@ namespace CtaLinea.Model.Costs
         public string? BudgetName { get; set; }
         public string? BudgetType { get; set; }
 
+        public string? SimulationName { get; set; }
 
-        // indica che deve usare dati freschi
-        public bool ForceFreshData { get; set; } = false;
+		// indica che deve usare dati freschi
+		public bool ForceFreshData { get; set; } = false;
 
         public bool NeedToUseFreshData ()
         {
@@ -50,6 +51,11 @@ namespace CtaLinea.Model.Costs
             {
                 need = this.UseReplacedCars == false;
             }
+            if (need == false)
+            {
+                need = string.IsNullOrEmpty(this.SimulationName) == false;
+            }
+
             return need;
         }
     }
