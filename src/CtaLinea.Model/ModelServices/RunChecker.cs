@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -675,7 +676,20 @@ namespace CtaLinea.Model.ModelServices
             await Task.CompletedTask;
         }
 
+
+
         #region mezzi
+        private IList<RunCarCost>? GetOnlyRealCosts(RunPeriodCar car)
+        {
+            if (car.CarCosts == null
+                || car.CarCosts.Count == 0)
+            {
+                return car.CarCosts;
+            }
+            return car.CarCosts?
+                .Where(cc => string.IsNullOrWhiteSpace(cc.SimulationName))
+                .ToList();
+        }
         private async Task CheckPeriodCarAsync(
             RunItem run,
             RunPeriod period,
@@ -685,11 +699,13 @@ namespace CtaLinea.Model.ModelServices
             IList<CheckResultItem> informations
             )
         {
+            var carCosts = this.GetOnlyRealCosts(car);
+
             if (car.RunCarType == CarTypeEnum.Primary
                 || car.RunCarType == CarTypeEnum.Replacement)
             {
-                if (car.CarCosts == null
-                    || car.CarCosts.Count == 0)
+                if (carCosts == null
+                    || carCosts.Count == 0)
                 {
                     errors.Add(
                         new CheckResultItem()
@@ -703,7 +719,7 @@ namespace CtaLinea.Model.ModelServices
                 else
                 {
                     // contorlla che ci sia il costo principale quello con startdate nulla
-                    var mainCost = car.CarCosts.Where(c => c.StartDate == null).FirstOrDefault();
+                    var mainCost = carCosts.Where(c => c.StartDate == null).FirstOrDefault();
                     if (mainCost == null)
                     {
                         errors.Add(
@@ -717,7 +733,7 @@ namespace CtaLinea.Model.ModelServices
                     }
 
                     // controlla i costi solo se il mezzo è un titolare o una sostituzione
-                    foreach (var cost in car.CarCosts)
+                    foreach (var cost in carCosts)
                     {
                         await this.CheckPeriodCarCostAsync(run, period, car, cost, errors, warnings, informations);
                     }
@@ -726,8 +742,8 @@ namespace CtaLinea.Model.ModelServices
             else
             {
                 // avverte se ci sono dei costi che non dovrebbero eseerci
-                if (car.CarCosts != null
-                    && car.CarCosts.Count > 0)
+                if (carCosts != null
+                    && carCosts.Count > 0)
                 {
                     informations.Add(
                         new CheckResultItem()

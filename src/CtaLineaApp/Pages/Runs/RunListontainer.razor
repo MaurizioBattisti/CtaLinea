@@ -36,13 +36,15 @@
     Style="height: 100%; grid-template-columns: auto 1fr auto; grid-template-areas: 'rz-header rz-header rz-header' 'rz-sidebar rz-body rz-right-sidebar'">
     <RadzenBody>
         <RadzenDataGrid @ref="@grdData"
-                        FilterMode="FilterMode.Simple"
+                        FilterMode="FilterMode.SimpleWithMenu"
+                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                         Count="@ItemCount"
                         IsLoading=@IsLoading
                         Data="@this.Data" TItem="RunItemQueryModel"
                         AllowSorting="true"
                         AllowFiltering="true"
                         AllowColumnResize="true"
+                        Culture=@AppSettings.CurrentCulture
                         LogicalFilterOperator="LogicalFilterOperator.And"
                         SelectionMode="DataGridSelectionMode.Single"
                         Value=@SelectedRuns
@@ -85,6 +87,10 @@
                                   Icon="@(EditorVisible==false ? "visibility" : "visibility_off")"
                                   Click="@(() => EditorVisible = !EditorVisible)" />
                     -->
+                    <RadzenButton ButtonStyle="ButtonStyle.Light"
+                                  Disabled=@(this.EditArgs == null)
+                                  Icon="@(EditorVisible==false ? "visibility" : "visibility_off")"
+                                  Click="@(() => EditorVisible = !EditorVisible)" />
                     @if(this.CanEdit())
                     {
                         <RadzenButton ButtonStyle="ButtonStyle.Primary"
@@ -212,7 +218,7 @@
                     </Template>
                 </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="CtaRunId" Title="Id CTA" Width="100px" FilterValue=@Filter_CtaRunId Frozen=true>
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="CtaRunId" Title="Id CTA" Width="100px"  Frozen=true FilterOperator="FilterOperator.Equals" >
                     <Template Context="item">
                         @if (item.Color != null)
                         {
@@ -226,7 +232,7 @@
                         }
                     </Template>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="@nameof(RunItemQueryModel.RunStatusDesvr)" Title="Stato" Width="180px" FilterValue=@Filter_CtaRunId Frozen=true>
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="@nameof(RunItemQueryModel.RunStatusDesvr)" Title="Stato" Width="180px" Frozen=true FilterOperator="FilterOperator.Contains">
                     <Template Context="item">
                         <div style="width: 100%;" class="@GetRunStatusStyleClass(item.RunStatus)" >
                             @item.RunStatusDesvr
@@ -239,34 +245,31 @@
                     </Template>
                 </RadzenDataGridColumn>
                 
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="AssociatesDescr" Title="Ditte" Width="200px" FilterValue=@Filter_AssociatesDescr >
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="AssociatesDescr" Title="Ditte" Width="200px" FilterOperator="FilterOperator.Contains">
                     <Template Context="item">
                         <div style="width: 100%;" class="@GetAssociateDescrStyle(item)">
                             @item.AssociatesDescr
                         </div>
                     </Template>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="StartTime" Title="Ora inizio" Width="120px" FilterOperator="FilterOperator.Equals" FilterValue=@Filter_StartTime_2>
-                    <FilterTemplate>
-                        <TimeSelector @bind-Value="Filter_StartTime" AllowClear=true Changed=@StartTime_Changed />
-                    </FilterTemplate>
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="StartTime" Title="Ora inizio" Width="120px" FilterOperator="FilterOperator.Equals" >
                     <Template Context="data">
                         @FormatTime(data?.StartTime)
                     </Template>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="PathsDescr" Title="Percorso" Width="200px" FilterValue=@Filter_PathsDescr />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="PathsDescr" Title="Percorso" Width="200px" FilterOperator="FilterOperator.Contains" />
                 <!--
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Path" Title="Percorso" Width="200px" FilterValue=@Filter_Path />
                 -->
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedFrequency" Title="Frequenza richiesta" Width="200px" FilterValue=@Filter_RequestedFrequency />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedFrequency" Title="Frequenza richiesta" Width="200px" FilterOperator="FilterOperator.Contains" />
 
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunName" Title="Nome Corsa" Width="250px" />
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="LineNumber" Title="Nr. Linea" Width="100px" FilterValue=@Filter_LineNumber />
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunNumber" Title="Nr. Corsa" Width="100px" FilterValue=@Filter_RunNumber />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunName" Title="Nome Corsa" Width="250px" FilterOperator="FilterOperator.Contains" />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="LineNumber" Title="Nr. Linea" Width="100px" FilterOperator="FilterOperator.Equals" />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunNumber" Title="Nr. Corsa" Width="100px" FilterOperator="FilterOperator.Contains" />
 
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedCapacity" Title="Capienza richiesta" Width="150px" FilterValue=@Filter_RequestedCapacity />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedCapacity" Title="Capienza richiesta" Width="150px" FilterOperator="FilterOperator.Equals" />
 
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Km" Title="Km" Width="100px" FilterValue=@Filter_Km FormatString="{0:0.00}" />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Km" Title="Km" Width="100px" FilterOperator="FilterOperator.Equals" FormatString="{0:0.00}" />
 
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="@nameof(RunItemQueryModel.Elastibus)" Title="Elastibus" Width="100px">
                     <Template Context="data">
@@ -277,8 +280,8 @@
                     </Template>
                 </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="@nameof(RunItemQueryModel.ForfaitName)" Title="Forfait" Width="150px" />
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="@nameof(RunItemQueryModel.CoincidenceState)" Title="Coincidenza" Width="150px" />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="@nameof(RunItemQueryModel.ForfaitName)" Title="Forfait" Width="150px" FilterOperator="FilterOperator.Contains" />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="@nameof(RunItemQueryModel.CoincidenceState)" Title="Coincidenza" Width="150px" FilterOperator="FilterOperator.Contains" />
 
                 <!--
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="ContractRowNumber" Title="Riga Appalto" Width="100px" FilterValue=@Filter_ContractRowNumber Frozen=true>
@@ -445,82 +448,7 @@
     private bool DetailIsLoading = false;
     private IEnumerable<RunVariationQueryModel>? Details;
     #endregion
-    #region filtri
     private RunAdvancedFilters AdvancedFilter4s = new RunAdvancedFilters();
-
-    private int? Filter_CtaRunId;
-    private int? Filter_ContractRowNumber;
-    private bool? Filter_Extra;
-    private int? Filter_RequestedDays;
-    private string? Filter_AssociatesDescr;
-    private string? Filter_PrimaryCarsDescr;
-    private string? Filter_SpareCarsDescr;
-    private string? Filter_CalendarsDescr;
-    private string? Filter_PathsDescr;
-    private string? Filter_LineNumber;
-    private int? Filter_RunNumber;
-
-    private bool? Filter_Monday;
-    private bool? Filter_Tuesday;
-    private bool? Filter_Wednesday;
-    private bool? Filter_Thursday;
-    private bool? Filter_Friday;
-    private bool? Filter_Saturday;
-    private bool? Filter_Sunday;
-
-    private string? Filter_Path;
-    private string? Filter_RequestedFrequency;
-
-    private float? Filter_Km;
-    private int? Filter_RequestedCapacity;
-
-    private string? Filter_Note;
-    private string? Filter_VariationNote;
-
-    // ORe di inizioe fine
-    private DateTime? Filter_StartTime_2;
-    private TimeSpan? Filter_StartTime;
-    private void StartTime_Changed(object value)
-    {
-        DateTime? dt = null;
-        if (Filter_StartTime != null)
-        {
-            dt = new DateTime(1, 1, 1, Filter_StartTime.Value.Hours, Filter_StartTime.Value.Minutes, Filter_StartTime.Value.Seconds);
-        }
-
-        Filter_StartTime_2 = dt;
-        this.grdData?.Reload();
-    }
-    private DateTime? Filter_EndTime_2;
-    private TimeSpan? Filter_EndTime;
-    private void EndTime_Changed(object value)
-    {
-        DateTime? dt = null;
-        if (Filter_EndTime != null)
-        {
-            dt = new DateTime(1, 1, 1, Filter_EndTime.Value.Hours, Filter_EndTime.Value.Minutes, Filter_EndTime.Value.Seconds);
-        }
-
-        Filter_EndTime_2 = dt;
-        this.grdData?.Reload();
-    }
-    private DateTime? Filter_StartDate;
-    private void StartDate_Changed(object value)
-    {
-        this.grdData?.Reload();
-    }
-    private DateTime? Filter_EndDate;
-    private void EndDate_Changed(object value)
-    {
-        this.grdData?.Reload();
-    }
-
-    private DateTime? Filter_VariationStartDate;
-    private void VariationStartDate_Changed(object value)
-    {
-        this.grdData?.Reload();
-    }
-    #endregion
 
     private string GetEditorStyle()
     {
@@ -1257,49 +1185,6 @@
                 col.ClearFilters();
             }
         }
-
-        // rivedere la sezione dei filtri forse non servono tutti gli oggetti
-        // ma solo qeulli particolari 
-        this.Filter_CtaRunId = null;
-        this.Filter_ContractRowNumber = null;
-        this.Filter_Extra = null;
-        this.Filter_RequestedDays = null;
-        this.Filter_AssociatesDescr = null;
-        this.Filter_PrimaryCarsDescr = null;
-        this.Filter_SpareCarsDescr = null;
-        this.Filter_CalendarsDescr = null;
-        this.Filter_PathsDescr = null;
-        this.Filter_LineNumber = null;
-        this.Filter_RunNumber = null;
-
-        this.Filter_Monday = null;
-        this.Filter_Tuesday = null;
-        this.Filter_Wednesday = null;
-        this.Filter_Thursday = null;
-        this.Filter_Friday = null;
-        this.Filter_Saturday = null;
-        this.Filter_Sunday = null;
-
-        this.Filter_Path = null;
-        this.Filter_RequestedFrequency = null;
-
-        this.Filter_Km = null;
-        this.Filter_RequestedCapacity = null;
-
-        this.Filter_Note = null;
-        this.Filter_VariationNote = null;
-
-        this.Filter_StartDate = null;
-        this.Filter_EndDate = null;
-
-        this.Filter_StartTime = null;
-        this.Filter_EndTime = null;
-
-        this.Filter_StartTime_2 = null;
-        this.Filter_EndTime_2 = null;
-
-        this.Filter_VariationStartDate = null;
-
 
         // this.StateHasChanged();
         await this.ReloadData();

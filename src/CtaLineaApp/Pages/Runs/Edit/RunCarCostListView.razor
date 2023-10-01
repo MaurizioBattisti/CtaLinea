@@ -149,14 +149,30 @@
 		}
 	}
 
+	private IList<RunCarCost>? GetOnlyRealCosts(RunPeriodCar car)
+	{
+		if (car.CarCosts == null
+			|| car.CarCosts.Count == 0)
+		{
+			return car.CarCosts;
+		}
+		return car.CarCosts?
+			.Where(cc => string.IsNullOrWhiteSpace(cc.SimulationName))
+			.ToList();
+	}
+
 	private async Task<bool> CheckCostAsync (RunCarCost item)
 	{
 		bool result = true;
 
-		if (this.PeriodCar.CarCosts != null)
+		// se il costo è un costo di sumulaizoe non fa niente
+		if (string.IsNullOrWhiteSpace(item.SimulationName) == false ) return await Task.FromResult(result);
+
+		var carCosts = this.GetOnlyRealCosts(this.PeriodCar);
+		if (carCosts != null)
 		{
 			// contorlla se esiste già una data di inizio
-			var cost = (from cc in this.PeriodCar.CarCosts
+			var cost = (from cc in carCosts
 						where cc.RunCarCostId != item.RunCarCostId
 							&& cc.StartDate == item.StartDate
 						select cc).FirstOrDefault();
