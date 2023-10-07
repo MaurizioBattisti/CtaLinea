@@ -140,7 +140,7 @@ namespace CtaLineaWebApi
             });
 
 			// recupera il servizio dello scheduler per avviarlo
-						var scheduler = app.ApplicationServices.GetService<TaskScheduler>();
+            var scheduler = app.ApplicationServices.GetService<TaskScheduler>();
         }
 
         private void AddSwagger(IServiceCollection services)

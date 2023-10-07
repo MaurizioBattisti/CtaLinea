@@ -1,0 +1,86 @@
+﻿@page "/simulations"
+
+@inject NotificationService _notificationService
+@inject DialogService _dialogService;
+@inject IApplicationSettings AppSettings;
+@inject IUtilityService _utilitySvc
+@attribute [Authorize]
+
+<RadzenRow>
+	<RadzenCard>
+        <RadzenRow>
+            <h3>Elimina Simulazione</h3>
+        </RadzenRow>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" Gap="1rem" Class="rz-p-4">            
+            <RadzenStack >
+                <RadzenLabel Text="Nome simulazione" />
+                <SimulationSelector 
+                    @ref=@SimSelector
+                    Name="SimulationName" @bind-SimulationName=@SimulationName />
+            </RadzenStack>
+            <RadzenButton Text="Elimina"
+                ButtonStyle="ButtonStyle.Danger"
+                IsBusy=@IsBusy
+                Disabled=@(string.IsNullOrEmpty(this.SimulationName))
+                Icon="delete" 
+                Click=@DeleteSimulation
+                />
+        </RadzenStack>
+    </RadzenCard>
+</RadzenRow>
+
+@code {
+    private SimulationSelector? SimSelector;
+
+    private string? SimulationName  { get; set; }
+    private bool IsBusy { get; set; } = false;
+
+
+    private async Task DeleteSimulation ()
+    {
+        // chiede conferma prima di proseguire con la cancellazione
+        var result = await _dialogService.Confirm(
+            "Eliminare la simulaizone ?",
+            "Eliminazione",
+            new ConfirmOptions()
+            {
+                CancelButtonText = "No",
+                OkButtonText = "Si"
+            });
+
+        // se non si desidera procedere esce subito
+        if (result == false) return;
+
+        try
+        {
+            this.IsBusy = true;
+
+            // esegue la cancellazione della simulaizone
+            await this._utilitySvc.DeleteSimulationAsync(this.SimulationName);
+
+            // se la cancellazioen va a buon fine azzera la selezione
+            this.SimulationName = null;
+            if (this.SimSelector != null)
+            {
+                await this.SimSelector.LoadData();
+            }
+            this.StateHasChanged();
+
+            // indica che l'operazione ha avuto successo
+            this._notificationService.Notify(
+                NotificationSeverity.Success,
+                "Simulaizone eliminata correttamente");
+        }
+        catch (Exception ex)
+        {
+            this._notificationService.Notify(
+                NotificationSeverity.Success,
+                "Errore eliminando la simulazione",
+                ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+        }
+    }
+}

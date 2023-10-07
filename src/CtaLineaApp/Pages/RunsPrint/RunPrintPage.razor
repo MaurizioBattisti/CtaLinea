@@ -1,10 +1,18 @@
 ﻿@page "/run-print/{RunIds}"
+@using CtaLinea.Model.Request
 @inject IJSRuntime jsRuntime
-@inject ICurrentUserService _userSvc;
+@inject ICurrentUserService _userSvc
+@inject IRunRepository _runRepo
+@inject NotificationService _notificationService
 @attribute [Authorize]
 
-<RadzenRow class="noprint">
-	<RadzenButton Click="@PrintClick" Text="Stampa..." Icon="print" />
+<RadzenRow class="noprint p-1">
+	<RadzenButton 
+		Disabled=@(!CanPrint)
+		IsBusy=@IsBusy 
+		Click="@PrintClick" 
+		Text="Stampa..." 
+		Icon="print" />
 </RadzenRow>
 
 @foreach(var run in this.Runs)
@@ -14,38 +22,28 @@
 		<!-- salto pagina-->
 		<div style="break-before:page"></div>
 	}
-
-	<div class="noscreen">
-		<PrintRun RunId="@run.RunId" />
+	<div class="print-on-screen" >
+		<PrintRun PrintData=@run />
 	</div>
 }
-
 @code {
-	private class PrintData
-	{
-		public Guid RunId { get; set; }
-		public RunItem? Run { get; set; }
-		public string Message { get; set; } = string.Empty;
-	}
-
 	[Parameter]
 	public string RunIds { get; set; } = string.Empty;
 
-	private IList<PrintData> Runs = new List<PrintData>();
+	private IList <RunForPrintModel> Runs = new List<RunForPrintModel>();
+	private GetRunForPrintRequest Args = new GetRunForPrintRequest ();
+	private bool IsBusy = false;
+	private bool CanPrint = false;
 
 	protected override async Task OnParametersSetAsync()
 	{
 		if (string.IsNullOrWhiteSpace(this.RunIds) == false)
 		{
-			var list = this.RunIds.Split("|");
-			this.Runs = (from id in list
-							select new PrintData ()
-							{
-								 RunId = new Guid(id),
-								 Run = null
-							}
-						)
-					.ToList();
+			var list = this.RunIds.Split(",");
+			this.Args.RunCtaIds = (from id in list
+											select int.Parse(id)
+						).ToList();
+
 			await this.LoadDataAsync();
 		}
 
@@ -54,15 +52,36 @@
 
 	private async Task LoadDataAsync()
 	{
-		
-		await Task.CompletedTask;
+		try
+		{
+			this.CanPrint = false;
+			this.IsBusy = true;
+
+			var runs = await this._runRepo.GetRunsForPrintAsync(
+				this.Args);
+
+			if (runs != null )
+			{
+				this.Runs = runs.ToList();
+			}
+			this.CanPrint = true;
+		}
+		catch (Exception ex)
+		{
+			_notificationService.Notify(
+				NotificationSeverity.Error,
+				"Errore durante il caricamento dei dati da stamapre",
+				ex.Message
+				);
+		}
+		finally
+		{
+			this.IsBusy = false;
+		}
 	}
 
 	private void PrintClick()
 	{
 		jsRuntime.InvokeVoidAsync("PrintCurent");
 	}
-
-
-
 }

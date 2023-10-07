@@ -1,0 +1,64 @@
+﻿@inject IUtilityService _utilitySvc
+@inject NotificationService _notificationService;
+
+<RadzenDropDown Name=@Name
+    Disabled=@Disabled
+    Data=@Data
+    @bind-Value="SimulationName"
+    TValue="string"
+    AllowClear="true"
+    Change=@OnChange
+    AllowFiltering=true    
+    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+    FilterOperator="StringFilterOperator.Contains"
+    Class="w-100">
+</RadzenDropDown>
+
+
+@code {
+    [Parameter]
+    public  string? SimulationName { get; set; }
+    [Parameter]
+    public EventCallback<string?> SimulationNameChanged { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+    [Parameter]
+    public string? Name { get; set; }
+
+    [Parameter]
+    public EventCallback<object> Changed { get; set; }
+
+    private IList<string> Data = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+        this.StateHasChanged();
+    }
+
+
+    public async Task LoadData()
+    {
+        await Task.CompletedTask;
+
+        try
+        {
+            var data = await this._utilitySvc.GetSimulationNamesAsync();
+            this.Data = data?.ToList() ?? new List<string>();
+        }
+        catch (Exception ex)
+        {
+            this._notificationService.Notify(NotificationSeverity.Error,
+            "erore durante il caricamento della lista delle simulazioni",
+            ex.Message);
+        }
+    }
+
+    private async Task OnChange(object value)
+    {
+        // this._CalendarId = (value as CalendarQueryItem)?.Id;
+        await SimulationNameChanged.InvokeAsync(this.SimulationName);
+        await Changed.InvokeAsync(this);
+    }
+}

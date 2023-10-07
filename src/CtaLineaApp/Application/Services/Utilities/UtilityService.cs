@@ -6,6 +6,7 @@ using CtaLinea.Model.Response;
 using CtaLinea.Model.Runs;
 using CtaLinea.Model.Utilities;
 using CtaLineaApp.Application.Services.Helper;
+using NPOI.SS.Formula.Functions;
 using System.Text;
 using static System.Net.WebRequestMethods;
 
@@ -145,6 +146,19 @@ namespace CtaLineaApp.Application.Services.Utilities
             var url = Constants.Endpoint_Run_AddElastibusDays;
             var result = await _http.Post<OperationResponse, OperationResponse>(url, request);
             return result;
+        }
+
+        public async Task<IEnumerable<string>?> GetSimulationNamesAsync ()
+        {
+            var url = Constants.Endpoint_Simulations;
+            var items = await _http.Get<IEnumerable<string>>(url);
+            return items;
+        }
+        public async Task DeleteSimulationAsync (
+            string simulationName)
+        {
+            var url = string.Format(Constants.Endpoint_Simulations_One_fmt, simulationName);
+            await this._http.Delete(url);
         }
     }
 }

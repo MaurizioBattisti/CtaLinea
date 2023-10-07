@@ -430,6 +430,7 @@
 
         Delete,
 
+        Print,
         MultiRun_SetSuspension,
         MultiRun_SetForfait
     };
@@ -753,9 +754,14 @@
                     <RadzenMenuItem Icon="savings" Text="Forfait Multi corsa..." Value=@RunMenuItems.MultiRun_SetForfait />
                     <hr class="separator">
                 }
-                <RadzenMenuItem Icon="delete" Text="Elimina..." Value=@RunMenuItems.Delete />
+                <RadzenMenuItem Icon="print" Text="Stampa..." Value=@RunMenuItems.Print />
+                @if (CanManage())
+                {
+                    <hr class="separator">
+                    <RadzenMenuItem Icon="delete" Text="Elimina..." Value=@RunMenuItems.Delete />
+                }
             </RadzenMenu>
-        );
+    );
     }
 
     private async Task OnMenuItemClick(
@@ -798,6 +804,10 @@
                 break;
             case RunMenuItems.InternalNote:
                 await this.ShowInternalNoteDialogAsync(args.Data.Id);
+                break;
+
+            case RunMenuItems.Print:
+                await this.NavgateToPrintWindowAsync(args.Data.CtaRunId);
                 break;
 
             default:
@@ -1025,6 +1035,23 @@
         {
             await this.RealodOneRowAsync(runId);
         }
+    }
+    private async Task NavgateToPrintWindowAsync (
+        int? ctaRunId)
+    {
+        string strIds = ctaRunId?.ToString()?.Trim() ?? string.Empty;
+        if (this.MultiSelectedRuns != null
+            && this.MultiSelectedRuns.Count > 0)
+        {
+            var ids = this.MultiSelectedRuns.Select(r => r.CtaRunId.ToString().Trim() );
+            strIds = string.Join(",", ids);
+        }
+        if (string.IsNullOrWhiteSpace (strIds) == false)
+        {
+            var url = string.Format("/run-print/{0}", strIds);
+            NavigationManager.NavigateTo(url);
+        }
+        await Task.CompletedTask;
     }
 
     private async Task SetForfaitAsync (Guid runId)

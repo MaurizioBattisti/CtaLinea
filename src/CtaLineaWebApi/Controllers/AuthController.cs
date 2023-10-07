@@ -1,4 +1,5 @@
-﻿using CtaLineaWebApi.Auth.Model;
+﻿using CtaLineaWebApi.Application.Scheduler;
+using CtaLineaWebApi.Auth.Model;
 using CtaLineaWebApi.Auth.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -18,13 +19,16 @@ namespace CtaLineaWebApi.Controllers
     {
         private readonly IUserService _userService;
         // private readonly IUserInfo _userInfo;
+        private readonly ISchedulerService _schedulerService;
 
         public AuthController(
-            IUserService userService
+            IUserService userService,
+            ISchedulerService scheduleService
             // IUserInfo userInfo
             )
         {
             _userService = userService;
+            _schedulerService = scheduleService;
             // _userInfo = userInfo;
         }
 

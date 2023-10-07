@@ -37,18 +37,21 @@ namespace CtaLineaWebApi.Controllers
         private readonly IUserService _userService;
         private readonly IUserChecker _userChecker;
         private readonly ILogger _logger;
+        private readonly ISchedulerService _schedulerService;
 
         public UsersController(
             ISender mediator,
             IUsersQueries queries,
             IUserService userService,
 			IUserChecker userChecker,
-			ILogger<UsersController> logger)
+            ISchedulerService schedulerService,
+            ILogger<UsersController> logger)
         {
             _mediator = mediator;
             _queries = queries;
             _userService = userService;
             _userChecker = userChecker;
+            _schedulerService = schedulerService;
             _logger = logger;
         }
 

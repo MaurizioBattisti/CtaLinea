@@ -61,9 +61,10 @@ namespace CtaLineaApp
         internal const string Endpoint_Run_CreateCopy = Endpoint_Runs + "/createcopy";
         internal const string Endpoint_OneRun_Note_Frm = Endpoint_OneRun_Frm + "/note";
         internal const string Endpoint_Run_AddElastibusDays = Endpoint_Runs + "/addelbdays";
+        internal const string Endpoint_Run_ForPRint = Endpoint_Runs + "/forprint";
 
-		// costi
-		internal const string EndPoint_Costs = "api/costs";
+        // costi
+        internal const string EndPoint_Costs = "api/costs";
         internal const string EndPoint_CostsByAssociate_GET = EndPoint_Costs + "/byassociate";
 		internal const string EndPoint_CostsByRun = EndPoint_Costs + "/byrun";
 		internal const string EndPoint_CostsByAssociate = EndPoint_Costs + "/byassociate";
@@ -75,10 +76,12 @@ namespace CtaLineaApp
 		internal const string EndPoint_RunPlanning = EndPoint_Utilitys + "/runplanning";
         internal const string EndPoint_OverlappingCars = EndPoint_Utilitys + "/overlappingcars";
 		internal const string EndPoint_RunGlobalOverlappingCars = EndPoint_Utilitys + "/globaloverlappingcars";
-		internal const string EndPoint_RunIncongruence = EndPoint_Utilitys + "/runincongruence";        
+		internal const string EndPoint_RunIncongruence = EndPoint_Utilitys + "/runincongruence";
+        internal const string Endpoint_Simulations = Endpoint_Utility + "/sims";
+        internal const string Endpoint_Simulations_One_fmt = Endpoint_Simulations + "/{0}";
 
-		// argomenti
-		internal const string EndPoint_CostsByAssociate_ContractId = "contractId";
+        // argomenti
+        internal const string EndPoint_CostsByAssociate_ContractId = "contractId";
         internal const string EndPoint_CostsByAssociate_StartDate= "startDate";
         internal const string EndPoint_CostsByAssociate_EndDAte = "endDate";
         internal const string EndPoint_CostsByAssociate_AssociateId = "associateId";

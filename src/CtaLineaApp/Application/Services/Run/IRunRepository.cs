@@ -38,5 +38,8 @@ namespace CtaLineaApp.Application.Services.Run
         Task<OperationResult<bool>?> UpdateRunInternalNoteAsync(
             Guid runId,
             InternalNoteQueryItem note);
-	}
+        Task<IEnumerable<RunForPrintModel>?> GetRunsForPrintAsync(
+            GetRunForPrintRequest request);
+
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using CtaLinea.Model.Filters;
 using CtaLinea.Model.QueryModel;
+using CtaLinea.Model.Runs;
 using CtaLinea.QueryModel;
 using System;
 using System.Collections.Generic;
@@ -26,5 +27,11 @@ namespace ZzSoft.CtaLinea.Dal.Queries
 
 		Task<InternalNoteQueryItem?> GetNoteAsync(
 			Guid id);
+
+        Task<IEnumerable<RunForPrintModel>> GetRunForPrintAsync(
+            IEnumerable<int> runCtaIds,
+            int? contractId,
+            DateTime? startDate,
+            DateTime? endDate);
     }
 }

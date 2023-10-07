@@ -37,5 +37,9 @@ namespace CtaLineaApp.Application.Services.Utilities
 
 		Task<OperationResponse?> AddElastibusDaysAsync(
 			AddElastibusDaysRequest request);
+
+		Task<IEnumerable<string>?> GetSimulationNamesAsync();
+		Task DeleteSimulationAsync(
+			string simulationName);
     }
 }

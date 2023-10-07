@@ -14,6 +14,8 @@ using ZzSoft.QueryHelper;
 using Dapper;
 using System.Globalization;
 using ZzSoft.CtaLinea.Dal.Services;
+using CtaLinea.Model.Runs;
+using ZzSoft.CtaLinea.Dal.Model;
 
 namespace ZzSoft.CtaLinea.Dal.Queries
 {
@@ -264,6 +266,39 @@ namespace ZzSoft.CtaLinea.Dal.Queries
             return await conn.QueryOneAsync(
                 queryDef)
                 .ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<RunForPrintModel>> GetRunForPrintAsync (
+            IEnumerable<int> runCtaIds,
+            int? contractId,
+            DateTime? startDate,
+            DateTime? endDate)
+        {
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
+
+            var strIds = runCtaIds.Select(x => string.Format("{0}", x));
+
+            // non usa il contratto come filtro
+            // if (contractId == null) contractId = this._zzContext.ContractId;
+            if (startDate == null) startDate = this._zzContext.PeriodStartDate;
+            if (endDate == null) endDate = this._zzContext.PeriodEndDate;
+
+            var items = await conn.QueryAsync<RunForPrintModel>(
+                "[dbo].[uo_GetRunsForPRint]",
+                param: new
+                {
+                    ContractId = contractId,
+                    StartDate = startDate,
+                    EndDAte = endDate,
+                    CtaIds = string.Join(",", strIds)
+                },
+                commandType: CommandType.StoredProcedure,
+                commandTimeout: 600);
+
+            return await  Task.FromResult(items)
+                .ConfigureAwait (false);
         }
     }
 }

@@ -1,43 +1,153 @@
-﻿@inject IRunRepository _repo
-@inject NotificationService notificationService
+﻿@inject IApplicationSettings _appSettings
 
-<PrintRunMainData CurrentRun=@CurrentRun />
-
+<div class="row">
+    <div class="col-2">
+        <span>Id #</span>
+        <strong>@PrintData.CtaRunId</strong>
+    </div>
+    <div class="col-10">
+        <strong>@PrintData.ContractName</strong>
+    </div>
+</div>
+<div class="row">
+    <div class="offset-8 col-2">
+        @(FormatDAte(PrintData.StartDate, "Dall'inizio'"))
+    </div>
+    <div class="col-2">
+        @(FormatDAte(PrintData.EndDate, "alla fine'"))
+    </div>
+</div>
+<br />
+<table class="table">
+    <tbody>
+        <tr>
+            <th scope="row">Titolari</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th scope="row">Ditta/e</th>
+            <td>@PrintData.PrimaryAssociateDescr</td>
+        </tr>
+        <tr>
+            <th scope="row">Mezzo/i</th>
+            <td>@PrintData.PrimaryCarDescr</td>
+        </tr>
+        <tr>
+            <th scope="row">Riserva</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th scope="row">Ditta/e</th>
+            <td>@PrintData.SpareAssociateDescr</td>
+        </tr>
+        <tr>
+            <th scope="row">Mezzo/i</th>
+            <td>@PrintData.SpareCarDescr</td>
+        </tr>
+    </tbody>
+</table>
+<br />
+<div class="row">
+    <div class="col-3">
+        capitolato: @Capitlato()
+    </div>
+    <div class="col-3">
+        @(PrintData.Elastibus ? "Elastibus": string.Empty)
+    </div>
+</div>
+<br />
+<table class="table">
+    <tbody>
+        <tr>
+            <th scope="row">Nr. Linea</th>
+            <td>@PrintData.LineNumber </td>
+        </tr>
+        <tr>
+            <th scope="row">Nr. Corsa</th>
+            <td>@PrintData.RunNumber @RunName() </td>
+        </tr>
+        <tr>
+            <th scope="row">Frequenza</th>
+            <td>@PrintData.RequestedFrequency </td>
+        </tr>
+        <tr>
+            <th scope="row">Km</th>
+            <td>@FormatKm(PrintData.Km) </td>
+        </tr>
+        <tr>
+            <th scope="row">Nr. Posti</th>
+            <td>@PrintData.RequestedCapacity</td>
+        </tr>
+        <tr>
+            <th scope="row">Calendari Inclusione</th>
+            <td>@PrintData.Inc_CalendarDescr</td>
+        </tr>
+        <tr>
+            <th scope="row">Calendari Esclusione</th>
+            <td>@PrintData.Exc_CalendarDescr</td>
+        </tr>
+    </tbody>
+</table>
+<br />
+<strong>Nodi</strong>
+<table class="table">
+    <thead>
+        <tr>
+            <td scope="col">Orario</td>
+            <td scope="col">Cod.</td>
+            <td scope="col">Descrizione Nodo</td>
+            <td scope="col">Coinc.</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th scope="row">@FromatTime(PrintData.Fn_Hour)</th>
+            <td>@PrintData.Fn_CollectionPointId </td>
+            <td>@PrintData.Fn_cpDescr </td>
+            <td>@PrintData.Fn_CoincidenceDescr </td>
+        </tr>
+        <tr>
+            <td colspan="4"> ... </td>
+        </tr>
+        <tr>
+            <th scope="row">@FromatTime(PrintData.Ln_Hour)</th>
+            <td>@PrintData.Ln_CollectionPointId </td>
+            <td>@PrintData.Ln_cpDescr </td>
+            <td>@PrintData.Ln_CoincidenceDescr </td>
+        </tr>
+    </tbody>
+</table>
 @code {
     [Parameter]
-    public Guid RunId { get; set; }
+    public RunForPrintModel PrintData { get; set; } = new RunForPrintModel();
 
-    private RunItem CurrentRun = new RunItem();
-    private bool IsBusy { get; set; } = false;
-
-    protected override async Task OnParametersSetAsync()
+    private string FormatDAte (DateTime? date, string defaultVal)
     {
-        await this.LoadDataAsync(this.RunId);
-        await base.OnParametersSetAsync();
+        return date == null ? defaultVal : string.Format("{0:dd/MM/yyyy}", date);
     }
-
-    public async Task LoadDataAsync(
-        Guid runId)
+    private  string Capitlato ()
     {
-        try
-        {
-            var run = await _repo.GetOneAsync(this.RunId);
-
-            if (run != null)
-            {
-                this.CurrentRun = run;
-            }
-        }
-        catch (Exception exc)
-        {
-            this.notificationService.Notify(NotificationSeverity.Error, "Errore caricando i dati", exc.Message);
-        }
-        finally
-        {
-            this.IsBusy = false;
-            this.StateHasChanged();
-        }
+        if (this.PrintData.Extra == true) return "EXTRA";
+        return this.PrintData.ContractRowNumber?.ToString() ?? string.Empty;
     }
+    private string RunName()
+    {
+        if (string.IsNullOrWhiteSpace (this.PrintData.RunName) == false)
+        {
+            return "/ " + this.PrintData.RunName;
+        }
+        return string.Empty;
+    }
+    private string FormatKm (float? km)
+    {
+        return km != null ? string.Format(_appSettings.CurrentCulture, "{0:f2}", km) : string.Empty;
+    }
+    private string FromatTime (TimeSpan? time)
+    {
+        if (time == null) return string.Empty;
+        DateTime dt = new DateTime(2000, 1, 1);
+        dt = dt.Add (time.Value);
+        return string.Format(_appSettings.CurrentCulture, "{0:HH:mm}", dt);
 
-
+    }
 }

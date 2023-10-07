@@ -1,4 +1,6 @@
-﻿namespace CtaLineaWebApi.Configuration
+﻿using MailKit.Security;
+
+namespace CtaLineaWebApi.Configuration
 {
     public class EmailConfiguration
     {
@@ -14,5 +16,7 @@
         public int Port { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
+
+        public SecureSocketOptions SecureSocketOptions { get; set; } = SecureSocketOptions.None;
     }
 }

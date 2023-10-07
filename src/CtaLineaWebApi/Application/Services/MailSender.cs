@@ -55,7 +55,8 @@ namespace CtaLineaWebApi.Application.Services
                     client.Connect(
                         _emailConfig.SmtpServer,
                         _emailConfig.Port,
-                        MailKit.Security.SecureSocketOptions.None
+                        _emailConfig.SecureSocketOptions
+                        // MailKit.Security.SecureSocketOptions.None
                         // MailKit.Security.SecureSocketOptions.StartTls
                         );
 

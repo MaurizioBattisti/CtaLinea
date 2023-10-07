@@ -87,6 +87,8 @@
     <Folder Include="StoredProc\Incongruence" />
     <Folder Include="Session" />
     <Folder Include="Views\External" />
+    <Folder Include="Functions\Simulation" />
+    <Folder Include="StoredProc\Simulation" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post_Deploy.sql" />
@@ -209,5 +211,8 @@
     <Build Include="StoredProc\Utility\up_AddElastibusDay.sql" />
     <Build Include="Views\Costs\vw_SimulationNames.sql" />
     <Build Include="StoredProc\Costs\up_DeleteSimulation.sql" />
+    <Build Include="StoredProc\Run\uo_GetRunsForPRint.sql" />
+    <Build Include="Functions\Simulation\tvf_Sim_Base.sql" />
+    <Build Include="StoredProc\Simulation\up_Sim_GetStatus.sql" />
   </ItemGroup>
 </Project>

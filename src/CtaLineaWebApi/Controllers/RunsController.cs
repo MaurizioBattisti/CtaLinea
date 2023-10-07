@@ -25,6 +25,7 @@ using CtaLinea.Model.Request;
 using CtaLinea.Model.Response;
 using CtaLinea.Model;
 using CtaLineaWebApi.Application.Commands.Uility;
+using CtaLineaWebApi.Application.Scheduler;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -40,18 +41,20 @@ namespace CtaLineaWebApi.Controllers
         private readonly IRunRepository _repo;
         private readonly ICurrentUserService _currentUser;
         private readonly ICompleteRunCheckerService _Checker;
-
+        private readonly ISchedulerService _schedulerService;
         public RunsController(
             ISender mediator,
             IRunRepository repo,
             ICompleteRunCheckerService checker,
             ICurrentUserService currentUSer,
+            ISchedulerService schedulerService,
             IRunQueries queries)
         {
             _mediator = mediator;
             _repo = repo;
             _Checker = checker;
             _currentUser = currentUSer;
+            _schedulerService = schedulerService;   
 			_queries = queries;
 		}
 
@@ -457,6 +460,29 @@ namespace CtaLineaWebApi.Controllers
                 .ConfigureAwait (false);
 
             return this.Ok(result);
+        }
+        #endregion
+
+        #region for print
+        [Authorize(Policy = Constants.Policy_RunView)]
+        [SwaggerOperation("elenco delle corse per la stampa")]
+        [ProducesResponseType(
+            StatusCodes.Status200OK, 
+            Type = typeof(IEnumerable<RunForPrintModel>))]
+        [HttpPost]
+        [Route("forprint")]
+        public async Task<IActionResult> GetRunForPrintASync(
+            [FromBody] GetRunForPrintRequest request)
+        {
+            var result = await this._queries.GetRunForPrintAsync(
+                request.RunCtaIds,
+                request.ContractId,
+                request.StartDate, request.EnddDate
+                )
+                .ConfigureAwait(false);
+
+            return await this.ModelOKAsync(result)
+                .ConfigureAwait(false);
         }
         #endregion
     }

@@ -24,6 +24,7 @@ using ZzSoft.CtaLinea.Dal.Repositories;
 using ZzSoft.CtaLinea.Dal.Services;
 using CtaLinea.Model.QueryModel;
 using Swashbuckle.AspNetCore.Annotations;
+using CtaLineaWebApi.Application.Scheduler;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -38,19 +39,22 @@ namespace CtaLineaWebApi.Controllers
 
         private readonly IUtilityQueries _queries;
         private readonly ICurrentUserService _currentUSer;
-        private readonly IUtilityREpository _utilityRepo; 
+        private readonly IUtilityREpository _utilityRepo;
+		private readonly ISchedulerService _schedulerService;
 
         public UtilityController(
             IMediator mediator,
             IUtilityQueries queries,
 			IUtilityREpository utilityRepo,
             ICurrentUserService currentUser,
+            ISchedulerService schedulerService,
             ILogger<UtilityController> logger)
         {
             this._mediator = mediator;
             this._queries = queries;
             this._utilityRepo = utilityRepo;
             this._currentUSer = currentUser;
+			this._schedulerService = schedulerService; ;
             this._logger = logger;
         }
 

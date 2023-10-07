@@ -185,30 +185,14 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             }
 
             using IDbConnection conn = this._context.GetNewConnection();
-
             await conn.InitializeSession(this._zzContext);
 
-            var tran = conn.BeginTransaction();
-
-            try
-            {
-                // elimina tutta una corsa
-                await this.DeleteTableAsync(
-                    SQL_Table_Runs,
-                    conn, tran,
-                    this.GetRunKey(runId)
-                    );
-
-                tran.Commit();
-                tran = null;
-            }
-            finally
-            {
-                if (tran != null ) 
-                { 
-                    tran.Rollback();
-                }
-            }
+            // elimina tutta una corsa
+            await this.DeleteTableAsync(
+                SQL_Table_Runs,
+                conn, null,
+                this.GetRunKey(runId)
+                );
         }
         public async Task SaveRuAsync(
             RunItem runItem)

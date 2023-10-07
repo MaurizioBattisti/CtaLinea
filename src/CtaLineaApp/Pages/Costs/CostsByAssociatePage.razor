@@ -38,7 +38,7 @@
                 <RadzenColumn Size="4" >
                     <DateRangeSelector @bind-StartDate="Request.StartDate" @bind-EndDate="Request.EndDate" Inline=true AllowClear=true />
                 </RadzenColumn>
-                <RadzenColumn Size="8">
+                <RadzenColumn Size="6">
                     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" Gap="2" Wrap="FlexWrap.Wrap">
                         <div class="rrz-text-align-center">
                             <RadzenCheckBox TValue="bool" @bind-Value=@Request.IncludeOutOfPeriod Name="IncludeOutOfPeriod" />
@@ -56,6 +56,12 @@
                             <RadzenCheckBox TValue="bool" @bind-Value=@Request.ForceFreshData Name="ForceFreshData" />
                             <RadzenLabel Text="Forza calcolo con dati nuovi" Component="ForceFreshData" Style="margin-left: 8px; vertical-align: middle;" />
                         </div>
+                    </RadzenStack>
+                </RadzenColumn>
+                <RadzenColumn Size="2">
+                    <RadzenStack Orientation="Orientation.Vertical" >
+	                    <RadzenLabel Component="SimulationName" Text="Simulazione" />
+                        <SimulationSelector Name="SimulationName" @bind-SimulationName=@this.Request.SimulationName />
                     </RadzenStack>
                 </RadzenColumn>
             </RadzenRow>

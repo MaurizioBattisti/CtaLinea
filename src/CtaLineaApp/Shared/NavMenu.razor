@@ -13,14 +13,11 @@
         <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_RunList)) Text="Elenco Corse" Path="/runs" Icon="departure_board"></RadzenPanelMenuItem>
         <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_ElastibusDays)) Text="Giorni Elastibus" Path="/elastibusdays" Icon="free_cancellation"></RadzenPanelMenuItem>
 
-        <!-- a togliere -->
-        <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_RunList)) Text="Stampa -- Corse" Path="/run-print/7F3DE61A-C706-4FA5-A82E-0280C1AAF330|F896209A-CDD7-40F8-BC08-05A4DAAEAF76" Icon="departure_board"></RadzenPanelMenuItem>
-        
-
         <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_Utility)) Text="Utility" Icon="bookmark">
             <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_Planning)) Text="Planning" Path="/planning" Icon="calendar_view_week"></RadzenPanelMenuItem>
             
             <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_AssociateCosts)) Text="Costi per Ditta" Path="/costbyassociate" Icon="point_of_sale"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_SimulationManager)) Text="Gestione simulazioni" Path="/simulations" Icon="cruelty_free"></RadzenPanelMenuItem>
 
             <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_RunIncongreunce)) Text="Incongruenze" Path="/runincongruence" Icon="bus_alert"></RadzenPanelMenuItem>
 
@@ -67,6 +64,7 @@
     private const string Item_Utility = "utiltiy";
     private const string Item_Planning = "Planning";
     private const string Item_AssociateCosts = "AssCosts";
+    private const string Item_SimulationManager = "Sim-Mgr";
     private const string Item_RunIncongreunce = "Incongruence";
     private const string Item_Overlappings = "Overlappings";
 
@@ -123,6 +121,7 @@
             VisibleItems.Add(Item_Utility);
         if (this.IsUserInRole(UserRoles.Role_Planning)) VisibleItems.Add(Item_Planning);
         if (this.IsUserInRole(UserRoles.Role_Costs)) VisibleItems.Add(Item_AssociateCosts);
+        if (this.IsUserInRole(UserRoles.Role_Manage)) VisibleItems.Add(Item_SimulationManager);        
         if (this.IsUserInRole(UserRoles.Role_Manage)) VisibleItems.Add(Item_RunIncongreunce);
         if (this.IsUserInRole(UserRoles.Role_Manage)) VisibleItems.Add(Item_Overlappings);
 

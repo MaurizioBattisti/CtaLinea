@@ -8,6 +8,7 @@ using CtaLinea.Model.Response;
 using CtaLinea.Model.Runs;
 using CtaLineaApp.Application.Model.Utility;
 using CtaLineaApp.Application.Services.Helper;
+using NPOI.SS.Formula.Functions;
 using System;
 
 namespace CtaLineaApp.Application.Services.Run
@@ -142,6 +143,14 @@ namespace CtaLineaApp.Application.Services.Run
             return await this._http.Post<OperationResult<bool>, CheckResult>(
                 url,
                 note);
+        }
+        public async Task<IEnumerable<RunForPrintModel>?> GetRunsForPrintAsync (
+            GetRunForPrintRequest request)
+        {
+            var url = Constants.Endpoint_Run_ForPRint;
+            return await this._http.Post<IEnumerable<RunForPrintModel>, CheckResult>(
+                url,
+                request);
         }
     }
 }

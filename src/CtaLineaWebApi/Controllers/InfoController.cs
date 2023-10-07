@@ -1,4 +1,5 @@
-﻿using CtaLineaWebApi.Auth.Model;
+﻿using CtaLineaWebApi.Application.Scheduler;
+using CtaLineaWebApi.Auth.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,14 @@ namespace CtaLineaWebApi.Controllers
     public class InfoController
         : ZControllerBase
     {
+        private readonly ISchedulerService _schedulerService;
+
+        public InfoController (
+            ISchedulerService schedulerService)
+        {
+            _schedulerService = schedulerService;   
+        }
+
         [Route("versions")]
         [HttpGet]
         [AllowAnonymous]

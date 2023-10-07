@@ -45,6 +45,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         {
             using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            this._zzContext.Override(request.ContractId, request.StartDate, request.EndDate);
             await conn.InitializeSession(this._zzContext);
 
             using var reader = await conn.QueryMultipleAsync(
@@ -75,7 +76,8 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 		{
 			using IDbConnection conn = this._context.GetNewConnection();
 			conn.Open();
-			await conn.InitializeSession(this._zzContext);
+            this._zzContext.Override(request.ContractId, request.StartDate, request.EndDate);
+            await conn.InitializeSession(this._zzContext);
 
 			using var reader = await conn.QueryMultipleAsync(
 				SQL_GetCostsByAssociate,
@@ -107,7 +109,8 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 		{
 			using IDbConnection conn = this._context.GetNewConnection();
 			conn.Open();
-			await conn.InitializeSession(this._zzContext);
+            this._zzContext.Override(request.ContractId, request.StartDate, request.EndDate);
+            await conn.InitializeSession(this._zzContext);
 
 			using var reader = await conn.QueryMultipleAsync(
 				SQL_GetCostsByAssociate,
@@ -139,6 +142,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         {
             using IDbConnection conn = this._context.GetNewConnection();
             conn.Open();
+            this._zzContext.Override(request.ContractId, request.StartDate, request.EndDate);
             await conn.InitializeSession(this._zzContext);
 
             using var reader = await conn.QueryMultipleAsync(
