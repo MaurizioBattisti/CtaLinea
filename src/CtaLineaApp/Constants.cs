@@ -79,6 +79,12 @@ namespace CtaLineaApp
 		internal const string EndPoint_RunIncongruence = EndPoint_Utilitys + "/runincongruence";
         internal const string Endpoint_Simulations = Endpoint_Utility + "/sims";
         internal const string Endpoint_Simulations_One_fmt = Endpoint_Simulations + "/{0}";
+        
+        internal const string Endpoint_Simulations_Activity = Endpoint_Utility + "/simulations";
+        internal const string Endpoint_Simulations_Status = Endpoint_Simulations_Activity + "/status";
+        internal const string Endpoint_Simulations_Apply= Endpoint_Simulations_Activity + "/apply";
+        internal const string Endpoint_Simulations_KmTotal_Apply = Endpoint_Simulations_Activity + "/kmtotal-apply"; 
+
 
         // argomenti
         internal const string EndPoint_CostsByAssociate_ContractId = "contractId";

@@ -89,6 +89,7 @@
     <Folder Include="Views\External" />
     <Folder Include="Functions\Simulation" />
     <Folder Include="StoredProc\Simulation" />
+    <Folder Include="Tables\Simulation" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post_Deploy.sql" />
@@ -214,5 +215,8 @@
     <Build Include="StoredProc\Run\uo_GetRunsForPRint.sql" />
     <Build Include="Functions\Simulation\tvf_Sim_Base.sql" />
     <Build Include="StoredProc\Simulation\up_Sim_GetStatus.sql" />
+    <Build Include="StoredProc\Simulation\up_Sim_SetCosts.sql" />
+    <Build Include="Tables\Simulation\SimCarMatches.sql" />
+    <Build Include="StoredProc\Simulation\up_Sim_SelectCarsByTotalKm.sql" />
   </ItemGroup>
 </Project>

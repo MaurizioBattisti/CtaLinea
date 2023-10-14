@@ -1,0 +1,173 @@
+﻿
+<RadzenStack Orientation="Orientation.Vertical" Gap="4"  class="w-100">
+	<RadzenRow>
+		<RadzenColumn Size="2">
+			<RadzenLabel Component="KmMatchType"
+						 Text="Tipo di Km"
+						 class="w-100" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenDropDown Name="KmMatchType"
+				@bind-Value=@KmMatchType
+				Data=@KmMathTypeList 
+				TextProperty="Item2"
+				ValueProperty="Item1"
+				class="w-100" />
+		</RadzenColumn>
+		@if (KmMatchType == MatchKmType.TotalKm )
+		{
+			<RadzenColumn Size="2">
+				<RadzenLabel Component="MinKm "
+					Text="Da Km tot."
+					class="w-100" />
+			</RadzenColumn>
+			<RadzenColumn Size="2">
+				<RadzenNumeric TValue="float?"
+					Name="MinKm "
+					@bind-Value=@KmTotalApply.Filter.MinKm
+					Change=@NotifyChange
+					class="w-100" />
+			</RadzenColumn>
+			<RadzenColumn Size="2">
+				<RadzenLabel Component="MaxKm "
+					Text="A Km tot."
+					class="w-100" />
+			</RadzenColumn>
+			<RadzenColumn Size="2">
+				<RadzenNumeric TValue="float?"
+					Name="MaxKm "
+					@bind-Value=@KmTotalApply.Filter.MaxKm
+					Change=@NotifyChange
+					class="w-100" />
+			</RadzenColumn>
+		}
+		@if (KmMatchType == MatchKmType.ContractTm)
+		{
+			<RadzenColumn Size="2">
+				<RadzenLabel Component="MinKmCContract "
+					Text="Da Km Appalto"
+					class="w-100" />
+			</RadzenColumn>
+			<RadzenColumn Size="2">
+				<RadzenNumeric TValue="float?"
+					Name="MinKmCContract "
+					@bind-Value=@KmTotalApply.Filter.MinKmCContract
+					Change=@NotifyChange
+					class="w-100" />
+			</RadzenColumn>
+			<RadzenColumn Size="2">
+				<RadzenLabel Component="MaxKmContract "
+					Text="A Km Appalto"
+					class="w-100" />
+			</RadzenColumn>
+			<RadzenColumn Size="2">
+				<RadzenNumeric TValue="float?"
+					Name="MaxKmContract "
+					@bind-Value=@KmTotalApply.Filter.MaxKmContract
+					Change=@NotifyChange
+					class="w-100" />
+			</RadzenColumn>
+		}
+		@if (KmMatchType == MatchKmType.ExtraKm)
+		{
+			<RadzenColumn Size="2">
+				<RadzenLabel Component="MinKmExtra "
+					Text="Da Km Extra"
+					class="w-100" />
+			</RadzenColumn>
+			<RadzenColumn Size="2">
+				<RadzenNumeric TValue="float?"
+					Name="MinKmExtra "
+					@bind-Value=@KmTotalApply.Filter.MinKmExtra
+					Change=@NotifyChange
+					class="w-100" />
+			</RadzenColumn>
+			<RadzenColumn Size="2">
+				<RadzenLabel Component="MaxKmExtra "
+					Text="A Km Extra"
+					class="w-100" />
+			</RadzenColumn>
+			<RadzenColumn Size="2">
+				<RadzenNumeric TValue="float?"
+					Name="MaxKmExtra "
+					@bind-Value=@KmTotalApply.Filter.MaxKmExtra
+					Change=@NotifyChange
+					class="w-100" />
+			</RadzenColumn>
+		}
+
+	</RadzenRow>
+
+	<SimApplyChangesEdit @bind-ApplyChanges=@KmTotalApply.ApplyChanges Changed=@NotifyChange />
+</RadzenStack>
+
+@code {
+	public enum MatchKmType
+	{
+		TotalKm,
+		ContractTm,
+		ExtraKm
+	}
+
+	private IEnumerable<Tuple<MatchKmType, string>> KmMathTypeList = new List<Tuple<MatchKmType, string>>
+	{
+		new Tuple<MatchKmType, string> ( MatchKmType.TotalKm, "Chilometri Totali"),
+		new Tuple<MatchKmType, string> ( MatchKmType.ContractTm, "Chilometri Appalto"),
+		new Tuple<MatchKmType, string> ( MatchKmType.ExtraKm, "Chilometri Extra")
+	};
+
+	[Parameter]
+	public ApplyChangeToSimRequest<KmToMatchCarRequest> KmTotalApply { get; set; } = new ApplyChangeToSimRequest<KmToMatchCarRequest>();
+	[Parameter]
+	public EventCallback<ApplyChangeToSimRequest<KmToMatchCarRequest>> KmTotalApplyChanged { get; set; }
+
+	[Parameter]
+	public EventCallback Changed { get; set; }
+
+	private async Task NotifyChange ()
+	{
+		await this.KmTotalApplyChanged.InvokeAsync(this.KmTotalApply);
+		await this.Changed.InvokeAsync();
+	}
+
+	private MatchKmType KmMatchType
+	{
+		get
+		{
+			if (this.KmTotalApply.Filter.MinKm != null || this.KmTotalApply.Filter.MaxKm != null) return MatchKmType.TotalKm;
+			if (this.KmTotalApply.Filter.MinKmCContract != null || this.KmTotalApply.Filter.MaxKmContract != null) return MatchKmType.ContractTm;
+			if (this.KmTotalApply.Filter.MinKmExtra != null || this.KmTotalApply.Filter.MaxKmExtra != null) return MatchKmType.ExtraKm;
+			return MatchKmType.TotalKm;
+		}
+		set
+		{
+			switch (value)
+			{
+				case MatchKmType.ContractTm:
+					this.KmTotalApply.Filter.MinKm = null;
+					this.KmTotalApply.Filter.MaxKm = null;
+					this.KmTotalApply.Filter.MinKmCContract = 0;
+					this.KmTotalApply.Filter.MaxKmContract = null;
+					this.KmTotalApply.Filter.MinKmExtra = null;
+					this.KmTotalApply.Filter.MaxKmExtra = null;
+					break;
+				case MatchKmType.ExtraKm:
+					this.KmTotalApply.Filter.MinKm = null;
+					this.KmTotalApply.Filter.MaxKm = null;
+					this.KmTotalApply.Filter.MinKmCContract = null;
+					this.KmTotalApply.Filter.MaxKmContract = null;
+					this.KmTotalApply.Filter.MinKmExtra = 0;
+					this.KmTotalApply.Filter.MaxKmExtra = null;
+					break;
+				default:
+					this.KmTotalApply.Filter.MinKm = 0;
+					this.KmTotalApply.Filter.MaxKm = null;
+					this.KmTotalApply.Filter.MinKmCContract = null;
+					this.KmTotalApply.Filter.MaxKmContract = null;
+					this.KmTotalApply.Filter.MinKmExtra = null;
+					this.KmTotalApply.Filter.MaxKmExtra = null;
+					break;
+			}
+		}
+	}
+}

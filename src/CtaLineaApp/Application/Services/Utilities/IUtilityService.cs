@@ -41,5 +41,11 @@ namespace CtaLineaApp.Application.Services.Utilities
 		Task<IEnumerable<string>?> GetSimulationNamesAsync();
 		Task DeleteSimulationAsync(
 			string simulationName);
+		Task<SimulationStatusResponse?> GetSimulationStatusAsync(
+			SimulationRequest request);
+		Task SimulationApplyChangesASync(
+			ApplyChangesSimulationRequest request);
+		Task SimulationKmTotalApplyChangesASync(
+			ApplyChangeToSimRequest<KmToMatchCarRequest> request);
     }
 }

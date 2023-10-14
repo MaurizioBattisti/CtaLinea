@@ -1,0 +1,339 @@
+﻿
+<RadzenStack Orientation="Orientation.Vertical" Gap="4"  class="w-100">
+	<RadzenRow>
+		<RadzenColumn Size="2">
+			<RadzenLabel Component="MinCapacity" 
+				Text="Min Posti"
+				class="w-100" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenNumeric 
+				TValue="int?"
+				Name="MinCapacity" 
+				@bind-Value=@ApplyChanges.MinCapacity
+				Change=@NotifyChange
+				class="w-100"/>
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenLabel Component="MaxCapacity"
+				Text="Max Posti"
+				class="w-100" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenNumeric 
+				TValue="int?"
+				Name="MaxCapacity"
+				@bind-Value=@ApplyChanges.MaxCapacity
+				Change=@NotifyChange
+				class="w-100" />
+		</RadzenColumn>
+	</RadzenRow>
+
+	<RadzenRow>
+		<RadzenColumn Size="2">
+			<RadzenLabel Component="BasePriceLimit"
+				Text="Se Pr. Km. <="
+				class="w-100" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenNumeric TValue="decimal?"
+				Name="BasePriceLimit"
+				@bind-Value=@ApplyChanges.BasePriceLimit
+				Change=@NotifyChange
+				class="w-100" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenLabel Component="KmPrizeOperation"
+				Text="Operazione"
+				class="w-100" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenDropDown Name="KmPrizeOperation"
+				@bind-Value=@KmPriceOperation 
+				Data=@Operations TextProperty="Item2" 
+				ValueProperty="Item1" 
+				class="w-100" />
+		</RadzenColumn>
+		@if(KmPriceOperation == SetPriceOperation.SetValue)
+		{
+			<RadzenColumn Size="2">
+				<RadzenLabel Component="BasePriceNewVAl "
+					Text="Nuovo Prezzo Km"
+					class="w-100" />
+			</RadzenColumn>
+			<RadzenColumn Size="2">
+				<RadzenNumeric TValue="decimal?"
+					Name="BasePriceNewVAl "
+					@bind-Value=@ApplyChanges.BasePriceNewVAl 
+					Change=@NotifyChange
+					class="w-100" />
+			</RadzenColumn>
+		}
+		@if (KmPriceOperation == SetPriceOperation.AddValue)
+		{
+			<RadzenColumn Size="2">
+				<RadzenLabel Component="BasePriceAddVal "
+					Text="Aggiungi"
+					class="w-100" />
+			</RadzenColumn>
+			<RadzenColumn Size="2">
+				<RadzenNumeric TValue="decimal?"
+					Name="BasePriceAddVal "
+					@bind-Value=@ApplyChanges.BasePriceAddVal
+					Change=@NotifyChange
+					class="w-100" />
+			</RadzenColumn>
+		}
+		@if (KmPriceOperation == SetPriceOperation.MultiplyValue)
+		{
+			<RadzenColumn Size="2">
+				<RadzenLabel Component="BasePriceFacto "
+					Text="Moltiplica per"
+					class="w-100" />
+			</RadzenColumn>
+			<RadzenColumn Size="2">
+				<RadzenNumeric TValue="float?"
+					Name="BasePriceFacto "
+					@bind-Value=@ApplyChanges.BasePriceFacto
+					Change=@NotifyChange
+					class="w-100" />
+			</RadzenColumn>
+		}
+	</RadzenRow>
+
+	<RadzenRow>
+		<RadzenColumn Size="2">
+			<RadzenLabel Component="ExtraPriceLimit"
+				Text="Se Pr. Km. Extra <="
+				class="w-100" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenNumeric TValue="decimal?"
+				Name="ExtraPriceLimit"
+				@bind-Value=@ApplyChanges.ExtraPriceLimit
+				Change=@NotifyChange
+				class="w-100" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenLabel Component="ExtraKmPriceOperation"
+				Text="Operazione"
+				class="w-100" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenDropDown Name="ExtraKmPriceOperation"
+				@bind-Value=@ExtraKmPriceOperation
+				Data=@Operations TextProperty="Item2"
+				ValueProperty="Item1"
+				class="w-100" />
+		</RadzenColumn>
+		@if (ExtraKmPriceOperation == SetPriceOperation.SetValue)
+		{
+			<RadzenColumn Size="2">
+				<RadzenLabel Component="ExtraPriceNewVAl "
+					Text="Nuovo Prezzo Km Extra"
+					class="w-100" />
+			</RadzenColumn>
+			<RadzenColumn Size="2">
+				<RadzenNumeric TValue="decimal?"
+					Name="ExtraPriceNewVAl "
+					@bind-Value=@ApplyChanges.ExtraPriceNewVAl
+					Change=@NotifyChange
+					class="w-100" />
+			</RadzenColumn>
+		}
+		@if (ExtraKmPriceOperation == SetPriceOperation.AddValue)
+		{
+			<RadzenColumn Size="2">
+				<RadzenLabel Component="ExtraPriceAddVal "
+					Text="Aggiungi"
+					class="w-100" />
+			</RadzenColumn>
+			<RadzenColumn Size="2">
+				<RadzenNumeric TValue="decimal?"
+					Name="ExtraPriceAddVal "
+					@bind-Value=@ApplyChanges.ExtraPriceAddVal
+					Change=@NotifyChange
+					class="w-100" />
+			</RadzenColumn>
+		}
+		@if (ExtraKmPriceOperation == SetPriceOperation.MultiplyValue)
+		{
+			<RadzenColumn Size="2">
+				<RadzenLabel Component="ExtraPriceFacto "
+					Text="Moltiplica per"
+					class="w-100" />
+			</RadzenColumn>
+			<RadzenColumn Size="2">
+				<RadzenNumeric TValue="float?"
+					Name="ExtraPriceFacto "
+					@bind-Value=@ApplyChanges.ExtraPriceFacto
+					Change=@NotifyChange
+					class="w-100" />
+			</RadzenColumn>
+		}
+	</RadzenRow>
+	
+	<RadzenRow>
+		<RadzenColumn Size="1">
+			<RadzenStack Orientation="Orientation.Horizontal">
+				<RadzenCheckBox Name="chkDefault" @bind-Value=@DefaultCheck />
+				<RadzenLabel Component="chkDefault" Text="Predefiniti" />
+			</RadzenStack>
+		</RadzenColumn>
+		@if (this.DefaultCheck == true)
+		{
+			<RadzenColumn Size="1">
+				<RadzenLabel Component="DefKmPrice"
+				Text="Prezzo Km"
+				class="w-100" />
+			</RadzenColumn>
+			<RadzenColumn Size="2">
+				<RadzenNumeric TValue="decimal?"
+				Name="DefKmPrice"
+				@bind-Value=@ApplyChanges.DefKmPrice
+				Change=@NotifyChange
+				class="w-100" />
+			</RadzenColumn>
+			<RadzenColumn Size="2">
+				<RadzenLabel Component="DefKmExtraPrice"
+				Text="Prezzo Km extra"
+				class="w-100" />
+			</RadzenColumn>
+			<RadzenColumn Size="2">
+				<RadzenNumeric TValue="decimal?"
+					Name="DefKmExtraPrice"
+					@bind-Value=@ApplyChanges.DefKmExtraPrice
+					Change=@NotifyChange
+					class="w-100" />
+		</RadzenColumn>
+		}
+	</RadzenRow>
+</RadzenStack>
+
+@code {
+	public enum SetPriceOperation
+	{
+		None,
+		SetValue,
+		AddValue,
+		MultiplyValue
+	}
+
+	private IEnumerable<Tuple<SetPriceOperation, string>> Operations = new List<Tuple<SetPriceOperation, string>>
+	{
+		new Tuple<SetPriceOperation, string> ( SetPriceOperation.None, "Nessuna"),
+		new Tuple<SetPriceOperation, string> ( SetPriceOperation.SetValue, "Imposta"),
+		new Tuple<SetPriceOperation, string> ( SetPriceOperation.AddValue, "Aggiungi"),
+		new Tuple<SetPriceOperation, string> ( SetPriceOperation.MultiplyValue, "Moltiplica")
+	};
+
+	[Parameter]
+	public ApplyChangesSimulationRequest ApplyChanges { get; set; } = new ApplyChangesSimulationRequest();
+	[Parameter]
+	public EventCallback<ApplyChangesSimulationRequest> ApplyChangesChanged { get; set; }
+
+	[Parameter]
+	public EventCallback Changed { get; set; }
+
+	private async Task NotifyChange ()
+	{
+		await this.ApplyChangesChanged.InvokeAsync(this.ApplyChanges);
+		await this.Changed.InvokeAsync();
+	}
+
+	private bool DefaultCheck
+	{
+		get 
+		{
+			return this.ApplyChanges.DefKmPrice != null
+					|| this.ApplyChanges.DefKmExtraPrice != null;
+		} 
+		set
+		{
+			if (value == true)
+			{
+				if (this.ApplyChanges.DefKmPrice == null) this.ApplyChanges.DefKmPrice = 0;
+				if (this.ApplyChanges.DefKmExtraPrice == null) this.ApplyChanges.DefKmExtraPrice = 0;
+			}
+			else
+			{
+				this.ApplyChanges.DefKmPrice = null;
+				this.ApplyChanges.DefKmExtraPrice = null;
+			}
+		}
+	}
+
+	private SetPriceOperation KmPriceOperation
+	{
+		get
+		{
+			if (this.ApplyChanges.BasePriceNewVAl != null) return SetPriceOperation.SetValue;
+			if (this.ApplyChanges.BasePriceAddVal != null) return SetPriceOperation.AddValue;
+			if (this.ApplyChanges.BasePriceFacto != null) return SetPriceOperation.MultiplyValue;
+			return SetPriceOperation.None;
+		}
+		set
+		{
+			switch (value)
+			{
+				case SetPriceOperation.SetValue:
+					this.ApplyChanges.BasePriceNewVAl = 0;
+					this.ApplyChanges.BasePriceAddVal = null;
+					this.ApplyChanges.BasePriceFacto = null;
+					break;
+				case SetPriceOperation.AddValue:
+					this.ApplyChanges.BasePriceNewVAl = null;
+					this.ApplyChanges.BasePriceAddVal = 0;
+					this.ApplyChanges.BasePriceFacto = null;
+					break;
+				case SetPriceOperation.MultiplyValue:
+					this.ApplyChanges.BasePriceNewVAl = null;
+					this.ApplyChanges.BasePriceAddVal = null;
+					this.ApplyChanges.BasePriceFacto = 1;
+					break;
+				default:
+					this.ApplyChanges.BasePriceNewVAl = null;
+					this.ApplyChanges.BasePriceAddVal = null;
+					this.ApplyChanges.BasePriceFacto = null;
+					break;
+			}
+		}
+	}
+
+	private SetPriceOperation ExtraKmPriceOperation
+	{
+		get
+		{
+			if (this.ApplyChanges.ExtraPriceNewVAl != null) return SetPriceOperation.SetValue;
+			if (this.ApplyChanges.ExtraPriceAddVal != null) return SetPriceOperation.AddValue;
+			if (this.ApplyChanges.ExtraPriceFacto != null) return SetPriceOperation.MultiplyValue;
+			return SetPriceOperation.None;
+		}
+		set
+		{
+			switch (value)
+			{
+				case SetPriceOperation.SetValue:
+					this.ApplyChanges.ExtraPriceNewVAl = 0;
+					this.ApplyChanges.ExtraPriceAddVal = null;
+					this.ApplyChanges.ExtraPriceFacto = null;
+					break;
+				case SetPriceOperation.AddValue:
+					this.ApplyChanges.ExtraPriceNewVAl = null;
+					this.ApplyChanges.ExtraPriceAddVal = 0;
+					this.ApplyChanges.ExtraPriceFacto = null;
+					break;
+				case SetPriceOperation.MultiplyValue:
+					this.ApplyChanges.ExtraPriceNewVAl = null;
+					this.ApplyChanges.ExtraPriceAddVal = null;
+					this.ApplyChanges.ExtraPriceFacto = 1;
+					break;
+				default:
+					this.ApplyChanges.ExtraPriceNewVAl = null;
+					this.ApplyChanges.ExtraPriceAddVal = null;
+					this.ApplyChanges.ExtraPriceFacto = null;
+					break;
+			}
+		}
+	}
+}

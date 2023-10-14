@@ -25,6 +25,8 @@ using ZzSoft.CtaLinea.Dal.Services;
 using CtaLinea.Model.QueryModel;
 using Swashbuckle.AspNetCore.Annotations;
 using CtaLineaWebApi.Application.Scheduler;
+using CtaLinea.Model.Request;
+using CtaLinea.Model.Response;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -41,6 +43,7 @@ namespace CtaLineaWebApi.Controllers
         private readonly ICurrentUserService _currentUSer;
         private readonly IUtilityREpository _utilityRepo;
 		private readonly ISchedulerService _schedulerService;
+		private readonly ISimulationRepository _simRepo;
 
         public UtilityController(
             IMediator mediator,
@@ -48,6 +51,7 @@ namespace CtaLineaWebApi.Controllers
 			IUtilityREpository utilityRepo,
             ICurrentUserService currentUser,
             ISchedulerService schedulerService,
+            ISimulationRepository simRepo,
             ILogger<UtilityController> logger)
         {
             this._mediator = mediator;
@@ -55,6 +59,7 @@ namespace CtaLineaWebApi.Controllers
             this._utilityRepo = utilityRepo;
             this._currentUSer = currentUser;
 			this._schedulerService = schedulerService; ;
+			this._simRepo = simRepo;
             this._logger = logger;
         }
 
@@ -293,5 +298,66 @@ namespace CtaLineaWebApi.Controllers
 					});
 			}
 		}
-	}
+
+        #region gestione simulaizoni
+
+        [Authorize(Policy = Constants.Policy_ManageData)]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpPost]
+        [Route("simulations/status")]
+        public async Task<ActionResult<SimulationStatusResponse>> GetSimulationStatusAsync(
+			[FromBody] SimulationRequest request
+            )	
+        {
+			var result = await this._simRepo.GetSimulationStatus (request)
+				.ConfigureAwait (false);
+
+            return this.Ok(result);
+        }
+        [Authorize(Policy = Constants.Policy_ManageData)]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPost]
+        [Route("simulations/apply")]
+        public async Task<ActionResult<SimulationStatusResponse>> ApplyChangesToSimulationASync(
+            [FromBody] ApplyChangesSimulationRequest request
+            )
+        {
+            await this._simRepo.ApplyChangeslSimulationAsync(request)
+                .ConfigureAwait(false);
+
+            return this.NoContent();
+        }
+        [Authorize(Policy = Constants.Policy_ManageData)]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPost]
+        [Route("simulations/kmtotal-apply")]
+        public async Task<ActionResult<SimulationStatusResponse>> AppluKmTotalChangesToASimulationASync(
+            [FromBody] ApplyChangeToSimRequest<KmToMatchCarRequest> request
+            )
+        {
+			if (request.ApplyChanges.Sim_CarMAtchId  == null)
+			{
+				request.ApplyChanges.Sim_CarMAtchId = Guid.NewGuid();
+            }
+
+			// alliena i valori
+			request.Filter.SimulationName = request.ApplyChanges.SimulationName;
+            request.Filter.ContractId = request.ApplyChanges.ContractId;
+            request.Filter.StartDate = request.ApplyChanges.StartDate;
+            request.Filter.EndDate = request.ApplyChanges.EndDate;
+            request.Filter.Sim_CarMAtchId = request.ApplyChanges.Sim_CarMAtchId;
+
+            await this._simRepo.ApplyKmTotalSimulationAsync(
+					request.Filter, 
+					request.ApplyChanges)
+                .ConfigureAwait(false);
+
+            return this.NoContent();
+        }
+
+        #endregion
+    }
 }

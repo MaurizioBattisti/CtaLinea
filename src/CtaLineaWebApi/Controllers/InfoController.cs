@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ZzSoft.Api.Utility.Base;
 
@@ -18,10 +19,13 @@ namespace CtaLineaWebApi.Controllers
         : ZControllerBase
     {
         private readonly ISchedulerService _schedulerService;
+        private readonly Application.Scheduler.TaskScheduler _scheduler;
 
         public InfoController (
+            Application.Scheduler.TaskScheduler scheduler,
             ISchedulerService schedulerService)
         {
+            _scheduler = scheduler;
             _schedulerService = schedulerService;   
         }
 
@@ -43,6 +47,22 @@ namespace CtaLineaWebApi.Controllers
                 );
 
             return Ok(list);
+        }
+
+        [Route("tick")]
+        [HttpGet]
+        [AllowAnonymous]
+        [SwaggerOperation(
+            summary: "Tick",
+            description: "Esegue un tick dello scheduelr",
+            Tags = new string[] { "Scheduler" }
+            ),]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        public async Task<IActionResult> SchedulerTichAsync(
+            )
+        {
+            _scheduler.DoTick();
+            return this.Accepted();
         }
 
         private IEnumerable<KeyValuePair<string, string?>> GetInfo()

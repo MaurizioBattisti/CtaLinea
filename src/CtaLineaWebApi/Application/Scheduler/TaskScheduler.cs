@@ -18,6 +18,7 @@ using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
 using CtaLinea.Model.ScheduledTasks;
 using Org.BouncyCastle.Asn1.Mozilla;
+using System.Security.Permissions;
 
 namespace CtaLineaWebApi.Application.Scheduler
 {
@@ -34,7 +35,7 @@ namespace CtaLineaWebApi.Application.Scheduler
 
 		private readonly Timer _timer;
 		private readonly IServiceProvider _serviceProvider;
-		private readonly AutoResetEvent _autoEvent;
+		// private readonly AutoResetEvent _autoEvent;
 		private readonly ILogger _logger;
 
 		// elenco dei task da eseguire
@@ -45,23 +46,24 @@ namespace CtaLineaWebApi.Application.Scheduler
 			ILogger<TaskScheduler> logger)
 		{
 			_logger = logger;
-			_autoEvent = new AutoResetEvent(false);
+			// _autoEvent = new AutoResetEvent(false);
 			_serviceProvider = serviceProvider;
 
-			_timer = new Timer(TaskScheduler.Tick,
+			this.AddReloadSchedulerTask();
+            // _autoEvent.Set();
+
+			_timer = new Timer(
+				TaskScheduler.Tick,
 				this,
 				FirstStart_Delay_Milliseconds,
 				Tick_Milliseconds
 				); ;
+        }
 
-			this.AddReloadSchedulerTask();
-			_autoEvent.Set();
-		}
-
-		public IEnumerable<ScheduledTaskItem> GetActualScheduledTasks ()
+        public IEnumerable<ScheduledTaskItem> GetActualScheduledTasks ()
 		{
 			var list = new List<ScheduledTaskItem>();
-            if (this._autoEvent.WaitOne(500) == true)
+            // if (this._autoEvent.WaitOne(500) == true)
 			{
 				list = this.AllTasks.ToList();
 			}
@@ -71,7 +73,7 @@ namespace CtaLineaWebApi.Application.Scheduler
 		public async Task ReplaceAllTAsks (
 			IEnumerable <ScheduledTaskItem> newTasks)
 		{
-			_autoEvent.Reset();
+			// _autoEvent.Reset();
 
 			// salva da una parte  l'elemento dello scheduler loader
 			var loadSchedulerItem = AllTasks.Where(x => x.ActivityId == Constants.Activity_ReloadScheduler).FirstOrDefault();
@@ -87,7 +89,7 @@ namespace CtaLineaWebApi.Application.Scheduler
 				newLoadSchedulerItem.LastEnd = loadSchedulerItem.LastEnd;
 			}
 
-			_autoEvent.Set();
+			// _autoEvent.Set();
 			await Task.CompletedTask;
 		}
 
@@ -212,12 +214,20 @@ namespace CtaLineaWebApi.Application.Scheduler
 			}
 		}
 
+		public void DoTick ()
+		{
+			Tick(this);
+        }
+
+		private bool _Working = false;
 		private static void Tick (object? stateInfo)
 		{
 			var self = stateInfo as TaskScheduler;
 
-			if (self._autoEvent.WaitOne(500) == true)
+			if (self._Working == false)
+			// if (self._autoEvent.WaitOne(500) == true)
 			{
+				self._Working = true;
 				var taskToRun = self.SelectTaskToRun();
 				if (taskToRun != null)
 				{
@@ -231,8 +241,9 @@ namespace CtaLineaWebApi.Application.Scheduler
 
 					taskToRun.LastEnd = DateTime.Now;
 				}
-				self._autoEvent.Set();
-			}
+                // self._autoEvent.Set();
+                self._Working = false;
+            }
 
 			return;
 		}
@@ -244,7 +255,7 @@ namespace CtaLineaWebApi.Application.Scheduler
 							 orderby t.LastEnd ascending
 							 select t);
 
-			DateTime midnight = DateTime.Today.Date;
+            DateTime midnight = DateTime.Today.Date;
 			TimeSpan now = DateTime.Now - midnight;
 
 			ScheduledTaskItem taskToRun = null;
@@ -256,16 +267,17 @@ namespace CtaLineaWebApi.Application.Scheduler
 
 				//  se la frequenza non è giornaliera verifica di essere nelle condizioni corrette
 				bool candidate = true;
+				bool mustExecute = false;
 				switch (item.Frequency)
 				{
 					case ScheduleFrequency.Monthly:
-						candidate = (DateTime.Today.Day == item.RrequencyMask
+                        lastStartLimit = DateTime.Now.AddMonths(-1);
+                        candidate = (DateTime.Today.Day == item.RrequencyMask
 							&& lastStart.Date < midnight);
-						lastStartLimit = DateTime.Now.AddMonths(-1);
                         break;
 					case ScheduleFrequency.Weekly:
-						candidate = this.WeeklyNeedToExecute(item.RrequencyMask, lastEnd);
                         lastStartLimit = DateTime.Now.AddDays(-7);
+                        candidate = this.WeeklyNeedToExecute(item.RrequencyMask, lastEnd);
                         break;
 					case ScheduleFrequency.Daily:
 						// se non è passato abbastanza tempo dall'ultima esecuzione
@@ -274,7 +286,8 @@ namespace CtaLineaWebApi.Application.Scheduler
                         lastStartLimit = DateTime.Now.AddDays(-1);
                         break;
 				}
-				if (candidate == false) continue;
+                mustExecute = lastStart < lastStartLimit;
+                if (candidate == false && mustExecute == false) continue;
 				
 				if (lastStartLimit <= lastStart &&   now < item.StartTime) continue;
 				if (item.EndTime != TimeSpan.Zero && now > item.EndTime) continue;
@@ -339,7 +352,7 @@ namespace CtaLineaWebApi.Application.Scheduler
 
 		public void Dispose()
 		{
-			_timer.Dispose ();
+			_timer?.Dispose ();
 		}
 	}
 }

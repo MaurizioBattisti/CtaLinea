@@ -38,6 +38,8 @@ BEGIN
 		SELECT cc.*,
 				ROW_NUMBER() OVER (PARTITION BY cc.RunCarId ORDER BY cc.SimulationName DESC, cc.StartDate DESC ) AS num
 			FROM Dbo.RunCarCosts cc
+			INNER JOIN dbo.RunCars rc
+				ON cc.RunCarId = rc.RunCarId
 			WHERE (cc.SimulationName IS NULL
 					OR cc.SimulationName = @SimulationName
 				)
@@ -65,10 +67,18 @@ BEGIN
 			FROM dbo.RunCars rc
 			INNER JOIN dbo.RunPeriods rp
 				ON rc.RunPeriodId = rp.RunPeriodId
+			INNER JOIN dbo.Runs r 
+				ON rp.RunId = r.RunId
 			LEFT JOIN CTE_Costs cc
 				ON rc.RunCarId = cc.RunCarId
 				AND cc.num = 1
 			WHERE rc.CarType IN ('P', 'R')
+				AND (r.StartDate IS NULL
+					OR r.StartDate <= @EndDate)
+				AND (r.EndDate IS NULL
+					OR r.EndDate >= @StartDate)
+				AND (@ContractId IS NULL
+					OR r.ContractId =  @ContractId)
 			;
 
 	RETURN;

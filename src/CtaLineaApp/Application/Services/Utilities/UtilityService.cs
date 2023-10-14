@@ -160,5 +160,26 @@ namespace CtaLineaApp.Application.Services.Utilities
             var url = string.Format(Constants.Endpoint_Simulations_One_fmt, simulationName);
             await this._http.Delete(url);
         }
+
+        public async Task<SimulationStatusResponse?> GetSimulationStatusAsync(
+            SimulationRequest request)
+        {
+            var url = Constants.Endpoint_Simulations_Status;
+            var status = await _http.Post<SimulationStatusResponse, string>(url, request);
+            return status;
+        }
+        public async Task SimulationApplyChangesASync(
+            ApplyChangesSimulationRequest request)
+        {
+            var url = Constants.Endpoint_Simulations_Apply;
+            await _http.Post(url, request);
+        }
+        public async Task SimulationKmTotalApplyChangesASync(
+            ApplyChangeToSimRequest<KmToMatchCarRequest> request)
+        {
+            var url = Constants.Endpoint_Simulations_KmTotal_Apply;
+            await _http.Post(url, request);
+        }
+
     }
 }

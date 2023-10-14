@@ -65,8 +65,6 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 			// trasforma lil dictionary di mappatura in una stringa di mappatura
 			string map = string.Join(",", replacementMap.Select(kv => string.Format("{0}={1}", kv.Key, kv.Value)));
 
-			await Task.CompletedTask;
-
 			// TODO: chiamare la stored proc [dbo].[up_ChangeCarsFromDate]
 			using IDbConnection conn = this._context.GetNewConnection();
 			conn.Open();

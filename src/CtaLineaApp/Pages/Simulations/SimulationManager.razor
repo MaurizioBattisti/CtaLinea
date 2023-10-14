@@ -6,10 +6,27 @@
 @inject IUtilityService _utilitySvc
 @attribute [Authorize]
 
+<CtaLineaGlobalFiltersManager 
+    Changed="@GlobalFilterChanged" />
+
 <RadzenRow>
+    <RadzenCard>
+        <RadzenRow>
+            <h3>Inizia nuova Simulaizone </h3>
+        </RadzenRow>
+        <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Start" Gap="1rem" Class="rz-p-4">
+            <RadzenLabel Text="Nome simulazione" />
+            <RadzenTextBox @bind-Value=@NewSimulationName MaxLength="50" />
+            <RadzenButton Text="Crea"
+                          ButtonStyle="ButtonStyle.Danger"
+                          IsBusy=@IsBusy
+                          Icon="add"
+                          Click=@NewSimulation />
+        </RadzenStack>
+    </RadzenCard>
 	<RadzenCard>
         <RadzenRow>
-            <h3>Elimina Simulazione</h3>
+            <h3>Gestione Simulazione esistente</h3>
         </RadzenRow>
         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" Gap="1rem" Class="rz-p-4">            
             <RadzenStack >
@@ -18,23 +35,127 @@
                     @ref=@SimSelector
                     Name="SimulationName" @bind-SimulationName=@SimulationName />
             </RadzenStack>
-            <RadzenButton Text="Elimina"
-                ButtonStyle="ButtonStyle.Danger"
+            <RadzenStack>
+            
+            <RadzenButton Text="Seleziona"
+                ButtonStyle="ButtonStyle.Primary"
                 IsBusy=@IsBusy
                 Disabled=@(string.IsNullOrEmpty(this.SimulationName))
-                Icon="delete" 
-                Click=@DeleteSimulation
+                Icon="edit" 
+                Click=@SelectSimulation
                 />
+                <RadzenButton Text="Elimina"
+                              ButtonStyle="ButtonStyle.Danger"
+                              IsBusy=@IsBusy
+                              Disabled=@(string.IsNullOrEmpty(this.SimulationName))
+                              Icon="delete"
+                              Click=@DeleteSimulation />
+            </RadzenStack>
         </RadzenStack>
     </RadzenCard>
 </RadzenRow>
+@if (string.IsNullOrWhiteSpace(this.SimRequest.SimulationName) == false)
+{
+    <RadzenStack Gap="5" class="m-4" >
+        <RadzenCard class="rz-p-4">
+            <RadzenRow>
+                <h3>Stato simulazione</h3>
+                <RadzenText Text=@this.SimRequest.SimulationName />
+            </RadzenRow>
+            <RadzenStack Orientation="Orientation.Horizontal" Gap="5" >
+                <RadzenStack Orientation="Orientation.Vertical" Get="2" class="m-lg-5" style="width: 200px">
+                    <h3>Applicati</h3>
+                    <h1>@this.SimStatus.SimulatedCount.ToString() </h1>
+                </RadzenStack>
+                <RadzenStack Orientation="Orientation.Vertical" Get="2" class="m-lg-5" style="width: 200px" >
+                    <h3>Totale</h3>
+                    <h1>@this.SimStatus.TotalCount.ToString() </h1>
+                </RadzenStack>
+
+                <RadzenArcGauge Style="width: 50%; height: 200px;">
+                    <RadzenArcGaugeScale Min="0" Max=@this.SimStatus.TotalCount  Radius="1.5" TickPosition="GaugeTickPosition.None" Y="0.9" Margin="0">
+                        <RadzenArcGaugeScaleValue Value=@this.SimStatus.SimulatedCount ShowValue=true>
+                            <Template Context="pointer">
+                                <h3>
+                                    @(string.Format(AppSettings.CurrentCulture, "{0:F2}", this.SimStatus.CoveragePerc)) <sup>%</sup>
+                                </h3>
+                            </Template>
+                        </RadzenArcGaugeScaleValue>
+                    </RadzenArcGaugeScale>
+                </RadzenArcGauge>
+            </RadzenStack>
+        </RadzenCard>
+        <RadzenCard class="rz-p-4" >
+            <RadzenRow>
+                <h5>Applica variazioni senza filtri</h5>
+            </RadzenRow>
+            <RadzenStack Orientation="Orientation.Horizontal" Get="4" >
+                <SimApplyChangesEdit @bind-ApplyChanges=@StdApplyChanges />
+                <RadzenStack Orientation="Orientation.Vertical">
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="4">
+                        <RadzenCheckBox Name="chk_OverWrite_1" @bind-Value=@StdApplyChanges.Overwrite />
+                        <RadzenLabel Component="chk_OverWrite_1" Text="Sovrascrivi" />
+                    </RadzenStack>
+                    <RadzenButton ButtonStyle="ButtonStyle.Secondary"
+                        IsBusy=@IsBusy
+                        Text="Applica"
+                        Click=@ApplyStandardChanges />
+                </RadzenStack>
+            </RadzenStack>
+        </RadzenCard>
+        <RadzenCard class="rz-p-4">
+            <RadzenRow>
+                <h5>Applica variazioni con filtro sui KM totali dei mezzi</h5>
+            </RadzenRow>
+            <RadzenStack Orientation="Orientation.Horizontal" Get="4">
+                <SimKmTotalMatchApplyChangesEdit @bind-KmTotalApply=@KmTotalApply />
+                <RadzenStack Orientation="Orientation.Vertical">
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="4">
+                        <RadzenCheckBox Name="chk_OverWrite_2" @bind-Value=@this.KmTotalApply.ApplyChanges.Overwrite />
+                        <RadzenLabel Component="chk_OverWrite_2" Text="Sovrascrivi" />
+                    </RadzenStack>
+                    <RadzenButton ButtonStyle="ButtonStyle.Secondary"
+                        IsBusy=@IsBusy
+                        Text="Applica"
+                        Click=@ApplyKmTotalChanges />
+                </RadzenStack>
+            </RadzenStack>
+        </RadzenCard>
+    </RadzenStack>
+}
 
 @code {
+    [CascadingParameter]
+    CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
+
     private SimulationSelector? SimSelector;
 
+    private string? NewSimulationName { get; set; }
     private string? SimulationName  { get; set; }
     private bool IsBusy { get; set; } = false;
 
+    private SimulationRequest SimRequest { get; set; } = new SimulationRequest();
+    private SimulationStatusResponse SimStatus { get; set; } = new SimulationStatusResponse();
+
+    // sistema di applicaizone delle modifcihe
+    private ApplyChangesSimulationRequest StdApplyChanges = new ApplyChangesSimulationRequest();
+    private ApplyChangeToSimRequest<KmToMatchCarRequest> KmTotalApply = new ApplyChangeToSimRequest<KmToMatchCarRequest>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GlobalFilterChanged();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task NewSimulation ()
+    {
+        await LoadSimulationStatus(this.NewSimulationName);
+    }
+    private async Task SelectSimulation()
+    {
+        await LoadSimulationStatus(this.SimulationName);
+    }
 
     private async Task DeleteSimulation ()
     {
@@ -59,6 +180,7 @@
             await this._utilitySvc.DeleteSimulationAsync(this.SimulationName);
 
             // se la cancellazioen va a buon fine azzera la selezione
+            if (this.SimRequest.SimulationName == this.SimulationName) this.SimRequest.SimulationName = string.Empty;
             this.SimulationName = null;
             if (this.SimSelector != null)
             {
@@ -83,4 +205,125 @@
             this.IsBusy = false;
         }
     }
+
+    private async Task GlobalFilterChanged()
+    {
+        await Task.CompletedTask;
+        if (this.GlobalFilters.IsFilterSet() == false) return;
+
+        this.SimRequest.ContractId = this.GlobalFilters.Contract?.Id;
+        this.SimRequest.StartDate = this.GlobalFilters.Period?.StartDate;
+        this.SimRequest.EndDate = this.GlobalFilters.Period?.EndDate;
+
+        this.StdApplyChanges.ContractId = this.SimRequest.ContractId;
+        this.StdApplyChanges.StartDate = this.SimRequest.StartDate;
+        this.StdApplyChanges.EndDate = this.SimRequest.EndDate;
+        this.StdApplyChanges.Sim_CarMAtchId = null;
+
+        this.KmTotalApply.ApplyChanges.ContractId = this.SimRequest.ContractId;
+        this.KmTotalApply.ApplyChanges.StartDate = this.SimRequest.StartDate;
+        this.KmTotalApply.ApplyChanges.EndDate = this.SimRequest.EndDate;
+        this.KmTotalApply.ApplyChanges.Sim_CarMAtchId = Guid.NewGuid();
+
+        if (string.IsNullOrWhiteSpace(this.SimRequest.SimulationName) == false)
+        {
+            await LoadSimulationStatus(this.SimRequest.SimulationName);
+        }
+    }
+
+    private async Task LoadSimulationStatus (
+    string? simulationName)
+    {
+        if (string.IsNullOrWhiteSpace(simulationName)) return;
+
+        try
+        {
+            this.IsBusy = true;
+
+            this.SimRequest.SimulationName = simulationName;
+            this.StdApplyChanges.SimulationName = this.SimRequest.SimulationName;
+            this.KmTotalApply.ApplyChanges.SimulationName = this.SimRequest.SimulationName;
+
+            // esegue la cancellazione della simulaizone
+            var status = await this._utilitySvc.GetSimulationStatusAsync(this.SimRequest);
+            this.NewSimulationName = null;
+            if (status == null)
+            {
+                status = new SimulationStatusResponse() 
+                { 
+                    CoveragePerc = 0, 
+                    SimulatedCount = 0, 
+                    TotalCount = 0 
+                };
+            }
+            this.SimStatus = status;
+            this.StateHasChanged();
+
+            // indica che l'operazione ha avuto successo
+            this._notificationService.Notify(
+                NotificationSeverity.Success,
+                "Simulazione attiva");
+        }
+        finally 
+        {
+            this.IsBusy = false;
+        }
+    }
+
+    #region applica le modifiche
+    private async Task ApplyStandardChanges ()
+    {
+        await this.BaseApplyChanges(
+            async() =>
+            {
+                await this._utilitySvc.SimulationApplyChangesASync(this.StdApplyChanges);
+            });
+    }
+    private async Task ApplyKmTotalChanges()
+    {
+        await this.BaseApplyChanges(
+            async () =>
+            {
+                await this._utilitySvc.SimulationKmTotalApplyChangesASync(this.KmTotalApply);
+            });
+    }
+
+    private async Task BaseApplyChanges(
+        Func<Task> realApply)
+    {
+        try
+        {
+            this.IsBusy = true;
+
+            await realApply();
+
+            // ricarica al combo
+            if (this.SimSelector != null)
+            {
+                await this.SimSelector.LoadData();
+            }
+            this.StateHasChanged();
+
+            // indica che l'operazione ha avuto successo
+            this._notificationService.Notify(
+                NotificationSeverity.Success,
+                "Modifidca applicata  alla simulaizone");
+        }
+        catch (Exception ex)
+        {
+            // indica che l'operazione  è fallita
+            this._notificationService.Notify(
+                NotificationSeverity.Error,
+                "Applicazioen modifiche fallita",
+                ex.Message);
+        }
+        finally
+        {
+            this.IsBusy = false;
+        }
+
+        await this.LoadSimulationStatus(this.SimRequest.SimulationName);
+    }
+    #endregion
+
 }

@@ -826,4 +826,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="RepeatType" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="24b9acc3-bcc9-4e94-a966-d2b2457f0bb0" ChangeDateTime="10/07/2023 13:51:05">
+    <Property Name="ElementName" Value="[dbo].[SimCarMatches].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[SimCarMatches]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Sim_CarMAtchId" />
+  </Operation>
 </Operations>
