@@ -218,6 +218,7 @@ namespace CtaLineaWebApi
                 .AddScoped<ISchedulerTaskRepository, SchedulerTaskRepository> ()
                 .AddScoped<IAssociatesRepository, AssociatesRepository>()
                 .AddScoped <ISimulationRepository, SimulationRepository> ()
+                .AddScoped<IReportQueries, ReportQueries>()
 
                 // altri servizi del DAL
                 .AddScoped<INodeMatchService, NodeMatchService>()

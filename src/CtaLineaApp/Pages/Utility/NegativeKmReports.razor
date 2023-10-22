@@ -1,0 +1,223 @@
+﻿@page "/negativekm"
+@using CtaLinea.Model.Checks;
+@using CtaLinea.Model.Reports;
+@using CtaLinea.Model.Utilities
+@using CtaLineaApp.Pages.Runs;
+
+@inject IApplicationSettings AppSettings;
+@inject IUtilityService _utilityService
+@inject DialogService DialogService
+@inject IExcelExporterService ExcelService
+@inject NotificationService notificationService;
+@attribute [Authorize]
+
+<CheckAuthorization Roles=@(new string[] { UserRoles.Role_Manage }) />
+<PageTitle>@Constants.App_Title - Km Negativi</PageTitle>
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Km Negativi" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+<CtaLineaGlobalFiltersManager Changed="@GlobalFilterChanged" />
+
+<RadzenLayout Style="height: 100%; grid-template-columns: auto 1fr auto; grid-template-areas: 'rz-header rz-header rz-header' 'rz-sidebar rz-body rz-right-sidebar'">
+    <RadzenBody>
+        <RadzenDataGrid @ref="@grdData"
+                        FilterMode="FilterMode.Simple"
+                        IsLoading=@IsLoading
+                        Count="@Data.Count()"
+                        Data="@Data"
+                        CellRender="@Negative_CellRender"
+                        Culture=@AppSettings.CurrentCulture
+                        TItem="NegativeKmItem"
+                        AllowVirtualization=true
+                        AllowFiltering="true"
+                        AllowColumnResize="true"
+                        AllowSorting="true"
+                        LogicalFilterOperator="LogicalFilterOperator.And"
+                        Style="height:100%"
+                        Density=@Settings.Density
+                        PageSize=@(Settings?.PageSize ?? 5)>
+            <HeaderTemplate>
+                <RadzenStack Orientation="Orientation.Horizontal">
+                    <RadzenSplitButton ButtonStyle="ButtonStyle.Dark"
+                                    Icon="file_download" Click=@DownloadData_Click>
+                        <ChildContent>
+                            <RadzenSplitButtonItem Text="Excel" Value="X" Icon="grid_on" />
+                            <RadzenSplitButtonItem Text="CSV" Value="C" Icon="wrap_text" />
+                        </ChildContent>
+                    </RadzenSplitButton>
+
+                    <DateRangeSelector AllowClear="true"
+                                       Inline="true"
+                                       InlineLabels="true"
+                                       @bind-StartDate=@this._Request.StartDate
+                                       @bind-EndDate="@this._Request.EndDate" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Success"
+                                  IsBusy=@IsLoading
+                                  Icon="refresh"
+                                  Click="@(()=>LoadDataAsync())" />
+                </RadzenStack>
+            </HeaderTemplate>
+            <EmptyTemplate>
+                <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessuna km negativo </p>
+            </EmptyTemplate>
+            <Columns>
+                <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.CtaRunId)" Title="id DTA" Width="80px" />
+
+                <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.PrimaryAssociate)" Title="Ditte" Width="200px" />
+                <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.RunName)" Title="Nome" Width="100px" />
+                <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.LineNumber)" Title="Nr Linea" Width="100px" />
+                <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.RunNumber)" Title="Nr Corsa" Width="100px" />
+                <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.PathDescription)" Title="Percorso" Width="200px" />
+
+                <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.DayKm)" Title="Km al GG" FormatString="{0:F2}" Width="100px" />
+                <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.DayCount)" Title="GG Totali" Width="100px" />
+                <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.WorkedDayCount)" Title="GG effettuatu" Width="100px" />
+                <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.NotWorkedDayCount)" Title="GG Negativi" Width="100px" />
+                
+                <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.ContractKmTotal)" Title="Km Totali" FormatString="{0:F2}" Width="100px" >
+                    <FooterTemplate>
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",Totals.ContractKmTotal)" />
+                    </FooterTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.CetConttWorkedKm)" Title="Km effettuati" FormatString="{0:F2}" Width="100px" >
+                    <FooterTemplate>
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",Totals.CetConttWorkedKm)" />
+                    </FooterTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.ContractNegativeKm)" Title="Km Negativi" FormatString="{0:F2}" Width="100px" >
+                    <FooterTemplate>
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",Totals.ContractNegativeKm)" />
+                    </FooterTemplate>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+    </RadzenBody>
+</RadzenLayout>
+
+@code {
+    private RadzenDataGrid<NegativeKmItem> grdData;
+
+    [CascadingParameter]
+    public CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+    [CascadingParameter]
+    public CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
+
+    private bool IsLoading { get; set; } = false;
+
+    private NegativeKmReportRequest _Request = new NegativeKmReportRequest();
+
+    private IEnumerable<NegativeKmItem> Data { get; set; } = new List<NegativeKmItem>();
+    private NegativeKmItem Totals = new NegativeKmItem();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GlobalFilterChanged();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task GlobalFilterChanged()
+    {
+        await Task.CompletedTask;
+
+        this._Request.Contract = this.GlobalFilters?.Contract?.Id ?? 0;
+        this._Request.StartDate = this.GlobalFilters?.Period?.StartDate;
+        this._Request.EndDate = this.GlobalFilters?.Period?.EndDate;
+    }
+
+    private async Task DownloadData_Click(RadzenSplitButtonItem item)
+    {
+        this.IsLoading = true;
+        // var columninfo = this.grdData?.GetExportColumnInfo();
+        var columninfo = this.Data.GetExportColumnInfo();
+
+        try
+        {
+            string title = "Km negativi";
+            if (item == null)
+            {
+                await this.ExcelService.Export(title, this.Data, columninfo);
+            }
+            else
+            {
+                switch (item.Value)
+                {
+                    case "X":
+                        await this.ExcelService.ExportExcel(title, this.Data, columninfo);
+                        break;
+                    case "C":
+                        await this.ExcelService.ExportCsv(title, this.Data, columninfo);
+                        break;
+                }
+            }
+            this.notificationService.Notify(NotificationSeverity.Info, "File pronto per il donwload");
+        }
+        catch (Exception ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "Errori esportando i dati",
+                ex.Message);
+        }
+        finally
+        {
+            this.IsLoading = false;
+        }
+    }
+
+    private async Task LoadDataAsync()
+    {
+        this.IsLoading = true;
+
+        try
+        {
+            var data = await this._utilityService.GetNegativeKmReportAsync(
+                this._Request);
+            data = data ?? new List<NegativeKmItem>();
+            this.Data = data;
+
+            // calcola i totali
+            this.CalcTotals();
+        }
+        catch (Exception exc)
+        {
+            this.notificationService.Notify(NotificationSeverity.Warning, "errore durante il caricamento dei dati ", exc.Message);
+        }
+        finally
+        {
+            this.IsLoading = false;
+        }
+    }
+
+    private void Negative_CellRender(DataGridCellRenderEventArgs<NegativeKmItem> args)
+    {
+        if (args.Column.Property == nameof(NegativeKmItem.ContractNegativeKm)
+            )
+        {
+            args.Attributes.Add("style", $"background-color: var(--rz-success-darker)");
+        }
+    }
+
+    private void CalcTotals ()
+    {
+        var tot = new NegativeKmItem()
+        {
+            ContractKmTotal = 0,
+            ContractNegativeKm = 0,
+            CetConttWorkedKm = 0
+        };
+        foreach (var c in this.Data)
+        {
+            tot.ContractKmTotal += c.ContractKmTotal;
+            tot.ContractNegativeKm += c.ContractNegativeKm;
+            tot.CetConttWorkedKm += c.CetConttWorkedKm;
+        }
+        this.Totals = tot;
+    }
+
+}

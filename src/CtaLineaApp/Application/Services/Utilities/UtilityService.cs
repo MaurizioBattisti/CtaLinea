@@ -1,6 +1,7 @@
 ﻿using CtaLinea.Model.Checks;
 using CtaLinea.Model.Costs;
 using CtaLinea.Model.QueryModel;
+using CtaLinea.Model.Reports;
 using CtaLinea.Model.Request;
 using CtaLinea.Model.Response;
 using CtaLinea.Model.Runs;
@@ -180,6 +181,29 @@ namespace CtaLineaApp.Application.Services.Utilities
             var url = Constants.Endpoint_Simulations_KmTotal_Apply;
             await _http.Post(url, request);
         }
+        public async Task FinalizeSimulationAsync(
+            FinalizeSimulationRequest request)
+        {
+            var url = Constants.Endpoint_Simulations_Finalize;
+            await _http.Post(url, request);
+        }
+        public async Task SimulationSetDaysAmountAsync(
+            SimulationSetDayAmountsRequest request)
+        {
+            var url = Constants.Endpoint_Simulations_SetDayAmounts;
+            await _http.Post(url, request);
+        }
 
+        #region reports
+        public async Task<IEnumerable<NegativeKmItem>?> GetNegativeKmReportAsync(
+            NegativeKmReportRequest request)
+        {
+            var url = Constants.Endpoint_Reports_NegativeKm;
+            var status = await _http.Post<IEnumerable<NegativeKmItem>, string>(url, request);
+            return status;
+        }
+
+
+        #endregion
     }
 }

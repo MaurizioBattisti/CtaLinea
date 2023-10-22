@@ -10,7 +10,7 @@
 @inject NotificationService notificationService;
 @attribute [Authorize]
 
-<CheckAuthorization Roles=@(new string[] { UserRoles.Role_Planning }) />
+<CheckAuthorization Roles=@(new string[] { UserRoles.Role_Manage }) />
 <PageTitle>@Constants.App_Title - Sovrapposizioni</PageTitle>
 <LayoutSetter>
     <PageTitle>

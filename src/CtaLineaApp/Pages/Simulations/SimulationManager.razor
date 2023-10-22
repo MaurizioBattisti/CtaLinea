@@ -60,7 +60,7 @@
         <RadzenCard class="rz-p-4">
             <RadzenRow>
                 <h3>Stato simulazione</h3>
-                <RadzenText Text=@this.SimRequest.SimulationName />
+                <h1>@this.SimRequest.SimulationName </h1>
             </RadzenRow>
             <RadzenStack Orientation="Orientation.Horizontal" Gap="5" >
                 <RadzenStack Orientation="Orientation.Vertical" Get="2" class="m-lg-5" style="width: 200px">
@@ -72,7 +72,7 @@
                     <h1>@this.SimStatus.TotalCount.ToString() </h1>
                 </RadzenStack>
 
-                <RadzenArcGauge Style="width: 50%; height: 200px;">
+                <RadzenArcGauge Style="width: 30%; height: 200px;">
                     <RadzenArcGaugeScale Min="0" Max=@this.SimStatus.TotalCount  Radius="1.5" TickPosition="GaugeTickPosition.None" Y="0.9" Margin="0">
                         <RadzenArcGaugeScaleValue Value=@this.SimStatus.SimulatedCount ShowValue=true>
                             <Template Context="pointer">
@@ -83,6 +83,27 @@
                         </RadzenArcGaugeScaleValue>
                     </RadzenArcGaugeScale>
                 </RadzenArcGauge>
+                
+                <RadzenCard>
+                    <RadzenStack Orientation="Orientation.Vertical" Gap="2" class="m-lg-5" style="width: 200px">
+                        <RadzenText Text="Finalizza la simulazione alla data" />
+                        <DateSelector AllowClear=true
+                            @bind-Value=@FinlaizeArgs.StartDate
+                            />
+                        <RadzenStack Orientation="Orientation.Horizontal" Gap="4">
+                            <RadzenCheckBox Name="chk_OverWrite_finalize" @bind-Value=@FinlaizeArgs.OverwriteIfDateAlreadyExists />
+                            <RadzenLabel Component="chk_OverWrite_finalize" Text="Sovrascrivi se la data esiste" />
+                        </RadzenStack>
+
+                         <RadzenButton
+                             Text="Rendi Effettiva"
+                             IsBusy=@IsBusy
+                             Disabled=@(SimStatus.CoveragePerc<100)
+                             Click=@FinalizeAsync
+                             />
+                    </RadzenStack>
+                </RadzenCard>
+
             </RadzenStack>
         </RadzenCard>
         <RadzenCard class="rz-p-4" >
@@ -121,6 +142,21 @@
                 </RadzenStack>
             </RadzenStack>
         </RadzenCard>
+
+        <RadzenCard class="rz-p-4">
+            <RadzenRow>
+                <h5>Imposta i costi al giorno</h5>
+            </RadzenRow>
+            <RadzenStack Orientation="Orientation.Horizontal" Get="4">
+                <DayAmountEdit @bind-DayAmounts=@DayAmounts />
+                <RadzenStack Orientation="Orientation.Vertical">
+                    <RadzenButton ButtonStyle="ButtonStyle.Secondary"
+                        IsBusy=@IsBusy
+                        Text="Assegna"
+                        Click=@SetDayAmountsAsync />
+                </RadzenStack>
+            </RadzenStack>
+        </RadzenCard>
     </RadzenStack>
 }
 
@@ -133,6 +169,7 @@
     private string? NewSimulationName { get; set; }
     private string? SimulationName  { get; set; }
     private bool IsBusy { get; set; } = false;
+    private FinalizeSimulationRequest FinlaizeArgs = new FinalizeSimulationRequest();
 
     private SimulationRequest SimRequest { get; set; } = new SimulationRequest();
     private SimulationStatusResponse SimStatus { get; set; } = new SimulationStatusResponse();
@@ -140,6 +177,9 @@
     // sistema di applicaizone delle modifcihe
     private ApplyChangesSimulationRequest StdApplyChanges = new ApplyChangesSimulationRequest();
     private ApplyChangeToSimRequest<KmToMatchCarRequest> KmTotalApply = new ApplyChangeToSimRequest<KmToMatchCarRequest>();
+
+    // imposta i prezzi giornalieri
+    private SimulationSetDayAmountsRequest DayAmounts { get; set; } = new SimulationSetDayAmountsRequest();
 
     protected override async Task OnInitializedAsync()
     {
@@ -229,16 +269,19 @@
         {
             await LoadSimulationStatus(this.SimRequest.SimulationName);
         }
+
+        this.FinlaizeArgs.StartDate = this.GlobalFilters.Period?.StartDate;
     }
 
     private async Task LoadSimulationStatus (
-    string? simulationName)
+        string? simulationName)
     {
         if (string.IsNullOrWhiteSpace(simulationName)) return;
 
         try
         {
             this.IsBusy = true;
+            this.DayAmounts = new SimulationSetDayAmountsRequest();
 
             this.SimRequest.SimulationName = simulationName;
             this.StdApplyChanges.SimulationName = this.SimRequest.SimulationName;
@@ -269,6 +312,34 @@
             this.IsBusy = false;
         }
     }
+
+    private async Task FinalizeAsync ()
+    {
+        this.FinlaizeArgs.SimulationName = this.SimRequest.SimulationName;
+
+        await this.BaseApplyChanges(
+            async () =>
+            {
+                // esegue la finalizzaizone
+                await this._utilitySvc.FinalizeSimulationAsync(this.FinlaizeArgs);
+
+                this.SimRequest = new SimulationRequest();
+                this.SimulationName = null;
+            });
+    }
+
+    private async Task SetDayAmountsAsync()
+    {
+        this.DayAmounts.SimulationName = this.SimRequest.SimulationName;
+
+        await this.BaseApplyChanges(
+            async () =>
+            {
+                // assegna i valori giornalieri
+                await this._utilitySvc.SimulationSetDaysAmountAsync(this.DayAmounts);
+            });
+    }
+
 
     #region applica le modifiche
     private async Task ApplyStandardChanges ()

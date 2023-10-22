@@ -1,0 +1,58 @@
+﻿
+<RadzenStack Orientation="Orientation.Vertical" Gap="4"  class="w-100">
+	<RadzenRow>
+		<RadzenColumn Size="2">
+			<RadzenLabel Component="DayPrice"
+				Text="Prezzo al Giorno"
+				class="w-100" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenNumeric TValue="decimal"
+				Name="DayPrice"
+				@bind-Value=@DayAmounts.DayPrice
+				Change=@NotifyChange
+				class="w-100" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenLabel Component="DayForfait"
+				Text="Forfait al Giorno"
+				class="w-100" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenNumeric TValue="decimal?"
+				Name="DayForfait"
+				@bind-Value=@DayAmounts.DayForfait
+				Change=@NotifyChange
+				class="w-100" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenLabel Component="DayIntegration"
+				Text="Integrazione al Giorno"
+				class="w-100" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenNumeric TValue="decimal?"
+				Name="DayIntegration"
+				@bind-Value=@DayAmounts.DayIntegration
+				Change=@NotifyChange
+				class="w-100" />
+		</RadzenColumn>
+
+	</RadzenRow>
+</RadzenStack>
+
+@code {
+	[Parameter]
+	public SimulationSetDayAmountsRequest DayAmounts { get; set; } = new SimulationSetDayAmountsRequest();
+	[Parameter]
+	public EventCallback<SimulationSetDayAmountsRequest> DayAmountsChanged { get; set; }
+
+	[Parameter]
+	public EventCallback Changed { get; set; }
+
+	private async Task NotifyChange ()
+	{
+		await this.DayAmountsChanged.InvokeAsync(this.DayAmounts);
+		await this.Changed.InvokeAsync();
+	}
+}

@@ -17,6 +17,7 @@
             <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_Planning)) Text="Planning" Path="/planning" Icon="calendar_view_week"></RadzenPanelMenuItem>
             
             <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_AssociateCosts)) Text="Costi per Ditta" Path="/costbyassociate" Icon="point_of_sale"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_Reports)) Text="Km Negativi" Path="/negativekm" Icon="remove_circle"></RadzenPanelMenuItem>
             <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_SimulationManager)) Text="Gestione simulazioni" Path="/simulations" Icon="cruelty_free"></RadzenPanelMenuItem>
 
             <RadzenPanelMenuItem Visible=@(VisibleItems.Contains(Item_RunIncongreunce)) Text="Incongruenze" Path="/runincongruence" Icon="bus_alert"></RadzenPanelMenuItem>
@@ -87,6 +88,8 @@
     private const string Iten_AnagCars = "extCars";
     private const string Iten_AnagDrivers = "extDrivers";
     private const string Item_AnagNodes = "extCp";
+
+    private const string Item_Reports = "reports";
     #endregion
 
     private IList<string> VisibleItems = new List<string>();
@@ -124,6 +127,7 @@
         if (this.IsUserInRole(UserRoles.Role_Manage)) VisibleItems.Add(Item_SimulationManager);        
         if (this.IsUserInRole(UserRoles.Role_Manage)) VisibleItems.Add(Item_RunIncongreunce);
         if (this.IsUserInRole(UserRoles.Role_Manage)) VisibleItems.Add(Item_Overlappings);
+        if (this.IsUserInRole(UserRoles.Role_Manage)) VisibleItems.Add(Item_Reports);
 
         if (this.IsUserInRole(
                 UserRoles.Role_Manage

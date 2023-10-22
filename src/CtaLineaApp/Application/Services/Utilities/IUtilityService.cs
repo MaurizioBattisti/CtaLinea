@@ -1,5 +1,6 @@
 ﻿using CtaLinea.Model.Checks;
 using CtaLinea.Model.QueryModel;
+using CtaLinea.Model.Reports;
 using CtaLinea.Model.Request;
 using CtaLinea.Model.Response;
 using CtaLinea.Model.Utilities;
@@ -47,5 +48,12 @@ namespace CtaLineaApp.Application.Services.Utilities
 			ApplyChangesSimulationRequest request);
 		Task SimulationKmTotalApplyChangesASync(
 			ApplyChangeToSimRequest<KmToMatchCarRequest> request);
+		Task FinalizeSimulationAsync(
+			FinalizeSimulationRequest request);
+		Task SimulationSetDaysAmountAsync(
+			SimulationSetDayAmountsRequest request);
+
+		Task<IEnumerable<NegativeKmItem>?> GetNegativeKmReportAsync(
+			NegativeKmReportRequest request);
     }
 }

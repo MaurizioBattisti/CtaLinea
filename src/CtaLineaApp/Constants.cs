@@ -83,7 +83,12 @@ namespace CtaLineaApp
         internal const string Endpoint_Simulations_Activity = Endpoint_Utility + "/simulations";
         internal const string Endpoint_Simulations_Status = Endpoint_Simulations_Activity + "/status";
         internal const string Endpoint_Simulations_Apply= Endpoint_Simulations_Activity + "/apply";
-        internal const string Endpoint_Simulations_KmTotal_Apply = Endpoint_Simulations_Activity + "/kmtotal-apply"; 
+        internal const string Endpoint_Simulations_KmTotal_Apply = Endpoint_Simulations_Activity + "/kmtotal-apply";
+        internal const string Endpoint_Simulations_SetDayAmounts= Endpoint_Simulations_Activity + "/setdayamounts";
+        internal const string Endpoint_Simulations_Finalize = Endpoint_Simulations_Activity + "/finalize";
+
+        internal const string Endpoint_Reports = Endpoint_Utility + "/reports";
+        internal const string Endpoint_Reports_NegativeKm = Endpoint_Reports + "/negativekm";
 
 
         // argomenti

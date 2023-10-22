@@ -81,6 +81,46 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 .ConfigureAwait (false);
         }
 
+        public async Task SetDayAmountsAsync (
+            SimulationSetDayAmountsRequest  request)
+        {
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
+
+            await conn.ExecuteAsync(
+                "[dbo].[up_Sim_SetCosts]",
+                param: new
+                {
+                    SimulationName = request.SimulationName,
+                    DayPrice = request.DayPrice,
+                    DayForfait = request.DayForfait,
+                    DayIntegration = request.DayIntegration
+                },
+                transaction: null,
+                commandType: CommandType.StoredProcedure,
+                commandTimeout: 600);
+        }
+        public async Task FinalizeAsync (
+            FinalizeSimulationRequest request)
+        {
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
+
+            await conn.ExecuteAsync(
+                "[dbo].[up_Simulation_Finalize]",
+                param: new
+                {
+                    SimulationName = request.SimulationName,
+                    StartDate = request.StartDate,
+                    Overwrite = request.OverwriteIfDateAlreadyExists
+                },
+                transaction: null,
+                commandType: CommandType.StoredProcedure,
+                commandTimeout: 600);
+        }
+
         #region match car funcions
         private async Task MatchTotCarAsync(
             IDbConnection conn, 

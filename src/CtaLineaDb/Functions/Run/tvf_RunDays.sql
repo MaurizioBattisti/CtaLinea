@@ -168,7 +168,7 @@ BEGIN
 				SELECT d.RunVariantId, 
 						d.Day,
 						d.WeekDay,
-						CASE WHEN d.day > @v_EndDate AND @v_LastOne = 1 AND d.day <= @EndDAte THEN 1 ELSE 0 END
+						CASE WHEN d.day > @RunEndDAte AND @v_LastOne = 1 AND d.day <= @EndDAte THEN 1 ELSE 0 END
 					FROM CTE_Days d
 					LEFT JOIN @Tbl_Var_Days dd
 						ON dd.RunVariantId = @v_RunVariationId
@@ -257,7 +257,7 @@ BEGIN
 			SELECT @v_RunVariationId, 
 					d.Day,
 					DATEPART(dw, d.Day) AS WeekDay,
-					CASE WHEN d.day > @v_EndDate AND @v_LastOne = 1 AND d.day <= @EndDAte THEN 1 ELSE 0 END
+					CASE WHEN d.day > @RunEndDAte AND @v_LastOne = 1 AND d.day <= @EndDAte THEN 1 ELSE 0 END
 				FROM dbo.RunAdditionalDays d
 				LEFT JOIN @Tbl_Var_Days dd
 					ON dd.RunVariantId = @v_RunVariationId

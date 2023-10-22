@@ -90,6 +90,7 @@
     <Folder Include="Functions\Simulation" />
     <Folder Include="StoredProc\Simulation" />
     <Folder Include="Tables\Simulation" />
+    <Folder Include="StoredProc\Reports" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post_Deploy.sql" />
@@ -218,5 +219,8 @@
     <Build Include="StoredProc\Simulation\up_Sim_SetCosts.sql" />
     <Build Include="Tables\Simulation\SimCarMatches.sql" />
     <Build Include="StoredProc\Simulation\up_Sim_SelectCarsByTotalKm.sql" />
+    <Build Include="StoredProc\Simulation\up_Simulation_Finalize.sql" />
+    <Build Include="StoredProc\Simulation\up_SimulationSetDayCosts.sql" />
+    <Build Include="StoredProc\Reports\up_Report_NegativeKms.sql" />
   </ItemGroup>
 </Project>

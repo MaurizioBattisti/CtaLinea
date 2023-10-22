@@ -1,5 +1,6 @@
 ﻿using CtaLinea.Model.Request;
 using CtaLinea.Model.Response;
+using System.Data;
 using System.Threading.Tasks;
 
 namespace ZzSoft.CtaLinea.Dal.Repositories
@@ -12,5 +13,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         Task ApplyKmTotalSimulationAsync(
             KmToMatchCarRequest matchRequest,
             ApplyChangesSimulationRequest applyRe);
+
+        Task SetDayAmountsAsync(
+            SimulationSetDayAmountsRequest request);
+        Task FinalizeAsync(
+            FinalizeSimulationRequest request);
     }
 }

@@ -27,6 +27,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using CtaLineaWebApi.Application.Scheduler;
 using CtaLinea.Model.Request;
 using CtaLinea.Model.Response;
+using CtaLinea.Model.Reports;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -44,6 +45,7 @@ namespace CtaLineaWebApi.Controllers
         private readonly IUtilityREpository _utilityRepo;
 		private readonly ISchedulerService _schedulerService;
 		private readonly ISimulationRepository _simRepo;
+        private readonly IReportQueries _reportQueries;
 
         public UtilityController(
             IMediator mediator,
@@ -52,6 +54,7 @@ namespace CtaLineaWebApi.Controllers
             ICurrentUserService currentUser,
             ISchedulerService schedulerService,
             ISimulationRepository simRepo,
+            IReportQueries reportQueries,
             ILogger<UtilityController> logger)
         {
             this._mediator = mediator;
@@ -60,6 +63,7 @@ namespace CtaLineaWebApi.Controllers
             this._currentUSer = currentUser;
 			this._schedulerService = schedulerService; ;
 			this._simRepo = simRepo;
+            this._reportQueries = reportQueries;
             this._logger = logger;
         }
 
@@ -358,6 +362,55 @@ namespace CtaLineaWebApi.Controllers
             return this.NoContent();
         }
 
+        [Authorize(Policy = Constants.Policy_ManageData)]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPost]
+        [Route("simulations/setdayamounts")]
+        public async Task<ActionResult<SimulationStatusResponse>> Simulation_SetDayAmountsASync(
+            [FromBody] SimulationSetDayAmountsRequest request
+            )
+        {
+            await this._simRepo.SetDayAmountsAsync(
+                    request)
+                .ConfigureAwait(false);
+
+            return this.NoContent();
+        }
+        [Authorize(Policy = Constants.Policy_ManageData)]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPost]
+        [Route("simulations/finalize")]
+        public async Task<ActionResult<SimulationStatusResponse>> FinalizeSimulationAsync(
+            [FromBody] FinalizeSimulationRequest request
+            )
+        {
+            await this._simRepo.FinalizeAsync(
+                    request)
+                .ConfigureAwait(false);
+
+            return this.NoContent();
+        }
+
         #endregion
+
+        #region reports
+        [Authorize(Policy = Constants.Policy_ManageData)]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpPost]
+        [Route("reports/negativekm")]
+        public async Task<ActionResult<IEnumerable<NegativeKmItem>?>> GetNegativeKmAsync(
+            [FromBody] NegativeKmReportRequest request
+            )
+        {
+            var result = await this._reportQueries.GetNegativeKmAsync(request)
+                .ConfigureAwait(false);
+
+            return this.Ok(result);
+        }
+        #endregion
+
     }
 }
