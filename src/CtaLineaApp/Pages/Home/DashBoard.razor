@@ -1,6 +1,39 @@
-﻿<h3>DashBoard</h3>
+﻿@inject IAccountService AccountService
 
 
+@if (this.AccountService.IsUserInRole(UserRoles.Role_View)==true)
+{
+	<RadzenStack Orientation="Orientation.Vertical"  Gap="4">
+		<!-- numero  dei mezzi-->
+		<RadzenCard>
+			<RadzenStack Orientation="Orientation.Vertical"  Gap="4">
+				<h3>Mezzi impietagi</h3>
+				<DashboardCarCount />
+			</RadzenStack>
+		</RadzenCard>
+		<RadzenCard>
+			<RadzenStack Orientation="Orientation.Vertical" Gap="4">
+				<h3>Km Previsti</h3>
+				<DashboardKm />
+			</RadzenStack>
+		</RadzenCard>
+		<RadzenCard>
+			<RadzenStack Orientation="Orientation.Vertical" Gap="4">
+				<h3>Costi previsti</h3>
+				<DashboardCosts />
+			</RadzenStack>
+		</RadzenCard>
+
+		<!--
+		<RadzenCard>
+			<RadzenStack Orientation="Orientation.Vertical" Gap="4">
+				<h3>Km Percorsi</h3>
+				<DashboardKm RealElastibus=true />
+			</RadzenStack>
+		</RadzenCard>
+		-->
+	</RadzenStack>
+}
 
 
 @code {

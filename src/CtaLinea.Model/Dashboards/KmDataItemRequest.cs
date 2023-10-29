@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CtaLinea.Model.Request
+namespace CtaLinea.Model.Dashboards
 {
-    public class NegativeKmReportRequest
+    public class KmDataItemRequest
     {
-        public int Contract { get; set; }
+        public int? ContractId { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public bool ConsiderSuspended { get; set; } = false;
+        public bool RealElastibusKm { get; set; } = false;
     }
 }

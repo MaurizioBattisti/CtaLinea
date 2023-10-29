@@ -267,6 +267,9 @@
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="LineNumber" Title="Nr. Linea" Width="100px" FilterOperator="FilterOperator.Equals" />
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RunNumber" Title="Nr. Corsa" Width="100px" FilterOperator="FilterOperator.Contains" />
 
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="StartDate" Title="Inizio" FormatString="{0:dd/MM/yyyy}" Width="180px"  />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="EndDate" Title="Fine " FormatString="{0:dd/MM/yyyy}" Width="180px" />
+
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedCapacity" Title="Capienza richiesta" Width="150px" FilterOperator="FilterOperator.Equals" />
 
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="Km" Title="Km" Width="100px" FilterOperator="FilterOperator.Equals" FormatString="{0:0.00}" />
@@ -308,17 +311,6 @@
                     </Template>
                 </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="StartDate" Title="Inizio" FormatString="{0:dd/MM/yyyy}" Width="180px" FilterValue=@Filter_StartDate>
-                    <FilterTemplate>
-                        <DateSelector @bind-Value="Filter_StartDate" AllowClear=true Changed=@StartDate_Changed />
-                    </FilterTemplate>
-                </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="EndDate" Title="Fine " FormatString="{0:dd/MM/yyyy}" Width="180px" FilterValue=@Filter_EndDate>
-                    <FilterTemplate>
-                        <DateSelector @bind-Value="Filter_EndDate" AllowClear=true Changed=@EndDate_Changed />
-                    </FilterTemplate>
-                </RadzenDataGridColumn>
-                
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="RequestedDays" Title="GG Richiesti" Width="100px" FilterValue=@Filter_RequestedDays />
 
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="PrimaryCarsDescr" Title="Mezzi Titolari" Width="200px" FilterValue=@Filter_PrimaryCarsDescr />

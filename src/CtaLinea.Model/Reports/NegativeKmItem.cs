@@ -13,6 +13,8 @@ namespace CtaLinea.Model.Reports
         public Guid RunId { get; set; }
         [ColumnDescription(Header = "Id CTA")]
         public int CtaRunId { get; set; }
+        [ColumnDescription(Header = "Data Fine")]
+        public DateTime? EndDate { get; set; }
 
         [ColumnDescription(Header = "Ditte")]
         public string? PrimaryAssociate { get; set; }
@@ -40,5 +42,8 @@ namespace CtaLinea.Model.Reports
         public float CetConttWorkedKm { get; set; }
         [ColumnDescription(Header = "Km Negativi")]
         public float ContractNegativeKm { get; set; }
+
+        [ColumnDescription(Header = "Km Extra")]
+        public float KmExtra { get; set; }
     }
 }

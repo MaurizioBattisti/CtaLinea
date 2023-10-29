@@ -4,6 +4,7 @@
 @attribute [Authorize]
 
 <h3>Anteprima Calendario</h3>
+<RadzenText Text=@GetDayCount() />
 <RadzenScheduler @ref=@scheduler
                  SlotRender=@OnSlotRender
                  TItem="MyAppointment"
@@ -39,6 +40,11 @@
     private bool isLoading = false;
 
     private IEnumerable<DateTime> Days = new List<DateTime>();
+
+    private string GetDayCount()
+    {
+        return string.Format(AppSettings.CurrentCulture, "{0} gg nel periodo", this.Days.Count());
+    }
 
     public override async Task SetParametersAsync(ParameterView parameters)
     {

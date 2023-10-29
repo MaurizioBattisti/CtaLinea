@@ -1,0 +1,286 @@
+﻿@inject IApplicationSettings AppSettings
+@inject IAccountService AccountService
+@inject IDahboardService _dashboardService
+
+<CtaLineaGlobalFiltersManager 
+	Changed="@GlobalFilterChanged" />
+
+@if (this.IsLoading == true)
+{
+	<RadzenProgressBarCircular ProgressBarStyle="ProgressBarStyle.Primary" Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+}
+@if (this.IsLoading == false)
+{
+	<RadzenStack Orientation="Orientation.Vertical" Gap="4">
+		<RadzenStack Orientation="Orientation.Horizontal" Gap="4">
+			<RadzenCheckBox Name="ConsiderSuspended" @bind-Value=@this.Request.ConsiderSuspended TValue="bool" Change=@(a=> this.RefreshData()) />
+			<RadzenLabel Component="ConsiderSuspended" Text="Considera sovrapposizioni" />
+			<RadzenCheckBox Name="RealElastibusKm" @bind-Value=@this.Request.RealElastibusKm TValue="bool" Change=@(a=> this.RefreshData()) />
+			<RadzenLabel Component="RealElastibusKm" Text="Km reali elastibus" />
+		</RadzenStack>
+
+		<RadzenChart style="height: 400px">
+			<RadzenColumnSeries Title="Km Reali"
+								Data="@Data"
+								CategoryProperty="@nameof(KmDataItem.MonthId)"
+								ValueProperty="@nameof(KmDataItem.RealKm)">
+			</RadzenColumnSeries>
+			<RadzenColumnSeries Title="Km Appalto"
+								Data="@Data"
+								CategoryProperty="@nameof(KmDataItem.MonthId)"
+								ValueProperty="@nameof(KmDataItem.ContractKm)">
+			</RadzenColumnSeries>
+			<RadzenColumnSeries Title="Km Extra"
+								Data="@Data"
+								CategoryProperty="@nameof(KmDataItem.MonthId)"
+								ValueProperty="@nameof(KmDataItem.ExtraKm)">
+			</RadzenColumnSeries>
+			<RadzenColumnSeries Title="Km Lavorati"
+								Data="@Data"
+								CategoryProperty="@nameof(KmDataItem.MonthId)"
+								ValueProperty="@nameof(KmDataItem.WorkedContractKm)">
+			</RadzenColumnSeries>
+			<RadzenColumnSeries Title="Km Negativi"
+								Data="@Data"
+								CategoryProperty="@nameof(KmDataItem.MonthId)"
+								ValueProperty="@nameof(KmDataItem.NegativeContractKm)">
+			</RadzenColumnSeries>
+
+			<RadzenValueAxis Formatter="@FormatKm">
+				<RadzenGridLines Visible="true" />
+				<RadzenAxisTitle Text="Km" />
+			</RadzenValueAxis>
+			<RadzenCategoryAxis Formatter="@FormatMonth">
+				<RadzenGridLines Visible="true" />
+				<RadzenAxisTitle Text="Mese" />
+			</RadzenCategoryAxis>
+		</RadzenChart>
+	
+		<RadzenRow>
+			<RadzenColumn Size="4">
+				<RadzenChart style="height: 400px">
+					<RadzenBarSeries Title="Km Reali"
+						Data="@TotData"
+						CategoryProperty="@nameof(KmDataItem.MonthId)"
+						ValueProperty="@nameof(KmDataItem.RealKm)">
+					</RadzenBarSeries>
+					<RadzenBarSeries Title="Km Appalto"
+										Data="@TotData"
+										CategoryProperty="@nameof(KmDataItem.MonthId)"
+										ValueProperty="@nameof(KmDataItem.ContractKm)">
+					</RadzenBarSeries>
+					<RadzenBarSeries Title="Km Extra"
+										Data="@TotData"
+										CategoryProperty="@nameof(KmDataItem.MonthId)"
+										ValueProperty="@nameof(KmDataItem.ExtraKm)">
+					</RadzenBarSeries>
+					<RadzenBarSeries Title="Km Lavorati"
+									 Data="@TotData"
+									 CategoryProperty="@nameof(KmDataItem.MonthId)"
+									 ValueProperty="@nameof(KmDataItem.WorkedContractKm)">
+					</RadzenBarSeries>
+					<RadzenBarSeries Title="Km Negativi"
+										Data="@TotData"
+										CategoryProperty="@nameof(KmDataItem.MonthId)"
+										ValueProperty="@nameof(KmDataItem.NegativeContractKm)">
+					</RadzenBarSeries>
+
+					<RadzenValueAxis Formatter="@FormatKm">
+						<RadzenGridLines Visible="true" />
+						<RadzenAxisTitle Text="Km Totali" />
+					</RadzenValueAxis>
+					<RadzenCategoryAxis >
+						<RadzenGridLines Visible="true" />
+						<RadzenAxisTitle Text="Mese" />
+					</RadzenCategoryAxis>
+				</RadzenChart>
+			</RadzenColumn>
+			<RadzenColumn Size="8">
+				<RadzenDataGrid 
+					Data="@Data"
+					TItem="KmDataItem"
+					Culture=@AppSettings.CurrentCulture
+					AllowSorting="true"
+					AllowColumnResize="true"
+					Density=@Settings.Density
+					class="w-100">
+					<Columns>
+						<RadzenDataGridColumn TItem="KmDataItem" Property="@nameof(KmDataItem.MonthId)" Title="Mese" Width="120px" >
+							<Template Context="data">
+								<RadzenText Text="@FormatMonth(data.MonthId)" />
+							</Template>
+						</RadzenDataGridColumn>
+
+						<RadzenDataGridColumn TItem="KmDataItem" Property="@nameof(KmDataItem.RealKm)" Title="Km Reali" FormatString="{0:f2}" Width="100px">
+							<FooterTemplate>
+								<RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}", this.Totals.RealKm)" />
+							</FooterTemplate>
+						</RadzenDataGridColumn>
+						<RadzenDataGridColumn TItem="KmDataItem" Property="@nameof(KmDataItem.ContractKm)" Title="Km Appalto" FormatString="{0:f2}" Width="100px">
+							<FooterTemplate>
+								<RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}", this.Totals.ContractKm)" />
+							</FooterTemplate>
+						</RadzenDataGridColumn>
+						<RadzenDataGridColumn TItem="KmDataItem" Property="@nameof(KmDataItem.ExtraKm)" Title="Km Extra" FormatString="{0:f2}" Width="100px">
+							<FooterTemplate>
+								<RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}", this.Totals.ExtraKm)" />
+							</FooterTemplate>
+						</RadzenDataGridColumn>
+						<RadzenDataGridColumn TItem="KmDataItem" Property="@nameof(KmDataItem.WorkedContractKm)" Title="Km Lavorati" FormatString="{0:f2}" Width="100px">
+							<FooterTemplate>
+								<RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}", this.Totals.WorkedContractKm)" />
+							</FooterTemplate>
+						</RadzenDataGridColumn>
+						<RadzenDataGridColumn TItem="KmDataItem" Property="@nameof(KmDataItem.NegativeContractKm)" Title="Km Negativi" FormatString="{0:f2}" Width="100px">
+							<FooterTemplate>
+								<RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}", this.Totals.NegativeContractKm)" />
+							</FooterTemplate>
+						</RadzenDataGridColumn>
+					</Columns>
+				</RadzenDataGrid>
+			</RadzenColumn>
+		</RadzenRow>
+	</RadzenStack>
+}
+
+@code {
+	[CascadingParameter]
+	CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
+	[CascadingParameter]
+	CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+	[Parameter]
+	public bool RealElastibus 
+	{
+		get { return this.Request.RealElastibusKm; }
+		set 
+		{
+			this.Request.RealElastibusKm = value; 
+			this.LoadAllData();
+		}
+	}
+
+	private KmDataItemRequest Request = new KmDataItemRequest();
+
+	private bool IsLoading { get; set; } = false;
+	private IEnumerable<KmDataItem> Data = new List<KmDataItem>();
+	private IEnumerable<KmDataItem> TotData = new List<KmDataItem>();
+
+	private bool CanLoad = false;
+
+	private async Task GlobalFilterChanged()
+	{
+		this.RefreshData();
+		await Task.CompletedTask;
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		this.RefreshData();
+		await base.OnParametersSetAsync();
+	}
+
+	private void RefreshData()
+	{
+		this.Request.ContractId = this.GlobalFilters.Contract?.Id;
+		this.Request.StartDate = this.GlobalFilters.Period?.StartDate;
+		this.Request.EndDate = this.GlobalFilters.Period?.EndDate;
+
+		// carica i dati senza attenderli
+		this.LoadAllData();
+	}
+
+	protected override void OnAfterRender(bool firstRender)
+	{
+		if (firstRender == true)
+		{
+			this.CanLoad = true;
+			this.RefreshData();
+		}
+		base.OnAfterRender(firstRender);
+	}
+
+	private KmDataItem Totals
+	{
+		get
+		{
+			return this.TotData.FirstOrDefault() ?? new KmDataItem();
+		}
+	}
+
+	private void LoadAllData()
+	{
+		if (this.AccountService.IsUserInRole(UserRoles.Role_View) == false
+			|| this.CanLoad == false)
+		{
+			return;
+		}
+
+		IsLoading = true;
+
+		var t = this._dashboardService.GetKmAsync(
+			this.Request)
+			.ContinueWith(
+				(task) =>
+				{
+					this.Data = task.Result ?? new List<KmDataItem>();
+					var totals = this.SumAll(this.Data);
+					this.TotData = new List<KmDataItem>()
+					{
+						totals
+					};
+
+					IsLoading = false;
+					this.StateHasChanged();
+					return;
+				}
+			);
+		this.StateHasChanged();
+	}
+
+	private KmDataItem SumAll(IEnumerable<KmDataItem> data)
+	{
+		string yearText = "Tutto il periodo";
+		if (this.Request.StartDate != null
+			&& this.Request.EndDate != null)
+		{
+			var year = this.Request.StartDate?.Year;
+			yearText = string.Format("{0}", year);
+			if (year != this.Request.EndDate?.Year)
+			{
+				yearText = string.Format("{0} / {1}", year, this.Request.EndDate?.Year);
+			}
+		}
+
+		var total = new KmDataItem()
+		{
+			MonthId = yearText
+		};
+
+		foreach (var item in data)
+		{
+			total.RealKm += item.RealKm;
+			total.ContractKm += item.ContractKm;
+			total.ExtraKm += item.ExtraKm;
+			total.WorkedContractKm += item.WorkedContractKm;
+			total.NegativeContractKm += item.NegativeContractKm;
+		}
+
+		return total;
+	}
+
+	private string FormatKm(object? value)
+	{
+		if (value == null) return string.Empty;
+		return string.Format("{0:F2}", value);
+	}
+	private string FormatMonth (object? value)
+	{
+		if (value == null) return string.Empty;
+		string sMonth = (string)value;
+		if (string.IsNullOrWhiteSpace(sMonth) == true) return string.Empty;
+		string sDate = sMonth.Substring(0, 4) + "/" + sMonth.Substring(4) + "/01";
+		var dt = DateTime.Parse (sDate);
+		return string.Format( this.AppSettings.CurrentCulture, "{0:yyyy MMM}", dt);
+	}
+}

@@ -25,20 +25,27 @@ BEGIN
 		(
 			SELECT d.RunId,
 					COUNT(*) AS DayCount,
-					SUM(v.Km) AS KmTotal
+					SUM(v.Km) AS KmTotal,
+					SUM(CASE WHEN r.Extra = 1 THEN 0 ELSE fv.Km END) AS TotKmContract,
+					SUM(v.Km - CASE WHEN r.Extra = 1 THEN 0 ELSE fv.Km END) AS TotKmExtra
 				FROM dbo.RunDays d
 				INNER JOIN dbo.Runs r
 					ON d.RunId = r.RunId
 					AND r.Elastibus = 0
 				INNER JOIN dbo.RunVariations v
 					ON d.RunVariationId = v.RunVariationId
+				INNER JOIN dbo.RunVariations fv
+					ON fv.RunId = r.RunId
+					AND fv.StartDate IS NULL
 				WHERE d.Day BETWEEN @Start AND @End
 					AND d.CarNum = 1
 				GROUP BY d.RunId
 		) UNION (
 			SELECT d.RunId,	
 					COUNT(*) AS DayCount,
-					SUM(d.Km) AS KmTotal
+					SUM(d.Km) AS KmTotal,
+					SUM(d.Km) AS TotKmContract,
+					SUM(0) AS TotKmExtra
 				FROM Dbo.RunElastibusDays d
 				WHERE d.Day BETWEEN @Start AND @End
 				GROUP BY d.RunId
@@ -64,12 +71,19 @@ BEGIN
 			r.StartDate,
 			r.EndDate,
 			r.Km,
+			CASE WHEN r.Extra = 1 THEN 0 ELSE v.Km END  AS KmContract,
+			CASE WHEN r.Extra = 1 THEN r.Km ELSE r.Km - v.Km END  AS KmExtra,
 
 			d.DayCount,
-			d.KmTotal
+			d.KmTotal,
+			d.TotKmContract,
+			d.TotKmExtra
 		FROM dbo.vw_Runs r
 		INNER JOIN CTE_Days d
 			ON r.RunId = d.RunId
+		INNER JOIN dbo.RunVariations v
+			ON r.RunId = v.RunId
+			AND v.StartDate IS NULL
 		WHERE (@ContractId IS NULL OR r.ContractId = @ContractId)
 			AND (r.StartDate IS NULL OR r.StartDate <= @End)
 			AND (r.EndDate IS NULL OR r.EndDate >= @Start)

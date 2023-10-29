@@ -1,0 +1,143 @@
+﻿@inject IApplicationSettings AppSettings
+@inject IAccountService AccountService
+@inject IDahboardService _dashboardService
+
+<CtaLineaGlobalFiltersManager 
+	Changed="@GlobalFilterChanged" />
+
+@if(this.IsLoading == true)
+{
+	<RadzenProgressBarCircular ProgressBarStyle="ProgressBarStyle.Primary" Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+}
+@if (this.IsLoading == false)
+{
+	<RadzenChart>
+		<RadzenColumnSeries 				
+			Title="Anno Corr."
+			Data="@Data" 
+			CategoryProperty="@nameof(CarCountItem.CountType)"
+			ValueProperty="@nameof(CarCountItem.Count)" >
+			<RadzenSeriesDataLabels Visible="true" />
+		</RadzenColumnSeries>
+		<RadzenColumnSeries 
+			Title="Anno Prec."
+			Data="@Old_Data"
+			CategoryProperty="@nameof(CarCountItem.CountType)"
+			ValueProperty="@nameof(CarCountItem.Count)">
+			<RadzenSeriesDataLabels Visible="true" />
+		</RadzenColumnSeries>
+
+		<RadzenValueAxis>
+			<RadzenGridLines Visible="true" />
+			<RadzenAxisTitle Text="Nr Mezzi" />
+		</RadzenValueAxis>
+
+	</RadzenChart>
+}
+
+@code {
+	private class CarCountItem
+	{
+		public string CountType { get; set; } = string.Empty;
+		public int Count { get; set; }
+	}
+
+	[CascadingParameter]
+	CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
+
+	private CarCountRequest CarCostRequest = new CarCountRequest();
+
+	private bool IsLoading { get; set; } = false;
+	private bool CanLoad = false;
+
+	private IEnumerable<CarCountItem>? Data;
+	private IEnumerable<CarCountItem>? Old_Data;
+
+	private async Task GlobalFilterChanged()
+	{
+		this.RefreshData();
+		await Task.CompletedTask;
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		this.RefreshData();
+		await base.OnParametersSetAsync();
+	}
+
+	private void RefreshData ()
+	{
+		this.CarCostRequest.ContractId = this.GlobalFilters.Contract?.Id;
+		this.CarCostRequest.StartDate = this.GlobalFilters.Period?.StartDate;
+		this.CarCostRequest.EndDate = this.GlobalFilters.Period?.EndDate;
+
+		// carica i dati senza attenderli
+		this.LoadAllData();
+	}
+
+	protected override void OnAfterRender(bool firstRender)
+	{
+		if (firstRender == true)
+		{
+			this.CanLoad = true;
+			this.RefreshData();
+		}
+		base.OnAfterRender(firstRender);
+	}
+
+	private void LoadAllData()
+	{
+		if (this.AccountService.IsUserInRole(UserRoles.Role_View) == false
+			|| this.CanLoad == false)
+		{
+			return;
+		}
+
+		IsLoading = true;
+		this.Data = new List<CarCountItem>();
+		this.Old_Data = new List<CarCountItem>();
+
+		var t = this._dashboardService.GetCarCountAsync(
+			this.CarCostRequest)
+			.ContinueWith(
+				(task) =>
+				{
+					this.Data = this.GetSerie(task.Result);
+
+					IsLoading = false;
+					this.StateHasChanged();
+					return;
+				}
+			);
+		var request = new CarCountRequest()
+			{
+				ContractId = this.CarCostRequest.ContractId,
+				StartDate = this.CarCostRequest.StartDate?.AddYears(-1),
+				EndDate = this.CarCostRequest.EndDate?.AddYears(-1)
+			};
+		var t2 = this._dashboardService.GetCarCountAsync(
+			request)
+			.ContinueWith(
+			(task2) =>
+			{
+				this.Old_Data = this.GetSerie(task2.Result);
+				this.StateHasChanged();
+			});
+	}
+	private IEnumerable<CarCountItem> GetSerie (
+		CarCountResult? result)
+	{
+		if (result != null)
+		{
+			return new List<CarCountItem>()
+				{
+					new CarCountItem () {CountType = "Nr. Mezzi", Count = result.UsedCars },
+					new CarCountItem () {CountType = "Titolari", Count = result.NrPrimary },
+					new CarCountItem () {CountType = "Tit. e ris.", Count = result.NrPrimarySpare },
+					new CarCountItem () {CountType = "Riserve", Count = result.NrSpare }
+				};
+		}
+		return new List<CarCountItem>();
+	}
+
+}

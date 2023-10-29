@@ -204,6 +204,7 @@ namespace CtaLineaWebApi
                 .AddScoped<ICalendarRepository, CalendarRepository>()
                 .AddScoped<IForfaitQueries, ForfaitQueries> ()
                 .AddScoped<IUsersQueries, UsersQueries> ()
+                .AddScoped<IDashboardQueries, DashboardQueries>()
                 ;
 
             // repository 

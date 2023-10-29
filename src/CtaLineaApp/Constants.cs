@@ -47,7 +47,6 @@ namespace CtaLineaApp
         internal const string ImportDescr_TT = "TT Service";
 
 
-
         // endpoints
         internal const string Endpoint_Runs = "/api/runs";
         internal const string Endpoint_RunList = Endpoint_Runs;
@@ -90,9 +89,14 @@ namespace CtaLineaApp
         internal const string Endpoint_Reports = Endpoint_Utility + "/reports";
         internal const string Endpoint_Reports_NegativeKm = Endpoint_Reports + "/negativekm";
 
+        // Dashboards
+        internal const string Endpoint_Dashboard = "/api/dahboard";
+        internal const string Endpoint_Dashboard_CarCount = Endpoint_Dashboard + "/carcount";
+        internal const string Endpoint_Dashboard_Km = Endpoint_Dashboard + "/km";
+		internal const string Endpoint_Dashboard_Costs = Endpoint_Dashboard + "/costs";
 
-        // argomenti
-        internal const string EndPoint_CostsByAssociate_ContractId = "contractId";
+		// argomenti
+		internal const string EndPoint_CostsByAssociate_ContractId = "contractId";
         internal const string EndPoint_CostsByAssociate_StartDate= "startDate";
         internal const string EndPoint_CostsByAssociate_EndDAte = "endDate";
         internal const string EndPoint_CostsByAssociate_AssociateId = "associateId";

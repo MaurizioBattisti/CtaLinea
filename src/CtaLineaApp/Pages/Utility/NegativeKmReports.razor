@@ -56,6 +56,10 @@
                                        InlineLabels="true"
                                        @bind-StartDate=@this._Request.StartDate
                                        @bind-EndDate="@this._Request.EndDate" />
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="2">
+                        <RadzenCheckBox @bind-Value=@this._Request.ConsiderSuspended Name="ConsiderSuspended" />
+                        <RadzenLabel Component="ConsiderSuspended" Text="Considera Sospensioni" />
+                    </RadzenStack>
                     <RadzenButton ButtonStyle="ButtonStyle.Success"
                                   IsBusy=@IsLoading
                                   Icon="refresh"
@@ -73,12 +77,14 @@
                 <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.LineNumber)" Title="Nr Linea" Width="100px" />
                 <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.RunNumber)" Title="Nr Corsa" Width="100px" />
                 <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.PathDescription)" Title="Percorso" Width="200px" />
+                <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.EndDate)" Title="Fine" FormatString="{0:dd/MM/yyyy}" Width="120px" />
+                
 
                 <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.DayKm)" Title="Km al GG" FormatString="{0:F2}" Width="100px" />
                 <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.DayCount)" Title="GG Totali" Width="100px" />
                 <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.WorkedDayCount)" Title="GG effettuatu" Width="100px" />
                 <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.NotWorkedDayCount)" Title="GG Negativi" Width="100px" />
-                
+
                 <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.ContractKmTotal)" Title="Km Totali" FormatString="{0:F2}" Width="100px" >
                     <FooterTemplate>
                         <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",Totals.ContractKmTotal)" />
@@ -94,6 +100,13 @@
                         <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",Totals.ContractNegativeKm)" />
                     </FooterTemplate>
                 </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="NegativeKmItem" Property="@nameof(NegativeKmItem.KmExtra)" Title="Km Extra" FormatString="{0:F2}" Width="100px">
+                    <FooterTemplate>
+                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",Totals.KmExtra)" />
+                    </FooterTemplate>
+                </RadzenDataGridColumn>
+
+                
             </Columns>
         </RadzenDataGrid>
     </RadzenBody>
@@ -209,13 +222,15 @@
         {
             ContractKmTotal = 0,
             ContractNegativeKm = 0,
-            CetConttWorkedKm = 0
+            CetConttWorkedKm = 0,
+            KmExtra = 0
         };
         foreach (var c in this.Data)
         {
             tot.ContractKmTotal += c.ContractKmTotal;
             tot.ContractNegativeKm += c.ContractNegativeKm;
             tot.CetConttWorkedKm += c.CetConttWorkedKm;
+            tot.KmExtra += c.KmExtra;
         }
         this.Totals = tot;
     }

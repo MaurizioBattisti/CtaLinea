@@ -32,15 +32,24 @@ namespace ZzSoft.CtaLinea.Dal.Model
 		[ColumnDescription(Header = "Frequenza Richiesta")]
 		public string RequestedFrequency { get; set; }
 
-		[ColumnDescription(Header = "Km corsa/servizio")]
-		public double? Km { get; set; }
-		[ColumnDescription(Header = "Posti autobus")]
+        [ColumnDescription(Header = "Km corsa/servizio")]
+        public double? Km { get; set; }
+        [ColumnDescription(Header = "Km da Contratto")]
+        public double? KmContract { get; set; }
+        [ColumnDescription(Header = "Km Extra")]
+        public double? KmExtra { get; set; }
+
+        [ColumnDescription(Header = "Posti autobus")]
 		public int? RequestedCapacity { get; set; }
 
-		[ColumnDescription(Header = "Tod Km")]
-		public double? KmTotal { get; set; }
+        [ColumnDescription(Header = "Tod Km")]
+        public double? KmTotal { get; set; }
+        [ColumnDescription(Header = "Tod Km Contratto")]
+        public double? TotKmContract { get; set; }
+        [ColumnDescription(Header = "Tod Km Extra")]
+        public double? TotKmExtra { get; set; }
 
-		[ColumnDescription(Header = "Data inizio")]
+        [ColumnDescription(Header = "Data inizio")]
 		public DateTime? StartDate { get; set; }
 		[ColumnDescription(Header = "Data Fine")]
 		public DateTime? EndDate { get; set; }

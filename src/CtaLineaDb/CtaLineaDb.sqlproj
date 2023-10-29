@@ -91,6 +91,7 @@
     <Folder Include="StoredProc\Simulation" />
     <Folder Include="Tables\Simulation" />
     <Folder Include="StoredProc\Reports" />
+    <Folder Include="StoredProc\Dashboard" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post_Deploy.sql" />
@@ -222,5 +223,8 @@
     <Build Include="StoredProc\Simulation\up_Simulation_Finalize.sql" />
     <Build Include="StoredProc\Simulation\up_SimulationSetDayCosts.sql" />
     <Build Include="StoredProc\Reports\up_Report_NegativeKms.sql" />
+    <Build Include="StoredProc\Dashboard\up_Dashboard_GetCarCounts.sql" />
+    <Build Include="StoredProc\Dashboard\uo_Dashboard_GetPrevKm.sql" />
+    <Build Include="StoredProc\Dashboard\uo_Dashboard_GetCosts.sql" />
   </ItemGroup>
 </Project>

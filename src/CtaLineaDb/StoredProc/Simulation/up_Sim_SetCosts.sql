@@ -90,8 +90,20 @@ bEGIN
 
 	-- applica le variaizoni alla platea
 	UPDATE @Tbl_ActOn
-		SET KmPrice = CASE WHEN KmPrice < @BasePriceLimit THEN COALESCE(@BasePriceNewVAl, KmPrice + @BasePriceAddVal, KmPrice *@BasePriceFacto, KmPrice) ELSE KmPrice END,
-			KmPriceExtra = CASE WHEN KmPriceExtra < @ExtraPriceLimit THEN COALESCE(@ExtraPriceNewVal, KmPriceExtra + @ExtraPriceAddVal, KmPriceExtra *@ExtraPriceFacto, KmPriceExtra) ELSE KmPriceExtra END
+		SET KmPrice = CASE 
+						WHEN @BasePriceLimit IS NULL
+							THEN KmPrice 
+						WHEN KmPrice < @BasePriceLimit 
+							THEN COALESCE(@BasePriceNewVAl, KmPrice + @BasePriceAddVal, KmPrice *@BasePriceFacto, KmPrice) 
+						ELSE KmPrice 
+					END,
+			KmPriceExtra = CASE 
+						WHEN @ExtraPriceLimit IS NULL	
+							THEN KmPriceExtra
+						WHEN KmPriceExtra < @ExtraPriceLimit 
+							THEN COALESCE(@ExtraPriceNewVal, KmPriceExtra + @ExtraPriceAddVal, KmPriceExtra *@ExtraPriceFacto, KmPriceExtra) 
+						ELSE KmPriceExtra 
+					END
 		;
 
 	-- assegna un valore di default aqueli che non ce l'hanno

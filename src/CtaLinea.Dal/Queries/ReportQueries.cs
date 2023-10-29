@@ -46,7 +46,7 @@ namespace ZzSoft.CtaLinea.Dal.Queries
                     ContractId = request.Contract,
                     StartDate = request.StartDate,
                     EndDate = request.EndDate,
-
+                    ConsiderSuspended = request.ConsiderSuspended
                 },
                 commandType: CommandType.StoredProcedure,
                 commandTimeout: 600);

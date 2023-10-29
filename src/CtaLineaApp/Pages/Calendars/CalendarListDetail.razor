@@ -1,0 +1,156 @@
+﻿@using CtaLinea.Model.QueryModel;
+@using CtaLineaApp.Pages.Utility;
+@inject IQueryUtilityService QueryService
+@inject ICalendarService CalendarService
+@inject IApplicationSettings AppSettings;
+
+<CtaLineaGlobalFiltersManager 
+    Changed="@GlobalFilterChanged" />
+
+<RadzenRow>
+    <RadzenColumn Size="1">
+        <h4>Date</h4>
+        <RadzenDataGrid IsLoading=@isLoading
+                        Data="@this.CalendarDays"
+                        TItem="SingleCalendarDay"
+                        AllowSorting="true"
+                        Culture=@AppSettings.CurrentCulture
+                        AllowColumnResize="true"
+                        Density=@Settings.Density
+                        Style="height: 680px">
+            <Columns>
+                <RadzenDataGridColumn TItem="SingleCalendarDay" Property="@nameof(SingleCalendarDay.Day)" Title="Data" FormatString="{0:dd/MM/yyyy}" Width="120px" >
+                    <FooterTemplate>
+                        <RadzenText Text=@GetDayCount() />
+                    </FooterTemplate>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+    </RadzenColumn>
+    <RadzenColumn Size="7">
+        <RadzenRow>
+            <RadzenColumn Size="6">
+                <h4>Periodi</h4>
+                <RadzenDataGrid IsLoading=@DetailIsLoading
+                                Data="@this.Periods"
+                                TItem="CalendarPeriod"
+                                AllowSorting="true"
+                                AllowColumnResize="true"
+                                Density=@Settings.Density
+                                Style="height: 400px">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="CalendarPeriod" Property="StartDate" Title="Inizio var." FormatString="{0:dd/MM/yyyy}" Width="120px" />
+                        <RadzenDataGridColumn TItem="CalendarPeriod" Property="EndDate" Title="Fine var." FormatString="{0:dd/MM/yyyy}" Width="120px" />
+                        <RadzenDataGridColumn TItem="CalendarPeriod" Property="Note" Title="Note" Width="200px" />
+                    </Columns>
+                </RadzenDataGrid>
+            </RadzenColumn>
+            <RadzenColumn Size="6">
+                <h4>Gironi</h4>
+                <RadzenDataGrid IsLoading=@DetailIsLoading
+                                Data="@this.Holidays"
+                                TItem="CalendarHoliday"
+                                AllowSorting="true"
+                                AllowColumnResize="true"
+                                Density=@Settings.Density
+                                Style="height: 400px">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="CalendarHoliday" Property="Holiday" Title="Data." FormatString="{0:dd/MM/yyyy}" Width="120px" />
+                        <RadzenDataGridColumn TItem="CalendarHoliday" Property="HolidayDescription" Title="Descrizione" Width="200px" />
+                    </Columns>
+                </RadzenDataGrid>
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow>
+            <RadzenColumn Size="10">
+                <CalendarDaysView CalendarId=@CalendarId />
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenColumn>
+</RadzenRow>
+
+@code {
+    [CascadingParameter]
+    CtaLineaGlobalFilters GlobalFilters { get; set; } = new CtaLineaGlobalFilters();
+
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+    [Parameter]
+    public int CalendarId { get; set; } 
+
+    private bool DetailIsLoading = false;
+    private bool isLoading = false;
+    IEnumerable<CalendarPeriod>? Periods;
+    IEnumerable<CalendarHoliday>? Holidays;
+    IEnumerable<SingleCalendarDay> CalendarDays = new List<SingleCalendarDay>();
+
+    private DateTime _StartDAte;
+    private DateTime _EndDate;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await this.LoadDataAsync();
+        await  base.OnParametersSetAsync();
+    }
+
+    private string GetDayCount ()
+    {
+        return string.Format(AppSettings.CurrentCulture, "{0} gg.", this.CalendarDays.Count());
+    }
+
+    private async Task GlobalFilterChanged()
+    {
+        await LoadDaysAsync();
+    }
+
+    private async Task LoadDataAsync ()
+    {
+        await Task.CompletedTask;
+        this.Periods = null;
+        this.Holidays = null;
+        if (this.CalendarId != 0)
+        {
+            var t = InvokeAsync(
+                async () =>
+                {
+                    try
+                    {
+                        var periods = await this.CalendarService.GetPeriodListASync(this.CalendarId);
+                        var holidays = await this.CalendarService.GetHolidayListAsync(this.CalendarId);
+
+                        this.Periods = periods;
+                        this.Holidays = holidays;
+                    }
+                    finally
+                    {
+                        DetailIsLoading = false;
+                        this.StateHasChanged();
+                    }
+                });
+            await this.LoadDaysAsync();
+        }
+    }
+
+    public async Task LoadDaysAsync ()
+    {
+        var dt = DateTime.Today;
+        _StartDAte = this.GlobalFilters.Period?.StartDate ?? new DateTime(dt.Year, dt.Month, 1);
+        _EndDate = this.GlobalFilters.Period?.EndDate ?? new DateTime(dt.Year, dt.Month, 1).AddMonths(1);
+        try
+        {
+            this.isLoading = true;
+            var days = await this.CalendarService.GetDaysAsync(
+                this.CalendarId,
+                _StartDAte, _EndDate
+                );
+
+            CalendarDays = days ?? new List<SingleCalendarDay>();
+        }
+        finally
+        {
+            this.isLoading = false;
+            this.StateHasChanged();
+        }
+    }
+
+}

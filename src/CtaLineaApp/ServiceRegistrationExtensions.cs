@@ -12,6 +12,7 @@ using CtaLinea.Model.ModelServices;
 using CtaLineaApp.Application.Services.Costs;
 using CtaLineaApp.Application.Services.Utilities;
 using CtaLineaApp.Application.Services.Contab;
+using CtaLineaApp.Application.Services.Dashboards;
 using CtaLinea.Model.Base;
 using System.Security.Claims;
 
@@ -58,6 +59,7 @@ namespace CtaLineaApp
                 .AddScoped<ILocalStorageService, LocalStorageService>()
                 .AddScoped<IQueryUtilityService, QueryUtilityService>()
                 .AddScoped<ICostService, CostServic>()
+                .AddScoped <IDahboardService, DahboardService>()
                 .AddScoped<IUtilityService, UtilityService>()
                 .AddScoped<ITagsService, TagsService>()
                 .AddScoped<IUserService, UserService>()
