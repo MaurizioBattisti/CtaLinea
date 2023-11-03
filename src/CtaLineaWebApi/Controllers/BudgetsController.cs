@@ -21,11 +21,11 @@ namespace CtaLineaWebApi.Controllers
         : ZControllerBase
     {
         private readonly ISender _mediator;
-        private readonly ICostQueries _queries;
+        private readonly IBudgetQueries _queries;
 
         public BudgetsController(
             ISender mediator,
-            ICostQueries queries)
+            IBudgetQueries queries)
         {
             this._mediator = mediator;
             this._queries = queries;
@@ -36,14 +36,17 @@ namespace CtaLineaWebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CostsByAssociate>>> GetBudgetListAsync()
+        public async Task<ActionResult<IEnumerable<BudgetQueryItem>>> GetBudgetListAsync()
         {
-            await Task.CompletedTask;
+			var result = await this._queries.GetBudgetListAsync(
+				this.FilteringContext)
+				.ConfigureAwait(false);
 
-            return this.Ok(null);
-        }
+			return await this.ModelOKAsync(result)
+				.ConfigureAwait(false);
+		}
 
-        [Authorize(Policy = Constants.Policy_Costs)]
+		[Authorize(Policy = Constants.Policy_Costs)]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -52,12 +55,16 @@ namespace CtaLineaWebApi.Controllers
         public async Task<ActionResult<CostsByAssociate>> GetOneBudgetItemAsync(
             [FromRoute] int id)
         {
-            await Task.CompletedTask;
+			var result = await this._queries.GetOneBudgetAsync(
+				this.FilteringContext,
+				id)
+				.ConfigureAwait(false);
 
-            return this.Ok(null);
-        }
+			return await this.ModelOKAsync(result)
+				.ConfigureAwait(false);
+		}
 
-        [Authorize(Policy = Constants.Policy_Costs)]
+		[Authorize(Policy = Constants.Policy_Costs)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpDelete]
@@ -65,9 +72,14 @@ namespace CtaLineaWebApi.Controllers
         public async Task<ActionResult> DeleteBudgetAsync(
             [FromRoute] int id)
         {
-            await Task.CompletedTask;
+            var request = new DeleteBudgetRequest()
+            {
+                Id = id
+            };
+			await this._mediator.Send(request)
+				.ConfigureAwait(false);
 
-            return this.NoContent();
+			return this.NoContent();
         }
         [Authorize(Policy = Constants.Policy_Costs)]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -117,6 +129,5 @@ namespace CtaLineaWebApi.Controllers
 
             return this.NoContent();
         }
-
     }
 }

@@ -1,0 +1,386 @@
+﻿@page "/budget-compare/{FirstId:int}/{SecondId:int}"
+
+@inject IApplicationSettings AppSettings
+@inject IQueryUtilityService _queryService
+@inject ICostService _costService
+@inject NotificationService notificationService
+
+<CheckAuthorization Roles=@(new string[] { UserRoles.Role_Costs }) />
+<PageTitle>@Constants.App_Title - Confronta Budget</PageTitle>
+
+<LayoutSetter>
+	<PageTitle>
+		<RadzenLabel Text="Confronta Budget" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+	</PageTitle>
+	<TopLine>
+	</TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+@if (this.IsBusy == true)
+{
+	<RadzenProgressBarCircular ProgressBarStyle="ProgressBarStyle.Primary" Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+}
+else
+{
+<RadzenRow>
+	<RadzenText TextStyle="TextStyle.H3" Text=@("Confronta " + (this.FirstBudget?.BudgetName ?? string.Empty)) />
+	<BudgetInfo Budget=@FirstBudget />
+</RadzenRow>
+<RadzenRow>
+	<RadzenText TextStyle="TextStyle.H3" Text=@("con " + (this.SecondBudget?.BudgetName ?? string.Empty )) />
+	<BudgetInfo Budget=@SecondBudget />
+</RadzenRow>
+
+<RadzenRow>
+	<RadzenColumn Size="2">
+			<RadzenLabel Text="Appalto" Component="Sel_ContractId" />
+	</RadzenColumn>
+	<RadzenColumn Size="10">
+			<ContractDropDown @bind-ContractId=@Sel_ContractId
+				AllowClear=true
+				Changed=@(() => RefreshData() )
+				Name="Sel_ContractId" />
+	</RadzenColumn>
+</RadzenRow>
+<RadzenRow>
+	<RadzenColumn Size="12">
+		<AssociateAndCarDropDown @bind-AssociateId=@Sel_AssociateId
+								@bind-CarId="Sel_CarId"
+								AllowClear=true
+								Inline=true
+								Changed=@(() => RefreshData() ) />
+	</RadzenColumn>
+</RadzenRow>
+
+<RadzenStack Orientation="Orientation.Vertical" Gap="4">
+	<h3>Km</h3>
+	<RadzenChart class="w-100" style="height: 400px">
+		<RadzenColumnSeries Title=@FirstBudget.BudgetName
+							Data="@Data"
+							CategoryProperty="@nameof(CompareData.MonthId)"
+							ValueProperty="@nameof(CompareData.First_Km)">
+		</RadzenColumnSeries>
+			<RadzenColumnSeries Title=@SecondBudget.BudgetName
+								Data="@Data"
+								CategoryProperty="@nameof(CompareData.MonthId)"
+								ValueProperty="@nameof(CompareData.Second_Km)">
+			</RadzenColumnSeries>
+
+		<RadzenValueAxis Formatter="@FormatKm">
+			<RadzenGridLines Visible="true" />
+			<RadzenAxisTitle Text="Km" />
+		</RadzenValueAxis>
+		<RadzenCategoryAxis Formatter="@FormatMonth">
+			<RadzenGridLines Visible="true" />
+			<RadzenAxisTitle Text="Mese" />
+		</RadzenCategoryAxis>
+	</RadzenChart>
+	<h3>Costi</h3>
+	<RadzenChart class="w-100" style="height: 400px">
+		<RadzenColumnSeries Title=@FirstBudget.BudgetName
+							Data="@Data"
+							CategoryProperty="@nameof(CompareData.MonthId)"
+							ValueProperty="@nameof(CompareData.First_Cost)">
+		</RadzenColumnSeries>
+		<RadzenColumnSeries Title=@SecondBudget.BudgetName
+							Data="@Data"
+							CategoryProperty="@nameof(CompareData.MonthId)"
+							ValueProperty="@nameof(CompareData.Second_Cost)">
+		</RadzenColumnSeries>
+
+		<RadzenValueAxis Formatter="@FormatCost">
+			<RadzenGridLines Visible="true" />
+			<RadzenAxisTitle Text="Costi" />
+		</RadzenValueAxis>
+		<RadzenCategoryAxis Formatter="@FormatMonth">
+			<RadzenGridLines Visible="true" />
+			<RadzenAxisTitle Text="Mese" />
+		</RadzenCategoryAxis>
+	</RadzenChart>
+
+	<!-- dati grezzi -->
+	<RadzenDataGrid Data="@Data"
+					TItem="CompareData"
+					Culture=@AppSettings.CurrentCulture
+					AllowSorting="true"
+					AllowColumnResize="true"
+					Density=@Settings.Density
+					class="w-100">
+		<Columns>
+			<RadzenDataGridColumn TItem="CompareData" Property="@nameof(CompareData.MonthId)" Title="Mese" Width="120px">
+				<Template Context="data">
+					<RadzenText Text="@FormatMonth(data.MonthId)" />
+				</Template>
+			</RadzenDataGridColumn>
+
+			<RadzenDataGridColumn TItem="CompareData" Property="@nameof(CompareData.First_Km)" Title="Km 1" FormatString="{0:f2}" Width="100px">
+				<FooterTemplate>
+						<RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}", this.DataTotals.First_Km)" />
+				</FooterTemplate>
+			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="CompareData" Property="@nameof(CompareData.Second_Km)" Title="Km 2" FormatString="{0:f2}" Width="100px">
+				<FooterTemplate>
+					<RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}", this.DataTotals.Second_Km)" />
+				</FooterTemplate>
+			</RadzenDataGridColumn>
+
+			<RadzenDataGridColumn TItem="CompareData" Property="@nameof(CompareData.First_Cost)" Title="Costo 1" FormatString="{0:c2}" Width="100px">
+				<FooterTemplate>
+					<RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:c2}", this.DataTotals.First_Cost)" />
+				</FooterTemplate>
+			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="CompareData" Property="@nameof(CompareData.Second_Cost)" Title="Costo 2" FormatString="{0:c2}" Width="100px">
+				<FooterTemplate>
+					<RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:c2}", this.DataTotals.Second_Cost)" />
+				</FooterTemplate>
+			</RadzenDataGridColumn>
+		</Columns>
+	</RadzenDataGrid>
+</RadzenStack>
+}
+
+@code {
+	[CascadingParameter]
+	CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+	private class CompareData
+	{
+		// utilizzato epr raggruppare su tutto
+		public int Tot {get;set;} = 1;
+
+		public string MonthId { get; set; } = string.Empty;
+		public decimal First_Cost { get; set; }
+		public double First_Km { get; set; }
+
+		public decimal Second_Cost { get; set; }
+		public double Second_Km { get; set; }
+	}
+
+	[Parameter]
+	public int FirstId { get; set; }
+	[Parameter]
+	public int SecondId { get; set; }
+
+	private bool IsBusy = false;
+	private BudgetQueryItem FirstBudget = new BudgetQueryItem();
+	private BudgetQueryItem SecondBudget = new BudgetQueryItem();
+
+	private IEnumerable<CostByAssociateItem>? FirstData = null;
+	private CostByAssociateItem FirstTotals { get; set; } = new CostByAssociateItem();
+
+	private IEnumerable<CostByAssociateItem>? SecondData = null;
+	private CostByAssociateItem SecondTotals { get; set; } = new CostByAssociateItem();
+
+	private IEnumerable<CompareData> Data = new List<CompareData>();
+	private CompareData DataTotals = new CompareData();
+
+	// selezioni
+	private int? Sel_ContractId  { get; set; }
+	private Guid? Sel_AssociateId { get; set; }
+	private Guid? Sel_CarId { get; set; }
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender == true)
+		{
+			await this.LoadDataASync(
+				this.FirstId,
+				this.SecondId);
+		}
+		base.OnAfterRender(firstRender);
+	}
+
+	private async Task LoadDataASync(
+		int baseBudgetId,
+		int compareBudgetId)
+	{
+		IsBusy = true;
+		StateHasChanged();
+		try
+		{
+			var result = await this.GetBudgetAsync(
+				baseBudgetId,
+				(r) => this.FirstBudget = r,
+				(d) => this.FirstData = d,
+				(t) => this.FirstTotals = t
+				);
+
+			// carica ils econdo budget
+			result = await this.GetBudgetAsync(
+				compareBudgetId,
+				(r) => this.SecondBudget = r,
+				(d) => this.SecondData = d,
+				(t) => this.SecondTotals = t
+				);
+
+			// calcola i dati del grafico
+			this.RefreshData(null);
+		}
+		catch (BadRequestException<CheckResult> ex)
+		{
+			this.notificationService.Notify(
+				NotificationSeverity.Error,
+				ex.Payload?.Title ?? "problemi",
+				ex.Payload?.Description ?? string.Empty
+			);
+		}
+		catch (Exception ex)
+		{
+			notificationService.Notify(
+				NotificationSeverity.Error,
+				"Errore caricando i dati del budget",
+				ex.Message
+				);
+		}
+		finally
+		{
+			IsBusy = false;
+			StateHasChanged();
+		}
+	}
+
+	private async Task<BudgetQueryItem?> GetBudgetAsync (
+		int id,
+		Action<BudgetQueryItem?> setBudget,
+		Action<IEnumerable<CostByAssociateItem>> setDetailData,
+		Action<CostByAssociateItem> setTotals
+		)
+	{
+		var queryDef = new QueryDefinition();
+
+		queryDef.EndPoint = string.Format(
+			Constants.Endpoint_Budget_One_Fmt,
+			id
+			);
+
+		var result = await this._queryService.GetOneAsync<BudgetQueryItem>(
+					queryDef);
+
+		await this.SetBudgetDetaulsAsync(
+			result,
+			id, 
+			setBudget,
+			setDetailData,
+			setTotals
+			);
+
+		return result;
+	}	
+
+	private async Task SetBudgetDetaulsAsync (
+		BudgetQueryItem? result,
+		int id,
+		Action<BudgetQueryItem?> setBudget,
+		Action<IEnumerable<CostByAssociateItem>> setDetailData,
+		Action<CostByAssociateItem> setTotals
+		)
+	{
+		if (result != null)
+		{
+			setBudget(result);
+
+			// carica i dettagli
+			var data = (await this._costService.GetCostsByAssociateASync(
+					id, null)
+				) ?? new List<CostByAssociateItem>();
+
+			setDetailData(data);
+			setTotals(this._costService.ComputeTotalsByCar(data));
+		}
+	}
+	private void RefreshData (
+		Func<CostByAssociateItem, bool>?  condition = null
+		)
+	{
+		if (condition == null) condition = (x => true);
+		var data_f = (from d in this.FirstData
+							where condition(d)
+							group d by d.Month into m
+							select new
+							{
+								MonthId = m.Key,
+								Cost = m.Sum(x => x.DayCost),
+								Km = m.Sum(x => x.Km)
+							});
+		var data_s = (from d in this.FirstData
+							where condition(d)
+							group d by d.Month into m
+							select new
+							{
+								MonthId = m.Key,
+								Cost = m.Sum(x => x.DayCost),
+								Km = m.Sum(x => x.Km)
+							});
+
+		var data = (from sd in data_s
+					join fd in data_f on sd.MonthId equals fd.MonthId into g
+					select new CompareData
+						{
+							MonthId = sd.MonthId,
+							First_Cost = sd.Cost,
+							First_Km = sd.Km,
+
+							Second_Cost = g.FirstOrDefault()?.Cost ?? 0,
+							Second_Km = g?.FirstOrDefault()?.Km ?? 0
+						}
+				);
+
+		this.Data = data.ToList();
+
+		// calcola i ttlai
+		this.DataTotals = (from d in this.Data
+									group d by d.Tot into t
+									select new CompareData
+						{
+							First_Cost = t.Sum(x => x.First_Cost),
+							First_Km = t.Sum(x => x.First_Km),
+							Second_Cost = t.Sum(x => x.Second_Cost),
+							Second_Km = t.Sum(x => x.Second_Km)
+						}
+					).FirstOrDefault() ?? new CompareData();
+	}
+
+	private string FormatKm(object? value)
+	{
+		if (value == null) return string.Empty;
+		return string.Format("{0:F2}", value);
+	}
+	private string FormatCost(object? value)
+	{
+		if (value == null) return string.Empty;
+		return string.Format("{0:C2}", value);
+	}
+	private string FormatMonth(object? value)
+	{
+		if (value == null) return string.Empty;
+		string sMonth = (string)value;
+		if (string.IsNullOrWhiteSpace(sMonth) == true) return string.Empty;
+		string sDate = sMonth.Substring(0, 4) + "/" + sMonth.Substring(4) + "/01";
+		var dt = DateTime.Parse(sDate);
+		return string.Format(this.AppSettings.CurrentCulture, "{0:yyyy MMM}", dt);
+	}
+
+	private void RefreshData ()
+	{
+		Func<CostByAssociateItem, bool>? condition = null;
+
+		if (this.Sel_ContractId != null
+			|| this.Sel_AssociateId != null
+			|| this.Sel_CarId != null)
+		{
+			condition = (c) =>
+			{
+				return (
+					(this.Sel_ContractId == null || c.ContractId == this.Sel_ContractId)
+					&& (this.Sel_AssociateId == null || c.AssociateId == this.Sel_AssociateId)
+					&& (this.Sel_CarId == null || c.CarId == this.Sel_CarId)
+				);
+			};
+		}
+
+		this.RefreshData(
+			condition
+			);
+	}
+}

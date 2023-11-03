@@ -1,0 +1,83 @@
+﻿<RadzenCard class="w-100">
+	<RadzenRow>
+		<RadzenColumn Size="2">
+			<RadzenLabel Text="Nome Budget"/>
+		</RadzenColumn>
+		<RadzenColumn Size="6">
+			<RadzenText Text=@Budget.BudgetName />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<BudgetTYpeDescr BudgetTYpe=@Budget.BudgetType />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenText Text="@(string.Format("{0:dd/MM/yyyy}", this.Budget.BudgetDate))" />
+		</RadzenColumn>
+	</RadzenRow>
+	<RadzenRow>
+		<RadzenColumn Size="2">
+			<RadzenLabel Text="Appalto" />
+		</RadzenColumn>
+		<RadzenColumn Size="10">
+			<RadzenText Text=@Budget.ContractDescr />
+		</RadzenColumn>
+	</RadzenRow>
+	<RadzenRow>
+		<RadzenColumn Size="2">
+			<RadzenLabel Text="Inizio" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenText Text="@(this.Budget.StartDate == null ? string.Empty : string.Format("{0:dd/MM/yyyy}", this.Budget.StartDate))" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenLabel Text="Fine" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenText Text="@(this.Budget.EndDate == null ? string.Empty : string.Format("{0:dd/MM/yyyy}", this.Budget.EndDate))" />
+		</RadzenColumn>
+	</RadzenRow>
+	<RadzenRow>
+		<RadzenColumn Size="2">
+			<RadzenLabel Text="Ditta" />
+		</RadzenColumn>
+		<RadzenColumn Size="7">
+			<RadzenText Text=@Budget.AssociateDescr />
+		</RadzenColumn>
+		<RadzenColumn Size="1">
+			<RadzenLabel Text="Mezzo" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenText Text=@Budget.CarDescr />
+		</RadzenColumn>
+	</RadzenRow>
+	<RadzenRow>
+		<RadzenColumn Size="2">
+			<RadzenLabel Text="Corsa" />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenText Text=@Budget.CtaRunId />
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenStack Orientation="Orientation.Horizontal" Gap="2" >
+				<RadzenCheckBox Disabled=true Value=@Budget.OutOfPEriod />
+				<RadzenLabel Text="Fuori Periodo" />
+			</RadzenStack>
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenStack Orientation="Orientation.Horizontal" Gap="2" >
+				<RadzenCheckBox Disabled=true Value=@Budget.Suspended />
+				<RadzenLabel Text="Sospensioni" />
+			</RadzenStack>
+		</RadzenColumn>
+		<RadzenColumn Size="2">
+			<RadzenStack Orientation="Orientation.Horizontal" Gap="2" >
+				<RadzenCheckBox Disabled=true Value=@Budget.RplacedCars />
+				<RadzenLabel Text="Mezzi effettivi" />
+			</RadzenStack>
+		</RadzenColumn>
+	</RadzenRow>
+</RadzenCard>
+
+@code {
+	[Parameter]
+	public BudgetQueryItem Budget { get; set; } = new BudgetQueryItem();
+}

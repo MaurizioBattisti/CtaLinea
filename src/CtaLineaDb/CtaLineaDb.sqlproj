@@ -226,5 +226,6 @@
     <Build Include="StoredProc\Dashboard\up_Dashboard_GetCarCounts.sql" />
     <Build Include="StoredProc\Dashboard\uo_Dashboard_GetPrevKm.sql" />
     <Build Include="StoredProc\Dashboard\uo_Dashboard_GetCosts.sql" />
+    <Build Include="Views\Contab\vw_Budget.sql" />
   </ItemGroup>
 </Project>

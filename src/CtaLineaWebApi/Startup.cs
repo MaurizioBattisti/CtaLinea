@@ -176,8 +176,13 @@ namespace CtaLineaWebApi
             configuration.GetSection(Constants.ConfigSection_CtaLineaDb)
                 .Bind(ctaLinaDbConf);
             services.AddSingleton<CtaLineaDbContextConfiguration>(ctaLinaDbConf);
-            
-            var importerOptions = new ImporterConfiguration();
+
+			var schedulerOptions = new TaskSchedulerOptions();
+			configuration.GetSection(Constants.ConfigSection_TaskScheduler)
+				.Bind(schedulerOptions);
+			services.AddSingleton<TaskSchedulerOptions>(schedulerOptions);
+
+			var importerOptions = new ImporterConfiguration();
             configuration.GetSection(Constants.Configuration_Importer)
                 .Bind(importerOptions);
             services.AddSingleton<ImporterConfiguration>(importerOptions);
@@ -205,6 +210,7 @@ namespace CtaLineaWebApi
                 .AddScoped<IForfaitQueries, ForfaitQueries> ()
                 .AddScoped<IUsersQueries, UsersQueries> ()
                 .AddScoped<IDashboardQueries, DashboardQueries>()
+                .AddScoped<IBudgetQueries, BudgetQueries>()
                 ;
 
             // repository 

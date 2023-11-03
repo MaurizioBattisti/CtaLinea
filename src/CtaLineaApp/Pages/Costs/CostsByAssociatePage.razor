@@ -108,200 +108,17 @@
 @if(CostTYpe == CostTYpeEnum.ByCar)
 {
     <RadzenRow>
-        <RadzenDataGrid FilterMode="FilterMode.Simple"
-                        IsLoading=@isLoading
-                        CellRender="@Month_CellRender"
-                        Culture=@AppSettings.CurrentCulture
-                        Data="@this.ByCarData" TItem="CostByAssociateItem"
-                        AllowFiltering="true"
-                        AllowSorting="true"
-                        AllowColumnResize="true"
-                        AllowVirtualization=true
-                        LogicalFilterOperator="LogicalFilterOperator.And"
-                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                        Density=@Settings.Density
-                        Style=@GrdiStyle>
-            <HeaderTemplate>
-                <RadzenStack Orientation="Orientation.Horizontal">
-                    <RadzenSplitButton ButtonStyle="ButtonStyle.Dark"
-                                        Icon="file_download" Click=@DownloadDataByCar_Click>
-                        <ChildContent>
-                            <RadzenSplitButtonItem Text="Excel" Value="X" Icon="grid_on" />
-                            <RadzenSplitButtonItem Text="CSV" Value="C" Icon="wrap_text" />
-                        </ChildContent>
-                    </RadzenSplitButton>
-                </RadzenStack>
-            </HeaderTemplate>
-            <EmptyTemplate>
-                <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun dato da visaulizzare !</p>
-            </EmptyTemplate>
-            <Columns>
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.ContractName)" Title="Appalto" Width="200px" />
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.AssociateName)" Title="Ditta" Width="200px" />
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.CarDescription)" Title="Mezzo" Width="70px" />
-
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.Month)" Title="Mese" Width="100px" />
-
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.KmTot)" Title="Km Totali" FormatString="{0:f2}" Width="100px">
-                    <FooterTemplate>
-                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",ByCarTotals.KmTot)" />
-                    </FooterTemplate>
-                </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.Total)" Title="Costo Totale" FormatString="{0:C}" Width="150px">
-                    <FooterTemplate>
-                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByCarTotals.Total)" />
-                    </FooterTemplate>
-                </RadzenDataGridColumn>
-
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.Km)" Title="Tod. Km" FormatString="{0:f2}" Width="100px">
-                    <FooterTemplate>
-                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",ByCarTotals.Km)" />
-                    </FooterTemplate>
-                </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.KmExtra)" Title="Tod. Km Extra" FormatString="{0:f2}" Width="100px">
-                    <FooterTemplate>
-                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",ByCarTotals.KmExtra)" />
-                    </FooterTemplate>
-                </RadzenDataGridColumn>
-
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayCost)" Title="Tod. Costo da GG" FormatString="{0:C}" Width="150px">
-                    <FooterTemplate>
-                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByCarTotals.DayCost)" />
-                    </FooterTemplate>
-                </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.CostKm)" Title="Tod. Costo Km GG" FormatString="{0:C}" Width="150px">
-                    <FooterTemplate>
-                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByCarTotals.CostKm)" />
-                    </FooterTemplate>
-                </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.CostKmExtra)" Title="Tit. Costo Km GG Extra" FormatString="{0:C}" Width="150px">
-                    <FooterTemplate>
-                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByCarTotals.CostKmExtra)" />
-                    </FooterTemplate>
-                </RadzenDataGridColumn>
-
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayIntegration)" Title="Tot. int. GG" FormatString="{0:C}" Width="150px">
-                    <FooterTemplate>
-                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByCarTotals.DayIntegration)" />
-                    </FooterTemplate>
-                </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayForfait)" Title="Tot. Forfait GG" FormatString="{0:C}" Width="150px">
-                    <FooterTemplate>
-                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByCarTotals.DayForfait)" />
-                    </FooterTemplate>
-                </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayMultiRunForfait)" Title="Tot. Forfait Multiplo GG" FormatString="{0:C}" Width="150px">
-                    <FooterTemplate>
-                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByCarTotals.DayMultiRunForfait)" />
-                    </FooterTemplate>
-                </RadzenDataGridColumn>
-            </Columns>
-        </RadzenDataGrid>
+        <CostDetailByCar IsLoading=@isLoading
+                         Data=@ByCarData
+                         Total=@ByCarTotals />
     </RadzenRow>
 }
 @if (CostTYpe == CostTYpeEnum.ByRun)
 {
     <RadzenRow>
-        <RadzenDataGrid FilterMode="FilterMode.Simple"
-                        IsLoading=@isLoading
-                        Culture=@AppSettings.CurrentCulture
-                        Data="@this.ByRunData" TItem="CostByAssociateByRunItem"
-                        AllowFiltering="true"
-                        AllowSorting="true"
-                        AllowColumnResize="true"
-                        AllowVirtualization=true
-                        LogicalFilterOperator="LogicalFilterOperator.And"
-                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                        Density=@Settings.Density
-                        Style=@GrdiStyle>
-            <HeaderTemplate>
-                <RadzenStack Orientation="Orientation.Horizontal">
-                    <RadzenSplitButton ButtonStyle="ButtonStyle.Dark"
-                                       Icon="file_download" Click=@DownloadDataByRun_Click>
-                        <ChildContent>
-                            <RadzenSplitButtonItem Text="Excel" Value="X" Icon="grid_on" />
-                            <RadzenSplitButtonItem Text="CSV" Value="C" Icon="wrap_text" />
-                        </ChildContent>
-                    </RadzenSplitButton>
-                </RadzenStack>
-            </HeaderTemplate>
-            <EmptyTemplate>
-                <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun dato da visaulizzare !</p>
-            </EmptyTemplate>
-            <Columns>
-                <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.ContractName)" Title="Appalto" Width="200px" />
-                <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.AssociateName)" Title="Ditta" Width="200px" />
-                
-                <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.LineNumber)" Title="Linea" Width="70px" />
-                <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.RunNumber)" Title="Nr Corsa" Width="120px" />
-                <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.RunName)" Title="Corsa" Width="150px" />
-                <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.PathsDescr)" Title="Percorso" Width="200px" />
-                <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.StartTime)" Title="Ora inizio" Width="120px">
-                    <Template Context="data">
-                        @FormatTime(data?.StartTime)
-                    </Template>
-                </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.EndTime)" Title="Ora Fine" Width="120px">
-                    <Template Context="data">
-                        @FormatTime(data?.EndTime)
-                    </Template>
-                </RadzenDataGridColumn>
-
-                <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.KmTot)" Title="Km Totali" FormatString="{0:f2}" Width="100px">
-                    <FooterTemplate>
-                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",ByRunTotals.KmTot)" />
-                    </FooterTemplate>
-                </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.Total)" Title="Costo Totale" FormatString="{0:C}" Width="150px">
-                    <FooterTemplate>
-                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByRunTotals.Total)" />
-                    </FooterTemplate>
-                </RadzenDataGridColumn>
-
-                <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.Km)" Title="Tod. Km" FormatString="{0:f2}" Width="100px">
-                    <FooterTemplate>
-                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",ByRunTotals.Km)" />
-                    </FooterTemplate>
-                </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.KmExtra)" Title="Tod. Km Extra" FormatString="{0:f2}" Width="100px">
-                    <FooterTemplate>
-                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",ByRunTotals.KmExtra)" />
-                    </FooterTemplate>
-                </RadzenDataGridColumn>
-
-                <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.DayCost)" Title="Tod. Costo da GG" FormatString="{0:C}" Width="150px">
-                    <FooterTemplate>
-                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByRunTotals.DayCost)" />
-                    </FooterTemplate>
-                </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.CostKm)" Title="Tod. Costo Km GG" FormatString="{0:C}" Width="150px">
-                    <FooterTemplate>
-                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByRunTotals.CostKm)" />
-                    </FooterTemplate>
-                </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.CostKmExtra)" Title="Tit. Costo Km GG Extra" FormatString="{0:C}" Width="150px">
-                    <FooterTemplate>
-                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByRunTotals.CostKmExtra)" />
-                    </FooterTemplate>
-                </RadzenDataGridColumn>
-
-                <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.DayIntegration)" Title="Tot. int. GG" FormatString="{0:C}" Width="150px">
-                    <FooterTemplate>
-                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByRunTotals.DayIntegration)" />
-                    </FooterTemplate>
-                </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.DayForfait)" Title="Tot. Forfait GG" FormatString="{0:C}" Width="150px">
-                    <FooterTemplate>
-                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByRunTotals.DayForfait)" />
-                    </FooterTemplate>
-                </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.DayMultiRunForfait)" Title="Tot. Forfait Multiplo GG" FormatString="{0:C}" Width="150px">
-                    <FooterTemplate>
-                        <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",ByRunTotals.DayMultiRunForfait)" />
-                    </FooterTemplate>
-                </RadzenDataGridColumn>
-            </Columns>
-        </RadzenDataGrid>
+        <CostDetailByRun IsLoading=@isLoading
+                        Data=@ByRunData
+                        Total=@ByRunTotals />
     </RadzenRow>
 }
 
@@ -372,7 +189,7 @@
                     this.Request);
 
                 this.ByCarData = data;
-                this.ByCarTotals = this.ComputeTotalsByCar(this.ByCarData);
+                this.ByCarTotals = this._CostService.ComputeTotalsByCar(this.ByCarData);
             }
             else if (costTyle == CostTYpeEnum.ByRun )
             {
@@ -380,7 +197,7 @@
                     this.Request);
 
                 this.ByRunData = data;
-                this.ByRunTotals = this.ComputeTotalsByRun(this.ByRunData);
+                this.ByRunTotals = this._CostService.ComputeTotalsByRun(this.ByRunData);
             }
         }
         catch (BadRequestException<CheckResult> ex)
@@ -404,61 +221,6 @@
         }
     }
 
-    private async Task ExportDataAsync<TEntity> (
-        RadzenSplitButtonItem item,
-        IEnumerable<TEntity>? data,
-        string title
-        )
-        where TEntity : class
-    {
-        try
-        {
-            this.isLoading = true;
-
-            if (data != null)
-            {
-                var columninfo = data.GetExportColumnInfo();
-
-                if (item == null)
-                {
-                    await this.ExcelService.Export(title, data, columninfo);
-                }
-                else
-                {
-                    switch (item.Value)
-                    {
-                        case "X":
-                            await this.ExcelService.ExportExcel(title, data, columninfo);
-                            break;
-                        case "C":
-                            await this.ExcelService.ExportCsv(title, data, columninfo);
-                            break;
-                    }
-                }
-                this._notificationService.Notify(NotificationSeverity.Info, "File pronto per il donwload");
-            }
-            else
-            {
-                this._notificationService.Notify(
-                    NotificationSeverity.Warning,
-                    "Nessun dato da esportare"
-                    );
-            }
-        }
-        catch (Exception ex)
-        {
-            this._notificationService.Notify(
-                NotificationSeverity.Error,
-                "ERrore recuperando i dati",
-                ex.Message
-                );
-        }
-        finally
-        {
-            this.isLoading = false;
-        }
-    }
-
     #region By car
 
     private IEnumerable<CostByAssociateItem>? ByCarData = null;
@@ -468,47 +230,7 @@
     {
         await LoadDataAsync(CostTYpeEnum.ByCar);
     }
-    private CostByAssociateItem ComputeTotalsByCar(IEnumerable<CostByAssociateItem> costs)
-    {
-        var total = new CostByAssociateItem()
-            {
-                Km = 0,
-                KmExtra = 0,
-                DayCost = 0,
-                CostKm = 0,
-                CostKmExtra = 0,
-                DayIntegration = 0,
-                DayForfait = 0,
-                DayMultiRunForfait = 0
-            };
-        foreach (var c in costs)
-        {
-            total.Km += c.Km;
-            total.KmExtra += c.KmExtra;
-            total.DayCost += c.DayCost;
-            total.CostKm += c.CostKm;
-            total.CostKmExtra += c.CostKmExtra;
-
-            total.DayIntegration += c.DayIntegration;
-            total.DayForfait += c.DayForfait;
-            total.DayMultiRunForfait += c.DayMultiRunForfait;
-        }
-
-        return total;
-    }
-    private async Task DownloadDataByCar_Click(RadzenSplitButtonItem item)
-    {
-        await this.ExportDataAsync (item, this.ByCarData, "Costi per MEzzo");
-    }
-
-    private void Month_CellRender(DataGridCellRenderEventArgs<CostByAssociateItem> args)
-    {
-        if (args.Column.Property == nameof(CostByAssociateItem.KmTot)
-            || args.Column.Property == nameof(CostByAssociateItem.Total))
-        {
-            args.Attributes.Add("style", $"background-color: var(--rz-success-darker)");
-        }
-    }
+    
     #endregion
 
     #region by Run
@@ -518,46 +240,6 @@
     private async Task LoadDataByRunAsync()
     {
         await LoadDataAsync(CostTYpeEnum.ByRun);
-    }
-    private CostByAssociateByRunItem ComputeTotalsByRun(IEnumerable<CostByAssociateByRunItem> costs)
-    {
-        var total = new CostByAssociateByRunItem()
-            {
-                Km = 0,
-                KmExtra = 0,
-                DayCost = 0,
-                CostKm = 0,
-                CostKmExtra = 0,
-                DayIntegration = 0,
-                DayForfait = 0,
-                DayMultiRunForfait = 0
-            };
-        foreach (var c in costs)
-        {
-            total.Km += c.Km;
-            total.KmExtra += c.KmExtra;
-            total.DayCost += c.DayCost;
-            total.CostKm += c.CostKm;
-            total.CostKmExtra += c.CostKmExtra;
-
-            total.DayIntegration += c.DayIntegration;
-            total.DayForfait += c.DayForfait;
-            total.DayMultiRunForfait += c.DayMultiRunForfait;
-        }
-
-        return total;
-    }
-    private async Task DownloadDataByRun_Click(RadzenSplitButtonItem item)
-    {
-        await this.ExportDataAsync(item, this.ByRunData, "Costi per Corsa");
-    }
-    
-    private string FormatTime(
-        TimeSpan? time)
-    {
-        if (time == null) return string.Empty;
-        var to = new TimeOnly(time.Value.Hours, time.Value.Minutes, time.Value.Minutes);
-        return string.Format(this.AppSettings.CurrentCulture, "{0:HH:mm}", to);
     }
     #endregion
 }

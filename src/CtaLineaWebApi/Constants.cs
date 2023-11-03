@@ -20,10 +20,11 @@ namespace CtaLineaWebApi
         internal const string ConfigSection_CtaLineaDb = "CtaLineaDb";
         internal const string Configuration_MailSender = "MailSender";
         internal const string Configuration_Importer = "Importer";
+        internal const string ConfigSection_TaskScheduler = "TaskScheduler";
 
-        // claims type
+		// claims type
 
-        public const string ClaimType_AssociateId = "ctalinea.associateid";
+		public const string ClaimType_AssociateId = "ctalinea.associateid";
 
 
         // importazioni

@@ -6,7 +6,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 {
     public interface IBudgetRepository
     {
-        Task<IEnumerable<CostByAssociateItem>> GEtCostsByAssociateAsync(int? budgetId, CalcCostsRequest request);
+		Task<bool> DeleteBudgetAsync(
+			int id);
+
+		Task<IEnumerable<CostByAssociateItem>> GEtCostsByAssociateAsync(int? budgetId, CalcCostsRequest request);
 		Task<IEnumerable<CostByAssociateByRunItem>> GEtCostsByAssociateByRunAsync(
 					int? budgetId,
 					CalcCostsRequest request

@@ -1,0 +1,37 @@
+﻿<RadzenText Text=@Descriotion />
+
+@code {
+
+    private string? _BudgetTYpe;
+    [Parameter]
+    public string? BudgetTYpe { 
+        get { return _BudgetTYpe; }
+        set
+        {
+            _BudgetTYpe = value;
+            var descr = "Non definito";
+            if (string.IsNullOrEmpty(_BudgetTYpe) == false)
+            {
+                switch (_BudgetTYpe)
+                {
+                    case Constants.BudgetTYpe_Last_Calc:
+                        descr = "Ultimo ricalcolo";
+                        break;
+                    case Constants.BudgetTYpe_SchoolYearStart:
+                        descr = "Inizio A. Scol.";
+                        break;
+                    case Constants.BudgetTYpe_SolarYearStart:
+                        descr = "Inizio Anno";
+                        break;
+                    case Constants.BudgetTYpe_Other:
+                        descr = "Altro";
+                        break;
+                }
+
+            }
+            this.Descriotion = descr;
+        }
+    }
+
+    private string Descriotion { get; set; } = string.Empty;
+}

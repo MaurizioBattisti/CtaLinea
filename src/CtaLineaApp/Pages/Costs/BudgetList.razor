@@ -1,0 +1,314 @@
+﻿@page "/budget-list"
+
+@inject IAutoLoadDataList<BudgetQueryItem> AutoLoad;
+@inject IExcelExporterService ExcelService
+@inject ContextMenuService ContextMenuService
+@inject NavigationManager NavigationManager
+@inject NotificationService notificationService
+@inject ICostService _costService;
+@attribute [Authorize]
+
+<CheckAuthorization Roles=@(new string[] { UserRoles.Role_Costs }) />
+<PageTitle>@Constants.App_Title - Budget</PageTitle>
+
+<LayoutSetter>
+    <PageTitle>
+        <RadzenLabel Text="Budget" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+    </PageTitle>
+    <TopLine>
+    </TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<RadzenDataGrid @ref="@grdData"
+                FilterMode="FilterMode.Simple"
+                IsLoading=@AutoLoad.isLoading
+                Count="@AutoLoad.RowCount"
+                LoadData="@this.AutoLoad.LoadData"
+                Data="@this.AutoLoad.Data" TItem="BudgetQueryItem"
+                AllowFiltering="true"
+                AllowColumnResize="true"
+                AllowSorting="true"
+                LogicalFilterOperator="LogicalFilterOperator.And"
+                CellContextMenu="@RowActionCellContextMenu"
+                SelectionMode="DataGridSelectionMode.Single"
+                Value=@SelectedItem
+                ValueChanged="@SelectionChanged"
+                Style="height:100%"
+                AllowPaging="true"
+                PagerHorizontalAlign="HorizontalAlign.Left"
+                ShowPagingSummary="true"
+                Density=@Settings.Density
+                PageSize=@(Settings?.PageSize ?? 5)>
+    <HeaderTemplate>
+        <RadzenStack Orientation="Orientation.Horizontal">
+            <RadzenSplitButton ButtonStyle="ButtonStyle.Dark"
+                               Icon="file_download" Click=@DownloadData_Click>
+                <ChildContent>
+                    <RadzenSplitButtonItem Text="Excel" Value="X" Icon="grid_on" />
+                    <RadzenSplitButtonItem Text="CSV" Value="C" Icon="wrap_text" />
+                </ChildContent>
+            </RadzenSplitButton>
+
+            <RadzenTextBox @bind-Value=@this.AutoLoad.FullTextSearch Placeholder="Cerca..." Style="width: 200px" Change="@FullText_OnChange" Class="w-100" />
+            <RadzenButton ButtonStyle="ButtonStyle.Success"
+                          IsBusy=@AutoLoad.isLoading
+                          Icon="refresh"
+                          Click="@(()=>ReloadData())" />
+        </RadzenStack>
+    </HeaderTemplate>
+    <EmptyTemplate>
+        <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessuna budget trovato !</p>
+    </EmptyTemplate>
+    <Columns>
+        <RadzenDataGridColumn TItem="BudgetQueryItem" Property="@nameof(BudgetQueryItem.Id)" Title="ID" Visible=false />
+
+        <RadzenDataGridColumn TItem="BudgetQueryItem" Filterable=false Property="@nameof(BudgetQueryItem.Id)" Title="Conf. con" Width="80px">
+            <Template Context="data">
+                @if(this.FirstCompare == data)
+                {
+                    <RadzenIcon Icon="push_pin" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+
+        <RadzenDataGridColumn TItem="BudgetQueryItem" Property="@nameof(BudgetQueryItem.BudgetName)" Title="Nome Budget" Width="200px" />
+        <RadzenDataGridColumn TItem="BudgetQueryItem" Filterable=false Property="@nameof(BudgetQueryItem.BudgetType)" Title="Tipo" Width="150px">
+            <Template Context="data">
+                <BudgetTYpeDescr BudgetTYpe=@data.BudgetType />
+            </Template>
+        </RadzenDataGridColumn>
+
+        <RadzenDataGridColumn TItem="BudgetQueryItem" Property="@nameof(BudgetQueryItem.BudgetDate)" Title="Data" FormatString="{0:dd/MM/yyyy}" Width="120px" />
+
+        <RadzenDataGridColumn TItem="BudgetQueryItem" Property="@nameof(BudgetQueryItem.ContractDescr)" Title="Appalto" Width="200px" />
+        <RadzenDataGridColumn TItem="BudgetQueryItem" Property="@nameof(BudgetQueryItem.StartDate)" Title="Inizio" FormatString="{0:dd/MM/yyyy}" Width="120px" />
+        <RadzenDataGridColumn TItem="BudgetQueryItem" Property="@nameof(BudgetQueryItem.EndDate)" Title="Fine" FormatString="{0:dd/MM/yyyy}" Width="120px" />
+
+        <RadzenDataGridColumn TItem="BudgetQueryItem" Property="@nameof(BudgetQueryItem.AssociateDescr)" Title="Ditta" Width="200px" />
+        <RadzenDataGridColumn TItem="BudgetQueryItem" Property="@nameof(BudgetQueryItem.CarDescr)" Title="Mezzo" Width="200px" />
+        <RadzenDataGridColumn TItem="BudgetQueryItem" Property="@nameof(BudgetQueryItem.RunId)" Title="Ud CTA corsa" Width="120px" />
+
+        <RadzenDataGridColumn TItem="BudgetQueryItem" Property="@nameof(BudgetQueryItem.OutOfPEriod)" Title="Furoi periodo" Width="100px">
+            <Template Context="data">
+                @if (data.OutOfPEriod)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="BudgetQueryItem" Property="@nameof(BudgetQueryItem.Suspended)" Title="Sospensioni" Width="100px">
+            <Template Context="data">
+                @if (data.Suspended)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="BudgetQueryItem" Property="@nameof(BudgetQueryItem.RplacedCars)" Title="Mezzo reale" Width="100px">
+            <Template Context="data">
+                @if (data.RplacedCars)
+                {
+                    <RadzenIcon Icon="check" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+    RadzenDataGrid<BudgetQueryItem>? grdData;
+    IList<BudgetQueryItem>? SelectedItem = new List<BudgetQueryItem>();
+    BudgetQueryItem? FirstCompare = null;
+
+    private enum MontextMenu
+    {
+        Detail,
+        SetCompareTo,
+        Compare,
+
+        Delete
+    };
+
+    private async Task DownloadData_Click(RadzenSplitButtonItem item)
+    {
+        this.AutoLoad.StartLoading();
+
+        try
+        {
+            var data = await this.AutoLoad.GetAllAsync();
+            if (data != null)
+            {
+                // var columninfo = this.grdData?.GetExportColumnInfo();
+                var columninfo = data.GetExportColumnInfo();
+
+                string title = "Elenco budgets";
+                if (item == null)
+                {
+                    await this.ExcelService.Export(title, data, columninfo);
+                }
+                else
+                {
+                    switch (item.Value)
+                    {
+                        case "X":
+                            await this.ExcelService.ExportExcel(title, data, columninfo);
+                            break;
+                        case "C":
+                            await this.ExcelService.ExportCsv(title, data, columninfo);
+                            break;
+                    }
+                }
+                this.notificationService.Notify(NotificationSeverity.Info, "File pronto per il donwload");
+            }
+            else
+            {
+                this.notificationService.Notify(
+                    NotificationSeverity.Warning,
+                    "Nessun dato da esportare"
+                    );
+            }
+        }
+        catch (Exception ex)
+        {
+            this.notificationService.Notify(
+                NotificationSeverity.Error,
+                "ERrore recuperando i dati",
+                ex.Message
+                );
+        }
+        finally
+        {
+            this.AutoLoad.EndLoading();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AutoLoad.Initilize(
+            Constants.Endpoint_Budgets
+            );
+
+        await Task.CompletedTask;
+        this.StateHasChanged();
+    }
+
+    void FullText_OnChange(string value)
+    {
+        this.grdData?.Reload();
+    }
+
+    private async Task ReloadData()
+    {
+        if (this.grdData != null)
+        {
+            await this.grdData.Reload();
+        }
+    }
+
+    private async Task SelectionChanged(IList<BudgetQueryItem> list)
+    {
+        await Task.CompletedTask;
+        this.SelectedItem = list;
+    }
+
+    private void RowActionCellContextMenu(DataGridCellMouseEventArgs<BudgetQueryItem> args)
+    {
+        if (grdData != null)
+        {
+            this.grdData.SelectRow(args.Data);
+        }
+        string compareText = string.Empty;
+        if (this.FirstCompare != null)
+        {
+            compareText = "confronta con " + this.FirstCompare.BudgetName;
+        }
+        ContextMenuService.Open(args, ds =>
+            @<RadzenMenu Click=@((e)=>OnMenuItemClick(args, e))>
+        <RadzenMenuItem Icon="savings" Text="Dettaglio..." Value=@MontextMenu.Detail />
+        <RadzenMenuItem Icon="push_pin" Text="Seleziona per confronto" Value=@MontextMenu.SetCompareTo />
+        
+            @if (this.FirstCompare != null)
+            {
+                <hr class="separator">
+            <RadzenMenuItem Icon="compare" Text=@compareText Value=@MontextMenu.Compare />
+            }
+            <hr class="separator">
+        <RadzenMenuItem Icon="delete" Text="Elimina..." Value=@MontextMenu.Delete />
+            </RadzenMenu>
+    );
+    }
+
+    private async Task OnMenuItemClick(
+        DataGridCellMouseEventArgs<BudgetQueryItem> args,
+        MenuItemEventArgs e
+        )
+    {
+        await Task.CompletedTask;
+        ContextMenuService.Close();
+        string url = string.Empty;
+
+        switch ((MontextMenu)e.Value)
+        {
+            case MontextMenu.Delete:
+                await this.DeleteOneAsync(args.Data.Id);
+                break;
+            case MontextMenu.Detail:
+                url = string.Format("/budget-detail/{0}", args.Data.Id);
+                break;
+            case MontextMenu.SetCompareTo:
+                this.FirstCompare = args.Data;
+                break;
+
+            case MontextMenu.Compare:
+                url = string.Format("/budget-compare/{0}/{1}", 
+                    args.Data.Id,
+                    this.FirstCompare?.Id ?? 0
+                    );
+                break;
+
+            default:
+                break;
+        };
+        if (string.IsNullOrEmpty(url) == false)
+        {
+            NavigationManager.NavigateTo(url);
+        }
+    }
+
+    private async Task DeleteOneAsync (
+    int budgetId)
+    {
+        this.AutoLoad.StartLoading();
+
+        try
+        {
+            await this._costService.DeleteBudgetAsync(budgetId);
+
+            if (this.grdData != null)
+            {
+                await this.grdData.Reload();
+            }
+
+            notificationService.Notify(
+                NotificationSeverity.Success,
+                "Budget eliminato con successo"
+            );
+        }
+        catch (Exception ex)
+        {
+            notificationService.Notify(
+                NotificationSeverity.Error,
+                "Errore eliminando il budget",
+                ex.Message
+                );
+        }
+        finally
+        {
+            this.AutoLoad.EndLoading();
+        }
+    }
+}

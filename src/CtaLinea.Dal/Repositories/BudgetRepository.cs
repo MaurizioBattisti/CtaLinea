@@ -1,4 +1,5 @@
-﻿using CtaLinea.Model.Costs;
+﻿using Azure.Core;
+using CtaLinea.Model.Costs;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,8 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         : RepositoryBase
         , IBudgetRepository
     {
+        private const string Sql_BudgetTable = "[dbo].[Budgets]";
+
         private const string SQL_GetCosts = "[dbo].[up_GetCosts_New]";
         private const string SQL_GetCostsByAssociate = "[dbo].[up_GetCostByAssociate]";
 		private const string SQL_GetCostsByAssociateByRun = "[dbo][up_GetCostByAssociateByRun]";
@@ -37,10 +40,26 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         }
 
         #region gestione della tabella dei budgets
-        #endregion
+        public async Task<bool> DeleteBudgetAsync (
+            int id)
+        {
+			using IDbConnection conn = this._context.GetNewConnection();
+			conn.Open();
+			await conn.InitializeSession(this._zzContext);
 
-        #region gestione dei costi
-        public async Task UpdateBudgetDetaulsAsync(
+			await conn.ExecuteAsync(
+				"DELETE FROM " + Sql_BudgetTable + " WHERE BudgetId = @BudgetId",
+				new
+				{
+					BudgetId = id
+				});
+
+			return true;
+		}
+
+		#endregion
+		#region gestione dei costi
+		public async Task UpdateBudgetDetaulsAsync(
             CalcCostsRequest request)
         {
             using IDbConnection conn = this._context.GetNewConnection();

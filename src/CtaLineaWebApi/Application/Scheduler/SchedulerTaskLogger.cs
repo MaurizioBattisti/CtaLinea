@@ -10,8 +10,7 @@ using ZzSoft.CtaLinea.Dal.Context;
 namespace CtaLineaWebApi.Application.Scheduler
 {
 	public class SchedulerTaskLogger 
-		: ISchedulerTaskLogger,
-		IDisposable
+		: ISchedulerTaskLogger
 	{
 		private const string Sql_Log = @"INSERT INTO [dbo].[SchedulerTaskLog]
 (TaskId, Tag, Code, Message)
@@ -20,7 +19,6 @@ VALUES (@TaskId, @Tag, @Code, @Message)";
 		private readonly CtaDbContext _context;
 		private readonly ILogger _logger;
 		private readonly Guid _tag;
-		private readonly IDbConnection _conn;
 
 		public SchedulerTaskLogger(
 			CtaDbContext context,
@@ -29,13 +27,6 @@ VALUES (@TaskId, @Tag, @Code, @Message)";
 			_context = context;
 			_logger = logger;
 			_tag = Guid.NewGuid();
-			_conn = _context.GetNewConnection();
-			_conn.Open();
-		}
-
-		public void Dispose()
-		{
-			_conn.Dispose();
 		}
 
 		public int TaskId { get; set; }
@@ -44,9 +35,12 @@ VALUES (@TaskId, @Tag, @Code, @Message)";
 			string message,
 			string code = null)
 		{
+			using var conn = _context.GetNewConnection(); ;
+			conn.Open();
+
 			try
 			{
-				await _conn.ExecuteAsync(
+				await conn.ExecuteAsync(
 					Sql_Log,
 					new
 					{

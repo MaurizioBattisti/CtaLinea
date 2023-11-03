@@ -12,9 +12,17 @@ namespace CtaLineaApp.Application.Services.Costs
 
         Task<IEnumerable<CostByAssociateItem>?> GetCostsByAssociateASync(
             CalcCostsRequest request);
-        Task<IEnumerable<CostByAssociateByRunItem>?> GetCostsByAssociateByRunASync(
+		Task<IEnumerable<CostByAssociateItem>?> GetCostsByAssociateASync(
+			int budgetId,
+			CalcCostsRequest? request);
+		Task<IEnumerable<CostByAssociateByRunItem>?> GetCostsByAssociateByRunASync(
             CalcCostsRequest request);
 		Task<IEnumerable<CostByRunItem>?> GetCostsByRunASync(
             CalcCostsRequest request);
+
+        Task DeleteBudgetAsync(int budgetId);
+
+        CostByAssociateItem ComputeTotalsByCar(IEnumerable<CostByAssociateItem> costs);
+        CostByAssociateByRunItem ComputeTotalsByRun(IEnumerable<CostByAssociateByRunItem> costs);
     }
 }

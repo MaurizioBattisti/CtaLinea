@@ -1,0 +1,99 @@
+﻿@page "/budget-detail/{Id:int}"
+
+@inject IQueryUtilityService _queryService
+@inject ICostService _costService
+@inject NotificationService notificationService
+
+<CheckAuthorization Roles=@(new string[] { UserRoles.Role_Costs }) />
+<PageTitle>@Constants.App_Title - Dettagli Budget</PageTitle>
+
+<LayoutSetter>
+	<PageTitle>
+		<RadzenLabel Text="Dettagli Budget" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" />
+	</PageTitle>
+	<TopLine>
+	</TopLine>
+</LayoutSetter>
+<CtaLineaSttingsNotifier Changed=@StateHasChanged />
+
+<RadzenRow>
+	<BudgetInfo Budget=@Budget />
+</RadzenRow>
+<RadzenRow>
+	<CostDetailByCar IsLoading=@IsBusy
+						Data=@ByCarData
+						Total=@ByCarTotals />
+</RadzenRow>
+
+@code {
+
+	[Parameter]
+	public int Id { get; set; }
+
+	private bool IsBusy = false;
+	private BudgetQueryItem Budget = new BudgetQueryItem();
+
+	private IEnumerable<CostByAssociateItem>? ByCarData = null;
+	private CostByAssociateItem ByCarTotals { get; set; } = new CostByAssociateItem();
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender == true)
+		{
+			await this.LoadDataASync(this.Id);
+
+		}
+		base.OnAfterRender(firstRender);
+	}
+
+	private async Task LoadDataASync (int budgetId)
+	{
+		var queryDef = new QueryDefinition();
+		queryDef.EndPoint = string.Format(
+			Constants.Endpoint_Budget_One_Fmt,
+			budgetId
+			);
+
+		IsBusy = true;
+		StateHasChanged();
+		try
+		{
+			var result = await this._queryService.GetOneAsync<BudgetQueryItem> (
+						queryDef);
+
+			if (result != null)
+			{
+				this.Budget = result;
+
+				// carica i dettagli
+				var data = await this._costService.GetCostsByAssociateASync(
+					this.Id, null);
+
+				this.ByCarData = data;
+				this.ByCarTotals = this._costService.ComputeTotalsByCar( this.ByCarData);
+			}
+		}
+		catch (BadRequestException<CheckResult> ex)
+		{
+			this.notificationService.Notify(
+				NotificationSeverity.Error,
+				ex.Payload?.Title ?? "problemi",
+				ex.Payload?.Description ?? string.Empty
+			);
+		}
+
+		catch (Exception ex)
+		{
+			notificationService.Notify(
+				NotificationSeverity.Error,
+				"Errore caricando i dati del budget",
+				ex.Message
+				);
+		}
+		finally
+		{
+			IsBusy = false;
+			StateHasChanged();
+		}
+	}
+}

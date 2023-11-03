@@ -1,29 +1,22 @@
-﻿using Microsoft.AspNetCore.Hosting.Server.Features;
+﻿using CtaLinea.Model.ScheduledTasks;
+using CtaLineaWebApi.Auth.Services;
+using CtaLineaWebApi.Configuration;
 using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Identity.Client;
+using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
-using Microsoft.Extensions.FileSystemGlobbing.Internal;
-using System.Collections;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using CtaLineaWebApi.Auth.Services;
-using System.Net;
-using System.Net.Http.Headers;
-using Microsoft.Extensions.Logging;
-using CtaLinea.Model.ScheduledTasks;
-using Org.BouncyCastle.Asn1.Mozilla;
-using System.Security.Permissions;
 
 namespace CtaLineaWebApi.Application.Scheduler
 {
 	public   class TaskScheduler
-		: IDisposable
+		// : IDisposable
 	{
 		// considera morta una attivaià dopo 4 ore che è iniziata e  non è finita
 		private readonly  TimeSpan Dead_TimeSpan = TimeSpan.FromHours(4);
@@ -37,17 +30,20 @@ namespace CtaLineaWebApi.Application.Scheduler
 		private readonly IServiceProvider _serviceProvider;
 		// private readonly AutoResetEvent _autoEvent;
 		private readonly ILogger _logger;
+		private readonly TaskSchedulerOptions _options;
 
 		// elenco dei task da eseguire
 		private List<ScheduledTaskItem> AllTasks = new List<ScheduledTaskItem>();
-
+	
 		public TaskScheduler (
 			IServiceProvider serviceProvider,
+			TaskSchedulerOptions options,
 			ILogger<TaskScheduler> logger)
 		{
 			_logger = logger;
 			// _autoEvent = new AutoResetEvent(false);
 			_serviceProvider = serviceProvider;
+			_options = options;
 
 			this.AddReloadSchedulerTask();
             // _autoEvent.Set();
@@ -130,8 +126,8 @@ namespace CtaLineaWebApi.Application.Scheduler
 					Frequency = ScheduleFrequency.Daily,
 					RrequencyMask = 0,
 
-					StartTime = TimeSpan.FromHours(7),
-					EndTime = TimeSpan.FromHours(20),
+					StartTime = TimeSpan.FromHours(1),
+					EndTime = TimeSpan.FromHours(23),
 					Interval = TimeSpan.FromSeconds(30),
 					Active = true
 				});
@@ -142,10 +138,15 @@ namespace CtaLineaWebApi.Application.Scheduler
 		{
 			if (string.IsNullOrEmpty (_baseUrl) == true)
 			{
-				var server = _serviceProvider.GetService<IServer>();
-				var addresses = server?.Features.Get<IServerAddressesFeature>();
-				var baseurls = addresses?.Addresses ?? Array.Empty<string>();
-				_baseUrl = baseurls.FirstOrDefault();
+				_baseUrl = _options.BaseUrl;
+
+				if (string.IsNullOrEmpty(_baseUrl) == true)
+				{
+					var server = _serviceProvider.GetService<IServer>();
+					var addresses = server?.Features.Get<IServerAddressesFeature>();
+					var baseurls = addresses?.Addresses ?? Array.Empty<string>();
+					_baseUrl = baseurls.FirstOrDefault();
+				}
 			}
 			return _baseUrl;
 		}
@@ -220,7 +221,7 @@ namespace CtaLineaWebApi.Application.Scheduler
         }
 
 		private bool _Working = false;
-		private static void Tick (object? stateInfo)
+		private static async void Tick (object? stateInfo)
 		{
 			var self = stateInfo as TaskScheduler;
 
@@ -232,12 +233,21 @@ namespace CtaLineaWebApi.Application.Scheduler
 				if (taskToRun != null)
 				{
 					taskToRun.LastStart = DateTime.Now;
+
+					await self.CallTAskAction(
+						taskToRun.ActivityId,
+						taskToRun.Id,
+						taskToRun.Arguments,
+						taskToRun.Timeout)
+						.ConfigureAwait (false);
+					/*
 					var t = self.CallTAskAction(
 						taskToRun.ActivityId,
 						taskToRun.Id,
 						taskToRun.Arguments,
 						taskToRun.Timeout);
 					t.Wait();
+					*/
 
 					taskToRun.LastEnd = DateTime.Now;
 				}

@@ -1,0 +1,177 @@
+﻿@inject IExcelExporterService ExcelService
+@inject NotificationService _notificationService
+@inject IApplicationSettings AppSettings;
+
+<RadzenDataGrid FilterMode="FilterMode.Simple"
+                IsLoading=@IsLoading
+                CellRender="@Month_CellRender"
+                Culture=@AppSettings.CurrentCulture
+                Data="@this.Data" TItem="CostByAssociateItem"
+                AllowFiltering="true"
+                AllowSorting="true"
+                AllowColumnResize="true"
+                AllowVirtualization=true
+                LogicalFilterOperator="LogicalFilterOperator.And"
+                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                Density=@Settings.Density
+                Style=@GrdiStyle>
+    <HeaderTemplate>
+        <RadzenStack Orientation="Orientation.Horizontal">
+            <RadzenSplitButton ButtonStyle="ButtonStyle.Dark"
+                               Icon="file_download" Click=@DownloadDataByCar_Click>
+                <ChildContent>
+                    <RadzenSplitButtonItem Text="Excel" Value="X" Icon="grid_on" />
+                    <RadzenSplitButtonItem Text="CSV" Value="C" Icon="wrap_text" />
+                </ChildContent>
+            </RadzenSplitButton>
+        </RadzenStack>
+    </HeaderTemplate>
+    <EmptyTemplate>
+        <p style="color: lightgrey; font-size: 24px; text-align: left; margin: 2rem;">Nessun dato da visaulizzare !</p>
+    </EmptyTemplate>
+    <Columns>
+        <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.ContractName)" Title="Appalto" Width="200px" />
+        <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.AssociateName)" Title="Ditta" Width="200px" />
+        <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.CarDescription)" Title="Mezzo" Width="70px" />
+
+        <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.Month)" Title="Mese" Width="100px" />
+
+        <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.KmTot)" Title="Km Totali" FormatString="{0:f2}" Width="100px">
+            <FooterTemplate>
+                <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",Total.KmTot)" />
+            </FooterTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.Total)" Title="Costo Totale" FormatString="{0:C}" Width="150px">
+            <FooterTemplate>
+                <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",Total.Total)" />
+            </FooterTemplate>
+        </RadzenDataGridColumn>
+
+        <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.Km)" Title="Tod. Km" FormatString="{0:f2}" Width="100px">
+            <FooterTemplate>
+                <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",Total.Km)" />
+            </FooterTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.KmExtra)" Title="Tod. Km Extra" FormatString="{0:f2}" Width="100px">
+            <FooterTemplate>
+                <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:f2}",Total.KmExtra)" />
+            </FooterTemplate>
+        </RadzenDataGridColumn>
+
+        <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayCost)" Title="Tod. Costo da GG" FormatString="{0:C}" Width="150px">
+            <FooterTemplate>
+                <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",Total.DayCost)" />
+            </FooterTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.CostKm)" Title="Tod. Costo Km GG" FormatString="{0:C}" Width="150px">
+            <FooterTemplate>
+                <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",Total.CostKm)" />
+            </FooterTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.CostKmExtra)" Title="Tit. Costo Km GG Extra" FormatString="{0:C}" Width="150px">
+            <FooterTemplate>
+                <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",Total.CostKmExtra)" />
+            </FooterTemplate>
+        </RadzenDataGridColumn>
+
+        <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayIntegration)" Title="Tot. int. GG" FormatString="{0:C}" Width="150px">
+            <FooterTemplate>
+                <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",Total.DayIntegration)" />
+            </FooterTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayForfait)" Title="Tot. Forfait GG" FormatString="{0:C}" Width="150px">
+            <FooterTemplate>
+                <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",Total.DayForfait)" />
+            </FooterTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="CostByAssociateItem" Property="@nameof(CostByAssociateItem.DayMultiRunForfait)" Title="Tot. Forfait Multiplo GG" FormatString="{0:C}" Width="150px">
+            <FooterTemplate>
+                <RadzenText Text="@string.Format(this.AppSettings.CurrentCulture,"{0:C}",Total.DayMultiRunForfait)" />
+            </FooterTemplate>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    private string GrdiStyle = "height:900px; width:100%";
+
+    [CascadingParameter]
+    CtaLineaSettings Settings { get; set; } = new CtaLineaSettings();
+
+    [Parameter]
+    public bool IsLoading { get ;set; } = false;
+    [Parameter]
+    public IEnumerable<CostByAssociateItem>? Data { get; set; } = null;
+    [Parameter]
+    public CostByAssociateItem Total { get; set; } = new CostByAssociateItem();
+
+    private async Task DownloadDataByCar_Click(RadzenSplitButtonItem item)
+    {
+        await this.ExportDataAsync(item, this.Data, "Costi per MEzzo");
+    }
+
+    private void Month_CellRender(DataGridCellRenderEventArgs<CostByAssociateItem> args)
+    {
+        if (args.Column.Property == nameof(CostByAssociateItem.KmTot)
+            || args.Column.Property == nameof(CostByAssociateItem.Total))
+        {
+            args.Attributes.Add("style", $"background-color: var(--rz-success-darker)");
+        }
+    }
+
+    private async Task ExportDataAsync<TEntity>(
+        RadzenSplitButtonItem item,
+        IEnumerable<TEntity>? data,
+        string title
+        )
+        where TEntity : class
+    {
+        try
+        {
+            this.IsLoading = true;
+
+            if (data != null)
+            {
+                var columninfo = data.GetExportColumnInfo();
+
+                if (item == null)
+                {
+                    await this.ExcelService.Export(title, data, columninfo);
+                }
+                else
+                {
+                    switch (item.Value)
+                    {
+                        case "X":
+                            await this.ExcelService.ExportExcel(title, data, columninfo);
+                            break;
+                        case "C":
+                            await this.ExcelService.ExportCsv(title, data, columninfo);
+                            break;
+                    }
+                }
+                this._notificationService.Notify(NotificationSeverity.Info, "File pronto per il donwload");
+            }
+            else
+            {
+                this._notificationService.Notify(
+                    NotificationSeverity.Warning,
+                    "Nessun dato da esportare"
+                    );
+            }
+        }
+        catch (Exception ex)
+        {
+            this._notificationService.Notify(
+                NotificationSeverity.Error,
+                "ERrore recuperando i dati",
+                ex.Message
+                );
+        }
+        finally
+        {
+            this.IsLoading = false;
+        }
+    }
+
+}

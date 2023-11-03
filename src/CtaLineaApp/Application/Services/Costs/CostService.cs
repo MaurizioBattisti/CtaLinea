@@ -66,5 +66,80 @@ namespace CtaLineaApp.Application.Services.Costs
             var items = await _http.Post<IEnumerable<CostByRunItem>, string>(url, request);
             return items;
         }
+
+        public async Task DeleteBudgetAsync (int budgetId)
+        {
+            var url = string.Format(Constants.Endpoint_Budget_One_Fmt, budgetId);
+            await _http.Delete<string>(url);
+	    }
+
+		public async Task<IEnumerable<CostByAssociateItem>?> GetCostsByAssociateASync(
+            int budgetId,
+			CalcCostsRequest? request)
+		{
+            if (request == null) request = new CalcCostsRequest();
+			var url = string.Format(Constants.Endpoint_Budget_One_Detail_Fmt, budgetId);
+			var items = await _http.Post<IEnumerable<CostByAssociateItem>, string>(url, request);
+			return items;
+		}
+
+		#region calcola i totlai
+		public CostByAssociateItem ComputeTotalsByCar(IEnumerable<CostByAssociateItem> costs)
+        {
+            var total = new CostByAssociateItem()
+            {
+                Km = 0,
+                KmExtra = 0,
+                DayCost = 0,
+                CostKm = 0,
+                CostKmExtra = 0,
+                DayIntegration = 0,
+                DayForfait = 0,
+                DayMultiRunForfait = 0
+            };
+            foreach (var c in costs)
+            {
+                total.Km += c.Km;
+                total.KmExtra += c.KmExtra;
+                total.DayCost += c.DayCost;
+                total.CostKm += c.CostKm;
+                total.CostKmExtra += c.CostKmExtra;
+
+                total.DayIntegration += c.DayIntegration;
+                total.DayForfait += c.DayForfait;
+                total.DayMultiRunForfait += c.DayMultiRunForfait;
+            }
+
+            return total;
+        }
+        public CostByAssociateByRunItem ComputeTotalsByRun(IEnumerable<CostByAssociateByRunItem> costs)
+        {
+            var total = new CostByAssociateByRunItem()
+            {
+                Km = 0,
+                KmExtra = 0,
+                DayCost = 0,
+                CostKm = 0,
+                CostKmExtra = 0,
+                DayIntegration = 0,
+                DayForfait = 0,
+                DayMultiRunForfait = 0
+            };
+            foreach (var c in costs)
+            {
+                total.Km += c.Km;
+                total.KmExtra += c.KmExtra;
+                total.DayCost += c.DayCost;
+                total.CostKm += c.CostKm;
+                total.CostKmExtra += c.CostKmExtra;
+
+                total.DayIntegration += c.DayIntegration;
+                total.DayForfait += c.DayForfait;
+                total.DayMultiRunForfait += c.DayMultiRunForfait;
+            }
+
+            return total;
+        }
+        #endregion
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -21,9 +22,9 @@ namespace CtaLineaWebApi.Controllers
         private readonly ISchedulerService _schedulerService;
         private readonly Application.Scheduler.TaskScheduler _scheduler;
 
-        public InfoController (
+		public InfoController (
             Application.Scheduler.TaskScheduler scheduler,
-            ISchedulerService schedulerService)
+			ISchedulerService schedulerService)
         {
             _scheduler = scheduler;
             _schedulerService = schedulerService;   
@@ -50,7 +51,7 @@ namespace CtaLineaWebApi.Controllers
         }
 
         [Route("tick")]
-        [HttpGet]
+        [HttpPost]
         [AllowAnonymous]
         [SwaggerOperation(
             summary: "Tick",
@@ -61,11 +62,17 @@ namespace CtaLineaWebApi.Controllers
         public async Task<IActionResult> SchedulerTichAsync(
             )
         {
+            await Task.CompletedTask;
+
             _scheduler.DoTick();
-            return this.Accepted();
+            /*
+            var data = _scheduler.GetActualScheduledTasks();
+			return this.Ok(data);
+            */
+            return this.NoContent();
         }
 
-        private IEnumerable<KeyValuePair<string, string?>> GetInfo()
+		private IEnumerable<KeyValuePair<string, string?>> GetInfo()
         {
             // versione assembly
             var assembly = Assembly.GetExecutingAssembly();
