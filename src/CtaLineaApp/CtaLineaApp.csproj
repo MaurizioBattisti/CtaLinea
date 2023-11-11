@@ -14,8 +14,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <NeutralLanguage>it-IT</NeutralLanguage>
-    <AssemblyVersion>1.0.0.27</AssemblyVersion>
-    <FileVersion>1.0.0.27</FileVersion>
+    <AssemblyVersion>1.0.0.28</AssemblyVersion>
+    <FileVersion>1.0.0.28</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

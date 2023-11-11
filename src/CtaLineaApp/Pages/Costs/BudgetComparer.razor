@@ -300,7 +300,7 @@ else
 							select new
 							{
 								MonthId = m.Key,
-								Cost = m.Sum(x => x.DayCost),
+								Cost = m.Sum(x => x.DayCost + x.CostKm + x.CostKmExtra + x.DayForfait + x.DayIntegration + x.DayMultiRunForfait),
 								Km = m.Sum(x => x.Km)
 							});
 		var data_s = (from d in this.FirstData
@@ -309,7 +309,7 @@ else
 							select new
 							{
 								MonthId = m.Key,
-								Cost = m.Sum(x => x.DayCost),
+								Cost = m.Sum(x => x.DayCost + x.CostKm + x.CostKmExtra + x.DayForfait + x.DayIntegration + x.DayMultiRunForfait),
 								Km = m.Sum(x => x.Km)
 							});
 
