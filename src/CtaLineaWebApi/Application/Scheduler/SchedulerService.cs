@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ZzSoft.CtaLinea.Dal.Context;
 
@@ -105,6 +106,24 @@ namespace CtaLineaWebApi.Application.Scheduler
 			var newTasks = await conn.QueryAsync<ScheduledTaskItem>(
 				"SELECT * FROM [dbo].[SchedulerTasks]",
 				null);
+			newTasks = (from i in newTasks
+						select  new ScheduledTaskItem ()
+						{
+							Active = i.Active,
+							ActivityId = i.ActivityId,
+							Id = i.Id,
+							Arguments = i.Arguments,
+							Frequency = i.Frequency,
+							RrequencyMask = i.RrequencyMask,
+							Timeout = i.Timeout,
+
+							StartTime = i.StartTime,
+							EndTime = i.EndTime,
+							Interval = i.Interval,
+
+							LastStart = i.LastStart ?? DateTime.Today.AddYears(-1),
+							LastEnd = i.LastEnd ?? DateTime.Today.AddYears(-1)
+						});
 
 			await this._scheduler.ReplaceAllTAsks(newTasks);
 		}

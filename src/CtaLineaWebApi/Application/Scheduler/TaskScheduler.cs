@@ -240,14 +240,6 @@ namespace CtaLineaWebApi.Application.Scheduler
 						taskToRun.Arguments,
 						taskToRun.Timeout)
 						.ConfigureAwait (false);
-					/*
-					var t = self.CallTAskAction(
-						taskToRun.ActivityId,
-						taskToRun.Id,
-						taskToRun.Arguments,
-						taskToRun.Timeout);
-					t.Wait();
-					*/
 
 					taskToRun.LastEnd = DateTime.Now;
 				}
@@ -271,8 +263,8 @@ namespace CtaLineaWebApi.Application.Scheduler
 			ScheduledTaskItem taskToRun = null;
 			foreach (var item in validTAsks)
 			{
-				var lastStart = item.LastStart ?? DateTime.MinValue;
-				var lastEnd = item.LastEnd ?? DateTime.MinValue;
+				var lastStart = item.LastStart ?? DateTime.Today.Date.AddYears(-1);
+				var lastEnd = item.LastEnd ?? DateTime.Today.Date.AddYears(-1);
 				var lastStartLimit = lastStart;
 
 				//  se la frequenza non è giornaliera verifica di essere nelle condizioni corrette
@@ -284,11 +276,19 @@ namespace CtaLineaWebApi.Application.Scheduler
                         lastStartLimit = DateTime.Now.AddMonths(-1);
                         candidate = (DateTime.Today.Day == item.RrequencyMask
 							&& lastStart.Date < midnight);
+						if (candidate == true)
+						{
+							lastStartLimit = DateTime.Now.AddDays(-1);
+						}
                         break;
 					case ScheduleFrequency.Weekly:
                         lastStartLimit = DateTime.Now.AddDays(-7);
                         candidate = this.WeeklyNeedToExecute(item.RrequencyMask, lastEnd);
-                        break;
+						if (candidate == true)
+						{
+							lastStartLimit = DateTime.Now.AddDays(-1);
+						}
+						break;
 					case ScheduleFrequency.Daily:
 						// se non è passato abbastanza tempo dall'ultima esecuzione
 						candidate =  ((lastStart < midnight && item.Interval == TimeSpan.Zero)
