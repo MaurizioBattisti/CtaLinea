@@ -46,6 +46,9 @@ bEGIN
 
 		[DayIntegration]	MONEY NULL , 
 		[DayForfait]		MONEY NULL, 
+		
+		[MinDayCost]		MONEY NULL , 
+		[MaxDayCost]		MONEY NULL, 
     
 		[SimulationName]	VARCHAR(50) NULL, 
 
@@ -61,6 +64,7 @@ bEGIN
 			COALESCE(data.RunCarCostId, NEWID()),
 			data.DayPrice, data.KmPrice, data.KmPriceExtra,
 			data.DayIntegration, data.DayForfait,
+			data.MinCDayost, data.MaxDayCost,
 			data.SimulationName, data.Simulated
 		FROM [dbo].[tvf_Sim_Base] (@SimulationName, @ContractId, @StartDate, @EndDate) AS data
 		INNER JOIN dbo.Runs r
@@ -117,15 +121,18 @@ bEGIN
 		USING  @Tbl_ActOn AS s
 		ON  t.RunCarCostId = s.RunCarCostId
 	WHEN NOT MATCHED  THEN
-		INSERT (RunCarCostId, RunCarId, StartDate, KmPrice, KmPriceExtra, DayPrice, DayForfait, DayIntegration, SimulationName)
-		VALUES (s.RunCarCostId, s.RunCarId, NULL, s.KmPrice, s.KmPriceExtra, s.DayPrice, s.DayForfait, s.DayIntegration, s.SimulationName)
+		INSERT (RunCarCostId, RunCarId, StartDate, KmPrice, KmPriceExtra, DayPrice, DayForfait, DayIntegration, MinDayCost, MaxDayCost,  SimulationName)
+		VALUES (s.RunCarCostId, s.RunCarId, NULL, s.KmPrice, s.KmPriceExtra, s.DayPrice, s.DayForfait, s.DayIntegration, s.MinDayCost, s.MaxDayCost, s.SimulationName)
 	WHEN MATCHED  THEN
 		UPDATE 
 			SET t.KmPrice =  s.KmPrice, 
 				t.KmPriceExtra = s.KmPriceExtra, 
 				t.DayPrice = s.DayPrice, 
 				t.DayForfait = s.DayForfait, 
+				t.MinDayCost = s.MinDayCost,
+				t.MaxDayCost = s.MaxDayCost,
 				t.DayIntegration = s.DayIntegration
+
 		;
 
 

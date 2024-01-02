@@ -15,6 +15,9 @@ CREATE TABLE [dbo].[RunCarCosts]
 
     [DayIntegration] MONEY NULL , 
     [DayForfait] MONEY NULL, 
+
+    [MinDayCost] MONEY NULL , 
+    [MaxDayCost] MONEY NULL, 
     
     [SimulationName] VARCHAR(50) NULL, 
 

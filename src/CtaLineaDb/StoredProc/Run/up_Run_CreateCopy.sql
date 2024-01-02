@@ -244,13 +244,15 @@ BEGIN
 			StartDAte,
 			KmPrice, KmPriceExtra,
 			DayPrice, DayIntegration, DayForfait,
-			SimulationName
+			SimulationName,
+			MinDayCost, MaxDayCost
 			)
 		SELECT m.New_Id, mrc.New_Id,
 				rcc.StartDAte,
 				rcc.KmPrice, rcc.KmPriceExtra,
 				rcc.DayPrice, rcc.DayIntegration, rcc.DayForfait,
-				rcc.SimulationName
+				rcc.SimulationName,
+				rcc.MinDayCost, rcc.MaxDayCost
 			FROM dbo.RunCarCosts rcc
 			INNER JOIN @Tbl_Map m
 				ON m.NaoType = 'COST'

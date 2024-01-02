@@ -1451,6 +1451,8 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 carCost.DayPrice,
                 carCost.DayForfait,
                 carCost.DayIntegration,
+				carCost.MinDayCost,
+				carCost.MaxDayCost,
 				SimulationName = string.IsNullOrWhiteSpace(carCost.SimulationName) ? null : carCost.SimulationName?.Trim()
 			};
         }

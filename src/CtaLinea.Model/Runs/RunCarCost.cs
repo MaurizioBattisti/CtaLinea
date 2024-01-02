@@ -11,10 +11,13 @@ namespace CtaLinea.Model.Runs
         public decimal KmPriceExtra { get; set; }
         public decimal DayPrice { get; set; }
 
-        public decimal? DayIntegration { get; set; }
-        public decimal? DayForfait { get; set; }
+		public decimal? DayIntegration { get; set; }
+		public decimal? DayForfait { get; set; }
+		
+        public decimal? MinDayCost { get; set; }
+		public decimal? MaxDayCost { get; set; }
 
-        public string? SimulationName { get; set; }
+		public string? SimulationName { get; set; }
 
         public string Text => GetCarCostHeader();
 
@@ -29,7 +32,10 @@ namespace CtaLinea.Model.Runs
 
 			this.DayIntegration = item.DayIntegration;
 			this.DayForfait = item.DayForfait;
-            this.SimulationName = item.SimulationName;
+			this.MinDayCost = item.MinDayCost;
+			this.MaxDayCost = item.MaxDayCost;
+
+			this.SimulationName = item.SimulationName;
 	    }
 
         private string GetCarCostHeader()

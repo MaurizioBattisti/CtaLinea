@@ -125,14 +125,8 @@ BEGIN
 					AND ed.Day = d.Day
 				WHERE r.Elastibus = 1 AND  @SimulationName IS NULL
 		)
-	)
-	INSERT @Tbl_Costs(
-			RunId, CarNum, Day,
-			RunVariationId, RunCarId, OriginalRunCarId, 
-			Km, KmBase, KmContract, KmExtra, ExtraType,
-			KmPrice, KmPriceExtra, DayPrice, DayForfait, DayIntegration,
-			o_KmPrice, o_KmPriceExtra, o_DayPrice, o_DayForfait, o_DayIntegration
-			)
+	), CTE_Final_Costs AS
+	(
 		SELECT d.RunId,
 				d.CarNum,
 				d.Day,
@@ -157,7 +151,14 @@ BEGIN
 				o_costs.KmPriceExtra AS o_KmPriceExtra,
 				CASE WHEN k.ExtraType = 1 THEN 0 ELSE o_costs.DayPrice END AS o_DayPrice,
 				CASE WHEN k.ExtraType = 1 THEN 0 ELSE o_costs.DayForfait END AS o_DayForfait,
-				CASE WHEN k.ExtraType = 1 THEN 0 ELSE o_costs.DayIntegration END AS o_DayIntegration
+				CASE WHEN k.ExtraType = 1 THEN 0 ELSE o_costs.DayIntegration END AS o_DayIntegration,
+
+				-- riporta i valori di  costo minimo e massimo
+				-- use coalesce to normalioze values
+				0 AS MinCost,
+				0 AS MaxCost,
+				0 AS o_MinCost,
+				0 AS o_MaxCost
 
 			FROM CTE_Days d
 			INNER JOIN CTE_Km k
@@ -168,7 +169,88 @@ BEGIN
 			INNER JOIN CTE_CarCosts o_costs
 				ON d.OriginalRunCarId = o_costs.RunCarId
 				AND d.Day BETWEEN o_costs.StartDate AND o_costs.EndDate
-			;	
-	
+	), CTE_Final_Costs_Tot AS
+	(
+		SELECT fc.RunId,
+				fc.CarNum,
+				fc.Day,
+				fc.RunVariationId,
+				fc.RunCarId,
+				fc.OriginalRunCarId,
+			
+				fc.Km,
+				fc.KmBase,
+				fc.KmContract,
+				fc.KmExtra,
+				fc.ExtraType,	-- 1 = Extra captioato totale
+								-- 2 = Extra captiolato parziale
+								-- 0 = NON extra captialto
+				fc.KmPrice,
+				fc.KmPriceExtra,
+				fc.DayPrice,
+				fc.DayForfait,
+				fc.DayIntegration,
+				fc.KmPrice + fc.KmPriceExtra +fc.DayPrice + COALESCE(fc.DayForfait, 0) +  COALESCE(fc.DayIntegration, 0) AS c_DayTot,
+
+				fc.o_KmPrice,
+				fc.o_KmPriceExtra,
+				fc.o_DayPrice,
+				fc.o_DayForfait,
+				fc.o_DayIntegration,
+				fc.o_KmPrice + fc.o_KmPriceExtra +fc.o_DayPrice + COALESCE(fc.o_DayForfait, 0) +  COALESCE(fc.o_DayIntegration, 0) AS o_DayTot,
+				
+				-- normalizza i valori minimo e massimo
+				CASE WHEN fc.MinCost < 0 THEN 0 ELSE fc.MinCost END  AS MinCost,
+				CASE WHEN fc. MaxCost <= 0 THEN 1000000000 ELSE fc.MaxCost END AS MaxCost,
+				CASE WHEN fc.o_MinCost < 0 THEN 0 ELSE fc.o_MinCost END  AS o_MinCost,
+				CASE WHEN fc. o_MaxCost <= 0 THEN 1000000000 ELSE fc.o_MaxCost END AS o_MaxCost
+
+			FROM CTE_Final_Costs fc
+	)
+	INSERT @Tbl_Costs(
+			RunId, CarNum, Day,
+			RunVariationId, RunCarId, OriginalRunCarId, 
+			Km, KmBase, KmContract, KmExtra, ExtraType,
+			KmPrice, KmPriceExtra, DayPrice, DayForfait, DayIntegration,
+			o_KmPrice, o_KmPriceExtra, o_DayPrice, o_DayForfait, o_DayIntegration
+			)
+		SELECT fc.RunId,
+				fc.CarNum,
+				fc.Day,
+				fc.RunVariationId,
+				fc.RunCarId,
+				fc.OriginalRunCarId,
+			
+				fc.Km,
+				fc.KmBase,
+				fc.KmContract,
+				fc.KmExtra,
+				fc.ExtraType,	-- 1 = Extra captioato totale
+								-- 2 = Extra captiolato parziale
+								-- 0 = NON extra captialto
+				fc.KmPrice,
+				fc.KmPriceExtra,
+				fc.DayPrice,
+				fc.DayForfait,
+				(CASE WHEN fc.c_DayTot < fc.MinCost
+						THEN COALESCE(fc.DayIntegration, 0) + (fc.MinCost - fc.c_DayTot)
+					WHEN fc.c_DayTot > fc.MaxCost
+						THEN COALESCE(fc.DayIntegration, 0) + (fc.MaxCost - fc.c_DayTot)
+					ELSE fc.DayIntegration
+				END) AS DayIntegration,
+
+				fc.o_KmPrice,
+				fc.o_KmPriceExtra,
+				fc.o_DayPrice,
+				fc.o_DayForfait,
+				(CASE WHEN fc.o_DayTot < fc.o_MinCost
+						THEN COALESCE(fc.o_DayIntegration, 0) + (fc.o_MinCost - fc.o_DayTot)
+					WHEN fc.o_DayTot > fc.o_MaxCost
+						THEN COALESCE(fc.o_DayIntegration, 0) + (fc.o_MaxCost - fc.o_DayTot)
+					ELSE fc.o_DayIntegration
+				END) AS o_DayIntegration
+
+			FROM CTE_Final_Costs_Tot fc
+			;
 	RETURN;
 END

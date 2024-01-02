@@ -24,6 +24,9 @@ RETURNS @Tbl_Result TABLE
     [DayIntegration]	MONEY NULL , 
     [DayForfait]		MONEY NULL, 
     
+	[MinCDayost]		MONEY NULL , 
+    [MaxDayCost]		MONEY NULL, 
+    
     [SimulationName]	VARCHAR(50) NULL, 
 
 	[Simulated]			bit DEFAULT 0
@@ -35,7 +38,7 @@ BEGIN
 
 	WITH CTE_Costs AS
 	(
-		SELECT cc.*,
+		SELECT cc.*,				
 				ROW_NUMBER() OVER (PARTITION BY cc.RunCarId ORDER BY cc.SimulationName DESC, cc.StartDate DESC ) AS num
 			FROM Dbo.RunCarCosts cc
 			INNER JOIN dbo.RunCars rc
@@ -51,6 +54,7 @@ BEGIN
 			RunCarCostId,
 			KmPrice, KmPriceExtra,
 			DayPrice, DayForfait, DayIntegration,
+			MinCDayost, MaxDayCost,
 			SimulationName, 
 			Simulated)
 		SELECT rp.RunId,
@@ -62,6 +66,7 @@ BEGIN
 				COALESCE(cc.DayPrice, 0),
 				cc.DayForfait,
 				cc.DayIntegration,
+				cc.MinDayCost, cc.MaxDayCost,
 				@SimulationName AS SimulationName,
 				CASE WHEN cc.SimulationName IS NULL THEN 0 ELSE 1 END as Simulated
 			FROM dbo.RunCars rc

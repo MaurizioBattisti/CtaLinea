@@ -156,12 +156,14 @@ BEGIN
 			StartDAte, 
 			KmPrice, DayPrice, KmPriceExtra,
 			DayForfait, DayIntegration,
-			SimulationName)
+			SimulationName,
+			MinDayCost, MaxDayCost)
 			SELECT NEWID(), c.New_RunCarId, 
 				COALESCE(cc.StartDAte, '20000101'),
 				cc.KmPrice, cc.DayPrice, cc.KmPriceExtra,
 				cc.DayForfait, cc.DayIntegration,
-				cc.SimulationName
+				cc.SimulationName,
+				cc.MinDayCost, cc.MaxDayCost
 				FROM dbo.RunCarCosts cc
 				INNER JOIN @Tbl_RunCars c
 					ON cc.RunCarId =c.RunCarId

@@ -68,6 +68,7 @@
 			</EditTemplate>
 		</RadzenDataGridColumn>
 
+		<!--
 		<RadzenDataGridColumn TItem="RunCarCost" Title="Fofait G." Property="@nameof(RunCarCost.DayForfait)" FormatString="{0:C}" Width="90px" >
 			<EditTemplate Context="cost">
 				<RadzenNumeric TValue="decimal?"
@@ -86,6 +87,26 @@
 							   Class="w-100" />
 			</EditTemplate>
 		</RadzenDataGridColumn>
+		-->
+		<RadzenDataGridColumn TItem="RunCarCost" Title="Minimo G." Property="@nameof(RunCarCost.MinDayCost)" FormatString="{0:C}" Width="90px">
+			<EditTemplate Context="cost">
+				<RadzenNumeric TValue="decimal?"
+							   @bind-Value="@cost.MinDayCost"
+							   Culture=@AppSettings.CurrentCulture
+							   Format="0.00"
+							   Class="w-100" />
+			</EditTemplate>
+		</RadzenDataGridColumn>
+		<RadzenDataGridColumn TItem="RunCarCost" Title="Massimo. G." Property="@nameof(RunCarCost.MaxDayCost)" FormatString="{0:C}" Width="90px">
+			<EditTemplate Context="cost">
+				<RadzenNumeric TValue="decimal?"
+							   @bind-Value="@cost.MaxDayCost"
+							   Culture=@AppSettings.CurrentCulture
+							   Format="0.00"
+							   Class="w-100" />
+			</EditTemplate>
+		</RadzenDataGridColumn>
+
 		<RadzenDataGridColumn TItem="RunCarCost" Title="Simulazione." Property="@nameof(RunCarCost.SimulationName)" Width="150px">
 			<EditTemplate Context="cost">
 				<RadzenTextBox TValue="string?"
