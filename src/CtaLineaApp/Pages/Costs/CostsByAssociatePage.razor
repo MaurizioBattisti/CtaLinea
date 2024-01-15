@@ -176,14 +176,13 @@
         await base.OnInitializedAsync();
     }
 
-    private async Task LoadDataAsync(
-        CostTYpeEnum costTyle)
+    private async Task LoadDataAsync()
     {
         this.isLoading = true;
-        this.CostTYpe = costTyle;
+        
         try
         {
-            if (costTyle == CostTYpeEnum.ByCar)
+            if (this.CostTYpe == CostTYpeEnum.ByCar)
             {
                 var data = await this._CostService.GetCostsByAssociateASync(
                     this.Request);
@@ -191,7 +190,7 @@
                 this.ByCarData = data;
                 this.ByCarTotals = this._CostService.ComputeTotalsByCar(this.ByCarData);
             }
-            else if (costTyle == CostTYpeEnum.ByRun )
+            else if (this.CostTYpe == CostTYpeEnum.ByRun)
             {
                 var data = await this._CostService.GetCostsByAssociateByRunASync(
                     this.Request);
@@ -228,7 +227,8 @@
 
     private async Task LoadDataByCarAsync ()
     {
-        await LoadDataAsync(CostTYpeEnum.ByCar);
+        // await LoadDataAsync(CostTYpeEnum.ByCar);
+        await LoadDataAsync();
     }
     
     #endregion
@@ -237,9 +237,11 @@
     private IEnumerable<CostByAssociateByRunItem>? ByRunData = null;
     private CostByAssociateByRunItem ByRunTotals { get; set; } = new CostByAssociateByRunItem();
 
+    /*
     private async Task LoadDataByRunAsync()
     {
         await LoadDataAsync(CostTYpeEnum.ByRun);
     }
+    */
     #endregion
 }

@@ -22,7 +22,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 
         private const string SQL_GetCosts = "[dbo].[up_GetCosts_New]";
         private const string SQL_GetCostsByAssociate = "[dbo].[up_GetCostByAssociate]";
-		private const string SQL_GetCostsByAssociateByRun = "[dbo][up_GetCostByAssociateByRun]";
+		private const string SQL_GetCostsByAssociateByRun = "[dbo].[up_GetCostByAssociateByRun]";
 		private const string SQç_GetCostsByRun = "[dbo].[up_GetCostByRun]";
 
         private readonly CtaDbContext _context;
@@ -132,7 +132,7 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             await conn.InitializeSession(this._zzContext);
 
 			using var reader = await conn.QueryMultipleAsync(
-				SQL_GetCostsByAssociate,
+				SQL_GetCostsByAssociateByRun,
 				param: new
 				{
 					BudgetId = budgetId,

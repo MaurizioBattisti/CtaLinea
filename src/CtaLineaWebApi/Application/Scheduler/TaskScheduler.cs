@@ -322,38 +322,33 @@ namespace CtaLineaWebApi.Application.Scheduler
 			int mask,
 			DateTime lastEnd)
 		{
+			// se l'ultima esecuzione è stata fatta oggi non ne fa altre
+			if (lastEnd.Date >= DateTime.Today.Date) return false;
 			bool needToExecute = false;
 
 			var day = DateTime.Today.DayOfWeek;
 			switch (day)
 			{
 				case DayOfWeek.Monday:
-					needToExecute = ((mask & 1) == 1
-						&& lastEnd.Date < DateTime.Today);
+					needToExecute = (mask & 1) == 1;				
 					break;
 				case DayOfWeek.Tuesday:
-					needToExecute = ((mask & 2) == 2
-						&& lastEnd.Date < DateTime.Today);
+					needToExecute = (mask & 2) == 2;						
 					break;
 				case DayOfWeek.Wednesday:
-					needToExecute = ((mask & 4) == 4
-						&& lastEnd.Date < DateTime.Today);
+					needToExecute = (mask & 4) == 4;
 					break;
 				case DayOfWeek.Thursday:
-					needToExecute = ((mask & 8) == 8
-						&& lastEnd.Date < DateTime.Today);
+					needToExecute = (mask & 8) == 8;						
 					break;
 				case DayOfWeek.Friday:
-					needToExecute = ((mask & 16) == 16
-						&& lastEnd.Date < DateTime.Today);
+					needToExecute = (mask & 16) == 16;
 					break;
 				case DayOfWeek.Saturday:
-					needToExecute = ((mask & 32) == 32
-						&& lastEnd.Date < DateTime.Today);
+					needToExecute = (mask & 32) == 32;
 					break;
 				case DayOfWeek.Sunday:
-					needToExecute = ((mask & 64) == 64
-						&& lastEnd.Date < DateTime.Today);
+					needToExecute = (mask & 64) == 64;
 					break;
 			}
 
