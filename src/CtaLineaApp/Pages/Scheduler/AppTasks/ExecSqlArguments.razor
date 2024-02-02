@@ -1,0 +1,66 @@
+﻿@inject NotificationService _notificationService
+@implements IArgumentCollector
+
+<h3>Ricalcolo giorni delle corse</h3>
+
+<RadzenStack Orientation="Orientation.Vertical" Gap="4" AlignItems="AlignItems.Stretch">
+	<RadzenLabel Component="@nameof(ExecuteSqlCommandTaskRequest.SqlCommand)">Comando SQL</RadzenLabel>
+	<RadzenTextArea Name="@nameof(ExecuteSqlCommandTaskRequest.SqlCommand)"
+					Change=@((x) => this.DataChanged())
+					@bind-Value=@Args.SqlCommand
+					Style="height: 350px; width: 100%" />
+</RadzenStack>
+
+@code {
+	[Parameter]
+	public string? Arguments { get; set; }
+	[Parameter]
+	public EventCallback<string?> ArgumentsChanged { get; set; }
+
+	JsonSerializerOptions JsonOptions = new JsonSerializerOptions()
+	{
+		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+	};
+
+	private ExecuteSqlCommandTaskRequest Args = new ExecuteSqlCommandTaskRequest();
+
+	public object? GetArgs ()
+	{
+		return this.Args;
+	}
+
+	protected override Task OnParametersSetAsync()
+	{
+		this.DeserializeArgs();
+		return base.OnParametersSetAsync();
+	}
+
+	private void DeserializeArgs()
+	{
+		try
+		{
+			var obje = JsonSerializer.Deserialize<ExecuteSqlCommandTaskRequest>(this.Arguments, this.JsonOptions);
+			if (obje != null)
+			{
+				this.Args = obje;
+			}
+		}
+		catch (Exception ex)
+		{
+			this._notificationService.Notify(NotificationSeverity.Error,
+				"Errore recuperando i valori",
+				ex.Message);
+		}
+	}
+
+	private string? SerializeArgs ()
+	{
+		return JsonSerializer.Serialize(this.Args, JsonOptions);
+	}
+
+	private void DataChanged ()
+	{
+		this.Arguments = this.SerializeArgs();
+		this.ArgumentsChanged.InvokeAsync(this.Arguments);
+	}
+}

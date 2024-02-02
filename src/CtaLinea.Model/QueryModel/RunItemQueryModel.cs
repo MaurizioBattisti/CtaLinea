@@ -158,7 +158,14 @@ namespace CtaLinea.Model.QueryModel
 
         public bool IsAssociateNotPrimary() => this.NonPrimaryCarRunId != null;
 
-		public void CopyFrom (RunItemQueryModel source)
+        [ColumnDescription(Header = "Bloccata fino al", Ignore = false)]
+		public DateTime? LockedDate { get; set; }
+		[ColumnDescription(Header = "Note di Blocco", Ignore = false)]
+		public string? LockedNote { get; set; }
+
+        public bool IsLocked() => this.LockedDate != null;
+
+        public void CopyFrom (RunItemQueryModel source)
 		{
             Id = source.Id;
             CtaRunId = source.CtaRunId;
@@ -220,6 +227,9 @@ namespace CtaLinea.Model.QueryModel
             CoincidenceState = source.CoincidenceState;
             HasNote = source.HasNote;
             NonPrimaryCarRunId = source.NonPrimaryCarRunId;
+
+			LockedDate = source.LockedDate;
+			LockedNote = source.LockedNote;
 		}
-    }
+	}
 }

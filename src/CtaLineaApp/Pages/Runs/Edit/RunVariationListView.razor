@@ -46,16 +46,18 @@
 						</Template>
 					</RadzenDataGridColumn>
 
-					@if (ReadOnly == false)
+					@if (ReadOnly == false)						
 					{
 						<RadzenDataGridColumn TItem="RunVariation" Context="node" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
 							<Template Context="data">
 								<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
 										  Icon="edit"
+										  Visible=@(false == IsVariationLocked(data))
 										  Size="ButtonSize.Medium"
 										  Click=@(() => EditVariation_Click(data)) Text="" />
 								<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
 										  Icon="delete"
+										  Visible=@(false == IsVariationLocked(data))
 										  Size="ButtonSize.Medium"
 										  Click=@(() => DeleteVariation_Click(data)) Text="" />
 							</Template>
@@ -91,7 +93,8 @@
 			</RadzenColumn>
 			<RadzenColumn Size="6" >
 				<DateSelectorNotNull Name="StartDate"
-									 @bind-Value=@Edit_StartDate />
+				    Min=@GetMinDate()
+					@bind-Value=@Edit_StartDate />
 			</RadzenColumn>
 		</RadzenRow>
 	</Body>
@@ -222,7 +225,17 @@
 	private async Task AddVariation_Click()
 	{
 		this.IsAdding = true;
-		this.Edit_StartDate = DateTime.Today;
+		var mindate = this.GetMinDate();
+		if (mindate == null
+			|| mindate <= DateTime.Today)
+		{
+			this.Edit_StartDate = DateTime.Today;
+		}
+		else
+		{
+			this.Edit_StartDate = mindate.Value;
+		}
+
 		Edit_Item = new RunVariation()
 		{
 			RunVariationId = Guid.NewGuid()
@@ -235,7 +248,15 @@
 	private async Task EditVariation_Click(RunVariation item)
 	{
 		this.IsAdding = false;
-		this.Edit_StartDate = item.StartDate ?? DateTime.Today;
+		var defDate = DateTime.Today;
+		var mindate = this.GetMinDate();
+		if (mindate != null
+			&& mindate > DateTime.Today)
+		{
+			defDate = mindate.Value;
+		}
+
+		this.Edit_StartDate = item.StartDate ?? defDate;
 		Edit_Item = item;
 		if (VariantDialog != null)
 		{
@@ -306,4 +327,30 @@
 		}
 	}
 	#endregion
+
+	private bool IsVariationLocked (
+	RunVariation? item)
+	{
+		if (item == null) return true;
+		if (this.CurrentRun.LockedDate == null) return false;
+
+		if (item.StartDate == null)
+		{
+			return (
+					(this.CurrentRun.StartDate != null
+					&& this.CurrentRun.StartDate <= this.CurrentRun.LockedDate)
+				|| this.CurrentRun.StartDate == null
+			);
+		}
+		else
+		{
+			return item.StartDate <= this.CurrentRun.LockedDate;
+		}
+	}
+
+	private DateTime? GetMinDate ()
+	{
+		if (this.CurrentRun.LockedDate == null) return null;
+		return this.CurrentRun.LockedDate.Value.AddDays(1);
+	}
 }

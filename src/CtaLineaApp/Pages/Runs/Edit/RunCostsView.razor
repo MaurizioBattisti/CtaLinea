@@ -21,13 +21,25 @@
     <HeaderTemplate>
         <RadzenRow>
             <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" Gap="6px">
-                <RadzenStack Orientation="Orientation.Horizontal" Gap="4px" JustifyContent="JustifyContent.Left">
+                <RadzenSplitButton ButtonStyle="ButtonStyle.Dark"
+                                   Icon="file_download" Click=@DownloadData_Click>
+                    <ChildContent>
+                        <RadzenSplitButtonItem Text="Excel" Value="X" Icon="grid_on" />
+                        <RadzenSplitButtonItem Text="CSV" Value="C" Icon="wrap_text" />
+                    </ChildContent>
+                </RadzenSplitButton>
+
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems=AlignItems.Center Gap="4px" JustifyContent="JustifyContent.Left">
                     <RadzenButton ButtonStyle="ButtonStyle.Secondary"
                                   Icon="navigate_before"
                                   Click="@Prev_Click" />
                     <RadzenButton ButtonStyle="ButtonStyle.Secondary"
                                   Icon="navigate_next"
                                   Click="@Next_Click" />
+                    <RadzenLabel Component="SimulationName" Text="Simulazione" />
+                    <SimulationSelector Name="SimulationName" 
+                        @bind-SimulationName=@this.Request.SimulationName
+                        Changed=@PSimulation_Changed />
                 </RadzenStack>
                 
                 <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" Gap="4px" >
@@ -51,6 +63,14 @@
         <RadzenDataGridColumn TItem="CostByRunItem"  Property="@nameof(CostByRunItem.Day)" Title="Giorno" FormatString="{0:dd/MM/yyyy}" />
         <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.AssociateName)" Title="Ditta" Width="200px" />
         <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.CarDescription)" Title="Mezzo" Width="200px" />
+
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.StartTime)" Title="ora inizio" Width="200px" >
+                <Template Context="data">
+                    @FormatTime(data?.StartTime)
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.Path)" Title="Percorso" Width="200px" />
+        <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.RequestedFrequency)" Title="Frequenza" Width="200px" />
         
         <RadzenDataGridColumn TItem="CostByRunItem" Property="@nameof(CostByRunItem.KmTot)" Title="Km Totali" FormatString="{0:f2}" Width="100px" >
             <FooterTemplate>
@@ -128,6 +148,9 @@
 
     [Parameter]
     public Guid RunId { get; set; }
+
+    [Parameter]
+    public int CtaRunId { get; set; }
 
     private DateTime Current { get; set; } = DateTime.Today;
     private PeriodTypeEnum PeriodType { get; set; } = PeriodTypeEnum.Week;
@@ -230,6 +253,10 @@
     {
         this.PeriodType = value;
         this.StateHasChanged();
+        await this.ReloadDataAsync();
+    }
+    private async Task PSimulation_Changed ()
+    {
         await this.ReloadDataAsync();
     }
 
@@ -339,6 +366,53 @@
             || args.Column.Property == nameof(CostByRunItem.Total))
         {
             args.Attributes.Add("style", $"background-color: var(--rz-success-darker)");
+        }
+    }
+    private string FormatTime(
+        TimeSpan? time)
+    {
+        if (time == null) return string.Empty;
+        var to = new TimeOnly(time.Value.Hours, time.Value.Minutes, time.Value.Minutes);
+        return string.Format(this.AppSettings.CurrentCulture, "{0:HH:mm}", to);
+    }
+
+    private async Task DownloadData_Click(RadzenSplitButtonItem item)
+    {
+        this.IsLoading = true;
+        // var columninfo = this.grdData?.GetExportColumnInfo();
+        var columninfo = this.RunCosts.GetExportColumnInfo();
+
+        try
+        {
+            string title = "Dettaglio corsa ID " + this.CtaRunId.ToString ();
+            if (item == null)
+            {
+                await this.ExcelService.Export(title, this.RunCosts, columninfo);
+            }
+            else
+            {
+                switch (item.Value)
+                {
+                    case "X":
+                        await this.ExcelService.ExportExcel(title, this.RunCosts, columninfo);
+                        break;
+                    case "C":
+                        await this.ExcelService.ExportCsv(title, this.RunCosts, columninfo);
+                        break;
+                }
+            }
+            this._notificationService.Notify(NotificationSeverity.Info, "File pronto per il donwload");
+        }
+        catch (Exception ex)
+        {
+            this._notificationService.Notify(
+                NotificationSeverity.Error,
+                "Errori esportando i dati",
+                ex.Message);
+        }
+        finally
+        {
+            this.IsLoading = false;
         }
     }
 }

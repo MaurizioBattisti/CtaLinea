@@ -286,6 +286,17 @@
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="@nameof(RunItemQueryModel.ForfaitName)" Title="Forfait" Width="150px" FilterOperator="FilterOperator.Contains" />
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="@nameof(RunItemQueryModel.CoincidenceState)" Title="Coincidenza" Width="150px" FilterOperator="FilterOperator.Contains" />
 
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Filterable=false Sortable=false Title="Bloccato" Width="50px">
+                    <Template Context="data">
+                        @if (data.IsLocked() == true)
+                        {
+                            <RadzenIcon Icon="lock" IconStyle="IconStyle.Warning" />
+                        }
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="@nameof(RunItemQueryModel.LockedDate)" Title="Data Blocco" FormatString="{0:dd/MM/yyyy}" Width="180px" />
+                <RadzenDataGridColumn TItem="RunItemQueryModel" Property="@nameof(RunItemQueryModel.LockedNote)" Title="Note Blocco"  Width="200px" />
+
                 <!--
                 <RadzenDataGridColumn TItem="RunItemQueryModel" Property="ContractRowNumber" Title="Riga Appalto" Width="100px" FilterValue=@Filter_ContractRowNumber Frozen=true>
                     <Template Context="item">
@@ -424,7 +435,9 @@
 
         Print,
         MultiRun_SetSuspension,
-        MultiRun_SetForfait
+        MultiRun_SetForfait,
+        MultiRun_Lock,
+        MultiRun_Unlock
     };
 
     [CascadingParameter]
@@ -744,6 +757,12 @@
                 {
                     <RadzenMenuItem Icon="block" Text="Sospensione Multi corsa..." Value=@RunMenuItems.MultiRun_SetSuspension />
                     <RadzenMenuItem Icon="savings" Text="Forfait Multi corsa..." Value=@RunMenuItems.MultiRun_SetForfait />
+
+                    @if (CanManage())
+                    {
+                        <RadzenMenuItem Icon="lock" Text="Blocca corse..." Value=@RunMenuItems.MultiRun_Lock />
+                        <RadzenMenuItem Icon="lock_open" Text="Sblocca corse..." Value=@RunMenuItems.MultiRun_Unlock />
+                    }
                     <hr class="separator">
                 }
                 <RadzenMenuItem Icon="print" Text="Stampa..." Value=@RunMenuItems.Print />
@@ -793,6 +812,12 @@
                 break;
             case RunMenuItems.MultiRun_SetForfait:
                 await this.MultiRunSetForfaitAsync();
+                break;
+            case RunMenuItems.MultiRun_Lock:
+                await this.MultiRunLockAsync(true);
+                break;
+            case RunMenuItems.MultiRun_Unlock:
+                await this.MultiRunLockAsync(false);
                 break;
             case RunMenuItems.InternalNote:
                 await this.ShowInternalNoteDialogAsync(args.Data.Id);
@@ -865,6 +890,70 @@
             {
                 this.notificationService.Notify(NotificationSeverity.Error, "Errore durante l'assegnaizoen del forfait. ", exc.Message);
             }
+        }
+    }
+
+    private async Task MultiRunLockAsync (
+        bool setLockl)
+    {
+        //  usa il miultirun seleciont come sorgente
+        var ids = this.MultiSelectedRuns.Select(r => r.Id);
+
+        LockInfo? data = null;
+
+        if (setLockl == true)
+        {
+            data = new LockInfo()
+                {
+                    Date = DateTime.Today
+                };
+            // mostra la dialog per richiedere un forfait
+            var info = await DialogService.OpenAsync<SetLockInfoDialg>($"Imposta blocco Corse",
+                new Dictionary<string, object>() 
+                {
+                    { "ds", this.DialogService },
+                    { "LockInfo", data }
+                },
+                options: new DialogOptions()
+                    {
+                        CloseDialogOnOverlayClick = false,
+                        Width = "300px"
+                    });
+            if (info == null) return;
+            data = info;
+        }
+        else
+        {
+            // chiede conferma per togliere il blocco
+            if (await this.DialogService.Confirm(
+                "Desideri veramente  togliere il blocco dalle schede selezionate ?",
+                "Sblocco schede",
+                new ConfirmOptions
+                {
+                    OkButtonText = "Si, Sblocca !",
+                    CancelButtonText = "Annulla"
+                }) != true)
+            {
+                return;    
+            }
+        }
+
+        // assegna il forfait
+        try
+        {
+            await this.RunRepo.SetLockAsync(
+                ids,
+                data?.Date,
+                data?.Note
+                );
+
+            // se la dialog viene confermata ricaricat i dati
+            await this.LoadDataASync();
+            this.MultiSelectedRuns = this.Data.Where(d => ids.Contains(d.Id)).ToList();
+        }
+        catch (Exception exc)
+        {
+            this.notificationService.Notify(NotificationSeverity.Error, "Errore durante l'assegnaizone delo blocco schede. ", exc.Message);
         }
     }
 

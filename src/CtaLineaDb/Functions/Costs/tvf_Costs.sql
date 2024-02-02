@@ -50,7 +50,9 @@ BEGIN
 				cc.KmPriceExtra,
 				cc.DayPrice,
 				COALESCE(cc.DayForfait, 0) AS DayForfait,
-				COALESCE(cc.DayIntegration, 0) AS DayIntegration
+				COALESCE(cc.DayIntegration, 0) AS DayIntegration,
+				COALESCE(cc.MinDayCost, 0) AS MinDayCost,
+				COALESCE(cc.MaxDayCost, 0) AS MaxDayCost
 			FROM dbo.RunCarCosts cc
 			WHERE (@SimulationName IS NULL 
 					AND cc.SimulationName IS NULL)
@@ -65,7 +67,9 @@ BEGIN
 				cc.KmPriceExtra,
 				cc.DayPrice,
 				cc.DayForfait,
-				cc.DayIntegration
+				cc.DayIntegration,
+				cc.MinDayCost,
+				cc.MaxDayCost
 			FROM CTE_CarCosts_base cc
 			LEFT JOIN CTE_CarCosts_base cc2
 				ON cc.RunCarId = cc2.RunCarId
@@ -143,22 +147,31 @@ BEGIN
 								-- 0 = NON extra captialto
 				costs.KmPrice,
 				costs.KmPriceExtra,
-				CASE WHEN k.ExtraType = 1 THEN 0 ELSE costs.DayPrice END AS DayPrice,
-				CASE WHEN k.ExtraType = 1 THEN 0 ELSE costs.DayForfait END AS DayForfait,
-				CASE WHEN k.ExtraType = 1 THEN 0 ELSE costs.DayIntegration END AS DayIntegration,
+				-- ora considera sempre i costi di algriono , integrazione e forfait
+				--  CASE WHEN k.ExtraType = 1 THEN 0 ELSE costs.DayPrice END AS DayPrice,
+				-- CASE WHEN k.ExtraType = 1 THEN 0 ELSE costs.DayForfait END AS DayForfait,
+				-- CASE WHEN k.ExtraType = 1 THEN 0 ELSE costs.DayIntegration END AS DayIntegration,
+				costs.DayPrice AS DayPrice,
+				costs.DayForfait AS DayForfait,
+				costs.DayIntegration AS DayIntegration,
 
 				o_costs.KmPrice AS o_KmPrice,
 				o_costs.KmPriceExtra AS o_KmPriceExtra,
-				CASE WHEN k.ExtraType = 1 THEN 0 ELSE o_costs.DayPrice END AS o_DayPrice,
-				CASE WHEN k.ExtraType = 1 THEN 0 ELSE o_costs.DayForfait END AS o_DayForfait,
-				CASE WHEN k.ExtraType = 1 THEN 0 ELSE o_costs.DayIntegration END AS o_DayIntegration,
+
+				-- ora considera sempre i costi di algriono , integrazione e forfait
+				o_costs.DayPrice AS o_DayPrice,
+				o_costs.DayForfait AS o_DayForfait,
+				o_costs.DayIntegration AS o_DayIntegration,
+				-- CASE WHEN k.ExtraType = 1 THEN 0 ELSE o_costs.DayPrice END AS o_DayPrice,
+				-- CASE WHEN k.ExtraType = 1 THEN 0 ELSE o_costs.DayForfait END AS o_DayForfait,
+				-- CASE WHEN k.ExtraType = 1 THEN 0 ELSE o_costs.DayIntegration END AS o_DayIntegration,
 
 				-- riporta i valori di  costo minimo e massimo
 				-- use coalesce to normalioze values
-				0 AS MinCost,
-				0 AS MaxCost,
-				0 AS o_MinCost,
-				0 AS o_MaxCost
+				costs.MinDayCost AS MinCost,
+				costs.MaxDayCost AS MaxCost,
+				o_costs.MinDayCost AS o_MinCost,
+				o_costs.MaxDayCost AS o_MaxCost
 
 			FROM CTE_Days d
 			INNER JOIN CTE_Km k

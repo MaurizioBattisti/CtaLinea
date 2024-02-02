@@ -15,6 +15,9 @@
     [RunName] VARCHAR(MAX) NULL, 
     [Elastibus] BIT NOT NULL DEFAULT 0, 
 
+    [LockedDate] DATE NULL, 
+    [LockedNote] VARCHAR(MAX) NULL, 
+
     CONSTRAINT [FK_Funs_Contract] 
         FOREIGN KEY (ContractId) 
         REFERENCES [dbo].[Contracts](ContractId)

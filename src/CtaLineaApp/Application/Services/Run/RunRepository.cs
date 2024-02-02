@@ -1,5 +1,6 @@
 ﻿using CtaLinea.Model;
 using CtaLinea.Model.Base;
+using CtaLinea.Model.Contab;
 using CtaLinea.Model.Helpers;
 using CtaLinea.Model.ModelServices;
 using CtaLinea.Model.QueryModel;
@@ -152,5 +153,23 @@ namespace CtaLineaApp.Application.Services.Run
                 url,
                 request);
         }
+
+        public async Task SetLockAsync(
+            IEnumerable<Guid>? runIds,
+            DateTime? date = null, 
+            string? note = null
+            )
+        {
+            var model = new SetRunLockRequest()
+            {
+                Date = date,
+                Note = note,
+                RunIds = runIds
+            };
+            await this._http.Post<CheckResult>(Constants.Endpoint_Run_Lock, model);
+        }
+
+
+        
     }
 }

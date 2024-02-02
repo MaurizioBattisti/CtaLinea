@@ -34,5 +34,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         Task<bool> SaveRunInternalNoteAsync(
             Guid runId,
             InternalNoteQueryItem note);
+
+        Task SetRunsLockAsync(
+            IEnumerable<Guid> runIds,
+            DateTime? date,
+            string note = null);
     }
 }

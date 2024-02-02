@@ -36,6 +36,7 @@ BEGIN
 		AND @RplacedCars = 1
 		AND @BudgetId IS NULL
 		AND @BudgetName IS NULL
+		AND @SimulationName IS NULL
 	BEGIN
 		SELECT @BudgetId = BudgetId FROM dbo.Budgets WHERE BudgetType = 'LAST CALC';
 	END

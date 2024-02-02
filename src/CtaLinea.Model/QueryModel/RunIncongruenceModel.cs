@@ -128,7 +128,12 @@ namespace CtaLinea.Model.QueryModel
         public string? IncongreunceDescr { get; set; }
 
 
-        public void CopyFrom(RunIncongruenceModel source)
+		[ColumnDescription(Header = "Bloccata fino al", Ignore = false)]
+		public DateTime? LockedDate { get; set; }
+		[ColumnDescription(Header = "Note di Blocco", Ignore = false)]
+		public string? LockedNote { get; set; }
+
+		public void CopyFrom(RunIncongruenceModel source)
         {
             RunId = source.RunId;
             CtaRunId = source.CtaRunId;
@@ -188,6 +193,9 @@ namespace CtaLinea.Model.QueryModel
             CoincidenceState = source.CoincidenceState;
 
             IncongreunceDescr = source.IncongreunceDescr;
-        }
+
+            LockedDate = source.LockedDate;
+            LockedNote = source.LockedNote;
+		}
     }
 }

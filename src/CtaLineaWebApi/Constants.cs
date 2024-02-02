@@ -40,6 +40,7 @@ namespace CtaLineaWebApi
         internal const string Activity_ImportPoints = "i_points";
         internal const string Activity_ExportElastibus = "exp_elastibus";
         internal const string Activity_ExporTT = "exp_tt";
+        internal const string Activity_ExecuteSql= "exec";
 
         // Policy
         internal const string Policy_ChangePAssword = "ChangePAssword";

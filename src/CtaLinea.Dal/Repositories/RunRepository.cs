@@ -43,8 +43,10 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
         private const string SQL_Table_RunInternalNotes = "[dbo].[RunInternalNotes]";
 
         private const string SQL_Table_RunTags = "[dbo].[RunTags]";
+        private const string Sql_SetRunLock = "[dbo].[up_Runs_SetLocked]";
 
-		private readonly CtaDbContext _context;
+
+        private readonly CtaDbContext _context;
         private readonly ICurrentUserService _currentUser;
         private readonly ILogger _logger;
         private readonly IZzRequestConstx _zzContext;
@@ -124,6 +126,45 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
 				}
 			}
 		}
+
+        public async Task SetRunsLockAsync (
+            IEnumerable<Guid> runIds,
+            DateTime? date, 
+            string note = null)
+        {
+            if (date == null) note = null;
+
+            using IDbConnection conn = this._context.GetNewConnection();
+            conn.Open();
+            await conn.InitializeSession(this._zzContext);
+
+            var tran = conn.BeginTransaction();
+
+            try
+            {
+                await conn.ExecuteAsync(
+                    Sql_SetRunLock,
+                    new
+                    {
+                        RunIds = runIds != null ? string.Join(",", runIds) : (string)null,
+                        RefDate = date,
+                        Note = note
+                    },
+                    tran,
+                    commandType: CommandType.StoredProcedure)
+                    .ConfigureAwait(false);
+
+                tran.Commit();
+                tran = null;
+            }
+            finally
+            {
+                if (tran != null)
+                {
+                    tran.Rollback();
+                }
+            }
+        }
 
         public async Task<bool> SaveRunInternalNoteAsync (
             Guid runId,
@@ -992,8 +1033,11 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 runItem.Elastibus,
 				runItem.RunName,
 
-                runItem.Note
-            };
+                runItem.Note,
+
+				runItem.LockedDate,
+				runItem.LockedNote
+			};
         }
         private object GetRunKey(
             Guid runId)

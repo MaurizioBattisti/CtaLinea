@@ -169,6 +169,17 @@ namespace CtaLineaApp.Application.Services.Base
                     EndDate = null,
                 }, optins)
             };
-        }
-    }
+			yield return new AppTaskDescription()
+			{
+				TaskId = Constants.Activity_ExecuteSql,
+				TaskName = "Esegui comando SQL",
+				DefaultArguments = JsonSerializer.Serialize(
+				new ExecuteSqlCommandTaskRequest()
+				{
+					SqlCommand = null
+				}, optins)
+			};
+
+		}
+	}
 }

@@ -25,6 +25,7 @@ BEGIN
 		AND @Suspended = 0
 		AND @RplacedCars = 1
 		AND @BudgetId IS NULL
+		AND @SimulationName IS NULL
 	BEGIN
 		SELECT @BudgetId = BudgetId FROM dbo.Budgets WHERE BudgetType = 'LAST CALC';
 	END
@@ -124,7 +125,8 @@ BEGIN
 
 	WITH CTE_Data AS
 	(
-		SELECT d.Day,
+		SELECT d.RunId,
+				d.Day,
 			  d.AssociateId,
 			  d.CarId,
 			  
@@ -142,7 +144,8 @@ BEGIN
 			  d.MultiRunForfaitType AS MultirunForfaitType,
 			  d.MultiRunForfaitAmount AS MultiRunForfaitAmount
 			FROM @Tbl_OutPut d
-			GROUP BY  d.Day,
+			GROUP BY  d.RunId,
+			  d.Day,
 			  d.AssociateId,
 			  d.CarId,
 			  d.MultiRunForfaitName,
@@ -151,12 +154,19 @@ BEGIN
 		)	
 		SELECT d.*,
 		  a.Description AS AssociateName,
-		  c.Description AS CarDescription
+		  c.Description AS CarDescription,
+		  v.StartTime,
+		  v.Path,
+		  v.RequestedFrequency
 		FROM CTE_Data AS d
 		INNER JOIN dbo.Associates a
 			ON a.AssociateId = d.AssociateId
 		INNER JOIN Dbo.Cars c
 			ON c.CarId = d.CarId
+		INNER JOIN [dbo].[Vw_RunVariants_ByDay] v
+			ON d.RunId = v.RunId
+			AND d.Day = v.Day
+		ORDER BY d.day
 		;
 		
 	RETURN 0;

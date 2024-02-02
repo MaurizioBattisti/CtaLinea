@@ -67,6 +67,7 @@
 
         <RadzenDataGridColumn TItem="ScheduledTaskItem" Property="@(nameof(ScheduledTaskItem.Id))" Title="Id" Width="80px"  />
         <RadzenDataGridColumn TItem="ScheduledTaskItem" Property="@(nameof(ScheduledTaskItem.ActivityId))" Title="Attività" Width="150px" />
+        <RadzenDataGridColumn TItem="ScheduledTaskItem" Property="@(nameof(ScheduledTaskItem.Description))" Title="Titolo" Width="200px" />
 
         <RadzenDataGridColumn TItem="ScheduledTaskItem" Property="@(nameof(ScheduledTaskItem.Frequency))" Title="Frequenza" Width="150px">
             <Template Context="data">

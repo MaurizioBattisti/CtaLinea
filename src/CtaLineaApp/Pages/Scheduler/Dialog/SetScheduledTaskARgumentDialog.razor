@@ -43,6 +43,10 @@
 				{
 					<ExportTtArguments @ref=@_collector @bind-Arguments="ScheduledTask.Arguments" />
 				}
+				else if (this.ScheduledTask.ActivityId == Constants.Activity_ExecuteSql)
+				{
+					<ExecSqlArguments @ref=@_collector @bind-Arguments="ScheduledTask.Arguments" />
+				}
 
 				else
 				{

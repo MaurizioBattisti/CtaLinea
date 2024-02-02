@@ -227,5 +227,7 @@
     <Build Include="StoredProc\Dashboard\uo_Dashboard_GetPrevKm.sql" />
     <Build Include="StoredProc\Dashboard\uo_Dashboard_GetCosts.sql" />
     <Build Include="Views\Contab\vw_Budget.sql" />
+    <Build Include="Views\Runs\Vw_RunVariants_ByDay.sql" />
+    <Build Include="StoredProc\Run\up_Runs_SetLocked.sql" />
   </ItemGroup>
 </Project>

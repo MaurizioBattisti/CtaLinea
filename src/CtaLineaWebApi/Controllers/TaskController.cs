@@ -222,6 +222,44 @@ namespace CtaLineaWebApi.Controllers
             return this.NoContent();
         }
 
+        [SwaggerOperation("Esegue un comando SQL")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPost]
+        [Route(Constants.Activity_ExecuteSql + "/{id}")]
+        public async Task<IActionResult> ExecSqlAsync(
+            [FromRoute] int id,
+            [FromQuery] int? timeout,
+            [FromBody] ExecuteSqlCommandTaskRequest taskRequest
+            )
+        {
+            _schedulerLogger.TaskId = id;
+            await _scheduler.StartActivityAsync(Constants.Activity_ExecuteSql, id);
+
+            var request = new ExecuteSqlRequest()
+            {
+                Timeout = timeout ?? 600,
+                SqlCommand = taskRequest.SqlCommand
+            };
+
+            try
+            {
+                var result = await this._mediator.Send(request)
+                    .ConfigureAwait(false);
+                if (result == false)
+                {
+                    return this.BadRequest("Operazione fallita senza messaggio");
+                }
+            }
+            catch (Exception ex)
+            {
+                return this.BadRequest(ex);
+            }
+
+            await _scheduler.EndActivityAsycn(Constants.Activity_ExecuteSql, id);
+            return this.NoContent();
+        }
+
+
         [SwaggerOperation("Importa i dati relativi ai consorziati / mezzi e  autisti")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpPost]

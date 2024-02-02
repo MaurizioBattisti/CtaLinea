@@ -27,7 +27,10 @@ namespace CtaLinea.Model.Runs
         
         public string? Note { get; set; }
 
-        public IList<RunVariation>? Variations { get; set; }
+        public DateTime? LockedDate { get; set; }
+        public string? LockedNote { get; set; }
+
+		public IList<RunVariation>? Variations { get; set; }
 
         public IList<RunPeriod>? SubPeriods { get; set; }
 

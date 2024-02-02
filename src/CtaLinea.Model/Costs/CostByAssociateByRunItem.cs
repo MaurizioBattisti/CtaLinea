@@ -12,10 +12,12 @@ namespace CtaLinea.Model.Costs
 	{
 		[ColumnDescription(Header = "Id Ditta", Ignore = true)]
 		public Guid? AssociateId { get; set; }
-		[ColumnDescription(Header = "Ditta")]
-		public string AssociateName { get; set; } = string.Empty;
+        [ColumnDescription(Header = "Ditta")]
+        public string AssociateName { get; set; } = string.Empty;
+        [ColumnDescription(Header = "Mezzi")]
+        public string CarDescr { get; set; } = string.Empty;
 
-		[ColumnDescription(Header = "Id Appalto", Ignore = true)]
+        [ColumnDescription(Header = "Id Appalto", Ignore = true)]
 		public int ContractId { get; set; }
 		[ColumnDescription(Header = "Appalto")]
 		public string ContractName { get; set; } = string.Empty;
@@ -46,20 +48,24 @@ namespace CtaLinea.Model.Costs
 		[ColumnDescription(Header = "Km Totali")]
 		public double KmTot => this.Km + this.KmExtra;
 
-		[ColumnDescription(Header = "Import al Giorno")]
+		[ColumnDescription(Header = "Import Totale")]
 		public decimal DayCost { get; set; }
-		[ColumnDescription(Header = "Importo al GG per Km")]
+		[ColumnDescription(Header = "Importo per Km")]
 		public decimal CostKm { get; set; }
-		[ColumnDescription(Header = "Importo al GG per KM Extra")]
+		[ColumnDescription(Header = "Importo per KM Extra")]
 		public decimal CostKmExtra { get; set; }
 
-		[ColumnDescription(Header = "Integrazione al Girono")]
+		[ColumnDescription(Header = "Integrazione")]
 		public decimal DayIntegration { get; set; }
-		[ColumnDescription(Header = "Forfait al Giorno")]
+		[ColumnDescription(Header = "Forfait")]
 		public decimal DayForfait { get; set; }
-		[ColumnDescription(Header = "Forfait Multipli al giorno")]
+		[ColumnDescription(Header = "Forfait Multipli")]
 		public decimal DayMultiRunForfait { get; set; }
-		[ColumnDescription(Header = "Totale riga")]
+
+        [ColumnDescription(Header = "Nr Giorni")]
+        public int DayCount { get; set; }
+
+        [ColumnDescription(Header = "Totale riga")]
 		public decimal Total => this.DayCost + this.CostKm + this.CostKmExtra + this.DayIntegration + this.DayForfait + this.DayMultiRunForfait;
-	}
+    }
 }

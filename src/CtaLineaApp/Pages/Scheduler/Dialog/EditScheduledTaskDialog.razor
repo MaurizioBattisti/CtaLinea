@@ -25,6 +25,14 @@
 			</RadzenRow>
 			<RadzenRow AlignItems="AlignItems.Start">
 				<RadzenColumn Size="3">
+					<RadzenLabel Component="@nameof(ScheduledTaskItem.Description)">Titolo</RadzenLabel>
+				</RadzenColumn>
+				<RadzenColumn Size="9">
+					<RadzenTextBox MaxLength="200" @bind-Value=@this.ScheduledTask.Description class="w-100" />
+				</RadzenColumn>
+			</RadzenRow>
+			<RadzenRow AlignItems="AlignItems.Start">
+				<RadzenColumn Size="3">
 					<RadzenLabel Component="@nameof(ScheduledTaskItem.Frequency)">Frequenza</RadzenLabel>
 				</RadzenColumn>
 				<RadzenColumn Size="3">

@@ -8,6 +8,8 @@
 @inject IRunChecker runChecker
 @inherits EditorComponentBase
 @inject IAccountService _accountService
+@inject IApplicationSettings AppSettings
+@inject TooltipService tooltipService
 
 <CtaLineaSttingsNotifier Changed=@StateHasChanged />
 
@@ -46,9 +48,6 @@ else if (this.NoData == false)
         TabPosition="TabPosition.Top" 
         
         Change=@TabChangedd>
-        <!--
-            RenderMode="TabRenderMode.Client"
-        -->
          <Tabs>
             <RadzenTabsItem Text="Errori" Icon="beenhere">
                 <Animate Animation="Animations.ZoomIn"
@@ -61,8 +60,23 @@ else if (this.NoData == false)
                 </Animate>
             </RadzenTabsItem>
 
-            <RadzenTabsItem Text="Dati generali" Selected=true Icon="home">
-                <MainRunDataView ReadOnly=@ReadOnly CurrentRun=@this.CurrentRun EditableData=@this />
+            <RadzenTabsItem Text="Dati generali" Selected=true>
+                <Template>
+                    <RadzenStack AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Orientation="Orientation.Horizontal">
+                        <RadzenIcon Icon="home" />
+                        <RadzenText Text="Dati generali" />
+                        @if(this.CurrentRun?.LockedDate != null)
+                        {
+                        <RadzenBadge Text="1"
+                            BadgeStyle="BadgeStyle.Warning"
+                            MouseEnter="@(args => ShowTooltip(args) )"
+                            />
+                        }
+                    </RadzenStack>
+                </Template>
+                <ChildContent>
+                    <MainRunDataView ReadOnly=@ReadOnly CurrentRun=@this.CurrentRun EditableData=@this />
+                </ChildContent>                
             </RadzenTabsItem>
 
             <RadzenTabsItem Text="Varianti" Icon="fork_right">
@@ -78,7 +92,12 @@ else if (this.NoData == false)
                     <RadzenStack AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Orientation="Orientation.Horizontal">
                         <RadzenIcon Icon="block" />
                         <RadzenText Text="Sospensioni" />
-                        <RadzenBadge Text="@(this.CurrentRun.Suspensions == null ? "0" : this.CurrentRun.Suspensions.Count.ToString())" />
+                        @if (this.HasSuspensions() == true)
+                        {
+                            <RadzenBadge 
+                                BadgeStyle="BadgeStyle.Info"
+                                Text="@(this.CurrentRun?.Suspensions?.Count.ToString())" />
+                        }
                     </RadzenStack>
                 </Template>
                 <ChildContent>
@@ -107,7 +126,7 @@ else if (this.NoData == false)
                 @if (this.CanViewCosts())
                 {
                     <RadzenTabsItem Text="Costi" Icon="point_of_sale">
-                        <RunCostsView @ref=@CostsView RunId=@RunId />
+                        <RunCostsView @ref=@CostsView RunId=@RunId CtaRunId=@GetCtaRunId() />
                     </RadzenTabsItem>
                 }
             }
@@ -268,6 +287,11 @@ else if (this.NoData == true)
                     this.CheckResult = await this.runChecker.CheckRunAsync(this.CurrentRun);
                     this.NoData = false;
                     this.ElastibusDaysVisible = this.CurrentRun.Elastibus;
+
+                    if (this.CostsView != null)
+                    {
+                        this.CostsView.CtaRunId = this.CurrentRun.CtaRunId ?? 0;
+                    }
                 }
             }
             else
@@ -349,6 +373,7 @@ else if (this.NoData == true)
             }
             if (this.CostsView != null)
             {
+                this.CostsView.CtaRunId = this.CurrentRun.CtaRunId ?? 0;
                 await this.CostsView.ReloadDataAsync();
             }
 
@@ -388,9 +413,41 @@ else if (this.NoData == true)
     /*
     private void Btn_Click()
     {
-        this.IsClean = !IsClean;
-        this.EditMode = !this.EditMode;
-        this.StateHasChanged();
+    this.IsClean = !IsClean;
+    this.EditMode = !this.EditMode;
+    this.StateHasChanged();
     }
     */
+
+    private int GetCtaRunId ()
+    {
+        return this.CurrentRun?.CtaRunId ?? 0;
+    }
+
+    private void ShowTooltip(
+        ElementReference elementReference, 
+        TooltipOptions? options = null)
+    {
+        if (this.CurrentRun?.LockedDate != null)
+        {
+            if (options == null) options = new TooltipOptions();
+            options.Style = "background: var(--rz-warning-light); color: var(--rz-text-color)";
+
+            var msg = string.Format(this.AppSettings.CurrentCulture, "{0:dd/MM/yyyy} {1}",
+                this.CurrentRun.LockedDate,
+                string.IsNullOrWhiteSpace(this.CurrentRun.LockedNote) == true ? string.Empty : "\n" + this.CurrentRun.LockedNote
+                );
+            tooltipService.Open(elementReference, msg, options);
+        }
+    }
+    private bool HasSuspensions ()
+    {
+        bool has = false;
+        if (this.CurrentRun.Suspensions != null)
+        {
+            has = this.CurrentRun.Suspensions?.Count > 0;
+        }
+        return has;
+        
+    }
 }

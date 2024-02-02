@@ -37,6 +37,7 @@ BEGIN
 		AND @RplacedCars = 1
 		AND @BudgetId IS NULL
 		AND @BudgetName IS NULL
+		AND @SimulationName IS NULL
 	BEGIN
 		SELECT @BudgetId = BudgetId FROM dbo.Budgets WHERE BudgetType = 'LAST CALC';
 	END
@@ -135,12 +136,33 @@ BEGIN
 			;
 	END;
 
-	WITH CTE_Data AS
+	WITH CTE_Cars AS
+	(
+		SELECT DISTINCT d.AssociateId,
+			  d.ContractId,
+			  d.RunId,
+			  d.CarId,
+			  c.RegNumber
+			FROM @Tbl_OutPut d
+			INNER JOIN dbo.Cars c
+				ON  d.CarId = c.CarId
+	), CTE_CarDescrs AS
+	(
+		SELECT c.AssociateId,
+			  c.ContractId,
+			  c.RunId,
+			  STRING_AGG(c.RegNumber, ', ') AS CarDescr
+			FROM CTE_Cars c
+			GROUP BY c.AssociateId,
+			  c.ContractId,
+			  c.RunId
+	), CTE_Data AS
 	(
 		SELECT d.AssociateId,
 			  d.ContractId,
 			  d.RunId,
 			  
+			  COUNT(d.Day) AS DayCount,
 			  SUM(d.RealKm_Contract) AS Km,
 			  SUM(d.RealKm_Extra) AS KmExtra,
 			  SUM(d.DayCost) AS DayCost, 
@@ -157,6 +179,7 @@ BEGIN
 			  d.RunId
 		)	
 		SELECT d.*,
+			c.CarDescr,
 			-- dati della corsa
 			r.CtaRunId,
 			r.PathsDescr,
@@ -175,6 +198,10 @@ BEGIN
 			ON d.RunId = r.RunId
 		INNER JOIN dbo.Contracts ct
 			ON ct.ContractId = d.ContractId
+		LEFT JOIN CTE_CarDescrs c
+			ON d.AssociateId = c.AssociateId
+			AND d.ContractId = c.ContractId
+			AND d.RunId = c.RunId
 		;
 		
 	RETURN 0;

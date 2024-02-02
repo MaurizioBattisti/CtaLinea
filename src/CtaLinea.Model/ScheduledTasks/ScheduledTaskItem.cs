@@ -10,8 +10,9 @@ namespace CtaLinea.Model.ScheduledTasks
     {
         public int Id { get; set; }
         public string ActivityId { get; set; } = string.Empty;
+		public string? Description { get; set; }
 
-        public ScheduleFrequency Frequency { get; set; } = ScheduleFrequency.Daily;
+		public ScheduleFrequency Frequency { get; set; } = ScheduleFrequency.Daily;
         public int RrequencyMask { get; set; } = 1;
 
         public TimeSpan StartTime { get; set; } = TimeSpan.FromHours(8);
@@ -77,8 +78,9 @@ namespace CtaLinea.Model.ScheduledTasks
         {
             this.Id = item.Id;
             this.ActivityId = item.ActivityId;
+            this.Description = item.Description;
 
-            this.Frequency = item.Frequency;
+			this.Frequency = item.Frequency;
             this.RrequencyMask = item.RrequencyMask;
 
             this.StartTime = item.StartTime;

@@ -41,5 +41,10 @@ namespace CtaLineaApp.Application.Services.Run
         Task<IEnumerable<RunForPrintModel>?> GetRunsForPrintAsync(
             GetRunForPrintRequest request);
 
+        Task SetLockAsync(
+            IEnumerable<Guid>? runIds,
+            DateTime? date = null,
+            string? note = null
+            );
     }
 }

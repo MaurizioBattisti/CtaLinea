@@ -127,7 +127,8 @@ BEGIN
 			FROM dbo.RunVariations v
 			INNER JOIN @Tbl_Map m
 				ON m.NaoType = 'VAR'
-				AND v.RunId = m.ParentId;
+				AND v.RunId = m.ParentId
+				AND v.RunVariationId = m.OldI_d;
 
 	-- inserisce i calendari
 	INSERT INTO dbo.RunVariationCalendars

@@ -18,6 +18,12 @@
 		<RadzenStack Orientation="Orientation.Horizontal">
 			<RadzenIcon Icon="@(this.CurrentRun.Extra ?"health_and_safety" : "shield")" IconStyle=@(this.CurrentRun.Extra ? IconStyle.Warning : IconStyle.Info) />
 			<RadzenIcon Icon="auto_awesome" Visible=@CurrentRun.Elastibus IconStyle="IconStyle.Primary" />
+			@if(this.CurrentRun.LockedNote != null)
+			{
+				<RadzenIcon Icon="lock"  IconStyle="IconStyle.Warning" />
+				<RadzenText Text=@string.Format(AppSettings.CurrentCulture, "{0:dd/MM/yyyy}", this.CurrentRun.LockedDate) />
+				<RadzenText Text=@(this.CurrentRun.LockedNote ?? string.Empty) />
+			}
 		</RadzenStack>
 		<div class="row">
 			<RadzenFieldset Text="Appalto">

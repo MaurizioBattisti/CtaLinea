@@ -136,7 +136,7 @@ BEGIN
 			WHERE (d.Suspended = 0
 					OR d.Suspended = @Suspended)
 				AND (d.OutOfPeriod = 0
-					OR d.OutOfPeriod =OutOfPEriod)
+					OR d.OutOfPeriod =@OutOfPEriod)
 				AND (@RunId IS NULL
 					OR c.RunId = @RunId)
 				AND (@ContractId IS  NULL
@@ -185,7 +185,7 @@ BEGIN
 		INNER JOIN dbo.MultiRunForfait f
 			ON d.ForfaitId = f.ForfaitId
 	
-	-- calcola al  quota aprte del forfait sul mezzo / consorziato /  corsa /  girono
+	-- calcola la quota aprte del forfait sul mezzo / consorziato /  corsa /  girono
 	BEGIN
 		-- forafit giornalieri
 		DECLARE @Tbl_MRForfait_byDAy AS TABLE

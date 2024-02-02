@@ -111,10 +111,12 @@
 					<RadzenDataGridColumn TItem="RunPeriod" Context="group" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
 						<Template Context="data">
 							<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
+									  Visible=@(!IsPeriodLocked(data))
 									  Icon="edit"
 									  Size="ButtonSize.Medium"
 									  Click=@(() => EditPeriod_Click(data)) Text="" />
 							<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
+									  Visible=@(!IsPeriodLocked(data))		  
 									  Icon="delete"
 									  Size="ButtonSize.Medium"
 									  Click=@(() => DeletePeriod_Click(data)) Text="" />
@@ -130,7 +132,7 @@
 				<Tabs>
 					<RadzenTabsItem Text="Mezzi usati" Selected=true >
 						<RunCarListView2 CurrentRun=@CurrentRun
-									 ReadOnly="@ReadOnly"
+									 ReadOnly="@SelectedReadOnly"
 									 EditableData=@EditableData 
 									 CarList="@this.GetSelectedPeriod().Cars"  
 									 BeforeAddNew="@BeforeAddCarAsync"
@@ -143,7 +145,7 @@
 									 HandleReplacedCars=false />
 					</RadzenTabsItem>
 					<RadzenTabsItem Text="Sostituzioni" >
-						<RunCarReplacementListView ReadOnly=@ReadOnly CurrentRun=@CurrentRun EditableData=@EditableData Period="@GetSelectedPeriod()" />
+						<RunCarReplacementListView ReadOnly=@SelectedReadOnly CurrentRun=@CurrentRun EditableData=@EditableData Period="@GetSelectedPeriod()" />
 					</RadzenTabsItem>
 					<RadzenTabsItem Text="Note Periodo" >
 						<RadzenRow AlignItems="AlignItems.Start">
@@ -151,7 +153,7 @@
 								<RadzenLabel Component="Note" Text="Note" />
 							</RadzenColumn>
 							<RadzenColumn Size="9">
-								<RadzenTextArea ReadOnly=@ReadOnly Name="Note" @bind-Value="CurrentPeriod.Note" Class="w-100 h-100" Change=@(a=> this.EditableData?.SetDirty()) Style="height: 60px" />
+								<RadzenTextArea ReadOnly=@SelectedReadOnly Name="Note" @bind-Value="CurrentPeriod.Note" Class="w-100 h-100" Change=@(a=> this.EditableData?.SetDirty()) Style="height: 60px" />
 							</RadzenColumn>
 						</RadzenRow>
 					</RadzenTabsItem>
@@ -202,6 +204,21 @@
 
 			args.Grid.Groups.Add(new GroupDescriptor() { Title = "Gruppo", Property = nameof(RunPeriod.MainPeriodText), SortOrder = SortOrder.Ascending });
 			StateHasChanged();
+		}
+	}
+
+	private bool SelectedReadOnly
+	{
+		get
+		{
+			if (this.SelectedPeriods.Count == 0) return true;
+			if (this.ReadOnly == true) return true;
+
+			if (this.CurrentRun.LockedNote == null) return false;
+			var period = this.GetSelectedPeriod();
+			if (period.StartDate == null) return true;
+			if (period.StartDate <= this.CurrentRun.LockedDate) return true;
+			return false;
 		}
 	}
 
@@ -258,7 +275,7 @@
 
 		var edit = await DialogService.OpenAsync(
 			"Nuovo periodo",
-			ds => @<RunPeriodDataDialog ds=@ds IsAdding="@IsAdding" PeriodInEdit=@PeriodInEdit />
+		ds => @<RunPeriodDataDialog ds=@ds CurrentRun=@CurrentRun IsAdding="@IsAdding" PeriodInEdit=@PeriodInEdit />
 			, new DialogOptions()
 				{
 					ShowClose = true,
@@ -284,7 +301,7 @@
 
 		var edit = await DialogService.OpenAsync(
 			"Modifica periodo",
-			ds => @<RunPeriodDataDialog ds=@ds IsAdding="@IsAdding" PeriodInEdit=@PeriodInEdit />
+		ds => @<RunPeriodDataDialog ds=@ds CurrentRun=@CurrentRun IsAdding="@IsAdding" PeriodInEdit=@PeriodInEdit />
 			, new DialogOptions()
 			{
 				ShowClose = true,
@@ -602,5 +619,21 @@
 			default:
 				break;
 		};
+	}
+
+	private bool IsPeriodLocked (RunPeriod item)
+	{
+		bool isLocked = false;
+		if (this.CurrentRun.LockedDate != null)
+		{
+			isLocked = true;
+			if (item.StartDate != null
+				&& item.StartDate > this.CurrentRun.LockedDate)
+			{
+				isLocked = false;
+			}
+		}
+
+		return isLocked;
 	}
 }

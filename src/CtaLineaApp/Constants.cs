@@ -61,6 +61,7 @@ namespace CtaLineaApp
         internal const string Endpoint_OneRun_Note_Frm = Endpoint_OneRun_Frm + "/note";
         internal const string Endpoint_Run_AddElastibusDays = Endpoint_Runs + "/addelbdays";
         internal const string Endpoint_Run_ForPRint = Endpoint_Runs + "/forprint";
+        internal const string Endpoint_Run_Lock = Endpoint_Runs + "/lock";
 
         // costi
         internal const string EndPoint_Costs = "api/costs";
@@ -188,6 +189,7 @@ namespace CtaLineaApp
         internal const string Activity_ImportPoints = "i_points";
         internal const string Activity_ExportElastibus = "exp_elastibus";
         internal const string Activity_ExporTT = "exp_tt";
+        internal const string Activity_ExecuteSql = "exec";
 
         // budget types
         internal const string BudgetTYpe_Last_Calc = "LAST CALC";

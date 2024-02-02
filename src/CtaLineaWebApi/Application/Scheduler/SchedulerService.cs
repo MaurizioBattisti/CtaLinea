@@ -111,6 +111,8 @@ namespace CtaLineaWebApi.Application.Scheduler
 						{
 							Active = i.Active,
 							ActivityId = i.ActivityId,
+							Description = i.Description,
+
 							Id = i.Id,
 							Arguments = i.Arguments,
 							Frequency = i.Frequency,

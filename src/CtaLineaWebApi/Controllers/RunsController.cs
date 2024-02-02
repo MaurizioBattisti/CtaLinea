@@ -26,6 +26,8 @@ using CtaLinea.Model.Response;
 using CtaLinea.Model;
 using CtaLineaWebApi.Application.Commands.Uility;
 using CtaLineaWebApi.Application.Scheduler;
+using System.Linq;
+using CtaLineaWebApi.Application.Commands.Forfait;
 
 namespace CtaLineaWebApi.Controllers
 {
@@ -316,8 +318,40 @@ namespace CtaLineaWebApi.Controllers
             }
         }
 
-		#region dettagli
-		[Authorize(Policy = Constants.Policy_RunView)]
+        [Authorize(Policy = Constants.Policy_ManageData)]
+        [SwaggerOperation("Blocca o sblocca un gruppo di corse")]
+        [ProducesResponseType(StatusCodes.Status204NoContent,
+            Type = typeof(CheckResult))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpPost]
+        [Route("lock")]
+        public async Task<IActionResult> LockRunsAsync(
+            [FromBody] SetRunLockRequest model)
+        {
+            if (model.RunIds == null
+                || model.RunIds.Count() == 0
+                )
+            {
+                // ritorna un badrequest
+                return this.BadRequest(
+                    new CheckResult() { Description = "Non è possibile bloccare o sbloccare corse se non se ne indica neanche una" }
+                    ); ;
+            }
+
+            var request = new SetRunLockedRequest()
+            {
+                RunIds = model.RunIds,
+                Date = model.Date,
+                Note = model.Note
+            };
+            await this._mediator.Send(request)
+                .ConfigureAwait(false);
+
+            return this.NoContent();
+        }
+
+        #region dettagli
+        [Authorize(Policy = Constants.Policy_RunView)]
 		[SwaggerOperation("Elenco  delle varianti di una corsa")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<RuntimeVariablesExpression>))]
         [HttpGet]

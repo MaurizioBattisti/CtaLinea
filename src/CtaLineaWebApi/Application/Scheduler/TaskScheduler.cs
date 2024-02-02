@@ -265,7 +265,6 @@ namespace CtaLineaWebApi.Application.Scheduler
 			{
 				var lastStart = item.LastStart ?? DateTime.Today.Date.AddYears(-1);
 				var lastEnd = item.LastEnd ?? DateTime.Today.Date.AddYears(-1);
-				var lastStartLimit = lastStart;
 
 				//  se la frequenza non è giornaliera verifica di essere nelle condizioni corrette
 				bool candidate = true;
@@ -273,33 +272,21 @@ namespace CtaLineaWebApi.Application.Scheduler
 				switch (item.Frequency)
 				{
 					case ScheduleFrequency.Monthly:
-                        lastStartLimit = DateTime.Now.AddMonths(-1);
                         candidate = (DateTime.Today.Day == item.RrequencyMask
 							&& lastStart.Date < midnight);
-						if (candidate == true)
-						{
-							lastStartLimit = DateTime.Now.AddDays(-1);
-						}
                         break;
 					case ScheduleFrequency.Weekly:
-                        lastStartLimit = DateTime.Now.AddDays(-7);
                         candidate = this.WeeklyNeedToExecute(item.RrequencyMask, lastEnd);
-						if (candidate == true)
-						{
-							lastStartLimit = DateTime.Now.AddDays(-1);
-						}
 						break;
 					case ScheduleFrequency.Daily:
 						// se non è passato abbastanza tempo dall'ultima esecuzione
 						candidate =  ((lastStart < midnight && item.Interval == TimeSpan.Zero)
 							|| lastStart + item.Interval < DateTime.Now) ;
-                        lastStartLimit = DateTime.Now.AddDays(-1);
                         break;
 				}
-                mustExecute = lastStart < lastStartLimit;
-                if (candidate == false && mustExecute == false) continue;
+                if (candidate == false) continue;
 				
-				if (lastStartLimit <= lastStart &&   now < item.StartTime) continue;
+				if (now < item.StartTime) continue;
 				if (item.EndTime != TimeSpan.Zero && now > item.EndTime) continue;
 
 				// l'erazione è ancora in corso

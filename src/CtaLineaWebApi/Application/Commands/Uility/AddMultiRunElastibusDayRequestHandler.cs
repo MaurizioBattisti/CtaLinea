@@ -46,42 +46,45 @@ namespace CtaLineaWebApi.Application.Commands.Uility
 		private IEnumerable<ElastibusDayDataItem> IterateData (
 			string data)
 		{
-			var rows = data.Split("\n");
-			foreach (var row in rows)
+            if (string.IsNullOrEmpty (data) == false)
 			{
-				if (string.IsNullOrWhiteSpace(row)) continue;
-				var elements = row.Split ("\t");
-
-				// recupera l'id della corsa
-				if (elements.Length < 3) continue;
-
-				if (elements.Length == 3)
+                var rows = data.Split("\n");
+                foreach (var row in rows)
 				{
-					// imposta a zero il valore delle persone
-					elements = new string[4] { elements[0], elements[1], elements[2], "0" };
-				}
+					if (string.IsNullOrWhiteSpace(row)) continue;
+					var elements = row.Split("\t");
 
-				bool ok = false;
-				ok = int.TryParse (elements[0], NumberStyles.Integer, _culture, out int ctaId);
+					// recupera l'id della corsa
+					if (elements.Length < 3) continue;
 
-				if (ok == false) continue;
-				ok = DateTime.TryParse(elements[1], _culture, DateTimeStyles.AssumeUniversal, out DateTime day);
-
-				if (ok == false) continue;
-				ok = float.TryParse(elements[2], NumberStyles.Number, _culture, out float km);
-
-				if (ok == false) continue;
-				ok = int.TryParse(elements[3], NumberStyles.Integer, _culture, out int peopleCount);
-
-				if (ok == true)
-				{
-					yield return new ElastibusDayDataItem()
+					if (elements.Length == 3)
 					{
-						RunCtaId = ctaId,
-						Date = day,
-						Km = km,
-						PeopleCount = peopleCount
-					};
+						// imposta a zero il valore delle persone
+						elements = new string[4] { elements[0], elements[1], elements[2], "0" };
+					}
+
+					bool ok = false;
+					ok = int.TryParse(elements[0], NumberStyles.Integer, _culture, out int ctaId);
+
+					if (ok == false) continue;
+					ok = DateTime.TryParse(elements[1], _culture, DateTimeStyles.AssumeUniversal, out DateTime day);
+
+					if (ok == false) continue;
+					ok = float.TryParse(elements[2], NumberStyles.Number, _culture, out float km);
+
+					if (ok == false) continue;
+					ok = int.TryParse(elements[3], NumberStyles.Integer, _culture, out int peopleCount);
+
+					if (ok == true)
+					{
+						yield return new ElastibusDayDataItem()
+						{
+							RunCtaId = ctaId,
+							Date = day,
+							Km = km,
+							PeopleCount = peopleCount
+						};
+					}
 				}
 			}
 		}

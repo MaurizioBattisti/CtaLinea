@@ -75,7 +75,9 @@ SELECT  r.RunId,
 		mrf.ForfaitId,
 		mrf.ForfaitName,
 		mrf.[ForfaitType],
-		CASE WHEN note.RunId IS NOT NULL THEN 1 ELSE 0 END AS HasNote
+		CASE WHEN note.RunId IS NOT NULL THEN 1 ELSE 0 END AS HasNote,
+		r.LockedDate,
+		r.LockedNote
 	FROM dbo.Runs r
 	INNER JOIN CTE_Variants v
 		ON R.RunId = v.RunId

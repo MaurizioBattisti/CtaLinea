@@ -7,9 +7,10 @@
 	<RadzenRow>
 		<RadzenColumn Size="7">
 			<DateRangeSelector @bind-StartDate=@this.PeriodInEdit.StartDate
-			@bind-EndDate=@this.PeriodInEdit.EndDate
-							   Inline=false
-							   AllowClear=true />
+				@bind-EndDate=@this.PeriodInEdit.EndDate
+				Min=@CurrentRun.LockedDate
+				Inline=false
+				AllowClear=true />
 		</RadzenColumn>
 		<RadzenColumn Size="5">
 			<FormWeekDays @bind-Monday="@this.PeriodInEdit.Monday"
@@ -74,6 +75,9 @@
 @code {
 	[Parameter]
 	public DialogService ds { get; set; }
+
+	[Parameter]
+	public RunItem CurrentRun { get; set; } = new RunItem();
 
 	[Parameter]
 	public RunPeriod PeriodInEdit { get; set; } = new RunPeriod();

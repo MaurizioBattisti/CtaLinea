@@ -78,6 +78,8 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
             return new
             {
                 model.ActivityId,
+				model.Description,
+				
                 model.Frequency,
                 model.RrequencyMask,
 

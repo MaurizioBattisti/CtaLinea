@@ -41,6 +41,7 @@ namespace CtaLineaApp
                 .AddScoped<NotificationService>()
                 .AddScoped<DialogService>()
                 .AddScoped<ContextMenuService>()
+                .AddScoped<TooltipService>()
 
                 // Cfc Routing
                 .AddCECRouting()

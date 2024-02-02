@@ -92,9 +92,37 @@
 	[Parameter]
 	public RunVariation Variation { get; set; } = new RunVariation();
 
+	private bool _ReadOnly = false;
 	[Parameter]
-	public bool ReadOnly { get; set; } = false;
+	public bool ReadOnly
+	{
+		get
+		{
+			if (this.CurrentRun.LockedDate != null)
+			{
+				if ((
+					this.Variation.StartDate == null
+					&& this.CurrentRun.StartDate == null
+				) || (
+					this.Variation.StartDate == null
+					&& this.CurrentRun.StartDate != null
+					&& this.CurrentRun.StartDate < this.CurrentRun.LockedDate
 
+				) || (
+					this.Variation.StartDate != null
+					&& this.Variation.StartDate < this.CurrentRun.LockedDate
+				))
+				{
+					return true;
+				}
+			}
+			return _ReadOnly;
+		}
+		set
+		{
+			_ReadOnly = value;
+		}
+	}
 	// nodo per il dialog
 	private RunNode? DialogNode = null;
 

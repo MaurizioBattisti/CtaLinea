@@ -833,4 +833,32 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="Sim_CarMAtchId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="1cfcb343-e6fd-43d9-b0bd-af8353b25afa" ChangeDateTime="01/26/2024 14:44:21">
+    <Property Name="ElementName" Value="[dbo].[trg_Ai_]" />
+    <Property Name="ElementType" Value="SqlDmlTrigger" />
+    <Property Name="ParentElementName" Value="[dbo].[Runs_NeedsDayRecalc]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[trg_ai_Runs_NeedsDayRecalc]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="63ad64bc-ee04-4772-a91e-e4982d7b69f9" ChangeDateTime="01/27/2024 13:45:01">
+    <Property Name="ElementName" Value="[dbo].[Runs].[LockDate]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Runs]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="LockedBefore" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="0699ce0e-29cd-4233-b78d-0fd950787d70" ChangeDateTime="01/27/2024 13:45:13">
+    <Property Name="ElementName" Value="[dbo].[Runs].[LockedBefore]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Runs]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="LockedDate" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c27537df-678d-4b63-b570-0a68295e99c0" ChangeDateTime="01/27/2024 13:45:19">
+    <Property Name="ElementName" Value="[dbo].[Runs].[LockNote]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Runs]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="LockedNote" />
+  </Operation>
 </Operations>

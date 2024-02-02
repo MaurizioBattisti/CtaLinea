@@ -42,6 +42,7 @@
 						</Template>
 						<EditTemplate Context="item">
 							<RadzenDatePicker @bind-Value="item.Day"
+								Min=@GetMinDate()
 								DateFormat="dd/MM/yyyy"
 								AllowClear=false
 								Culture=@AppSettings.CurrentCulture 
@@ -58,9 +59,9 @@
 					{
 						<RadzenDataGridColumn TItem="RunAdditionalDay" Context="item" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
 							<Template Context="item">
-								<RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@(args => EditRow_Click(item))" @onclick:stopPropagation="true">
+								<RadzenButton Icon="edit" Visible=@(!IsDayReadOnly(item)) ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@(args => EditRow_Click(item))" @onclick:stopPropagation="true">
 								</RadzenButton>
-								<RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteRow_Click(item))" @onclick:stopPropagation="true">
+								<RadzenButton Visible=@(!IsDayReadOnly(item)) ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteRow_Click(item))" @onclick:stopPropagation="true">
 								</RadzenButton>
 							</Template>
 							<EditTemplate Context="item">
@@ -204,13 +205,41 @@
 	private async Task AddDay_Click ()
 	{
 		await Task.CompletedTask;
+		var minDay = this.GetMinDate();
+		var today = DateTime.Today.Date;
+		if (minDay != null
+			&& today < minDay.Value)
+		{
+			today = minDay.Value;
+		}
+
 		DayToInsert = new RunAdditionalDay()
 		{
-			Day = DateTime.Today.Date
+			Day = today
 		};
 		if (grdData != null)
 		{
 			await grdData.InsertRow(DayToInsert);
 		}
 	}
+	private bool IsDayReadOnly(RunAdditionalDay item)
+	{
+		bool isLocked = false;
+		if (this.CurrentRun.LockedDate != null)
+		{
+			isLocked = true;
+			if (item.Day > this.CurrentRun.LockedDate)
+			{
+				isLocked = false;
+			}
+		}
+
+		return isLocked;
+	}
+	private DateTime? GetMinDate()
+	{
+		if (this.CurrentRun.LockedDate == null) return null;
+		return this.CurrentRun.LockedDate.Value.AddDays(1);
+	}
+
 }

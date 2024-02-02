@@ -40,10 +40,12 @@
 						<RadzenDataGridColumn TItem="RunSuspension" Context="node" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
 							<Template Context="data">
 								<RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter"
+										  Visible=@(!IsSuspensionLocked(data))
 										  Icon="edit"
 										  Size="ButtonSize.Medium"
 										  Click=@(() => EditSuspnesion_Click(data)) Text="" />
 								<RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter"
+										  Visible=@(!IsSuspensionLocked(data))
 										  Icon="delete"
 										  Size="ButtonSize.Medium"
 										  Click=@(() => DeleteSuspnesion_Click(data)) Text="" />
@@ -64,6 +66,7 @@
 			<DateRangeSelectorNotNull 
 				StartName="StartDate"
 				EndName="EndDate"
+				Min=@GetMinDate()
 				@bind-StartDate="@SuspensionInEdit.StartDate"
 				@bind-EndDate="@SuspensionInEdit.EndDate"
 				Inline=true />
@@ -133,11 +136,18 @@
 
 	private async Task AddSuspnesion_Click()
 	{
+		var todayDate = DateTime.Today;
+		var minDate = this.GetMinDate();
+		if (minDate != null
+			&& todayDate < minDate.Value)
+		{
+			todayDate = minDate.Value;
+		}
 		var susp = new RunSuspension()
 			{
 				RunSuspensionId = Guid.NewGuid(),
-				StartDate = DateTime.Today,
-				EndDate = DateTime.Today.AddDays(1)
+			StartDate = todayDate,
+			EndDate = todayDate.AddDays(1)
 			};
 
 		this.IsAdding = true;
@@ -232,5 +242,25 @@
 		}
 		this.EditableData?.SetDirty();
 		ds.Close();
+	}
+
+	private bool IsSuspensionLocked(RunSuspension item)
+	{
+		bool isLocked = false;
+		if (this.CurrentRun.LockedDate != null)
+		{
+			isLocked = true;
+			if (item.StartDate > this.CurrentRun.LockedDate)
+			{
+				isLocked = false;
+			}
+		}
+
+		return isLocked;
+	}
+	private DateTime? GetMinDate ()
+	{
+		if (this.CurrentRun.LockedDate == null) return null;
+		return this.CurrentRun.LockedDate.Value.AddDays(1);
 	}
 }
