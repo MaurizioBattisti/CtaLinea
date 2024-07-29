@@ -328,6 +328,7 @@ BEGIN
 				WHERE (@RunId IS NULL OR d.RunId = @RunId);
 	END
 	-- 14 corsa con capienza del mezzo inferiore alla richiesta
+	/* Disattivata in data 29/07/2024 
 	IF @WhatToCheck IS NULL OR EXISTS(SELECT 1 FROM @Tbl_What w WHERE w.IncType = 14)
 	BEGIN 
 		WITH CTE_Data AS
@@ -356,6 +357,7 @@ BEGIN
 				FROM CTE_Inc d
 				WHERE (@RunId IS NULL OR d.RunId = @RunId);
 	END
+	*/
 
 	-- preprare i risultati
 	INSERT INTO @Tbl_IncData
