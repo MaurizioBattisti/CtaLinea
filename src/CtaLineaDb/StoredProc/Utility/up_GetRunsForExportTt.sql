@@ -63,10 +63,20 @@ BEGIN
 
 			r.PathsDescr,
 			r.RequestedFrequency,
+			
 			r.AssociatesDescr,
 			r.PrimaryCarsDescr,
 			r.SpareAssociatesDescr,
 			r.SpareCarsDescr,
+			-- Nuove descrizioni
+			pAss_curr.AssociatesDescr AS CurrentPrimaryAssociatesDescr,
+			pCar_curr.CarDescr AS CurrentPrimaryCarDescr,
+			pAss_ex.AssociatesDescr AS ExPrimaryAssociatesDescr,
+			pCar_ex.CarDescr AS ExPrimaryCarDescr,
+			sAss_curr.AssociatesDescr AS CurrentSpareAssociatesDescr,
+			sCar_curr.CarDescr AS CurrentSpareCarDescr,
+			sAss_ex.AssociatesDescr AS ExSpareAssociatesDescr,
+			sCar_ex.CarDescr AS ExSpareCarDescr,
 			
 			r.StartDate,
 			r.EndDate,
@@ -78,12 +88,48 @@ BEGIN
 			d.KmTotal,
 			d.TotKmContract,
 			d.TotKmExtra
+
 		FROM dbo.vw_Runs r
 		INNER JOIN CTE_Days d
 			ON r.RunId = d.RunId
 		INNER JOIN dbo.RunVariations v
 			ON r.RunId = v.RunId
 			AND v.StartDate IS NULL
+		-- nuove descrizioni
+		LEFT JOIN [dbo].[tvf_GetRunAssociatesDescr] (
+			'P', @Start, @End, @Dt, 1, 0
+			) pAss_curr
+			ON r.RunId = pAss_curr.RunId
+		LEFT JOIN [dbo].[tvf_GetRunAssociatesDescr] (
+			'P', @Start, @End, @Dt, 0, 1
+			) pAss_ex
+			ON r.RunId = pAss_ex.RunId
+		LEFT JOIN [dbo].[tvf_GetRunAssociatesDescr] (
+			'S', @Start, @End, @Dt, 1, 0
+			) sAss_curr
+			ON r.RunId = sAss_curr.RunId
+		LEFT JOIN [dbo].[tvf_GetRunAssociatesDescr] (
+			'S', @Start, @End, @Dt, 0, 1
+			) sAss_ex
+			ON r.RunId = sAss_ex.RunId
+		-- nuove descrizioni mezzi
+		LEFT JOIN [dbo].[tvf_GetRunCarDescr] (
+			'P', @Start, @End, @Dt, 1, 0
+			) pCar_curr
+			ON r.RunId = pCar_curr.RunId
+		LEFT JOIN [dbo].[tvf_GetRunCarDescr] (
+			'P', @Start, @End, @Dt, 0, 1
+			) pCar_ex
+			ON r.RunId = pCar_ex.RunId
+		LEFT JOIN [dbo].[tvf_GetRunCarDescr] (
+			'S', @Start, @End, @Dt, 1, 0
+			) sCar_curr
+			ON r.RunId = sCar_curr.RunId
+		LEFT JOIN [dbo].[tvf_GetRunCarDescr] (
+			'S', @Start, @End, @Dt, 0, 1
+			) sCar_ex
+			ON r.RunId = sCar_ex.RunId
+
 		WHERE (@ContractId IS NULL OR r.ContractId = @ContractId)
 			AND (r.StartDate IS NULL OR r.StartDate <= @End)
 			AND (r.EndDate IS NULL OR r.EndDate >= @Start)

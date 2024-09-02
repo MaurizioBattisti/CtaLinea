@@ -92,6 +92,7 @@
     <Folder Include="Tables\Simulation" />
     <Folder Include="StoredProc\Reports" />
     <Folder Include="StoredProc\Dashboard" />
+    <Folder Include="Functions\Utility" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post_Deploy.sql" />
@@ -229,5 +230,7 @@
     <Build Include="Views\Contab\vw_Budget.sql" />
     <Build Include="Views\Runs\Vw_RunVariants_ByDay.sql" />
     <Build Include="StoredProc\Run\up_Runs_SetLocked.sql" />
+    <Build Include="Functions\Utility\tvf_GetRunAssociatesDescr.sql" />
+    <Build Include="Functions\Utility\tvf_GetRunCarDescr.sql" />
   </ItemGroup>
 </Project>

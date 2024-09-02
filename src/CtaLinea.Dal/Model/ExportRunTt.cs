@@ -55,16 +55,30 @@ namespace ZzSoft.CtaLinea.Dal.Model
 		public DateTime? EndDate { get; set; }
 
 		[ColumnDescription(Header = "Ditte Titolari")]
-		public string AssociatesDescr { get; set; }
-		[ColumnDescription(Header = "MEzzi Titolari")]
-		public string PrimaryCarsDescr { get; set; }
+        public string CurrentPrimaryAssociatesDescr { get; set; }
+        // public string AssociatesDescr { get; set; }
+        [ColumnDescription(Header = "MEzzi Titolari")]
+        public string CurrentPrimaryCarDescr { get; set; }
+        // public string PrimaryCarsDescr { get; set; }
 
-		[ColumnDescription(Header = "Ditte riserva")]
-		public string SpareAssociatesDescr { get; set; }
+        [ColumnDescription(Header = "Ditte Ex Titolari")]
+        public string ExPrimaryAssociatesDescr { get; set; }
+        [ColumnDescription(Header = "MEzzi Ex Titolari")]
+        public string ExPrimaryCarDescr { get; set; }
+
+        [ColumnDescription(Header = "Ditte riserva")]
+        public string CurrentSpareAssociatesDescr { get; set; }
+        // public string SpareAssociatesDescr { get; set; }
 		[ColumnDescription(Header = "Mezzi riserva")]
-		public string SpareCarsDescr { get; set; }
+		public string CurrentSpareCarDescr { get; set; }
+        // public string SpareCarsDescr { get; set; }
+        
+        [ColumnDescription(Header = "Ditte Ex riserva")]
+        public string ExSpareAssociatesDescr { get; set; }
+        [ColumnDescription(Header = "Mezzi Ex riserva")]
+        public string ExSpareCarDescr { get; set; }
 
-		[ColumnDescription(Header = "Nr. Giorni")]
+        [ColumnDescription(Header = "Nr. Giorni")]
 		public int? DayCount { get; set; }
 		[ColumnDescription(Header = "Id CTA")]
 		public int? CtaRunId { get; set; }
