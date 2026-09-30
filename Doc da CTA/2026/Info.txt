@@ -1,0 +1,29 @@
+Ciao Maurizio
+Allora ti allego i due file, urbano ed extraurbano, come sono definiti finora.
+Come ti dicevo non ci sono più due targhe in una cella, ho aggiunto un'altra colonna che ho chiamato mezzo di supporto.
+Le tariffe sono da prendere quelle della colonna Y: tariffa 2025/2026.
+Resta il problema delle targhe che tra parentesi hanno la ditta proprietaria che è diversa dalla ditta titolare del servizio.
+E poi c’è il problemone delle fermate di cui abbiamo parlato, nel file c’è solo il percorso (colonna F), così com’è nel capitolato.
+Come frequenza, sarebbe meglio tenere la frequenza CTA (colonna X) perché le ho rese omogenee e sono tutte controllate e corrispondono anche al numero dei giorni (colonna J).
+Diciamo che fino alla colonna K è quanto c’è scritto sul capitolato. Il resto l’ho aggiunto io.
+
+Ti allego anche il calendario, nel secondo giorno c’è un conteggio giorni.
+
+RIASSUNTO CALENDARIO:
+periodo invernale: giovedì 10 settembre 2026 - venerdì 25 giugno 2027
+inizio/fine scuola: giovedì 10 settembre 2026 - martedì 8 giugno 2027
+periodo estivo: fino a mercoledì 9 settembre 2026 e da sabato 26 giugno 2027
+Servizi scolastici: giovedì 10 settembre 2026 – martedì 8 giugno 2027
+Servizi post-festivi scolastici: Primo giorno di scuola, tutti i lunedì scolastici, martedì 3 novembre, mercoledì 9 dicembre, giovedì 7 gennaio, mercoledì 10 febbraio, giovedì 1 aprile, giovedì 3 giugno
+Servizi pre-festivi infrasett. Scol.: Ultimo giorno di scuola, tutti i venerdì scolastici, martedì 22 dicembre, mercoledì 24 marzo, mercoledì 28 aprile, martedì 1 giugno
+
+Sospensione attività scolastica:
+•	2 novembre 2026 (Ognissanti)
+•	7 dicembre 2026 – 8 dicembre 2026 (Immacolata)
+•	23 dicembre 2026 – 6 gennaio 2027 (Natale)
+•	8 febbraio 2027 – 9 febbraio 2027 (Carnevale)
+•	25 marzo 2027 – 31 marzo 2027 (Pasqua)
+•	29 aprile 2027 – 1 maggio 2027 (Festa lavoratori)
+•	2 giugno 2027 (Repubblica)
+
+Grazie Olimpia
