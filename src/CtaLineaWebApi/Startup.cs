@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 using System;
+using Microsoft.OpenApi;
 using ZzSoft.CtaLinea.Dal.Context;
 using ZzSoft.CtaLinea.Dal.Queries;
 using MediatR;
@@ -72,12 +72,12 @@ namespace CtaLineaWebApi
 			// swagger
 			this.AddSwagger(services);
 
-            // registra il mediator con tutti i tipi 
-            services.AddMediatR(
+            // registra il mediator con tutti i tipi usando la nuova sintassi di MediatR v12+
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
                 System.Reflection.Assembly.GetAssembly(typeof(ILogger)),
                 System.Reflection.Assembly.GetAssembly(typeof(Startup)),
                 System.Reflection.Assembly.GetAssembly(typeof(ICalendaQueries))
-                );
+            ));
 
             // Gestione dei servizi in backgrouond
             services.AddHostedService<QueuedHostedService>();
