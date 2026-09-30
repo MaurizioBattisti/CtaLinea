@@ -67,3 +67,20 @@ a, .btn-link {
     color: black;
     padding: 50px;
 }
+
+/*  ******  Modifiche per nuova version radzen ****** */
+/* Azzera margini e padding sul layout principale e sui suoi componenti interni di Radzen */
+.rz-layout,
+.rz-body {
+    margin: 0px !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.rz-sidebar,
+.rz-header {
+    margin: 5px !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+

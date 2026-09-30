@@ -32,8 +32,7 @@
     Changed="@GlobalFilterChanged"
     />
 
-<RadzenLayout 
-    Style="height: 100%; grid-template-columns: auto 1fr auto; grid-template-areas: 'rz-header rz-header rz-header' 'rz-sidebar rz-body rz-right-sidebar'">
+<RadzenLayout   Style="height: 100%; grid-template-columns: auto 1fr auto; grid-template-areas: 'rz-header rz-header rz-header' 'rz-sidebar rz-body rz-right-sidebar';">
     <RadzenBody>
         <RadzenDataGrid @ref="@grdData"
                         FilterMode="FilterMode.SimpleWithMenu"
@@ -55,9 +54,10 @@
                         RowExpand=@RowExpand
                         AllowVirtualization=true
                         VirtualizationOverscanCount="10"
-                        Style="height:100%"
+                        Style="@($"height: 100%; min-height: {(IsLoading || !Data.Any() ? "100vh" : "0px")};")"                        
                         CellRender=@CellRender
-                        Density=@Settings.Density>
+                        Density=@Settings.Density
+                        >
             <HeaderTemplate>
                 <RadzenStack Orientation="Orientation.Horizontal" Gap="4px" class="noprint">
                     <RadzenSplitButton 
