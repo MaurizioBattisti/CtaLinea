@@ -32,7 +32,7 @@
     Changed="@GlobalFilterChanged"
     />
 
-<RadzenLayout   Style="height: 100%; grid-template-columns: auto 1fr auto; grid-template-areas: 'rz-header rz-header rz-header' 'rz-sidebar rz-body rz-right-sidebar';">
+<RadzenLayout>
     <RadzenBody>
         <RadzenDataGrid @ref="@grdData"
                         FilterMode="FilterMode.SimpleWithMenu"
@@ -54,10 +54,11 @@
                         RowExpand=@RowExpand
                         AllowVirtualization=true
                         VirtualizationOverscanCount="10"
-                        Style="@($"height: 100%; min-height: {(IsLoading || !Data.Any() ? "100vh" : "0px")};")"                        
+                        Style="height: 100%;"
                         CellRender=@CellRender
                         Density=@Settings.Density
                         >
+                @*Style="@($"height: 100%; min-height: {(IsLoading || !Data.Any() ? "100vh" : "0px")};")"                        *@
             <HeaderTemplate>
                 <RadzenStack Orientation="Orientation.Horizontal" Gap="4px" class="noprint">
                     <RadzenSplitButton 
@@ -407,7 +408,12 @@
             </Columns>
         </RadzenDataGrid>
     </RadzenBody>
-    <RadzenSidebar Expanded="@EditorVisible" Style=@GetEditorStyle() class="noprint">
+    <RadzenSidebar 
+            @bind-Expanded="@EditorVisible" 
+            Position="SidebarPosition.End" 
+            Style="width: 1000px;"
+            FullHeight="true"
+            >
         <RinItemEditView @ref=@RunEditDetail
                         ShowCloseButton=true
                         Saved=@RunSaved
@@ -456,14 +462,6 @@
     #endregion
     private RunAdvancedFilters AdvancedFilter4s = new RunAdvancedFilters();
 
-    private string GetEditorStyle()
-    {
-        if (this.EditorVisible == true)
-        {
-            return Constants.OpenedEditorStype;
-        }
-        return Constants.ClosedEditorStype;
-    }
     private async Task Editor_Closed()
     {
         await Task.CompletedTask;

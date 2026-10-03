@@ -38,6 +38,7 @@
         <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.RunNumber)" Title="Nr Corsa" Width="120px" />
         <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.RunName)" Title="Corsa" Width="150px" />
         <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.PathsDescr)" Title="Percorso" Width="200px" />
+        <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.RequestedFrequency)" Title="Frequenza Rich." Width="200px" />
         <RadzenDataGridColumn TItem="CostByAssociateByRunItem" Property="@nameof(CostByAssociateByRunItem.StartTime)" Title="Ora inizio" Width="120px">
             <Template Context="data">
                 @FormatTime(data?.StartTime)

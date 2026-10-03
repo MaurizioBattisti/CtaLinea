@@ -11,9 +11,6 @@ namespace CtaLineaApp
         internal const int HttpTimeOut_Seconds = 300;
 		// run editor style
 
-		internal const string OpenedEditorStype = "width: 1000px; grid-area: rz-right-sidebar";
-        internal const string ClosedEditorStype = "width: 0px; grid-area: rz-right-sidebar";
-
 
         // Titolo applicazione
         public const string App_Title =  "CTA Linee";

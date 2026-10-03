@@ -2,6 +2,9 @@
 *	Maurizio Battisti
 *	19/12/2022
 *	Lista delle corse con tutti i dati 
+*	Changes
+*	02/10/2023:		gestito il percorso rrichiesto se quelo reale è assente
+*					restituisce la frrequenza agganciata al nome della corsa
  ************************************************* */
 CREATE VIEW [dbo].[vw_Runs]
 AS 
@@ -26,7 +29,9 @@ WITH CTE_Variants_Base AS
 )
 SELECT  r.RunId,
 		r.CtaRunId,
+		-- TODO: da togliere non appena si risolve con al frequenza
 		r.RunName,
+		-- COALESCE(r.RunName +  COALESCE(' - ' + v.RequestedFrequency, '') , v.RequestedFrequency) AS RunName,
 		r.ContractId, r.Extra, r.Elastibus,
 		r.ContractRowNumber,
 		r.StartDate, r.EndDate,
@@ -39,7 +44,7 @@ SELECT  r.RunId,
 		rSpareAss.SpareAssociatesDescr,
 		rSpareCar.SpareCarsDescr,
 		rCal.CalendarsDescr,
-		rPath.Path AS PathsDescr,
+		COALESCE(rPath.Path, v.Path) AS PathsDescr,
 		-- rPath.PathsDescr,
 		
 		v.RunVariationId,
@@ -97,10 +102,10 @@ SELECT  r.RunId,
 		ON r.RunId = rCal.RunId
 	LEFT JOIN dbo.vw_PathByNodes rPath
 		ON v.RunVariationId = rPath.RunVariationId
-		/*
-	LEFT JOIN dbo.vw_RunPaths rPath
-		ON r.RunId = rPath.RunId
-		*/
+	/*
+	LEFT JOIN dbo.vw_RunPaths rPath_req
+		ON r.RunId = rPath_req.RunId
+	*/
 	LEFT JOIN dbo.vw_RunFirstTags tag
 		ON r.RunId = tag.RunId
 	LEFT JOIN dbo.MultiRunForfaitDetails mrfd

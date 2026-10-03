@@ -24,7 +24,7 @@
 </LayoutSetter>
 <CtaLineaSttingsNotifier Changed=@StateHasChanged />
 
-<RadzenLayout Style="height: 100%; grid-template-columns: auto 1fr auto; grid-template-areas: 'rz-header rz-header rz-header' 'rz-sidebar rz-body rz-right-sidebar'">
+<RadzenLayout>
     <RadzenBody>
         <RadzenDataGrid @ref="@grdData"
                         FilterMode="FilterMode.Simple"
@@ -130,7 +130,12 @@
             </Columns>
         </RadzenDataGrid>
     </RadzenBody>
-    <RadzenSidebar Expanded="@EditorVisible" Style=@GetEditorStyle()>
+    <RadzenSidebar 
+            @bind-Expanded="@EditorVisible" 
+            Position="SidebarPosition.End" 
+            Style="width: 1000px;"
+            FullHeight="true"
+            >
         <RinItemEditView @ref=@RunEditDetail
                          ShowCloseButton=true
                          Saved=@RunSaved
@@ -175,14 +180,6 @@
 
     private RinIncongruenceRequest IncongruenceRequest = new RinIncongruenceRequest();
 
-    private string GetEditorStyle()
-    {
-        if (this.EditorVisible == true)
-        {
-            return Constants.OpenedEditorStype;
-        }
-        return Constants.ClosedEditorStype;
-    }
     private async Task Editor_Closed()
     {
         await Task.CompletedTask;

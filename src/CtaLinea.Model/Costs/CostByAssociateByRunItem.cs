@@ -30,7 +30,11 @@ namespace CtaLinea.Model.Costs
 
 		[ColumnDescription(Header = "Percorso")]
 		public string? PathsDescr { get; set; }
-		[ColumnDescription(Header = "Nr Linea")]
+
+        [ColumnDescription(Header = "Frequenza Richiesta")]
+        public string? RequestedFrequency { get; set; }
+
+        [ColumnDescription(Header = "Nr Linea")]
 		public int? LineNumber { get; set; }
 		[ColumnDescription(Header = "Nome Corsa")]
 		public string? RunName { get; set; }

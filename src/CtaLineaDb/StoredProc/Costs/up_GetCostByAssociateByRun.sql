@@ -190,7 +190,8 @@ BEGIN
 			r.EndTime,
 			-- altri dati raggruppamento
 			a.Description AS AssociateName,
-			ct.ContractName AS ContractName
+			ct.ContractName AS ContractName,
+			r.RequestedFrequency
 		FROM CTE_Data AS d
 		INNER JOIN dbo.Associates a
 			ON a.AssociateId = d.AssociateId
