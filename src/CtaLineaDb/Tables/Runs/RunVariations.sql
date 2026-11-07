@@ -34,3 +34,9 @@ CREATE TABLE [dbo].[RunVariations]
         ON DELETE CASCADE
         ON UPDATE CASCADE
 )
+GO
+
+CREATE NONCLUSTERED INDEX IX_RunVariations_RunId_StartDate 
+    ON dbo.RunVariations (RunId, StartDate DESC)
+    INCLUDE (RunVariationId, Path);
+GO

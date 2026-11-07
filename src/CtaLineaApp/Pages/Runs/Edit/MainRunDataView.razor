@@ -76,14 +76,19 @@
 					<RadzenColumn Size="3">
 						<RadzenNumeric ReadOnly=@ReadOnly Name="ContractRowNumber" TValue="int?" @bind-Value="this.CurrentRun.ContractRowNumber" Class="w-100" Change=@(a=> this.EditableData?.SetDirty()) />
 					</RadzenColumn>
-					<RadzenColumn Size="3">
+					<RadzenColumn Size="2">
 						<RadzenCheckBox Disabled=@ReadOnly Name="ExtraContract" @bind-Value=@this.CurrentRun.Extra TValue="bool" Change=@(a=> this.EditableData?.SetDirty()) />
 						<RadzenLabel Text="Extra Capitolato" Component="ExtraContract" Style="margin-left: 8px; vertical-align: middle;" />
 					</RadzenColumn>
-					<RadzenColumn Size="3">
+					<RadzenColumn Size="2">
 						<RadzenCheckBox Disabled=@ReadOnly Name="Elastibus" @bind-Value=@this.CurrentRun.Elastibus TValue="bool" Change=@(a=> this.EditableData?.SetDirty()) />
 						<RadzenLabel Text="Elastibus" Component="Elastibus" Style="margin-left: 8px; vertical-align: middle;" />
 					</RadzenColumn>
+					<RadzenColumn Size="2">
+						<RadzenCheckBox Disabled=@ReadOnly Name="NeverStarted" @bind-Value=@this.CurrentRun.NeverStarted TValue="bool" Change=@(a => this.EditableData?.SetDirty()) />
+						<RadzenLabel Text="Mai Avviata" Component="NeverStarted" Style="margin-left: 8px; vertical-align: middle;" />
+					</RadzenColumn>
+
 				</RadzenRow>
 			</RadzenFieldset>
 			<RadzenFieldset Text="Richieste">

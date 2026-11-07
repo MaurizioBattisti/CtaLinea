@@ -45,6 +45,7 @@ BEGIN
 		AssociateId		uniqueidentifier,
 		CarId			uniqueidentifier,
 		Day				date,
+		OutOfPeriod		bit,
 		
 		-- ulteriroi dati per filtor
 		ContractId		int,
@@ -75,7 +76,7 @@ BEGIN
 	IF @UseFreshData = 1
 	BEGIN
 		INSERT INTO @Tbl_OutPut 
-			(RunId, RunRowNum, Day,
+			(RunId, RunRowNum, Day, OutOfPeriod,
 			AssociateId, CarId, ContractId, 
 			RealKm_Contract, RealKm_Extra,
 			ContractKm, ExtraKm,
@@ -94,7 +95,7 @@ BEGIN
 	ELSE
 	BEGIN
 		INSERT INTO @Tbl_OutPut 
-			(RunId, RunRowNum, Day,
+			(RunId, RunRowNum, Day, OutOfPeriod,
 			AssociateId, CarId, ContractId, 
 			RealKm_Contract, RealKm_Extra,
 			ContractKm, ExtraKm,
@@ -103,7 +104,7 @@ BEGIN
 			MultiRunForfaitAmount, MultiRunForfaitType, 
 			MultiRunForfaitName, MultiRunForfaitId
 			)
-		SELECT d.RunId, d.RunRowNum, d.Day,
+		SELECT d.RunId, d.RunRowNum, d.Day, d.OutOfPeriod,
 			d.AssociateId, d.CarId, d.ContractId, 
 			d.RealKm_Contract, d.RealKm_Extra,
 			d.ContractKm, d.ExtraKm,

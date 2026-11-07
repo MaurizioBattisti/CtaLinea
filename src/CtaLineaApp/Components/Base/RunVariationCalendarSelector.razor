@@ -70,8 +70,8 @@
 		var workCals = this.RunCalendars?.ToList() ?? new List<RunVariationCalendar>();
 		var ids = calendars?.ToList() ?? new List<int>();
 		var wrkIds = (from c in workCals
-							select c.CalendarId)
-							.ToList();
+					select c.CalendarId)
+					.ToList();
 
 		var idTodDel = (from c in workCals
 						where ids.Contains(c.CalendarId) == false
@@ -86,7 +86,7 @@
 		// imposta lo stesso valore di esclusione  / insnclusione per gli altri
 		var updt = (from c in workCals
 					where ids.Contains(c.CalendarId) == true
-					&& c.Exclusion != this.Exclusion
+						&& c.Exclusion != this.Exclusion
 					select c);
 		foreach (var c in updt)
 		{
@@ -97,7 +97,8 @@
 						where wrkIds.Contains(id) == false
 						select new RunVariationCalendar()
 						 {
-							 CalendarId = id
+							 CalendarId = id,
+							 Exclusion = this.Exclusion
 						 }
 					);
 

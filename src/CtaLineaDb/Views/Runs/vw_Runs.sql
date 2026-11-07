@@ -37,6 +37,7 @@ SELECT  r.RunId,
 		r.StartDate, r.EndDate,
 		r.RequestedDays,
 		r.Note AS RunNote,
+		r.NeverStarted AS NeverStarted,
 
 		-- descrizioni
 		rAss.AssociatesDescr,

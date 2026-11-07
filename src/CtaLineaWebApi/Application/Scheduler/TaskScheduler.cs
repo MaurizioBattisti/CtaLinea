@@ -229,22 +229,28 @@ namespace CtaLineaWebApi.Application.Scheduler
 			// if (self._autoEvent.WaitOne(500) == true)
 			{
 				self._Working = true;
-				var taskToRun = self.SelectTaskToRun();
-				if (taskToRun != null)
+				try
 				{
-					taskToRun.LastStart = DateTime.Now;
+					var taskToRun = self.SelectTaskToRun();
+					if (taskToRun != null)
+					{
+						taskToRun.LastStart = DateTime.Now;
 
-					await self.CallTAskAction(
-						taskToRun.ActivityId,
-						taskToRun.Id,
-						taskToRun.Arguments,
-						taskToRun.Timeout)
-						.ConfigureAwait (false);
+						await self.CallTAskAction(
+							taskToRun.ActivityId,
+							taskToRun.Id,
+							taskToRun.Arguments,
+							taskToRun.Timeout)
+							.ConfigureAwait(false);
 
-					taskToRun.LastEnd = DateTime.Now;
+						taskToRun.LastEnd = DateTime.Now;
+					}
 				}
-                // self._autoEvent.Set();
-                self._Working = false;
+				finally
+				{
+					// self._autoEvent.Set();
+					self._Working = false;
+				}
             }
 
 			return;

@@ -9,6 +9,7 @@ CREATE TABLE [dbo].[BudgetDetail]
     [RunId] UNIQUEIDENTIFIER NOT NULL, 
     [RunRowNum] INT NOT NULL, 
     [Day] DATE NOT NULL, 
+    [OutOfPeriod] BIT NOT NULL DEFAULT 0,
     [AssociateId] UNIQUEIDENTIFIER NOT NULL, 
     [CarId] UNIQUEIDENTIFIER NOT NULL, 
     [ContractId] INT NOT NULL, 

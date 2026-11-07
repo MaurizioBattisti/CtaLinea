@@ -42,7 +42,8 @@ BEGIN
 		RunVariantId	uniqueidentifier PRIMARY KEY,
 		StartDate		date NOT NULL,
 		EndDate			date NOT NULL,
-		LastOne			bit DEFAULT 0
+		LastOne			bit DEFAULT 0,
+		NeverStarted	BIT DEFAULT 0
 	);
 	
 	SELECT @StartDate = CASE WHEN  COALESCE(r.StartDate, c.StartDate) < c.StartDate THEN C.StartDAte ELSE COALESCE(r.StartDate, c.StartDate) END,
@@ -64,16 +65,20 @@ BEGIN
 	(
 		SELECT ROW_NUMBER() OVER (ORDER BY COALESCE(v.StartDate, @StartDate) ) AS Num,
 				COALESCE(v.StartDate, @StartDate) AS StartDate,
-				v.RunVariationId
+				v.RunVariationId,
+				v.RunId
 			FROM dbo.RunVariations v
 			WHERE v.RunId = @RunId
 	)
 	INSERT INTO @Tbl_Variants
-		(StartDate, EndDate, RunVariantId)
+		(StartDate, EndDate, RunVariantId, NeverStarted)
 		SELECT c.StartDate,
 				COALESCE (DATEADD(d, -1,  ce.StartDate), @EndDAte) AS EndDAte,
-				c.RunVariationId
+				c.RunVariationId,
+				r.NeverStarted
 			FROM CTE_RunVariants c
+			INNER JOIN dbo.Runs r
+				ON C.RunId = r.RunId
 			LEFT JOIN  CTE_RunVariants ce
 				ON ce.Num = (c.num + 1)
 		;
@@ -112,7 +117,8 @@ BEGIN
 					vc.Thursday, vc.Friday, vc.Saturday, vc.Sunday,
 					v.StartDate,
 					v.EndDate,
-					v.LastOne
+					v.LastOne,
+					v.NeverStarted
 				FROM @Tbl_Variants v
 				INNER JOIN dbo.RunVariationCalendars vc
 					ON V.RunVariantId = vc.RunVariationId
@@ -134,6 +140,7 @@ BEGIN
 	DECLARE @v_c_Friday			bit;
 	DECLARE @v_c_Saturday		bit;
 	DECLARE @v_c_Sunday			bit;
+	DECLARE @NeverStarted		bit = 0;
 
 	OPEN Var_Curr;
 	FETCH NEXT FROM Var_Curr INTO 
@@ -141,7 +148,8 @@ BEGIN
 			@v_c_Monday, @v_c_Tuesday, @v_c_Wednesday,
 			@v_c_Thursday, @v_c_Friday, @v_c_Saturday, @v_c_Sunday,
 			@v_StartDate, @v_EndDate,
-			@v_LastOne;
+			@v_LastOne,
+			@NeverStarted;
 
 	WHILE @@FETCH_STATUS = 0  
 	BEGIN  
@@ -168,7 +176,15 @@ BEGIN
 				SELECT d.RunVariantId, 
 						d.Day,
 						d.WeekDay,
-						CASE WHEN d.day > @RunEndDAte AND @v_LastOne = 1 AND d.day <= @EndDAte THEN 1 ELSE 0 END
+						CASE 
+							WHEN @NeverStarted = 1
+								THEN 1
+							WHEN d.day > @RunEndDAte 
+									AND @v_LastOne = 1 
+									AND d.day <= @EndDAte 
+								THEN 1 
+							ELSE 0 
+						END
 					FROM CTE_Days d
 					LEFT JOIN @Tbl_Var_Days dd
 						ON dd.RunVariantId = @v_RunVariationId

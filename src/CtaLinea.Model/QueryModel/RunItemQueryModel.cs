@@ -47,6 +47,9 @@ namespace CtaLinea.Model.QueryModel
         [SqlField(FullText = true)]
 		public string? RunNote { get; set; }
 
+        [ColumnDescription(Header = "Corsa mai avviata")]
+        public bool NeverStarted { get; set; } = false;
+
         // Descrizioni
         [ColumnDescription(Header = "Ditte")]
         [SqlField(SortPosition = 3, FullText = true)]

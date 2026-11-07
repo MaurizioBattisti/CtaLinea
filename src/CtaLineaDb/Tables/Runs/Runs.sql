@@ -8,6 +8,7 @@
     [EndDate] DATE NULL, 
     [RequestedDays] INT NULL, 
     [Note] VARCHAR(MAX) NULL, 
+    [NeverStarted] BIT NOT NULL DEFAULT 0,
 
     -- Identificativo univoco autoincrementante non più modificabile di una corsa
     [CtaRunId] INT NOT NULL IDENTITY, 

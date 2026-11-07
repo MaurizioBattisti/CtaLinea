@@ -26,6 +26,7 @@ namespace CtaLinea.Model.Runs
         public int? RequestedDays { get; set; }
         
         public string? Note { get; set; }
+        public bool NeverStarted { get; set; } = false;
 
         public DateTime? LockedDate { get; set; }
         public string? LockedNote { get; set; }

@@ -37,6 +37,7 @@ BEGIN
 		AssociateId		uniqueidentifier,
 		CarId			uniqueidentifier,
 		Day				date,
+		OutOfPeriod		BIT,
 		
 		-- ulteriroi dati per filtor
 		ContractId		int,
@@ -70,7 +71,7 @@ BEGIN
 	);
 
 	INSERT INTO @Tbl_OutPut 
-		(RunId, RunRowNum, Day,
+		(RunId, RunRowNum, Day, OutOfPeriod,
 		ContractId, RunVariationId,
 		AssociateId, CarId,
 		MonthId, YearId,
@@ -79,8 +80,9 @@ BEGIN
 		DayCost, DayIntegration, DayForfait
 		)
 		SELECT DISTINCT c.RunId,
-				c.CarNum,
+				c.CarNum,				
 				c.Day,
+				d.OutOfPeriod,
 				r.ContractId,
 				c.RunVariationId,
 				(CASE @RplacedCars  
@@ -95,14 +97,16 @@ BEGIN
 				dbo.fn_GetMonthId(c.Day),
 				dbo.fn_GetYearId(c.Day),
 
-				c.KmContract,
-				c.KmExtra,
+				c.KmContract * (CASE WHEN d.OutOfPeriod = 1 THEN -1 ELSE 1 END) AS RealKm_Contract,
+				c.KmExtra * (CASE WHEN d.OutOfPeriod = 1 THEN -1 ELSE 1 END) AS RealKm_Extra,
 
 				-- Costi
 				c.KmContract * 
-					(CASE @RplacedCars  
-						WHEN 1 THEN  c.KmPrice
-						WHEN 0 THEN c.o_KmPrice
+					(CASE WHEN d.OutOfPeriod = 1 THEN 0 ELSE 
+						(CASE @RplacedCars  
+							WHEN 1 THEN c.KmPrice
+							WHEN 0 THEN c.o_KmPrice
+						END)
 					END) AS RealKm_Contract_Cost,
 				c.KmExtra * 
 					(CASE @RplacedCars  
@@ -349,7 +353,7 @@ BEGIN
 		-- inserisce il dettaglio
 		INSERT INTO dbo.BudgetDetail
 			(BudgetId,
-			RunId, RunRowNum, Day,
+			RunId, RunRowNum, Day, OutOfPeriod,
 			AssociateId, CarId, ContractId,
 			RealKm_Contract, RealKm_Extra, 
 			ContractKm, ExtraKm,
@@ -359,7 +363,7 @@ BEGIN
 			MultiRunForfaitType, MultiRunForfaitName, MultiRunForfaitId
 			)
 			SELECT @BudgetId,
-					RunId, RunRowNum, Day,
+					RunId, RunRowNum, Day, OutOfPeriod,
 					AssociateId, CarId, ContractId,
 					RealKm_Contract, RealKm_Extra, 
 					ContractKm, ExtraKm,
@@ -375,6 +379,7 @@ BEGIN
 	SELECT [RunId]
 		  ,[RunRowNum]
 		  ,[Day]
+		  ,[OutOfPeriod]
 		  ,[AssociateId]
 		  ,[CarId]
 		  ,[ContractId]

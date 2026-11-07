@@ -2,10 +2,15 @@
 *	Maurizio Battisti
 *	19/12/2022
 *	Crea la lista dei Percorsi associati ad una corsa
+*	Changtes
+*	15/10/2026	Ottimizzaizone
  ************************************************* */
 CREATE VIEW [dbo].[vw_RunPaths]
 AS 
-WITH CTE_Variants AS
+WITH CTE_CurrentDate AS (
+    -- Calcoliamo la data UNA SOLA VOLTA all'inizio della vista
+    SELECT [dbo].[fn_Session_GetCurrentDate]() AS CurDate
+), CTE_Variants AS
 (
 	SELECT v.RunVariationId,
 			v.RunId,
@@ -19,7 +24,9 @@ WITH CTE_Variants AS
 			v.Path,
 			ROW_NUMBER() OVER (PARTITION BY v.RunId ORDER BY v.StartDate DESC) as n
 		FROM CTE_Variants v
-		WHERE v.StartDate <= [dbo].[fn_Session_GetCurrentDate] ()
+		CROSS JOIN CTE_CurrentDate d -- Inseriamo la data calcolata una sola volta
+		-- WHERE v.StartDate <= [dbo].[fn_Session_GetCurrentDate] ()
+		WHERE v.StartDate <= d.CurDate
 ), CTE_Nodes AS 
 (
 	SELECT n.RunVariationId,
@@ -50,7 +57,8 @@ WITH CTE_Variants AS
 			ON rv.RunVariationId = p.RunVariationId
 		WHERE rv.n = 1
 )
-SELECT rc.RunId ,
+SELECT
+		rc.RunId ,
 		STRING_AGG(rc.Path, ', ') AS PathsDescr
 	FROM CTE_PAths rc
 	GROUP BY rc.RunId

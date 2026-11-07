@@ -3,6 +3,8 @@
 *	18/12/2022
 *	Calcola il numero dei giorni di un calndario
 *	considera anche i calendari di base del calendario stesso
+*	Chnages
+*	09/10/2026		Considera il primo giorno di scuoal u girono  psot-festivo sul calendario post-festivo che è basato su calendario scolastico
 ************************************************************************************************************ */
 CREATE FUNCTION [dbo].[tvf_CalendarDays]
 (
@@ -131,8 +133,9 @@ BEGIN
 		-- controlla il valroe del tipo di calendario
 		IF @Int_CalendarType = 'NOP' 
 		BEGIN
-			-- i valodir i post  e rpe festivo vengono considerati solo sui calendari NO operation
-			IF @Int_Pre = 1 OR @Int_Post = 1
+			-- i valodir i post e rpe festivo vengono considerati solo sui calendari NO operation
+			IF @Int_Pre = 1 
+				OR @Int_Post = 1
 			BEGIN
 				WITH CTE_DAys AS 
 				(
@@ -140,6 +143,8 @@ BEGIN
 						*
 						FROM @Days d
 						WHERE d.ExcludedByCalendar = 0
+							-- per gestire il primo giorno di scuola come post festivo
+							AND d.ExcludedByPeriod = 0
 				)
 				UPDATE @Days
 					SET ExcludedByCalendar =CASE WHEN @Int_Post * CASE WHEN d_post.Day IS NULL  THEN 1 ELSE 0 END + @Int_Pre * (CASE WHEN d_Pre.Day IS NULL  THEN 1 ELSE 0 END ) < 1 THEN 1 ELSE d.ExcludedByCalendar  END 
