@@ -1031,7 +1031,9 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                 runItem.ContractRowNumber,
                 runItem.Extra,
                 runItem.Elastibus,
-				runItem.RunName,
+                runItem.NeverStarted,
+
+                runItem.RunName,
 
                 runItem.Note,
 

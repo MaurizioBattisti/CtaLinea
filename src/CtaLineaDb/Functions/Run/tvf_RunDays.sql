@@ -1,9 +1,10 @@
-﻿
-/* *****************************************************************************
+﻿/* *****************************************************************************
 	Maurizio Battisti
 	28/12/2022
 	Calcola il numero di giorni attesi per una determinata corsa
 	le sospensioni vengono idncate con un glaìg
+	Changes
+	20/11/2026	Corretto problema con il fetch del cursore
 ******************************************************************************/
 CREATE FUNCTION [dbo].[tvf_RunDays]
 (
@@ -237,7 +238,8 @@ BEGIN
 				@v_c_Monday, @v_c_Tuesday, @v_c_Wednesday,
 				@v_c_Thursday, @v_c_Friday, @v_c_Saturday, @v_c_Sunday,
 				@v_StartDate, @v_EndDate,
-				@v_LastOne;
+				@v_LastOne, 
+				@NeverStarted;
 	END;
 
 	CLOSE Var_Curr;  

@@ -35,14 +35,17 @@ BEGIN
 			WHERE c.CarType = 'P'
 	)
 	INSERT INTO @Tbl_Days
-		(RunId, Day, CarNum,
+		(RunId, Day, 
+		CarNum,
 		RunVariationId, RunPeriodId,
-		WeekDay, Suspended, OutOfPeriod,
+		WeekDay, 
+		Suspended, OutOfPeriod,
 		RunCarId, OriginalRunCarId, Replaced)
 		SELECT d.RunId, d.Day, 
 				ROW_NUMBER() OVER (PARTITION BY d.RunId, d.Day ORDER BY d.RunPeriodId, c.RunCarId, rd.ReplacedRunCarId) AS Num,
 				d.RunVariationId, d.RunPeriodId,
-				d.WeekDay,d. Suspended, d.OutOfPeriod,
+				d.WeekDay,
+				d. Suspended, d.OutOfPeriod,
 				COALESCE(rd.ReplacedRunCarId, c.RunCarId) AS RunCarId, 
 				c.RunCarId  AS OriginalRunCarId, 
 				CASE WHEN rd.ReplacedRunCarId IS NULL THEN 0 ELSE 1 END AS Replaced
