@@ -948,7 +948,12 @@ namespace ZzSoft.CtaLinea.Dal.Repositories
                             select repl);
             foreach (var replGroup in replDett)
             {
-                var repl = item.SubPeriods.SelectMany(p => p.CarReplacements.Where(r => r.CarReplacementId == replGroup.Key)).SingleOrDefault();
+                var repl = item.SubPeriods.SelectMany(p => 
+                    p.CarReplacements != null
+                    ? p.CarReplacements.Where(r => 
+                        r.CarReplacementId == replGroup.Key)
+                    : Enumerable.Empty<CarReplacement>())
+                    .SingleOrDefault();
                 if (repl != null)
                 {
                     // crea le due liste da asegnare ai sostituiti e al sostituente
