@@ -5,6 +5,7 @@
 	le sospensioni vengono idncate con un glaìg
 	Changes
 	20/11/2026	Corretto problema con il fetch del cursore
+	27/11/2026	Modiica per recuperare il valroe corretto della variazionic he inizia già prolungata
 ******************************************************************************/
 CREATE FUNCTION [dbo].[tvf_RunDays]
 (
@@ -62,14 +63,20 @@ BEGIN
 		WHERE r.RunId = @RunId;
 
 	-- crea la tabella con  le varianti con inizio e  fine del loro periodo
-	WITH CTE_RunVariants  AS
+	WITH CTE_RealRunVariations AS
+	(
+		SELECT v.*,
+				ROW_NUMBER() OVER (PARTITION BY COALESCE(v.StartDate, @StartDate) ORDER BY COALESCE(DAY(v.StartDate), 100) ) AS MyNum
+			FROM dbo.RunVariations v
+			WHERE v.RunId = @RunId
+	), CTE_RunVariants  AS
 	(
 		SELECT ROW_NUMBER() OVER (ORDER BY COALESCE(v.StartDate, @StartDate) ) AS Num,
 				COALESCE(v.StartDate, @StartDate) AS StartDate,
 				v.RunVariationId,
-				v.RunId
-			FROM dbo.RunVariations v
-			WHERE v.RunId = @RunId
+				v.RunId		
+			FROM CTE_RealRunVariations v
+			WHERE v.MyNum =1
 	)
 	INSERT INTO @Tbl_Variants
 		(StartDate, EndDate, RunVariantId, NeverStarted)
